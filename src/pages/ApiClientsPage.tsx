@@ -10,28 +10,45 @@ import { useRootMeta } from '@lib/root';
 import { groupErrors, readErrors, useAuth } from '@lib/api';
 import type { ApiClient, ErrorItem, FormErrors } from '@lib/api';
 import { DateHelper } from '@lib/date';
-import { useI18n } from '@lib/i18n';
+import { useI18n, useLocalizer } from '@lib/i18n';
 import { Table, Cell, Row } from '@components/Table';
 import ErrorSummary from '../forms/ErrorSummary';
 import FieldError, { errorId } from '../forms/FieldError';
 import '@styles/forms.scss';
 
 const FIELDS = ['name', 'expiresAt'] as const;
+const COLUMNS = ['name', 'expires', 'last_used', 'created', 'actions'] as const;
+const COLUMN_TEXT: Record<(typeof COLUMNS)[number], string> = {
+    name: 'Name',
+    expires: 'Expires',
+    last_used: 'Last used',
+    created: 'Created',
+    actions: 'Actions',
+};
 const inputId = (field: string) => `api-client-${field}`;
 const networkError: ErrorItem[] = [
     { code: 'network_error', message: 'Network error occurred' },
 ];
 
-const NoClientsPlaceholder: Component = () => <>No API clients</>;
+const NoClientsPlaceholder: Component = () => {
+    const t = useLocalizer('api-clients');
+    return <>{t('empty', 'No API clients')}</>;
+};
 
 export default function ApiClientsPage() {
     const { setTitle, setDescription } = useRootMeta();
     const { user, isAuthenticated, addCsrfToken } = useAuth();
     const i18n = useI18n();
+    const t = useLocalizer('api-clients');
 
     createRenderEffect(() => {
-        setTitle('API clients · EchoPhase');
-        setDescription('Credentials for bots and scripts that call the API.');
+        setTitle(`${t('title', 'API clients')} · EchoPhase`);
+        setDescription(
+            t(
+                'description',
+                'Credentials for bots and scripts that call the API.'
+            )
+        );
     });
 
     const [clients, { refetch }] = createResource(
@@ -50,6 +67,9 @@ export default function ApiClientsPage() {
     const [errors, setErrors] = createSignal<FormErrors>({});
     const [secret, setSecret] = createSignal<string | null>(null);
     const [busy, setBusy] = createSignal(false);
+
+    const column = (c: (typeof COLUMNS)[number]) =>
+        t(`columns.${c}`, COLUMN_TEXT[c]);
 
     // Times show in the profile's zone, so they read the same on any device.
     const show = (iso: string | null) =>
@@ -115,13 +135,13 @@ export default function ApiClientsPage() {
 
     return (
         <div class="api-clients-container">
-            <h1>API clients</h1>
+            <h1>{t('title', 'API clients')}</h1>
 
             <form class="vert-form" onSubmit={create} noValidate>
-                <h4 class="form-title">New client</h4>
+                <h4 class="form-title">{t('form.title', 'New client')}</h4>
                 <ErrorSummary errors={errors()} inputId={inputId} />
 
-                <label for={inputId('name')}>Name</label>
+                <label for={inputId('name')}>{t('form.name', 'Name')}</label>
                 <div class="form-group">
                     <input
                         {...errorProps('name')}
@@ -136,7 +156,7 @@ export default function ApiClientsPage() {
                 <FieldError for={inputId('name')} errors={errors().name} />
 
                 <label for={inputId('expiresAt')}>
-                    Expires (optional, your local time)
+                    {t('form.expires', 'Expires (optional, your local time)')}
                 </label>
                 <div class="form-group">
                     <input
@@ -155,34 +175,47 @@ export default function ApiClientsPage() {
                 />
 
                 <button class="btn" type="submit" disabled={busy()}>
-                    Create
+                    {t('form.create', 'Create')}
                 </button>
             </form>
 
             <Show when={secret()}>
                 <p class="api-client-secret" role="status">
-                    Secret (shown once, copy it now): <code>{secret()}</code>
+                    {t('secret', 'Secret (shown once, copy it now):')}{' '}
+                    <code>{secret()}</code>
                 </p>
             </Show>
 
             <Table
                 data={clients() ?? []}
-                headers={['Name', 'Expires', 'Last used', 'Created', 'Actions']}
+                headers={COLUMNS.map((c) => column(c))}
                 placeholder={NoClientsPlaceholder}
                 tableProps={{ class: 'api-clients' }}
                 render={({ item: client }) => (
                     <Row>
-                        <Cell label="Name" text={client.Name} />
-                        <Cell label="Expires" text={show(client.ExpiresAt)} />
+                        <Cell label={column('name')} text={client.Name} />
                         <Cell
-                            label="Last used"
+                            label={column('expires')}
+                            text={show(client.ExpiresAt)}
+                        />
+                        <Cell
+                            label={column('last_used')}
                             text={show(client.LastUsedAt)}
                         />
-                        <Cell label="Created" text={show(client.CreatedAt)} />
-                        <Cell label="Actions" props={{ class: 'actions' }}>
+                        <Cell
+                            label={column('created')}
+                            text={show(client.CreatedAt)}
+                        />
+                        <Cell
+                            label={column('actions')}
+                            props={{ class: 'actions' }}
+                        >
                             <button
                                 class="btn"
-                                aria-label={`Delete ${client.Name}`}
+                                aria-label={t(
+                                    'delete',
+                                    'Delete {name}'
+                                ).replace('{name}', client.Name)}
                                 disabled={busy()}
                                 onClick={() => remove(client.Id)}
                             >

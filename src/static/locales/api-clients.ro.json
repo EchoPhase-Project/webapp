@@ -1,0 +1,20 @@
+{
+  "title": "Clienți API",
+  "description": "Date de acces pentru boți și scripturi care apelează API-ul.",
+  "empty": "Niciun client API",
+  "form": {
+    "title": "Client nou",
+    "name": "Nume",
+    "expires": "Expiră (opțional, ora ta locală)",
+    "create": "Creează"
+  },
+  "secret": "Secret (afișat o singură dată, copiază-l acum):",
+  "delete": "Șterge {name}",
+  "columns": {
+    "name": "Nume",
+    "expires": "Expiră",
+    "last_used": "Ultima utilizare",
+    "created": "Creat",
+    "actions": "Acțiuni"
+  }
+}

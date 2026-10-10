@@ -4,7 +4,7 @@ import { BiRegularLock } from 'solid-icons/bi';
 import { useNavigate } from '@solidjs/router';
 import { groupErrors, useAuth } from '@lib/api';
 import type { FormErrors, LoginCredentials } from '@lib/api';
-import { useI18n } from '@lib/i18n';
+import { useI18n, useLocalizer } from '@lib/i18n';
 import ErrorSummary from './ErrorSummary';
 import FieldError, { errorId } from './FieldError';
 import '@styles/forms.scss';
@@ -14,6 +14,7 @@ const inputId = (field: string) => `login-${field}`;
 
 export default function LoginForm() {
     const i18n = useI18n();
+    const t = useLocalizer('auth');
     const auth = useAuth();
     const navigate = useNavigate();
 
@@ -51,12 +52,12 @@ export default function LoginForm() {
 
     return (
         <form class="vert-form" onSubmit={handleLogin} noValidate>
-            <h4 class="form-title">{i18n.t('auth.login', 'Log In')}</h4>
+            <h4 class="form-title">{t('login', 'Log In')}</h4>
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
             <label class="visually-hidden" for={inputId('username')}>
-                {i18n.t('form.username', 'Your Username')}
+                {t('form.username', 'Your Username')}
             </label>
             <div class="form-group">
                 <FaRegularUser class="input-icon" />
@@ -65,7 +66,7 @@ export default function LoginForm() {
                     class="form-style"
                     type="text"
                     autocomplete="username"
-                    placeholder={i18n.t('form.username', 'Your Username')}
+                    placeholder={t('form.username', 'Your Username')}
                     value={loginForm().username}
                     disabled={isDisabled()}
                     onInput={(e) =>
@@ -79,7 +80,7 @@ export default function LoginForm() {
             <FieldError for={inputId('username')} errors={errors().username} />
 
             <label class="visually-hidden" for={inputId('password')}>
-                {i18n.t('form.password', 'Your Password')}
+                {t('form.password', 'Your Password')}
             </label>
             <div class="form-group">
                 <BiRegularLock class="input-icon" />
@@ -88,7 +89,7 @@ export default function LoginForm() {
                     class="form-style"
                     type="password"
                     autocomplete="current-password"
-                    placeholder={i18n.t('form.password', 'Your Password')}
+                    placeholder={t('form.password', 'Your Password')}
                     value={loginForm().password}
                     disabled={isDisabled()}
                     onInput={(e) =>
@@ -109,7 +110,7 @@ export default function LoginForm() {
             >
                 {isDisabled()
                     ? i18n.t('loading', 'Loading...')
-                    : i18n.t('form.submit', 'SUBMIT')}
+                    : t('form.submit', 'SUBMIT')}
             </button>
         </form>
     );

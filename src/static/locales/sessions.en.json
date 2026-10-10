@@ -1,0 +1,17 @@
+{
+  "title": "Sessions",
+  "description": "List of current active sessions.",
+  "heading": "Active Sessions",
+  "revoke_all": "Revoke All",
+  "revoke": "Revoke session",
+  "empty": "No active sessions",
+  "columns": {
+    "device": "Device",
+    "actions": "Actions"
+  },
+  "device": {
+    "unknown_os": "Unknown OS",
+    "unknown_browser": "Unknown Browser",
+    "browser_on_os": "{browser} on {os}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "login": "Log In",
+  "signup": "Sign Up",
+  "form": {
+    "username": "Your Username",
+    "password": "Your Password",
+    "fullname": "Your Full Name",
+    "submit": "Submit"
+  }
+}

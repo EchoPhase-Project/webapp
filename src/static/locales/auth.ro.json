@@ -1,0 +1,10 @@
+{
+  "login": "Autentificare",
+  "signup": "Înregistrare",
+  "form": {
+    "username": "Numele de utilizator",
+    "password": "Parola",
+    "fullname": "Numele complet",
+    "submit": "Trimite"
+  }
+}

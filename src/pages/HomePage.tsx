@@ -6,20 +6,24 @@ import { useAuth } from '@lib/api';
 import { AiOutlineInfoCircle } from 'solid-icons/ai';
 import { TbOutlineBuildingEstate } from 'solid-icons/tb';
 import { VsSettings } from 'solid-icons/vs';
-import { useI18n } from '@lib/i18n';
+import { useI18n, useLocalizer } from '@lib/i18n';
 
 export default function HomePage() {
     const { setTitle, setDescription } = useRootMeta();
     const { setNavLinks } = useNav();
     const { logout } = useAuth();
     const { t } = useI18n();
+    const page = useLocalizer('home');
 
     const navigate = useNavigate();
 
     createRenderEffect(() => {
-        setTitle('Home · EchoPhase');
+        setTitle(`${page('title', 'Home')} · EchoPhase`);
         setDescription(
-            'Secure API bridge and real-time communication platform for modern distributed applications.'
+            page(
+                'description',
+                'Secure API bridge and real-time communication platform for modern distributed applications.'
+            )
         );
         setNavLinks([
             {
@@ -38,18 +42,24 @@ export default function HomePage() {
             },
             {
                 icon: VsSettings,
-                text: 'Settings',
+                text: t('nav.settings', 'Settings'),
                 items: [
                     {
                         icon: VsSettings,
-                        label: 'Sessions',
-                        description: 'View active sessions',
+                        label: t('nav.sessions.label', 'Sessions'),
+                        description: t(
+                            'nav.sessions.description',
+                            'View active sessions'
+                        ),
                         events: { onClick: () => navigate('/sessions') },
                     },
                     {
                         icon: VsSettings,
-                        label: 'API clients',
-                        description: 'Credentials for bots and scripts',
+                        label: t('nav.api_clients.label', 'API clients'),
+                        description: t(
+                            'nav.api_clients.description',
+                            'Credentials for bots and scripts'
+                        ),
                         events: { onClick: () => navigate('/api-clients') },
                     },
                 ],
@@ -66,7 +76,7 @@ export default function HomePage() {
 
     return (
         <div>
-            <h1>Home page</h1>
+            <h1>{page('heading', 'Home page')}</h1>
         </div>
     );
 }

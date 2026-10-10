@@ -1,5 +1,5 @@
 import { createSignal, onMount } from 'solid-js';
-import { useI18n } from '@lib/i18n';
+import { useLocalizer } from '@lib/i18n';
 import RegisterForm from '@forms/RegisterForm';
 import LoginForm from '@forms/LoginForm';
 import { BsArrowUpRight } from 'solid-icons/bs';
@@ -9,7 +9,7 @@ import '@styles/auth.scss';
 export default function AuthPages() {
     const [isRegister, setIsRegister] = createSignal(false);
     const { setNavLinks } = useNav();
-    const { t } = useI18n();
+    const t = useLocalizer('auth');
 
     onMount(() => {
         setNavLinks([]);
@@ -19,8 +19,8 @@ export default function AuthPages() {
         <div class="auth-wrapper">
             <div class="auth-section">
                 <h6 class="auth-tabs">
-                    <span>{t('auth.login', 'Log In')}</span>
-                    <span>{t('auth.signup', 'Sign Up')}</span>
+                    <span>{t('login', 'Log In')}</span>
+                    <span>{t('signup', 'Sign Up')}</span>
                 </h6>
                 <input
                     class="hidden-checkbox"

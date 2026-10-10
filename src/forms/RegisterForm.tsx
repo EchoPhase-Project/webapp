@@ -6,7 +6,7 @@ import { AiOutlineTags } from 'solid-icons/ai';
 import { groupErrors, useAuth } from '@lib/api';
 import type { FormErrors, RegisterData } from '@lib/api';
 import { DateHelper } from '@lib/date';
-import { useI18n } from '@lib/i18n';
+import { useI18n, useLocalizer } from '@lib/i18n';
 import ErrorSummary from './ErrorSummary';
 import FieldError, { errorId } from './FieldError';
 import '@styles/forms.scss';
@@ -26,6 +26,7 @@ export default function RegisterForm() {
     const navigate = useNavigate();
 
     const i18n = useI18n();
+    const t = useLocalizer('auth');
     const isDisabled = () => auth.isLoading() || i18n.isLoading();
 
     // aria wiring shared by every input: invalid state and its error list.
@@ -57,12 +58,12 @@ export default function RegisterForm() {
 
     return (
         <form class="vert-form" onSubmit={handleRegister} noValidate>
-            <h4 class="form-title">{i18n.t('auth.signup', 'Sign Up')}</h4>
+            <h4 class="form-title">{t('signup', 'Sign Up')}</h4>
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
             <label class="visually-hidden" for={inputId('name')}>
-                {i18n.t('form.fullname', 'Your Full Name')}
+                {t('form.fullname', 'Your Full Name')}
             </label>
             <div class="form-group">
                 <FaRegularUser class="input-icon" />
@@ -72,7 +73,7 @@ export default function RegisterForm() {
                     type="text"
                     autocomplete="name"
                     disabled={isDisabled()}
-                    placeholder={i18n.t('form.fullname', 'Your Full Name')}
+                    placeholder={t('form.fullname', 'Your Full Name')}
                     value={registerForm().name}
                     onInput={(e) =>
                         setRegisterForm((f) => ({
@@ -85,7 +86,7 @@ export default function RegisterForm() {
             <FieldError for={inputId('name')} errors={errors().name} />
 
             <label class="visually-hidden" for={inputId('username')}>
-                {i18n.t('form.username', 'Your Username')}
+                {t('form.username', 'Your Username')}
             </label>
             <div class="form-group">
                 <AiOutlineTags class="input-icon" />
@@ -95,7 +96,7 @@ export default function RegisterForm() {
                     type="text"
                     autocomplete="username"
                     disabled={isDisabled()}
-                    placeholder={i18n.t('form.username', 'Your Username')}
+                    placeholder={t('form.username', 'Your Username')}
                     value={registerForm().username}
                     onInput={(e) =>
                         setRegisterForm((f) => ({
@@ -108,7 +109,7 @@ export default function RegisterForm() {
             <FieldError for={inputId('username')} errors={errors().username} />
 
             <label class="visually-hidden" for={inputId('password')}>
-                {i18n.t('form.password', 'Your Password')}
+                {t('form.password', 'Your Password')}
             </label>
             <div class="form-group">
                 <BiRegularLock class="input-icon" />
@@ -118,7 +119,7 @@ export default function RegisterForm() {
                     type="password"
                     autocomplete="new-password"
                     disabled={isDisabled()}
-                    placeholder={i18n.t('form.password', 'Your Password')}
+                    placeholder={t('form.password', 'Your Password')}
                     value={registerForm().password}
                     onInput={(e) =>
                         setRegisterForm((f) => ({
@@ -138,7 +139,7 @@ export default function RegisterForm() {
             >
                 {isDisabled()
                     ? i18n.t('loading', 'Loading...')
-                    : i18n.t('form.submit', 'SUBMIT')}
+                    : t('form.submit', 'SUBMIT')}
             </button>
         </form>
     );

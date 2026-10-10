@@ -1,0 +1,17 @@
+{
+  "title": "Sesiuni",
+  "description": "Lista sesiunilor active.",
+  "heading": "Sesiuni active",
+  "revoke_all": "Revocă toate",
+  "revoke": "Revocă sesiunea",
+  "empty": "Nicio sesiune activă",
+  "columns": {
+    "device": "Dispozitiv",
+    "actions": "Acțiuni"
+  },
+  "device": {
+    "unknown_os": "SO necunoscut",
+    "unknown_browser": "Browser necunoscut",
+    "browser_on_os": "{browser} pe {os}"
+  }
+}

@@ -1,14 +1,29 @@
 {
-  "auth": {
-    "login": "Log In",
-    "signup": "Sign Up"
-  },
-  "form": {
-    "username": "Your Username",
-    "password": "Your Password",
-    "fullname": "Your Full Name",
-    "submit": "Submit"
-  },
+  "loading": "Loading...",
   "unauthorized": "Unauthorized",
-  "select_language": "Select Language"
+  "select_language": "Select Language",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "logout": "Logout",
+    "settings": "Settings",
+    "sessions": {
+      "label": "Sessions",
+      "description": "View active sessions"
+    },
+    "api_clients": {
+      "label": "API clients",
+      "description": "Credentials for bots and scripts"
+    }
+  },
+  "notice": {
+    "reauth": {
+      "title": "Connection needs attention",
+      "text": "Reconnect"
+    },
+    "discord": {
+      "title": "Discord gateway stopped"
+    },
+    "dismiss": "Dismiss"
+  }
 }

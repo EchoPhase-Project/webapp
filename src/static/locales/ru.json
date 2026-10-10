@@ -1,14 +1,29 @@
 {
-  "auth": {
-    "login": "Войти",
-    "signup": "Регистрация"
-  },
-  "form": {
-    "username": "Имя пользователя",
-    "password": "Пароль",
-    "fullname": "Полное имя",
-    "submit": "Отправить"
-  },
+  "loading": "Загрузка...",
   "unauthorized": "Неавторизован",
-  "select_language": "Выберите язык"
+  "select_language": "Выберите язык",
+  "nav": {
+    "home": "Главная",
+    "about": "О проекте",
+    "logout": "Выйти",
+    "settings": "Настройки",
+    "sessions": {
+      "label": "Сеансы",
+      "description": "Активные сеансы"
+    },
+    "api_clients": {
+      "label": "API-клиенты",
+      "description": "Ключи для ботов и скриптов"
+    }
+  },
+  "notice": {
+    "reauth": {
+      "title": "Подключение требует внимания",
+      "text": "Переподключите"
+    },
+    "discord": {
+      "title": "Шлюз Discord остановлен"
+    },
+    "dismiss": "Закрыть"
+  }
 }

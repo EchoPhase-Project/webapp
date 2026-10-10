@@ -1,0 +1,20 @@
+{
+  "title": "API clients",
+  "description": "Credentials for bots and scripts that call the API.",
+  "empty": "No API clients",
+  "form": {
+    "title": "New client",
+    "name": "Name",
+    "expires": "Expires (optional, your local time)",
+    "create": "Create"
+  },
+  "secret": "Secret (shown once, copy it now):",
+  "delete": "Delete {name}",
+  "columns": {
+    "name": "Name",
+    "expires": "Expires",
+    "last_used": "Last used",
+    "created": "Created",
+    "actions": "Actions"
+  }
+}

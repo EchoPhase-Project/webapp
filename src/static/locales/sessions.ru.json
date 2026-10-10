@@ -1,0 +1,17 @@
+{
+  "title": "Сеансы",
+  "description": "Список текущих активных сеансов.",
+  "heading": "Активные сеансы",
+  "revoke_all": "Завершить все",
+  "revoke": "Завершить сеанс",
+  "empty": "Нет активных сеансов",
+  "columns": {
+    "device": "Устройство",
+    "actions": "Действия"
+  },
+  "device": {
+    "unknown_os": "Неизвестная ОС",
+    "unknown_browser": "Неизвестный браузер",
+    "browser_on_os": "{browser} на {os}"
+  }
+}

@@ -1,14 +1,29 @@
 {
-  "auth": {
-    "login": "Autentificare",
-    "signup": "Înregistrare"
-  },
-  "form": {
-    "username": "Numele de utilizator",
-    "password": "Parola",
-    "fullname": "Numele complet",
-    "submit": "Trimite"
-  },
+  "loading": "Se încarcă...",
   "unauthorized": "Neautorizat",
-  "select_language": "Selectează limba"
+  "select_language": "Selectează limba",
+  "nav": {
+    "home": "Acasă",
+    "about": "Despre",
+    "logout": "Deconectare",
+    "settings": "Setări",
+    "sessions": {
+      "label": "Sesiuni",
+      "description": "Vezi sesiunile active"
+    },
+    "api_clients": {
+      "label": "Clienți API",
+      "description": "Date de acces pentru boți și scripturi"
+    }
+  },
+  "notice": {
+    "reauth": {
+      "title": "Conexiunea necesită atenție",
+      "text": "Reconectează"
+    },
+    "discord": {
+      "title": "Gateway-ul Discord s-a oprit"
+    },
+    "dismiss": "Închide"
+  }
 }
