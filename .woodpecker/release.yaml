@@ -1,0 +1,88 @@
+# Release: pushes to main and manual runs (UI "Run pipeline", `mise run ci:run`)
+# publish this commit's webapp image to the in-cluster registry and
+# release the image by committing its tag to EchoPhase-Project/deploy (Flux
+# deploys from there).
+# GitHub Actions does the checks (all OSes); this only needs what GitHub
+# cannot reach: the registry.
+#
+# Manual-run variables:
+#   DEPLOY=false   publish only, do not touch the release
+#
+# Requires the repository to be "trusted" in Woodpecker (privileged builds)
+# and the secret deploy_key (write deploy key of EchoPhase-Project/deploy).
+
+variables:
+    # Step image: mise + the tools of mise.lock. `mise run ci:image` updates it.
+    - &ci-image localhost:30500/echophase/ci-webapp:91ef4e9df280
+    - &buildkit moby/buildkit:v0.33.0
+    # From pipeline pods the registry is its Service; image references in the
+    # chart keep localhost:30500, the address the node pulls from.
+    - &registry registry.registry.svc:5000
+
+when:
+    - event: push
+      branch: main
+    - event: manual
+
+clone:
+    - name: clone
+      image: woodpeckerci/plugin-git:2.10.1
+      settings:
+          # The image tag comes from `git describe`: full history and tags.
+          depth: 0
+          tags: true
+
+steps:
+    - name: image-tag
+      image: *ci-image
+      commands:
+          # Computed first, written after: a file created during the computation
+          # would count as an uncommitted change and make the tag "-dirty".
+          - TAG=$(mise run -q image-tag)
+          - echo "$${TAG}" > .image-tag
+          - echo "image tag $${TAG}"
+
+    - name: webapp-image
+      image: *buildkit
+      depends_on: [image-tag]
+      privileged: true
+      environment:
+          REGISTRY: *registry
+      commands:
+          - TAG=$(cat .image-tag)
+          - IMAGE=$${REGISTRY}/echophase/webapp
+          - >
+              buildctl-daemonless.sh build
+              --frontend dockerfile.v0 --local context=. --local dockerfile=.
+              --import-cache type=registry,ref=$${IMAGE}:buildcache,registry.insecure=true
+              --export-cache type=registry,ref=$${IMAGE}:buildcache,mode=max,registry.insecure=true
+              --output "type=image,\"name=$${IMAGE}:$${TAG},$${IMAGE}:latest\",push=true,registry.insecure=true"
+      backend_options:
+          kubernetes:
+              resources:
+                  requests: { cpu: '1', memory: 1Gi }
+                  limits: { cpu: '4', memory: 4Gi }
+
+    # GitOps: commit the tag to EchoPhase-Project/deploy; Flux upgrades the
+    # release from there. The step has no rights in the cluster at all.
+    - name: release
+      image: *ci-image
+      depends_on: [webapp-image]
+      when:
+          - evaluate: 'DEPLOY != "false"'
+      environment:
+          # Write deploy key of EchoPhase-Project/deploy (Woodpecker secret).
+          DEPLOY_KEY:
+              from_secret: deploy_key
+          GIT_AUTHOR_NAME: Woodpecker CI
+          GIT_AUTHOR_EMAIL: ci@echophase.invalid
+          GIT_COMMITTER_NAME: Woodpecker CI
+          GIT_COMMITTER_EMAIL: ci@echophase.invalid
+      commands:
+          - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          - printf '%s\n' "$${DEPLOY_KEY}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          # GitHub's published host key (api.github.com/meta), not ssh-keyscan.
+          - echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" > ~/.ssh/known_hosts
+          - git clone -q --depth 1 git@github.com:EchoPhase-Project/deploy.git /tmp/deploy
+          - TAG=$(cat .image-tag)
+          - cd /tmp/deploy && mise run release:bump --component webapp --tag "$${TAG}" --push

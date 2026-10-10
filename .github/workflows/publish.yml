@@ -1,0 +1,32 @@
+name: Publish
+
+# A tag vX.Y.Z publishes ghcr.io/echophase-project/webapp:X.Y.Z (and latest)
+# for self-hosting; the chart in EchoPhase-Project/charts pins it by version.
+on:
+    push:
+        tags: ['v*']
+
+permissions:
+    contents: read
+    packages: write
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        env:
+            IMAGE: ghcr.io/echophase-project/webapp
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Log in to GHCR
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+            - name: Webapp image
+              run: |
+                  version="${GITHUB_REF_NAME#v}"
+                  docker build -t "$IMAGE:$version" -t "$IMAGE:latest" .
+                  docker push "$IMAGE:$version"
+                  docker push "$IMAGE:latest"

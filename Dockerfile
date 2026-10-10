@@ -9,6 +9,8 @@ COPY . .
 RUN npm run build
 
 FROM nginx:alpine
+# Links the published package to its repository (and its visibility) on GHCR.
+LABEL org.opencontainers.image.source=https://github.com/EchoPhase-Project/webapp
 
 RUN rm /etc/nginx/conf.d/default.conf
 

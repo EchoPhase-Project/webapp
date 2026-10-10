@@ -21,13 +21,8 @@ const parseUserAgent = (deviceId: string): string => {
 
 export default function SessionsPage() {
     const { setTitle, setDescription } = useRootMeta();
-    const {
-        sessions,
-        revokeSession,
-        revokeCurrentSession,
-        revokeAllSessions,
-        isLoading,
-    } = useSession();
+    const { sessions, revokeSession, revokeAllSessions, isLoading } =
+        useSession();
 
     createRenderEffect(() => {
         setTitle('Sessions · EchoPhase');

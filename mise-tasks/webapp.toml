@@ -1,0 +1,39 @@
+# The web client: dependencies, the API contract it is typed against, checks.
+
+[install]
+description = "Install npm dependencies (as in package-lock.json)"
+run = "npm ci"
+
+# api-version names the contract (server version) the client is built
+# against; schema.d.ts is generated from it.
+["contract:pull"]
+description = "Download the API contract of ./api-version to artifacts/openapi.json"
+usage = 'flag "--version <version>" help="Contract version instead of ./api-version" env="CONTRACT_VERSION"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+version=${usage_version:-$(cat api-version)}
+rm -rf artifacts && mkdir -p artifacts
+plain=$([[ "$CONTRACT_REPO" == localhost:* || "$CONTRACT_REPO" == *.svc:* ]] && echo --plain-http || true)
+oras pull $plain "$CONTRACT_REPO:$version" -o artifacts >/dev/null
+echo "artifacts/openapi.json: $CONTRACT_REPO:$version"
+'''
+
+["gen:api"]
+description = "Regenerate src/lib/api/schema.d.ts from the contract"
+depends = ["contract:pull"]
+run = "OPENAPI=artifacts/openapi.json npm run gen:api"
+
+[check]
+description = "Contract types up to date, type check, lint, build"
+depends = ["contract:pull"]
+run = [
+  "OPENAPI=artifacts/openapi.json npm run check:api",
+  "npx --no-install tsc --noEmit",
+  "npm run lint",
+  "npm run build",
+]
+
+[dev]
+description = "Vite dev server (proxies the API, see vite.config.ts)"
+run = "npm run dev"

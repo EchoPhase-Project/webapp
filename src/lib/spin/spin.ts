@@ -89,7 +89,7 @@ export class Spin {
             el.removeEventListener('mouseleave', leaveHandler);
         };
 
-        const enterHandler = (e: MouseEvent) => {
+        const enterHandler = () => {
             el.addEventListener('mousemove', moveHandler);
             el.addEventListener('mouseleave', leaveHandler);
         };

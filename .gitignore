@@ -1,2 +1,9 @@
-# Ignore node_modules directory
 node_modules/
+dist/
+# Downloaded API contract (mise run contract:pull)
+artifacts/
+# Per-machine settings and secrets
+mise.local.toml
+mise.local.lock
+# Image tag the Woodpecker release workflow hands between its steps
+.image-tag

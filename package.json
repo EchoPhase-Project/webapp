@@ -13,7 +13,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "gen:lib": "tsx scripts/generate-lib-indexes.ts",
-    "gen:api": "openapi-typescript ${OPENAPI:-../artifacts/openapi.json} -o src/lib/api/schema.d.ts && prettier --write src/lib/api/schema.d.ts",
+    "gen:api": "openapi-typescript ${OPENAPI:-artifacts/openapi.json} -o src/lib/api/schema.d.ts && prettier --write src/lib/api/schema.d.ts",
     "check:api": "npm run gen:api && git diff --exit-code -- src/lib/api/schema.d.ts"
   },
   "keywords": [],

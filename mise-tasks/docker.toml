@@ -1,0 +1,44 @@
+# The webapp image: build locally, push to $DOCKER_REGISTRY under the image
+# tag of this checkout (`mise run image-tag`) and "latest".
+
+["image-tag"]
+description = "Print the image tag of this checkout (<version>-g<sha>[-dirty.<time>])"
+run = "scripts/image-tag.sh"
+
+["docker:build"]
+description = "Build the webapp image"
+run = 'docker build -t "$WEBAPP_IMAGE" .'
+
+["docker:push"]
+description = "Tag the built image with the image tag and latest, and push it"
+usage = 'flag "--tag <tag>" help="Tag instead of the image tag of this checkout" env="IMAGE_TAG"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+. scripts/lib.sh
+tag=${usage_tag:-$(image_tag)}
+for t in "$tag" latest; do
+    docker tag "$WEBAPP_IMAGE" "$DOCKER_REGISTRY/$WEBAPP_IMAGE:$t"
+    docker push -q "$DOCKER_REGISTRY/$WEBAPP_IMAGE:$t"
+done
+'''
+
+["docker:publish"]
+description = "Build and push the webapp image"
+usage = 'flag "--tag <tag>" help="Tag instead of the image tag of this checkout" env="IMAGE_TAG"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+mise run docker:build
+mise run docker:push ${usage_tag:+--tag "$usage_tag"}
+'''
+
+["docker:info"]
+description = "Show the registry, image name and this checkout's image tag"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+. scripts/lib.sh
+echo "registry:  $DOCKER_REGISTRY"
+echo "image:     $DOCKER_REGISTRY/$WEBAPP_IMAGE:$(image_tag)"
+'''

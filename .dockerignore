@@ -80,3 +80,11 @@ Logs/
 *.env
 *.crt
 *.key
+
+# Never in the build context: local settings (tokens), git, CI files.
+mise.local.toml
+.git/
+.woodpecker/
+.github/
+artifacts/
+.image-tag

@@ -1,0 +1,21 @@
+# Tool versions for this repository (https://mise.jdx.dev). `mise install`
+# installs them; with mise activated in the shell they are on PATH here.
+[tools]
+node = "26.11.1"
+oras = "1.3.4"
+# Woodpecker's CLI (ci:run, linting .woodpecker/); same version as the server.
+"github:woodpecker-ci/woodpecker" = { version = "3.18.1", matching_regex = "^woodpecker-cli_" }
+
+# Each keeps a value already set in the environment, so one-off overrides work.
+[env]
+# Images: the in-cluster registry of the project's instance (EchoPhase-Project/deploy).
+DOCKER_REGISTRY = "{{ get_env(name='DOCKER_REGISTRY', default='localhost:30500') }}"
+REGISTRY_API = "{{ get_env(name='REGISTRY_API', default=get_env(name='DOCKER_REGISTRY', default='localhost:30500')) }}"
+WEBAPP_IMAGE = "{{ get_env(name='WEBAPP_IMAGE', default='echophase/webapp') }}"
+# The server's API contract: an OCI artifact, version in ./api-version.
+# Published releases are on GHCR; for unreleased server changes point this at
+# the local registry: CONTRACT_REPO=localhost:30500/echophase/openapi.
+CONTRACT_REPO = "{{ get_env(name='CONTRACT_REPO', default='ghcr.io/echophase-project/openapi') }}"
+# Woodpecker (ci:run): WOODPECKER_SERVER and the token are per machine, in
+# mise.local.toml (see mise.local.toml.example).
+WOODPECKER_REPO = "{{ get_env(name='WOODPECKER_REPO', default='EchoPhase-Project/webapp') }}"

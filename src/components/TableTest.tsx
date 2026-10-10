@@ -1,5 +1,5 @@
 import { Table, Cell, Row } from './Table';
-import { Component, Show } from 'solid-js';
+import { Component } from 'solid-js';
 
 type Webhook = {
     id: string;

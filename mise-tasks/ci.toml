@@ -1,0 +1,58 @@
+# The webapp's Woodpecker pipeline (.woodpecker/) and its step image (infra/ci).
+# Woodpecker itself is set up from EchoPhase-Project/deploy.
+
+# The tag is a hash of what goes into the image, so it changes exactly when the
+# tool versions or the Dockerfile do. The pipelines pin it; this task rewrites
+# the pin (the `&ci-image` anchor in .woodpecker/*.yaml) to the new tag.
+["ci:image"]
+description = "Build and push the CI step image (mise + tools of mise.lock)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+ctx=$(mktemp -d)
+trap 'rm -rf "$ctx"' EXIT
+cp infra/ci/Dockerfile mise.toml mise.lock "$ctx/"
+tag=$(cat "$ctx/Dockerfile" "$ctx/mise.lock" | sha256sum | cut -c1-12)
+image="$DOCKER_REGISTRY/echophase/ci-webapp"
+docker build -t "$image:$tag" "$ctx"
+docker tag "$image:$tag" "$image:latest"
+docker push -q "$image:$tag"
+docker push -q "$image:latest"
+for f in .woodpecker/*.yaml; do
+    [ -e "$f" ] || continue
+    sed -i -E "s#^([[:space:]]*- &ci-image ).*#\1$image:$tag#" "$f"
+done
+echo "$image:$tag"
+'''
+
+# Needs WOODPECKER_SERVER and WOODPECKER_TOKEN (Woodpecker UI > user > access
+# token) in mise.local.toml. Goes through the tailnet, not the public funnel.
+["ci:run"]
+description = "Start the release pipeline manually"
+usage = '''
+flag "--branch <branch>" help="Branch to run" default="main"
+flag "--no-deploy" help="Publish images and contract, skip the deploy step"
+flag "--var <key=value>" var=#true help="More pipeline variables"
+'''
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${WOODPECKER_SERVER:?set it in mise.local.toml}"
+: "${WOODPECKER_TOKEN:?set it in mise.local.toml}"
+args=(--branch "$usage_branch")
+if [ "${usage_no_deploy:-false}" = true ]; then args+=(--var DEPLOY=false); fi
+eval "vars=(${usage_var:-})"
+for v in "${vars[@]}"; do args+=(--var "$v"); done
+if ! out=$(woodpecker-cli pipeline create "${args[@]}" "$WOODPECKER_REPO" 2>&1); then
+    # The server answers 204 when no workflow of the branch *on GitHub* matches
+    # a manual run; the CLI then fails on the empty body.
+    if grep -q '"error":"EOF"' <<<"$out"; then
+        echo "no pipeline started: branch '$usage_branch' on GitHub has no .woodpecker/ workflow for manual runs (not pushed yet?)" >&2
+    else
+        echo "$out" >&2
+    fi
+    exit 1
+fi
+echo "$out"
+echo "$WOODPECKER_SERVER/repos"
+'''

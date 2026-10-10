@@ -6,7 +6,6 @@ import '@styles/navbar.scss';
 // ─── SubMenuItem ──────────────────────────────────────────────────────────────
 
 function DesktopSubMenuItem(props: { item: NavSubItem; onClose: () => void }) {
-    const Icon = props.item.icon;
     return (
         <li role="none">
             <div
@@ -28,9 +27,9 @@ function DesktopSubMenuItem(props: { item: NavSubItem; onClose: () => void }) {
                     }
                 }}
             >
-                <Show when={Icon}>
+                <Show when={props.item.icon}>
                     <i class="submenu-icon" aria-hidden="true">
-                        <Dynamic component={Icon} />
+                        <Dynamic component={props.item.icon} />
                     </i>
                 </Show>
                 <div class="submenu-content">

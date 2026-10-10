@@ -95,7 +95,8 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
     const connect = async () => {
         if (!wanted) return;
         setStatus(failures === 0 ? 'connecting' : 'reconnecting');
-        const subscribeTo = await allowedIntents();
+        // Fetched again on every (re)connect; this connection keeps its snapshot.
+        const initialIntents = await allowedIntents();
         if (!wanted) return;
 
         const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
@@ -103,7 +104,7 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
         socket = ws;
 
         ws.onopen = () =>
-            send({ op: Op.Handshake, d: { intents: subscribeTo } });
+            send({ op: Op.Handshake, d: { intents: initialIntents } });
 
         ws.onmessage = (message) => {
             let data: ProtocolMessage | RealtimeEvent;

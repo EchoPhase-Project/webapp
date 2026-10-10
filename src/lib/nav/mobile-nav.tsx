@@ -21,7 +21,7 @@ function MobileBottomSheet(props: {
         <>
             <div
                 class="mobile-sheet-backdrop"
-                onClick={props.onClose}
+                onClick={() => props.onClose()}
                 aria-hidden="true"
             />
             <div
@@ -232,7 +232,7 @@ function MobileMoreButton(props: { count: number; onClick: () => void }) {
                 class="mobile-nav-btn"
                 aria-label={`More navigation items (${props.count})`}
                 aria-haspopup="menu"
-                onClick={props.onClick}
+                onClick={() => props.onClick()}
             >
                 <i class="nav-icon" aria-hidden="true">
                     <IoEllipsisHorizontal />

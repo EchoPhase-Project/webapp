@@ -34,6 +34,9 @@ export default defineConfig([
         },
         rules: {
             ...tseslint.configs.recommended.rules,
+            // TypeScript checks undefined names itself; the core rule does not
+            // know types such as EventListener (typescript-eslint's advice).
+            'no-undef': 'off',
         },
     },
 

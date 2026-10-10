@@ -20,6 +20,12 @@ export type EncryptedMessage = {
     Aead: AeadChoice;
 };
 
+// An EncryptedMessage as msgpack returns it: the byte fields may come back as
+// plain arrays or buffers, so they are copied into Uint8Arrays.
+type PackedEncryptedMessage = {
+    [K in Exclude<keyof EncryptedMessage, 'Aead'>]: ArrayLike<number>;
+} & Pick<EncryptedMessage, 'Aead'>;
+
 export type Crypto25519Settings = {
     aeadChoice: AeadChoice;
 };
@@ -287,7 +293,7 @@ export class Crypto25519Service {
         mp: Uint8Array,
         recipientX25519SecretKey: Uint8Array
     ): Promise<Uint8Array> => {
-        const obj = unpack(mp) as any;
+        const obj = unpack(mp) as PackedEncryptedMessage;
         const box: EncryptedMessage = {
             EphemeralPublicKey: new Uint8Array(obj.EphemeralPublicKey),
             Nonce: new Uint8Array(obj.Nonce),
