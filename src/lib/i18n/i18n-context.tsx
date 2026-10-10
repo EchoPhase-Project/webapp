@@ -3,12 +3,13 @@ import {
     useContext,
     createSignal,
     createResource,
-    onMount,
     JSX,
 } from 'solid-js';
 import localesList from '@static/locales.json';
 
-export type Translations = Record<string, string | Translations>;
+export interface Translations {
+    [key: string]: string | Translations;
+}
 
 interface LocaleDefinition {
     nativeName: string;
@@ -27,13 +28,13 @@ interface I18nContextType {
 const defaultLocale = 'en';
 const STORAGE_KEY = 'app_locale';
 
-const localeLoaders = import.meta.glob<string>('@/static/locales/*.json', {
+const localeLoaders = import.meta.glob<string>('@static/locales/*.json', {
     query: '?raw',
     import: 'default',
     eager: false,
 });
 
-const namespaceLoaders = import.meta.glob<string>('@/static/locales/*.*.json', {
+const namespaceLoaders = import.meta.glob<string>('@static/locales/*.*.json', {
     query: '?raw',
     import: 'default',
     eager: false,
@@ -62,7 +63,7 @@ export function useI18n() {
 }
 
 export function useLocalizer(namespace?: string) {
-    const { currentLocale, _, loadNamespace } = useI18n();
+    const { currentLocale, t, loadNamespace } = useI18n();
 
     const [nsTranslations] = createResource(
         () => (namespace ? `${namespace}.${currentLocale()}` : null),
@@ -74,15 +75,25 @@ export function useLocalizer(namespace?: string) {
 
     return (key: string, fallback?: string): string => {
         if (!namespace) {
-            return _(key, fallback);
+            return t(key, fallback);
         }
 
         const trans = nsTranslations();
         if (!trans) return fallback ?? key;
 
-        return typeof trans[key] === 'string'
-            ? (trans[key] as string)
-            : (fallback ?? key);
+        const parts = key.split('.');
+        let current: string | Translations | undefined = trans;
+        for (const part of parts) {
+            if (
+                current == null ||
+                typeof current !== 'object' ||
+                !(part in current)
+            ) {
+                return fallback ?? key;
+            }
+            current = current[part];
+        }
+        return typeof current === 'string' ? current : (fallback ?? key);
     };
 }
 
@@ -245,8 +256,6 @@ export function I18nProvider(props: { children: JSX.Element }) {
     function isLoading(): boolean {
         return translations.loading || availableLocales.loading;
     }
-
-    onMount(() => {});
 
     return (
         <I18nContext.Provider

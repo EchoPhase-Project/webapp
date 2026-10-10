@@ -43,14 +43,14 @@ export default function Carousel<T>(props: CarouselProps<T>) {
                 onPointerEnter={() => setIsHovered(true)}
                 onPointerLeave={() => setIsHovered(false)}
             >
-                {props.renderItem(props.items[currentIndex()], currentIndex())}
+                {props.render(props.data[currentIndex()], currentIndex())}
             </div>
             <div
                 class="buttons"
                 onPointerEnter={() => setIsHovered(true)}
                 onPointerLeave={() => setIsHovered(false)}
             >
-                {props.items.map((item, i) => (
+                {props.data.map((_, i) => (
                     <button
                         data-active={currentIndex() === i}
                         disabled={currentIndex() === i}
@@ -59,8 +59,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
                         onFocus={() => setIsHovered(true)}
                         onBlur={() => setIsHovered(false)}
                         aria-label={
-                            props.getButtonLabel?.(i) ||
-                            `Switch to slide ${i + 1}`
+                            props.buttonLabel?.(i) || `Switch to slide ${i + 1}`
                         }
                         class="button"
                     />

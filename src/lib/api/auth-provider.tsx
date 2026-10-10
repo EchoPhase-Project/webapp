@@ -6,12 +6,25 @@ import {
     createResource,
     Accessor,
 } from 'solid-js';
-import type { User, LoginCredentials, RegisterData, ErrorItem } from '@lib/api';
+import type {
+    User,
+    LoginCredentials,
+    RegisterData,
+    ProfileUpdate,
+    ErrorItem,
+} from '@lib/api';
+import { CsrfService } from '@lib/csrf';
+import { readErrors } from './errors';
 
 interface AuthContextValue {
-    user: Accessor<User | null>;
-    roles: Accessor<string[] | null>;
-    refetchUser: Promise<User | null>;
+    /** undefined while loading, null when signed out. */
+    user: Accessor<User | null | undefined>;
+    roles: Accessor<string[] | null | undefined>;
+    refetchUser: () =>
+        | User
+        | null
+        | undefined
+        | Promise<User | null | undefined>;
     isAuthenticated: Accessor<boolean>;
     isLoading: Accessor<boolean>;
     csrfToken: Accessor<string | null>;
@@ -22,13 +35,15 @@ interface AuthContextValue {
     register: (
         data: RegisterData
     ) => Promise<{ success: boolean; error?: ErrorItem[] }>;
+    updateProfile: (
+        data: ProfileUpdate
+    ) => Promise<{ success: boolean; error?: ErrorItem[] }>;
     logout: () => Promise<void>;
     addCsrfToken: () => Record<string, string>;
     hasCsrfToken: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>();
-const CSRF_KEY = 'X-CSRF-TOKEN';
 
 export const AuthProvider: ParentComponent = (props) => {
     const [isLoading, setIsLoading] = createSignal(false);
@@ -43,9 +58,8 @@ export const AuthProvider: ParentComponent = (props) => {
         return res.json();
     };
 
-    const [user, { refetch: refetchUser }] = createResource<User | null>(
-        fetchMe
-    );
+    const [user, { refetch: refetchUser, mutate: setUser }] =
+        createResource<User | null>(fetchMe);
 
     const isAuthenticated = () => !!user();
 
@@ -60,17 +74,17 @@ export const AuthProvider: ParentComponent = (props) => {
         return res.json();
     };
 
-    const [roles, { refetch: refetchRoles }] = createResource<string[] | null>(
-        () => isAuthenticated(),
-        fetchRoles
-    );
+    const [roles, { refetch: refetchRoles }] = createResource<
+        string[] | null,
+        boolean
+    >(() => isAuthenticated(), fetchRoles);
 
     const [csrfToken, setCsrfToken] = createSignal<string | null>(
-        sessionStorage.getItem(CSRF_KEY)
+        CsrfService.getToken()
     );
 
     const refetchCsrf = async (): Promise<string | null> => {
-        sessionStorage.removeItem(CSRF_KEY);
+        CsrfService.clearToken();
         setCsrfToken(null);
         return null;
     };
@@ -78,10 +92,20 @@ export const AuthProvider: ParentComponent = (props) => {
     const addCsrfToken = (): Record<string, string> => {
         const t = csrfToken();
         if (!t) throw new Error('CSRF token is not available.');
-        return { [CSRF_KEY]: t };
+        return { [CsrfService.HEADER]: t };
     };
 
     const hasCsrfToken = () => csrfToken() !== null;
+
+    const signedIn = async (res: Response) => {
+        const token = res.headers.get(CsrfService.HEADER);
+        if (token) {
+            CsrfService.saveToken(token);
+            setCsrfToken(token);
+        }
+        await refetchUser();
+        await refetchRoles();
+    };
 
     const login = async (credentials: LoginCredentials) => {
         try {
@@ -93,21 +117,10 @@ export const AuthProvider: ParentComponent = (props) => {
                 body: JSON.stringify(credentials),
             });
             if (res.ok) {
-                const token = res.headers.get(CSRF_KEY);
-                if (token) {
-                    sessionStorage.setItem(CSRF_KEY, token);
-                    setCsrfToken(token);
-                }
-                await refetchUser();
-                await refetchRoles();
+                await signedIn(res);
                 return { success: true };
             } else {
-                return {
-                    success: false,
-                    error: [
-                        { code: 'unauthorized', description: 'Unauthorized' },
-                    ],
-                };
+                return { success: false, error: await readErrors(res) };
             }
         } catch {
             return {
@@ -115,7 +128,7 @@ export const AuthProvider: ParentComponent = (props) => {
                 error: [
                     {
                         code: 'network_error',
-                        description: 'Network error occurred',
+                        message: 'Network error occurred',
                     },
                 ],
             };
@@ -134,10 +147,11 @@ export const AuthProvider: ParentComponent = (props) => {
                 body: JSON.stringify(data),
             });
             if (res.ok) {
+                // Registering also signs in: same cookies and CSRF token as login.
+                await signedIn(res);
                 return { success: true };
             } else {
-                const result: ErrorItem[] = await res.json();
-                return { success: false, error: result };
+                return { success: false, error: await readErrors(res) };
             }
         } catch {
             return {
@@ -145,7 +159,39 @@ export const AuthProvider: ParentComponent = (props) => {
                 error: [
                     {
                         code: 'network_error',
-                        description: 'Network error occurred',
+                        message: 'Network error occurred',
+                    },
+                ],
+            };
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Changes the signed-in user's name and/or time zone; omitted fields stay.
+    const updateProfile = async (data: ProfileUpdate) => {
+        try {
+            setIsLoading(true);
+            const res = await fetch(`/api/v1/auth/me`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...addCsrfToken(),
+                },
+                body: JSON.stringify(data),
+            });
+            if (!res.ok)
+                return { success: false, error: await readErrors(res) };
+            setUser((await res.json()) as User);
+            return { success: true };
+        } catch {
+            return {
+                success: false,
+                error: [
+                    {
+                        code: 'network_error',
+                        message: 'Network error occurred',
                     },
                 ],
             };
@@ -157,8 +203,9 @@ export const AuthProvider: ParentComponent = (props) => {
     const logout = async () => {
         try {
             setIsLoading(true);
-            await fetch(`/api/v1/auth/logout`, {
-                method: 'POST',
+            // Revokes this device's session and clears the token cookies.
+            await fetch(`/api/v1/sessions/current`, {
+                method: 'DELETE',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,6 +232,7 @@ export const AuthProvider: ParentComponent = (props) => {
         refetchCsrf,
         login,
         register,
+        updateProfile,
         logout,
         addCsrfToken,
         hasCsrfToken,

@@ -34,9 +34,9 @@ export default function SessionsPage() {
         setDescription('List of current active sessions.');
     });
 
-    const data = (): Session[] => sessions()?.Data ?? [];
+    const data = (): Session[] => sessions()?.data ?? [];
 
-    const headers = ['Device', 'Scopes', 'Intents', 'Permissions', 'Actions'];
+    const headers = ['Device', 'Actions'];
 
     return (
         <div class="sessions-container">
@@ -59,37 +59,15 @@ export default function SessionsPage() {
                     <Row>
                         <Cell
                             label="Device"
-                            text={parseUserAgent(session.DeviceId)}
+                            text={parseUserAgent(session.deviceId ?? '')}
                             props={{ class: 'device' }}
-                        />
-                        <Cell
-                            label="Scopes"
-                            text={session.Scopes?.join(', ') || '—'}
-                            props={{ class: 'scopes' }}
-                        />
-                        <Cell
-                            label="Intents"
-                            text={session.Intents?.join(', ') || '—'}
-                            props={{ class: 'intents' }}
-                        />
-                        <Cell
-                            label="Permissions"
-                            text={
-                                session.Permissions?.length
-                                    ? session.Permissions.map(
-                                          (p) =>
-                                              `${p.Resource}: ${p.Permissions.join(', ')}`
-                                      ).join(' | ')
-                                    : '—'
-                            }
-                            props={{ class: 'permissions' }}
                         />
                         <Cell label="Actions" props={{ class: 'actions' }}>
                             <div>
                                 <button
                                     class="btn"
                                     disabled={isLoading()}
-                                    onClick={() => revokeSession(session.Id)}
+                                    onClick={() => revokeSession(session.id)}
                                 >
                                     <AiOutlineClose />
                                 </button>

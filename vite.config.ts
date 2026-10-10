@@ -77,9 +77,6 @@ export default defineConfig(({ mode }) => {
             strictPort: true,
             // origin: 'http://localhost:8080',
         },
-        optimizeDeps: {
-            include: ['google-protobuf', 'grpc-web', '@microsoft/signalr'],
-        },
         root: path.resolve(__dirname),
         publicDir: path.resolve(__dirname, 'static'),
         // base: '/app',

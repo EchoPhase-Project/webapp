@@ -4,25 +4,28 @@ import '@styles/table.scss';
 
 type DataLabel = string;
 
+/** Handlers a cell or row may take (spread onto the element). */
+type Handlers<T extends HTMLElement> = Pick<
+    JSX.HTMLAttributes<T>,
+    | 'onClick'
+    | 'onDblClick'
+    | 'onContextMenu'
+    | 'onKeyDown'
+    | 'onPointerEnter'
+    | 'onPointerLeave'
+>;
+
 type CellProps = {
     label: DataLabel;
     text?: string;
-    events?: Partial<
-        Record<
-            keyof JSX.DOMAttributes<HTMLTableCellElement>,
-            JSX.EventHandler<HTMLTableCellElement, Event>
-        >
-    >;
+    /** Translation key for text; text is the fallback. */
+    i18n?: string;
+    events?: Handlers<HTMLTableCellElement>;
     props?: JSX.HTMLAttributes<HTMLTableCellElement>;
 };
 
 type RowProps = {
-    events?: Partial<
-        Record<
-            keyof JSX.DOMAttributes<HTMLTableRowElement>,
-            JSX.EventHandler<HTMLTableRowElement, Event>
-        >
-    >;
+    events?: Handlers<HTMLTableRowElement>;
 };
 
 export const Cell: ParentComponent<CellProps> = (props) => {
@@ -59,7 +62,8 @@ type TableProps<T> = {
     data: T[];
     headers: DataLabel[];
     placeholder: Component;
-    render: (props: RowFactoryProps<T>) => Component<RowProps>;
+    /** Renders one row (usually a <Row>) for an item. */
+    render: (props: RowFactoryProps<T>) => JSX.Element;
     tableProps?: JSX.HTMLAttributes<HTMLTableElement>;
 };
 

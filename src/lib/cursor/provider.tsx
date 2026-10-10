@@ -194,9 +194,7 @@ class CursorService implements ICursorService {
             .join(' ');
 
         // Clear all cursor classes
-        this.cursor.classList.value = Array.from(this.cursor.classList)
-            .filter((cls) => [].includes(cls))
-            .join(' ');
+        this.cursor.className = '';
 
         // Reset custom cursor size
         this.cursor.style.width = '';

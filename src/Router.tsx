@@ -7,6 +7,7 @@ import { ThemeProvider } from '@lib/theme';
 import { CryptoProvider } from '@lib/crypto25519';
 import { CursorProvider } from '@lib/cursor';
 import { SessionProvider } from './lib/api/session-provider';
+import { RealtimeProvider } from '@lib/realtime';
 
 interface RouterComponentProps {
     base?: string;
@@ -47,6 +48,10 @@ const routes = [
         component: lazy(() => import('./pages/SessionsPage')),
     },
     {
+        path: '/api-clients',
+        component: lazy(() => import('./pages/ApiClientsPage')),
+    },
+    {
         path: '*404',
         component: lazy(() => import('./components/NotFound')),
     },
@@ -57,15 +62,17 @@ const RouterComponent = (props: RouterComponentProps) => (
         <ThemeProvider>
             <I18nProvider>
                 <AuthProvider>
-                    <SessionProvider>
-                        <CursorProvider>
-                            <NavProvider>
-                                <Router base={props.base} root={props.root}>
-                                    {routes}
-                                </Router>
-                            </NavProvider>
-                        </CursorProvider>
-                    </SessionProvider>
+                    <RealtimeProvider>
+                        <SessionProvider>
+                            <CursorProvider>
+                                <NavProvider>
+                                    <Router base={props.base} root={props.root}>
+                                        {routes}
+                                    </Router>
+                                </NavProvider>
+                            </CursorProvider>
+                        </SessionProvider>
+                    </RealtimeProvider>
                 </AuthProvider>
             </I18nProvider>
         </ThemeProvider>

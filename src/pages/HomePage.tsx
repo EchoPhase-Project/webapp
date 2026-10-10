@@ -46,6 +46,12 @@ export default function HomePage() {
                         description: 'View active sessions',
                         events: { onClick: () => navigate('/sessions') },
                     },
+                    {
+                        icon: VsSettings,
+                        label: 'API clients',
+                        description: 'Credentials for bots and scripts',
+                        events: { onClick: () => navigate('/api-clients') },
+                    },
                 ],
             },
             {

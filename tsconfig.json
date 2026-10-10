@@ -17,11 +17,17 @@
     "moduleResolution": "Bundler",
     "types": ["vite/client"],
     "allowJs": true,
+    "resolveJsonModule": true,
     "checkJs": false,
     "paths": {
       "@/*": ["*"],
       "@lib/*": ["lib/*"],
-      "@proto/*": ["lib/grpc-clients/proto/*"]
+      "@forms/*": ["forms/*"],
+      "@styles/*": ["styles/*"],
+      "@static/*": ["static/*"],
+      "@shaders/*": ["shaders/*"],
+      "@assets/*": ["static/assets/*"],
+      "@components/*": ["components/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

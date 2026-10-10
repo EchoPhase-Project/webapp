@@ -1,25 +1,25 @@
-import { Component, JSX } from 'solid-js';
+import { Component } from 'solid-js';
+
+/**
+ * Handlers a nav entry may have. The nav components call them from their
+ * own handlers (which also close menus), so they are not spread onto the
+ * element: a spread would replace those.
+ */
+export interface NavEvents<T extends HTMLElement> {
+    onClick?: (event: MouseEvent & { currentTarget: T }) => void;
+    onKeyDown?: (event: KeyboardEvent & { currentTarget: T }) => void;
+}
 
 export interface NavSubItem {
     icon?: Component;
     label: string;
     description?: string;
-    events?: Partial<
-        Record<
-            keyof JSX.EventHandlerUnion<HTMLDivElement, Event>,
-            JSX.EventHandlerUnion<HTMLDivElement, Event>
-        >
-    >;
+    events?: NavEvents<HTMLElement>;
 }
 
 export interface NavLink {
     icon: Component;
     text: string;
     items?: NavSubItem[];
-    events?: Partial<
-        Record<
-            keyof JSX.EventHandlerUnion<HTMLButtonElement, Event>,
-            JSX.EventHandlerUnion<HTMLButtonElement, Event>
-        >
-    >;
+    events?: NavEvents<HTMLElement>;
 }

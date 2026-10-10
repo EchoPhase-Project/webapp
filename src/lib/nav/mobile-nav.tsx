@@ -1,4 +1,5 @@
 import { For, Show, createSignal, createMemo, onCleanup } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 import { IoEllipsisHorizontal } from 'solid-icons/io';
 import type { NavLink, NavSubItem } from '@lib/nav';
 import '@styles/navbar.scss';
@@ -34,7 +35,16 @@ function MobileBottomSheet(props: {
 
                 <Show when={props.mode.kind === 'submenu'}>
                     <ul class="mobile-sheet-list">
-                        <For each={(props.mode as { kind: 'submenu'; items: NavSubItem[] }).items}>
+                        <For
+                            each={
+                                (
+                                    props.mode as {
+                                        kind: 'submenu';
+                                        items: NavSubItem[];
+                                    }
+                                ).items
+                            }
+                        >
                             {(item) => {
                                 const Icon = item.icon;
                                 return (
@@ -46,25 +56,33 @@ function MobileBottomSheet(props: {
                                             aria-label={item.label}
                                             onClick={(e) => {
                                                 props.onClose();
-                                                item.events?.onClick?.(e as any);
+                                                item.events?.onClick?.(e);
                                             }}
                                             onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
                                                     e.preventDefault();
                                                     props.onClose();
-                                                    item.events?.onKeyDown?.(e as any);
+                                                    item.events?.onKeyDown?.(e);
                                                 } else if (e.key === 'Escape') {
                                                     props.onClose();
                                                 }
                                             }}
                                         >
                                             <Show when={Icon}>
-                                                <i class="submenu-icon" aria-hidden="true">
-                                                    <Icon />
+                                                <i
+                                                    class="submenu-icon"
+                                                    aria-hidden="true"
+                                                >
+                                                    <Dynamic component={Icon} />
                                                 </i>
                                             </Show>
                                             <div class="submenu-content">
-                                                <span class="submenu-label">{item.label}</span>
+                                                <span class="submenu-label">
+                                                    {item.label}
+                                                </span>
                                                 <Show when={item.description}>
                                                     <span class="submenu-description">
                                                         {item.description}
@@ -81,7 +99,16 @@ function MobileBottomSheet(props: {
 
                 <Show when={props.mode.kind === 'overflow'}>
                     <ul class="mobile-sheet-list">
-                        <For each={(props.mode as { kind: 'overflow'; links: NavLink[] }).links}>
+                        <For
+                            each={
+                                (
+                                    props.mode as {
+                                        kind: 'overflow';
+                                        links: NavLink[];
+                                    }
+                                ).links
+                            }
+                        >
                             {(link) => {
                                 const hasItems = !!link.items?.length;
                                 return (
@@ -91,7 +118,9 @@ function MobileBottomSheet(props: {
                                             role="menuitem"
                                             tabIndex={0}
                                             aria-label={link.text}
-                                            aria-haspopup={hasItems ? 'menu' : undefined}
+                                            aria-haspopup={
+                                                hasItems ? 'menu' : undefined
+                                            }
                                             onClick={(e) => {
                                                 if (hasItems) {
                                                     props.openSheet({
@@ -100,11 +129,14 @@ function MobileBottomSheet(props: {
                                                     });
                                                 } else {
                                                     props.onClose();
-                                                    link.events?.onClick?.(e as any);
+                                                    link.events?.onClick?.(e);
                                                 }
                                             }}
                                             onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
                                                     e.preventDefault();
                                                     if (hasItems) {
                                                         props.openSheet({
@@ -113,26 +145,37 @@ function MobileBottomSheet(props: {
                                                         });
                                                     } else {
                                                         props.onClose();
-                                                        link.events?.onKeyDown?.(e as any);
+                                                        link.events?.onKeyDown?.(
+                                                            e
+                                                        );
                                                     }
                                                 } else if (e.key === 'Escape') {
                                                     props.onClose();
                                                 }
                                             }}
                                         >
-                                            <i class="submenu-icon" aria-hidden="true">
+                                            <i
+                                                class="submenu-icon"
+                                                aria-hidden="true"
+                                            >
                                                 <link.icon />
                                             </i>
                                             <div class="submenu-content">
-                                                <span class="submenu-label">{link.text}</span>
+                                                <span class="submenu-label">
+                                                    {link.text}
+                                                </span>
                                                 <Show when={hasItems}>
                                                     <span class="submenu-description">
-                                                        {link.items!.length} items
+                                                        {link.items!.length}{' '}
+                                                        items
                                                     </span>
                                                 </Show>
                                             </div>
                                             <Show when={hasItems}>
-                                                <i class="mobile-sheet-chevron" aria-hidden="true" />
+                                                <i
+                                                    class="mobile-sheet-chevron"
+                                                    aria-hidden="true"
+                                                />
                                             </Show>
                                         </div>
                                     </li>
@@ -162,9 +205,12 @@ function MobileNavItem(props: {
                 aria-haspopup={hasItems() ? 'menu' : undefined}
                 onClick={(e) => {
                     if (hasItems()) {
-                        props.openSheet({ kind: 'submenu', items: props.link.items! });
+                        props.openSheet({
+                            kind: 'submenu',
+                            items: props.link.items!,
+                        });
                     } else {
-                        props.link.events?.onClick?.(e as any);
+                        props.link.events?.onClick?.(e);
                     }
                 }}
             >
@@ -240,7 +286,10 @@ export function MobileNav(props: { links: NavLink[] }) {
                         <MobileMoreButton
                             count={overflowLinks().length}
                             onClick={() =>
-                                openSheet({ kind: 'overflow', links: overflowLinks() })
+                                openSheet({
+                                    kind: 'overflow',
+                                    links: overflowLinks(),
+                                })
                             }
                         />
                     </Show>

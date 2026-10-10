@@ -15,6 +15,9 @@ $font-primary: 'Iosevka';
 $font-secondary: 'Inter';
 $transition-speed: 200ms;
 
+$gold: #c9a84c;
+$gold-rgb: utils.hex-to-rgb($gold);
+
 $bg-light: #d5bea7;
 $bg-light-rgb: utils.hex-to-rgb($bg-light);
 
@@ -49,6 +52,9 @@ $shadow-color-rgb: utils.hex-to-rgb($shadow-color);
 
   --button-fg-primary: #{$button-fg-primary};
   --button-fg-primary-rgb: #{$button-fg-primary-rgb};
+
+  --gold: #{$gold};
+  --gold-rgb: #{$gold-rgb};
 
   --link-color: #{$link-color};
   --link-color-dark: #{$link-color-dark};

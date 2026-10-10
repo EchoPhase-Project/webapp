@@ -75,7 +75,8 @@ export function Dropdown<T>(props: DropdownProps<T>) {
         setDropUp(triggerRect.bottom + menuHeight > window.innerHeight);
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
+    // Used for both click and focusout.
+    const handleClickOutside = (event: Event) => {
         if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
             setIsOpen(false);
             setSearchTerm('');
@@ -136,12 +137,18 @@ export function Dropdown<T>(props: DropdownProps<T>) {
         Fuzzy = 1,
     }
 
+    type Match = {
+        option: DropdownOption<T>;
+        priority: MatchPriority;
+        levDist: number;
+    };
+
     const filteredOptions = () => {
         const q = searchTerm().trim().toLowerCase();
         if (!q) return props.options;
 
         const matches = props.options
-            .map((opt) => {
+            .map((opt): Match | null => {
                 const fieldsToCheck = [
                     opt.label.toLowerCase(),
                     (opt.ariaLabel ?? '').toLowerCase(),
@@ -177,15 +184,7 @@ export function Dropdown<T>(props: DropdownProps<T>) {
 
                 return { option: opt, priority, levDist };
             })
-            .filter(
-                (
-                    m
-                ): m is {
-                    option: DropdownOption<T>;
-                    priority: MatchPriority;
-                    levDist: number;
-                } => m !== null
-            );
+            .filter((m): m is Match => m !== null);
 
         matches.sort((a, b) => {
             if (a.priority !== b.priority) return b.priority - a.priority;

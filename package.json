@@ -1,7 +1,7 @@
 {
-  "name": "frontend",
+  "name": "webapp",
   "version": "1.0.0",
-  "description": "EchoPhase frontend",
+  "description": "EchoPhase webapp",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,9 @@
     "format": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "gen:lib": "tsx scripts/generate-lib-indexes.ts"
+    "gen:lib": "tsx scripts/generate-lib-indexes.ts",
+    "gen:api": "openapi-typescript ${OPENAPI:-../artifacts/openapi.json} -o src/lib/api/schema.d.ts",
+    "check:api": "npm run gen:api && git diff --exit-code -- src/lib/api/schema.d.ts"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
     "eslint-plugin-solid": "^0.14.5",
     "globals": "^16.2.0",
     "jiti": "^2.4.2",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.5.3",
     "rollup-plugin-visualizer": "^5.14.0",
     "sass-embedded": "^1.89.2",
@@ -43,7 +46,6 @@
     "yaml": "^2.8.0"
   },
   "dependencies": {
-    "@microsoft/signalr": "^8.0.7",
     "@noble/ciphers": "^2.0.0",
     "@noble/curves": "^2.0.0",
     "@noble/ed25519": "^3.0.0",

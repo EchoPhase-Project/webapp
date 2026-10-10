@@ -153,3 +153,36 @@
   background-color: var(--button-fg-primary);
   box-shadow: 0 8px 24px 0 rgba(var(--button-fg-primary), 0.2);
 }
+
+// Labels kept for screen readers while the placeholder shows the hint.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.form-group:has([aria-invalid='true']) {
+  box-shadow: 0 0 0 2px var(--error-color, #d64545);
+}
+
+.errorlist {
+  margin: 0.4em 0 0;
+  padding-left: 1.2em;
+  color: var(--error-color, #d64545);
+  font-size: 0.9em;
+}
+
+.error-summary {
+  outline: none;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}

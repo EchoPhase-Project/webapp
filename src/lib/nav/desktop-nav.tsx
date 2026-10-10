@@ -1,4 +1,5 @@
 import { For, Show, createSignal, onCleanup } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 import type { NavLink, NavSubItem } from '@lib/nav';
 import '@styles/navbar.scss';
 
@@ -15,22 +16,21 @@ function DesktopSubMenuItem(props: { item: NavSubItem; onClose: () => void }) {
                 aria-label={props.item.label}
                 onClick={(e) => {
                     props.onClose();
-                    props.item.events?.onClick?.(e as any);
+                    props.item.events?.onClick?.(e);
                 }}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         props.onClose();
-                        props.item.events?.onKeyDown?.(e as any);
+                        props.item.events?.onKeyDown?.(e);
                     } else if (e.key === 'Escape') {
                         props.onClose();
                     }
                 }}
-                {...props.item.events}
             >
                 <Show when={Icon}>
                     <i class="submenu-icon" aria-hidden="true">
-                        <Icon />
+                        <Dynamic component={Icon} />
                     </i>
                 </Show>
                 <div class="submenu-content">
@@ -94,7 +94,7 @@ function DesktopNavItem(props: { link: NavLink; isLogo: boolean }) {
                         e.stopPropagation();
                         toggleSubmenu();
                     } else {
-                        props.link.events?.onClick?.(e as any);
+                        props.link.events?.onClick?.(e);
                     }
                 }}
                 onKeyDown={(e) => {
@@ -103,13 +103,12 @@ function DesktopNavItem(props: { link: NavLink; isLogo: boolean }) {
                         if (hasItems()) {
                             toggleSubmenu();
                         } else {
-                            props.link.events?.onKeyDown?.(e as any);
+                            props.link.events?.onKeyDown?.(e);
                         }
                     } else if (e.key === 'Escape' && isOpen()) {
                         setIsOpen(false);
                     }
                 }}
-                {...(!hasItems() ? props.link.events : {})}
             >
                 <i class="nav-icon">
                     <props.link.icon />

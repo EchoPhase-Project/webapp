@@ -7,6 +7,7 @@ import {
     Accessor,
 } from 'solid-js';
 import type { SessionsResponse, CursorOptions, ErrorItem } from '@lib/api';
+import { readErrors } from './errors';
 import { useAuth } from '@lib/api';
 
 interface SessionContextValue {
@@ -56,11 +57,10 @@ export const SessionProvider: ParentComponent = (props) => {
         return res.json();
     };
 
-    const [sessions, { refetch: refetchSessions }] =
-        createResource<SessionsResponse | null>(
-            () => isAuthenticated(),
-            fetchSessions
-        );
+    const [sessions, { refetch: refetchSessions }] = createResource<
+        SessionsResponse | null,
+        boolean
+    >(() => isAuthenticated(), fetchSessions);
 
     // -------------------
     // Session Methods
@@ -85,7 +85,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 await refetchSessions();
                 return { success: true };
             } else {
-                const error: ErrorItem[] = await res.json();
+                const error = await readErrors(res);
                 return { success: false, error };
             }
         } catch {
@@ -94,7 +94,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 error: [
                     {
                         code: 'network_error',
-                        description: 'Network error occurred',
+                        message: 'Network error occurred',
                     },
                 ],
             };
@@ -118,7 +118,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 await refetchSessions();
                 return { success: true };
             } else {
-                const error: ErrorItem[] = await res.json();
+                const error = await readErrors(res);
                 return { success: false, error };
             }
         } catch {
@@ -127,7 +127,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 error: [
                     {
                         code: 'network_error',
-                        description: 'Network error occurred',
+                        message: 'Network error occurred',
                     },
                 ],
             };
@@ -151,7 +151,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 await refetchSessions();
                 return { success: true };
             } else {
-                const error: ErrorItem[] = await res.json();
+                const error = await readErrors(res);
                 return { success: false, error };
             }
         } catch {
@@ -160,7 +160,7 @@ export const SessionProvider: ParentComponent = (props) => {
                 error: [
                     {
                         code: 'network_error',
-                        description: 'Network error occurred',
+                        message: 'Network error occurred',
                     },
                 ],
             };

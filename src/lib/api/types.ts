@@ -1,44 +1,40 @@
-export interface User {
-    id: string;
-    username: string;
-}
+// Shapes of the server's API, generated from its OpenAPI document into
+// schema.d.ts (`npm run gen:api`); do not hand-write response types here.
+import type { components, paths } from './schema';
 
-export interface LoginCredentials {
-    username: string;
-    password: string;
-}
+type Schemas = components['schemas'];
 
-export interface RegisterData {
-    name: string;
-    username: string;
-    password: string;
-}
+export type User = Schemas['MeResponse'];
 
-export interface ErrorItem {
-    code: string;
-    description: string;
-}
+export type LoginCredentials = Schemas['LoginRequest'];
 
-export interface ErrorResponse {
-    [key: string]: ErrorItem[];
-}
+export type RegisterData = Schemas['RegisterRequest'];
 
-export interface CursorOptions {
-    cursor?: string;
-    limit?: number;
-}
+export type ProfileUpdate = Schemas['UpdateProfileRequest'];
 
-export interface Session {
+/** The API's error body. `field` names the input it is about. */
+export type ErrorItem = Schemas['ErrorBody'];
+
+/** Query of GET /api/v1/sessions (cursor pagination). */
+export type CursorOptions = NonNullable<
+    paths['/api/v1/sessions']['get']['parameters']['query']
+>;
+
+export type Session = Schemas['SessionResponse'];
+
+export type SessionsResponse = Schemas['SessionResponseCursorPageResponse'];
+
+export type CreateApiClientData = Schemas['CreateApiClientRequest'];
+
+/**
+ * An API client as listed. Not in the OpenAPI document: the controller
+ * returns a projection (the entity's [Expose] fields, PascalCase).
+ */
+export interface ApiClient {
     Id: string;
-    UserId: string;
-    DeviceId: string;
-    Scopes: string[];
-    Intents: string[];
-    Permissions: { Resource: string; Permissions: string[] }[];
-}
-
-export interface SessionsResponse {
-    Data: Session[];
-    NextCursor: string | null;
-    HasMore: boolean;
+    Name: string;
+    ExpiresAt: string | null;
+    LastUsedAt: string | null;
+    SecretRotatedAt: string | null;
+    CreatedAt: string;
 }

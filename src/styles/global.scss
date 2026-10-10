@@ -128,6 +128,36 @@ a {
   }
 }
 
+// Gold grid fading out from the top right, over a soft glow (from Termicont).
+// Fixed and click-through, so it never scrolls or blocks the page.
+.page-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 70% 15%,
+    rgba(var(--gold-rgb), 0.1) 0%,
+    transparent 60%
+  );
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image:
+      linear-gradient(rgba(var(--gold-rgb), 1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--gold-rgb), 1) 1px, transparent 1px);
+    background-size: 60px 60px;
+    -webkit-mask-image: radial-gradient(
+      ellipse at 70% 15%,
+      black,
+      transparent 70%
+    );
+    mask-image: radial-gradient(ellipse at 70% 15%, black, transparent 70%);
+  }
+}
+
 main {
   display: flex;
   flex-direction: column;
