@@ -1,3 +1,5 @@
 node_modules/
 dist/
 build/
+# Third-party license texts, kept verbatim.
+src/static/fonts/

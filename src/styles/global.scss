@@ -10,16 +10,6 @@
 }
 
 @font-face {
-  font-family: 'YaroRg';
-  src:
-    url('@static/fonts/YaroRg.woff2') format('woff2'),
-    url('@static/fonts/YaroRg.ttf') format('truetype');
-  font-display: swap;
-  font-style: normal;
-  font-weight: normal;
-}
-
-@font-face {
   font-family: 'Fira Code';
   src:
     local('Fira Code'),
@@ -37,8 +27,7 @@
   font-family: 'Iosevka';
   src:
     local('Iosevka'),
-    url('@static/fonts/Iosevka.woff2') format('woff2'),
-    url('@static/fonts/Iosevka.ttf') format('truetype');
+    url('@static/fonts/Iosevka.woff2') format('woff2');
   font-display: swap;
   font-style: normal;
   font-weight: normal;
@@ -92,9 +81,7 @@ body {
 }
 
 .ligatures {
-  font-family:
-    'Fira Code',
-    'Inter' monospace;
+  font-family: 'Fira Code', 'Inter', monospace;
   font-feature-settings:
     'liga', 'calt', 'clig', 'dlig', 'zero', 'cv11', 'cv14', 'cv17', 'cv18',
     'cv27', 'cv28', 'cv29', 'cv30', 'cv31', 'ss06', 'ss07', 'ss09';
