@@ -5,7 +5,6 @@ import solidPlugin from 'vite-plugin-solid';
 import compress from 'vite-plugin-compression';
 import commonjs from '@rollup/plugin-commonjs';
 import path from 'path';
-import runBeforeBuildPlugin from './plugins/vite-plugin-run-before-build.ts';
 import Sitemap from 'vite-plugin-sitemap';
 
 const ClientSideRouting = {
@@ -29,14 +28,6 @@ export default defineConfig(({ mode }) => {
             compress({ algorithm: 'gzip' }),
             ClientSideRouting,
             commonjs({}),
-            runBeforeBuildPlugin({
-                command: 'npm',
-                args: ['run', 'gen:lib'],
-            }),
-            runBeforeBuildPlugin({
-                command: 'npm',
-                args: ['run', 'format'],
-            }),
             Sitemap(),
         ],
         resolve: {
