@@ -19,13 +19,13 @@ jobs:
             id-token: write # Codecov upload with OIDC, no token
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Set up tools
               uses: jdx/mise-action@v5
 
             - name: Cache npm downloads
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ~/.npm
                   key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -42,7 +42,7 @@ jobs:
 
             - name: Upload coverage to Codecov
               if: ${{ !cancelled() }}
-              uses: codecov/codecov-action@v5
+              uses: codecov/codecov-action@v7
               with:
                   use_oidc: true
                   files: artifacts/coverage/lcov.info
@@ -54,7 +54,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
 
             - name: Build the webapp image
               run: docker build -t webapp .
