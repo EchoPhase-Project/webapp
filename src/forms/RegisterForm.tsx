@@ -138,7 +138,7 @@ export default function RegisterForm() {
                 aria-busy={isDisabled()}
             >
                 {isDisabled()
-                    ? i18n.t('loading', 'Loading...')
+                    ? i18n.t('loading', 'Loading…')
                     : t('form.submit', 'SUBMIT')}
             </button>
         </form>
