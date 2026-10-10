@@ -9,7 +9,7 @@
     "settings": "Настройки",
     "sessions": {
       "label": "Сеансы",
-      "description": "Активные сеансы"
+      "description": "Просмотр активных сеансов"
     },
     "api_clients": {
       "label": "API-клиенты",
