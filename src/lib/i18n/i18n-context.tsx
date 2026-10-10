@@ -3,6 +3,7 @@ import {
     useContext,
     createSignal,
     createResource,
+    createEffect,
     JSX,
 } from 'solid-js';
 import localesList from '@static/locales.json';
@@ -22,37 +23,79 @@ interface I18nContextType {
     t: (key: string, fallback?: string) => string;
     availableLocales: () => { code: string; nativeName: string }[] | undefined;
     isLoading: () => boolean;
-    loadNamespace: (namespace: string, locale: string) => Promise<Translations>;
+    loadNamespace: (
+        namespace: string,
+        locale: string
+    ) => Promise<Translations | undefined>;
 }
 
 const defaultLocale = 'en';
 const STORAGE_KEY = 'app_locale';
 
-const localeLoaders = import.meta.glob<string>('@static/locales/*.json', {
+// Locale files: <code>.json holds the strings used across the site and is
+// loaded on start; <namespace>.<code>.json holds one page's strings and is
+// loaded only when that page asks for it (useLocalizer('<namespace>')).
+// Codes are "ru" or "pt-BR".
+const CODE = '[a-z]{2}(?:-[A-Z]{2})?';
+const globalFile = new RegExp(`/(${CODE})\\.json$`);
+const namespaceFile = new RegExp(`/([^/.]+)\\.(${CODE})\\.json$`);
+
+const files = import.meta.glob<string>('@static/locales/*.json', {
     query: '?raw',
     import: 'default',
     eager: false,
 });
 
-const namespaceLoaders = import.meta.glob<string>('@static/locales/*.*.json', {
-    query: '?raw',
-    import: 'default',
-    eager: false,
-});
+const globalLoaders: Record<string, () => Promise<string>> = {};
+const namespaceLoaders: Record<string, () => Promise<string>> = {};
+for (const [path, loader] of Object.entries(files)) {
+    const ns = path.match(namespaceFile);
+    if (ns) {
+        namespaceLoaders[`${ns[1]}.${ns[2]}`] = loader;
+        continue;
+    }
+    const code = path.match(globalFile)?.[1];
+    if (code) globalLoaders[code] = loader;
+}
 
-const normalizedNamespaceLoaders = Object.keys(namespaceLoaders).reduce(
-    (acc, path) => {
-        const match = path.match(/\/([^/]+)\.([a-z]{2})\.json$/);
-        if (match) {
-            const [, namespace, locale] = match;
-            acc[`${namespace}.${locale}`] = namespaceLoaders[path];
-        }
-        return acc;
-    },
-    {} as Record<string, () => Promise<string>>
-);
+const cache = new Map<string, Promise<Translations | undefined>>();
 
-const namespaceCache = new Map<string, Translations>();
+/** One locale file, parsed once; undefined when it does not exist. */
+function loadFile(
+    loaders: Record<string, () => Promise<string>>,
+    key: string
+): Promise<Translations | undefined> {
+    const loader = loaders[key];
+    if (!loader) return Promise.resolve(undefined);
+    let pending = cache.get(key);
+    if (!pending) {
+        pending = loader()
+            .then((raw) => JSON.parse(raw) as Translations)
+            .catch((e) => {
+                console.error(`Error loading translations "${key}":`, e);
+                cache.delete(key);
+                return undefined;
+            });
+        cache.set(key, pending);
+    }
+    return pending;
+}
+
+/**
+ * The string at a dotted key, or undefined when it is missing or empty: an
+ * untranslated string falls back instead of showing nothing.
+ */
+export function lookup(
+    translations: Translations | undefined,
+    key: string
+): string | undefined {
+    let current: string | Translations | undefined = translations;
+    for (const part of key.split('.')) {
+        if (current == null || typeof current !== 'object') return undefined;
+        current = current[part];
+    }
+    return typeof current === 'string' && current !== '' ? current : undefined;
+}
 
 const I18nContext = createContext<I18nContextType>();
 
@@ -62,199 +105,102 @@ export function useI18n() {
     return ctx;
 }
 
+/**
+ * Translator for one page. With a namespace, keys are looked up in
+ * <namespace>.<locale>.json, then <namespace>.en.json, then the site-wide
+ * strings; without one it is the site-wide `t`.
+ */
 export function useLocalizer(namespace?: string) {
     const { currentLocale, t, loadNamespace } = useI18n();
+    if (!namespace) return t;
 
-    const [nsTranslations] = createResource(
-        () => (namespace ? `${namespace}.${currentLocale()}` : null),
-        async () => {
-            if (!namespace) return null;
-            return loadNamespace(namespace, currentLocale());
-        }
+    const [current] = createResource(currentLocale, (locale) =>
+        loadNamespace(namespace, locale)
+    );
+    const [fallback] = createResource(() =>
+        loadNamespace(namespace, defaultLocale)
     );
 
-    return (key: string, fallback?: string): string => {
-        if (!namespace) {
-            return t(key, fallback);
-        }
-
-        const trans = nsTranslations();
-        if (!trans) return fallback ?? key;
-
-        const parts = key.split('.');
-        let current: string | Translations | undefined = trans;
-        for (const part of parts) {
-            if (
-                current == null ||
-                typeof current !== 'object' ||
-                !(part in current)
-            ) {
-                return fallback ?? key;
-            }
-            current = current[part];
-        }
-        return typeof current === 'string' ? current : (fallback ?? key);
-    };
+    return (key: string, fallbackText?: string): string =>
+        lookup(current(), key) ??
+        lookup(fallback(), key) ??
+        t(key, fallbackText);
 }
 
 export function I18nProvider(props: { children: JSX.Element }) {
     const localeDefinitions: Record<string, LocaleDefinition> = localesList;
 
-    function getAvailableLocales(): { code: string; nativeName: string }[] {
-        return Object.keys(localeLoaders)
-            .map((path) => {
-                const match = path.match(/\/([^/]+)\.json$/);
-                const code = match?.[1];
-                if (!code || !localeDefinitions[code]) return null;
-                return { code, nativeName: localeDefinitions[code].nativeName };
-            })
-            .filter(
-                (locale): locale is { code: string; nativeName: string } =>
-                    locale !== null
-            );
-    }
-
-    const [availableLocales] = createResource(getAvailableLocales);
+    const locales = Object.keys(globalLoaders)
+        .filter((code) => localeDefinitions[code])
+        .map((code) => ({
+            code,
+            nativeName: localeDefinitions[code].nativeName,
+        }));
+    const availableLocales = () => locales;
 
     function getBrowserLocale(): string | null {
-        if (typeof navigator !== 'undefined') {
-            const lang =
-                navigator.language ||
-                (navigator as Navigator & { userLanguage?: string })
-                    .userLanguage;
-            return lang?.slice(0, 2).toLowerCase() ?? null;
-        }
-        return null;
+        if (typeof navigator === 'undefined') return null;
+        return navigator.language?.slice(0, 2).toLowerCase() ?? null;
     }
 
     function getInitialLocale(): string {
-        if (typeof localStorage !== 'undefined') {
+        try {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored && localeDefinitions[stored]) return stored;
+            if (stored && globalLoaders[stored]) return stored;
+        } catch {
+            // Storage blocked: fall through to the browser's language.
         }
         const browserLocale = getBrowserLocale();
-        if (browserLocale && localeDefinitions[browserLocale])
-            return browserLocale;
+        if (browserLocale && globalLoaders[browserLocale]) return browserLocale;
         return defaultLocale;
     }
 
     const [currentLocale, setCurrentLocale] =
         createSignal<string>(getInitialLocale());
 
-    const translationCache = new Map<string, Translations>();
-
-    const normalizedLoaders = Object.keys(localeLoaders).reduce(
-        (acc, path) => {
-            const match = path.match(/\/([^/]+)\.json$/);
-            const code = match?.[1];
-            if (code) acc[code] = localeLoaders[path];
-            return acc;
-        },
-        {} as Record<string, () => Promise<string>>
+    const [translations] = createResource(currentLocale, (locale) =>
+        loadFile(globalLoaders, locale)
+    );
+    // Strings missing from a translation show in English, not as keys.
+    const [defaults] = createResource(() =>
+        loadFile(globalLoaders, defaultLocale)
     );
 
-    const [translations] = createResource(
-        currentLocale,
-        async (locale): Promise<Translations> => {
-            if (translationCache.has(locale))
-                return translationCache.get(locale)!;
-            try {
-                const loader = normalizedLoaders[locale];
-                if (!loader)
-                    throw new Error(`Loader not found for locale: ${locale}`);
-                const raw = await loader();
-                const loaded: Translations = JSON.parse(raw);
-                translationCache.set(locale, loaded);
-                if (typeof document !== 'undefined') {
-                    document.documentElement.lang = locale;
-                }
-                return loaded;
-            } catch (e) {
-                console.error(`Error loading locale "${locale}":`, e);
-                if (locale !== defaultLocale) {
-                    if (translationCache.has(defaultLocale))
-                        return translationCache.get(defaultLocale)!;
-                    const defaultLoader = normalizedLoaders[defaultLocale];
-                    if (defaultLoader) {
-                        const raw = await defaultLoader();
-                        const loaded = JSON.parse(raw);
-                        translationCache.set(defaultLocale, loaded);
-                        return loaded;
-                    }
-                }
-                return {};
-            }
-        }
-    );
+    createEffect(() => {
+        if (typeof document !== 'undefined')
+            document.documentElement.lang = currentLocale();
+    });
 
-    async function loadNamespace(
+    function loadNamespace(
         namespace: string,
         locale: string
-    ): Promise<Translations> {
-        const key = `${namespace}.${locale}`;
-        if (namespaceCache.has(key)) return namespaceCache.get(key)!;
-
-        const loader = normalizedNamespaceLoaders[key];
-
-        if (!loader) {
-            if (locale !== defaultLocale) {
-                const defaultKey = `${namespace}.${defaultLocale}`;
-                if (namespaceCache.has(defaultKey))
-                    return namespaceCache.get(defaultKey)!;
-                const defaultLoader = normalizedNamespaceLoaders[defaultKey];
-                if (defaultLoader) {
-                    const raw = await defaultLoader();
-                    const loaded: Translations = JSON.parse(raw);
-                    namespaceCache.set(defaultKey, loaded);
-                    return loaded;
-                }
-            }
-            return translations() ?? {};
-        }
-
-        const raw = await loader();
-        const loaded: Translations = JSON.parse(raw);
-        namespaceCache.set(key, loaded);
-        return loaded;
+    ): Promise<Translations | undefined> {
+        return loadFile(namespaceLoaders, `${namespace}.${locale}`);
     }
 
     async function setLocale(locale: string): Promise<void> {
-        const available = availableLocales();
-        const isValid = available?.some((l) => l.code === locale);
-        if (!isValid) {
+        if (!globalLoaders[locale]) {
             console.warn(
                 `Locale "${locale}" not supported, fallback to '${defaultLocale}'`
             );
             locale = defaultLocale;
         }
-        if (locale !== currentLocale()) {
-            setCurrentLocale(locale);
-            if (typeof localStorage !== 'undefined') {
-                localStorage.setItem(STORAGE_KEY, locale);
-            }
+        if (locale === currentLocale()) return;
+        setCurrentLocale(locale);
+        try {
+            localStorage.setItem(STORAGE_KEY, locale);
+        } catch {
+            // Not remembered across visits; the choice still applies now.
         }
     }
 
     function t(key: string, fallback?: string): string {
-        const trans = translations();
-        if (!trans) return fallback ?? key;
-        const parts = key.split('.');
-        let current: string | Translations | undefined = trans;
-        for (const part of parts) {
-            if (
-                current == null ||
-                typeof current !== 'object' ||
-                !(part in current)
-            ) {
-                return fallback ?? key;
-            }
-            current = current[part];
-        }
-        return typeof current === 'string' ? current : (fallback ?? key);
-    }
-
-    function isLoading(): boolean {
-        return translations.loading || availableLocales.loading;
+        return (
+            lookup(translations(), key) ??
+            lookup(defaults(), key) ??
+            fallback ??
+            key
+        );
     }
 
     return (
@@ -265,7 +211,7 @@ export function I18nProvider(props: { children: JSX.Element }) {
                 setLocale,
                 t,
                 availableLocales,
-                isLoading,
+                isLoading: () => translations.loading || defaults.loading,
                 loadNamespace,
             }}
         >
