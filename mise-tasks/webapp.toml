@@ -25,14 +25,24 @@ depends = ["contract:pull"]
 run = "OPENAPI=artifacts/openapi.json npm run gen:api"
 
 [check]
-description = "Contract types up to date, type check, lint, build"
+description = "Contract types up to date, type check, lint, formatting, tests, build"
 depends = ["contract:pull"]
 run = [
   "OPENAPI=artifacts/openapi.json npm run check:api",
   "npx --no-install tsc --noEmit",
   "npm run lint",
+  "npm run format:check",
+  "npm test",
   "npm run build",
 ]
+
+[test]
+description = "Unit tests (Vitest); extra arguments go to vitest"
+run = "npx --no-install vitest run"
+
+["test:coverage"]
+description = "Unit tests with coverage: artifacts/coverage/lcov.info"
+run = "npx --no-install vitest run --coverage"
 
 [dev]
 description = "Vite dev server (proxies the API, see vite.config.ts)"

@@ -21,7 +21,8 @@ mise run dev                   # Vite dev server
 | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `contract:pull [--version v]`                             | download the server's API contract (`./api-version`) to `artifacts/openapi.json` |
 | `gen:api`                                                 | regenerate `src/lib/api/schema.d.ts` from it                                     |
-| `check`                                                   | contract types up to date, `tsc`, ESLint, build                                  |
+| `check`                                                   | contract types up to date, `tsc`, ESLint, tests, build                           |
+| `test`, `test:coverage`                                   | Vitest unit tests (`src/**/*.test.ts`); coverage to `artifacts/coverage`         |
 | `docker:build`, `docker:push [--tag t]`, `docker:publish` | the webapp image                                                                 |
 | `image-tag`, `docker:info`                                | this checkout's image tag                                                        |
 | `ci:image`, `ci:run`                                      | Woodpecker step image, manual pipeline run                                       |
@@ -39,8 +40,10 @@ CONTRACT_REPO=localhost:30500/echophase/openapi CONTRACT_VERSION=latest mise run
 
 ## CI and releases
 
-- **GitHub Actions**: every push and PR checks the contract types, `tsc` and
-  the build; tags `vX.Y.Z` publish the image to GHCR.
+- **GitHub Actions**: every push and PR checks the contract types, `tsc`,
+  ESLint, tests and the build, and uploads coverage to
+  [Codecov](https://app.codecov.io/gh/EchoPhase-Project/webapp); tags `vX.Y.Z`
+  publish the image to GHCR.
 - **Woodpecker** (the project's own cluster): on `main` builds the image into
   the in-cluster registry and commits its tag to
   [deploy](https://github.com/EchoPhase-Project/deploy), from where Flux

@@ -14,6 +14,9 @@ jobs:
     check:
         name: contract, types, build
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write # Codecov upload with OIDC, no token
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -33,6 +36,18 @@ jobs:
             # schema.d.ts must match the contract named in ./api-version (GHCR).
             - name: Check
               run: mise run check
+
+            - name: Coverage
+              run: mise run test:coverage
+
+            - name: Upload coverage to Codecov
+              if: ${{ !cancelled() }}
+              uses: codecov/codecov-action@v5
+              with:
+                  use_oidc: true
+                  files: artifacts/coverage/lcov.info
+                  flags: webapp
+                  fail_ci_if_error: false
 
     image:
         name: docker image
