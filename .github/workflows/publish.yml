@@ -9,6 +9,11 @@ on:
 permissions:
     contents: read
     packages: write
+    # Build provenance: signed with the workflow's OIDC identity, stored next to
+    # the image in GHCR and listed under the org's linked artifacts.
+    id-token: write
+    attestations: write
+    artifact-metadata: write
 
 jobs:
     publish:
@@ -25,8 +30,18 @@ jobs:
               run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
 
             - name: Webapp image
+              id: image
               run: |
                   version="${GITHUB_REF_NAME#v}"
                   docker build -t "$IMAGE:$version" -t "$IMAGE:latest" .
                   docker push "$IMAGE:$version"
                   docker push "$IMAGE:latest"
+                  digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$version")
+                  echo "digest=${digest#*@}" >> "$GITHUB_OUTPUT"
+
+            - name: Webapp image provenance
+              uses: actions/attest-build-provenance@v4
+              with:
+                  subject-name: ${{ env.IMAGE }}
+                  subject-digest: ${{ steps.image.outputs.digest }}
+                  push-to-registry: true
