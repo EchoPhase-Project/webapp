@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import localesList from './locales.json';
 
 // Locale files: <code>.json (site-wide) and <namespace>.<code>.json (one
 // page), with English as the source of each. Weblate writes the translations;
@@ -58,15 +57,9 @@ describe('locales', () => {
         expect(stale).toEqual([]);
     });
 
-    it('locales.json lists every site-wide language', () => {
-        expect(Object.keys(localesList).sort()).toEqual(
-            [...groups.get('')!.keys()].sort()
-        );
-    });
-
     it('every namespace language is a site-wide language', () => {
+        const siteWide = [...groups.get('')!.keys()];
         for (const [, locales] of groups)
-            for (const code of locales.keys())
-                expect(Object.keys(localesList)).toContain(code);
+            for (const code of locales.keys()) expect(siteWide).toContain(code);
     });
 });

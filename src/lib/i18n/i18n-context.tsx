@@ -6,14 +6,9 @@ import {
     createEffect,
     JSX,
 } from 'solid-js';
-import localesList from '@static/locales.json';
 
 export interface Translations {
     [key: string]: string | Translations;
-}
-
-interface LocaleDefinition {
-    nativeName: string;
 }
 
 interface I18nContextType {
@@ -82,6 +77,23 @@ function loadFile(
 }
 
 /**
+ * A language's name in itself ("Русский", "Română"), from the browser's own
+ * data: a translation added in Weblate shows in the language list as is.
+ */
+export function nativeName(code: string): string {
+    try {
+        const name = new Intl.DisplayNames([code], { type: 'language' }).of(
+            code
+        );
+        if (name && name !== code)
+            return name.charAt(0).toLocaleUpperCase(code) + name.slice(1);
+    } catch {
+        // Unknown code or no Intl.DisplayNames: show the code itself.
+    }
+    return code;
+}
+
+/**
  * The string at a dotted key, or undefined when it is missing or empty: an
  * untranslated string falls back instead of showing nothing.
  */
@@ -128,14 +140,9 @@ export function useLocalizer(namespace?: string) {
 }
 
 export function I18nProvider(props: { children: JSX.Element }) {
-    const localeDefinitions: Record<string, LocaleDefinition> = localesList;
-
     const locales = Object.keys(globalLoaders)
-        .filter((code) => localeDefinitions[code])
-        .map((code) => ({
-            code,
-            nativeName: localeDefinitions[code].nativeName,
-        }));
+        .sort()
+        .map((code) => ({ code, nativeName: nativeName(code) }));
     const availableLocales = () => locales;
 
     function getBrowserLocale(): string | null {
