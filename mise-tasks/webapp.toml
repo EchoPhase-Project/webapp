@@ -40,6 +40,11 @@ run = [
 description = "Unit tests (Vitest); extra arguments go to vitest"
 run = "npx --no-install vitest run"
 
+["coverage:html"]
+description = "Coverage report to read: artifacts/coverage/index.html"
+depends = ["test:coverage"]
+run = "echo artifacts/coverage/index.html"
+
 ["test:coverage"]
 description = "Unit tests with coverage: artifacts/coverage/lcov.info"
 run = "npx --no-install vitest run --coverage"

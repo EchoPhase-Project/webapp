@@ -27,7 +27,7 @@ export default defineConfig({
             provider: 'v8',
             include: ['src/**/*.{ts,tsx}'],
             exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
-            reporter: ['text-summary', 'lcov'],
+            reporter: ['text-summary', 'lcov', 'html'],
             reportsDirectory: 'artifacts/coverage',
         },
     },

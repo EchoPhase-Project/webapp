@@ -23,6 +23,7 @@ mise run dev                   # Vite dev server
 | `gen:api`                                                 | regenerate `src/lib/api/schema.d.ts` from it                                     |
 | `check`                                                   | contract types up to date, `tsc`, ESLint, tests, build                           |
 | `test`, `test:coverage`                                   | Vitest unit tests (`src/**/*.test.ts`); coverage to `artifacts/coverage`         |
+| `coverage:html`                                           | the same as a browsable report: `artifacts/coverage/index.html`                  |
 | `docker:build`, `docker:push [--tag t]`, `docker:publish` | the webapp image                                                                 |
 | `image-tag`, `docker:info`                                | this checkout's image tag                                                        |
 | `ci:image`, `ci:run`                                      | Woodpecker step image, manual pipeline run                                       |
