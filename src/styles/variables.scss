@@ -11,7 +11,7 @@ $link-color: #3291ff;
 $link-color-dark: color.adjust($link-color, $lightness: -15%);
 $link-color-rgb: utils.hex-to-rgb($link-color);
 
-$font-primary: 'Iosevka';
+$font-primary: 'Inter';
 $font-secondary: 'Inter';
 $transition-speed: 200ms;
 

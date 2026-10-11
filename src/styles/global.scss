@@ -1,12 +1,19 @@
+// Inter as a variable font: every weight from 100 to 900 in one file, so
+// 500, 600 and bold are the real cuts, not the regular one thickened.
 @font-face {
   font-family: 'Inter';
-  src:
-    local('Inter'),
-    url('@static/fonts/Inter.woff2') format('woff2'),
-    url('@static/fonts/Inter.ttf') format('truetype');
+  src: url('@static/fonts/InterVariable.woff2') format('woff2');
   font-display: swap;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('@static/fonts/InterVariable-Italic.woff2') format('woff2');
+  font-display: swap;
+  font-style: italic;
+  font-weight: 100 900;
 }
 
 @font-face {
@@ -23,16 +30,6 @@
     'cv27', 'cv28', 'cv29', 'cv30', 'cv31', 'ss06', 'ss07', 'ss09'; // not working in Chromium <= 136.0.0.0
 }
 
-@font-face {
-  font-family: 'Iosevka';
-  src:
-    local('Iosevka'),
-    url('@static/fonts/Iosevka.woff2') format('woff2');
-  font-display: swap;
-  font-style: normal;
-  font-weight: normal;
-}
-
 body,
 html {
   margin: 0;
@@ -43,7 +40,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Fira Code', 'Iosevka', monospace;
+  font-family: 'Inter', 'Fira Code', sans-serif;
   font-variant-ligatures: contextual common-ligatures;
   line-height: 1.7;
   color: var(--text-primary);
