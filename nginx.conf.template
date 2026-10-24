@@ -70,6 +70,15 @@ http {
     limit_req_zone $binary_remote_addr zone=errors:10m rate=2r/s;
     limit_req_zone $binary_remote_addr zone=stats:10m rate=5r/s;
 
+    # Host and port of the request's Origin, to compare with its Host: the
+    # reports to /errors and /stats come from this webapp's own pages. A
+    # browser always sends Origin with them; scripts can fake it, but pages
+    # of other sites cannot post reports here.
+    map $http_origin $origin_host {
+        ~^https?://(?<origin_authority>[^/]+)$    $origin_authority;
+        default                                   "";
+    }
+
     limit_req_status  429;
     limit_conn_status 429;
     limit_req_log_level warn;
@@ -155,6 +164,7 @@ http {
 		# The browser's error reports (the Sentry SDK's tunnel) on to GlitchTip,
 		# which needs no public address for them.
 		location = /errors {
+			if ($origin_host != $http_host) { return 403; }
 			limit_req zone=errors burst=20 nodelay;
 			client_max_body_size 1m;
 
@@ -183,6 +193,7 @@ http {
 		}
 
 		location = /stats/api/send {
+			if ($origin_host != $http_host) { return 403; }
 			limit_req zone=stats burst=30 nodelay;
 			client_max_body_size 64k;
 
