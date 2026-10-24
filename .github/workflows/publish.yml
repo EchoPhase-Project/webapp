@@ -2,12 +2,15 @@ name: Publish
 
 # A tag vX.Y.Z publishes ghcr.io/echophase-project/webapp:X.Y.Z (and latest)
 # for self-hosting; the chart in EchoPhase-Project/charts pins it by version.
+# Then a GitHub release for the tag, its notes from the commits since the last
+# one (scripts/release-notes.sh).
 on:
     push:
         tags: ['v*']
 
 permissions:
-    contents: read
+    # Write: the GitHub release.
+    contents: write
     packages: write
     # Build provenance: signed with the workflow's OIDC identity, stored next to
     # the image in GHCR and listed under the org's linked artifacts.
@@ -23,6 +26,9 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+              with:
+                  # The release notes read the commits since the previous tag.
+                  fetch-depth: 0
 
             - name: Log in to GHCR
               env:
@@ -45,3 +51,19 @@ jobs:
                   subject-name: ${{ env.IMAGE }}
                   subject-digest: ${{ steps.image.outputs.digest }}
                   push-to-registry: true
+
+            - name: Release
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  version="${GITHUB_REF_NAME#v}"
+                  {
+                    scripts/release-notes.sh "$GITHUB_REF_NAME"
+                    echo
+                    echo "### Published"
+                    echo
+                    echo "- Image: \`$IMAGE:$version\`"
+                    echo "- To run it: the Helm chart or Docker Compose in [charts](https://github.com/EchoPhase-Project/charts)."
+                  } > release-notes.md
+                  gh release create "$GITHUB_REF_NAME" --verify-tag \
+                    --title "EchoPhase webapp $version" --notes-file release-notes.md
