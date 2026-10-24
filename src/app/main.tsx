@@ -2,13 +2,12 @@ import { render } from 'solid-js/web';
 import Root from './Root';
 import Layout from './Layout';
 import RouterComponent from './Router';
-import { startErrorReporting } from '@shared/lib/error-reporting';
-import { startAnalytics } from '@shared/lib/analytics';
+import { followConsent } from '@shared/lib/optional-services';
 
-// In parallel with the first render; each a no-op unless the deployment
-// switches it on (/config.json).
-void startErrorReporting();
-void startAnalytics();
+// Statistics and error reports, in parallel with the first render: only what
+// the visitor allowed in the cookie banner, and only what the deployment
+// switches on (/config.json).
+followConsent();
 
 render(
     () => (

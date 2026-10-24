@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorsTunnel, startErrorReporting } from './error-reporting';
 
 const init = vi.fn();
-vi.mock('@sentry/browser', () => ({ init }));
+const close = vi.fn();
+vi.mock('@sentry/browser', () => ({ init, close }));
 
 describe('startErrorReporting', () => {
     beforeEach(() => init.mockReset());
