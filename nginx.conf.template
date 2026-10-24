@@ -163,7 +163,9 @@ http {
 			proxy_set_header Connection "";
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 			proxy_connect_timeout 5s;
-			proxy_read_timeout 10s;
+			# GlitchTip's first report after a quiet spell takes several
+			# seconds (warm ones: milliseconds); it is stored either way.
+			proxy_read_timeout 30s;
 		}
         
         location ~* \.(js|css|woff2?|ttf|otf|svg|png|jpg|ico)$ {
