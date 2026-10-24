@@ -21,7 +21,7 @@ export default function MaintenanceScreen() {
                     aria-modal="true"
                     aria-labelledby="outage-title"
                 >
-                    <div class="outage-card">
+                    <div class="outage-card patterned">
                         <Show
                             when={current().kind === 'maintenance'}
                             fallback={

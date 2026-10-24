@@ -34,7 +34,7 @@ describe('SessionsPage', () => {
 
         renderPage(() => <SessionsPage />);
 
-        expect(await screen.findByText('Firefox on X11')).toBeTruthy();
+        expect(await screen.findByText('Firefox on Linux')).toBeTruthy();
         expect(screen.getByText('echophase-cli')).toBeTruthy();
 
         fireEvent.click(
@@ -42,7 +42,7 @@ describe('SessionsPage', () => {
         );
 
         await waitFor(() =>
-            expect(screen.queryByText('Firefox on X11')).toBeNull()
+            expect(screen.queryByText('Firefox on Linux')).toBeNull()
         );
         const [revoke] = api.calls('DELETE /api/v1/sessions/s1');
         expect(revoke.headers.get(CsrfService.HEADER)).toBe('t0k3n');

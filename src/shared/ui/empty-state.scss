@@ -1,0 +1,12 @@
+.empty-state {
+  --pattern-size: cover;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding-block: 36px;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}

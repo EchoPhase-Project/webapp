@@ -26,6 +26,9 @@ describe('ApiClientsPage', () => {
         });
 
         renderPage(() => <ApiClientsPage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'New client' })
+        );
         fireEvent.input(await screen.findByLabelText('Name'), {
             target: { value: 'bot' },
         });
@@ -61,14 +64,45 @@ describe('ApiClientsPage', () => {
         });
 
         renderPage(() => <ApiClientsPage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'New client' })
+        );
         fireEvent.input(await screen.findByLabelText('Name'), {
             target: { value: 'bot' },
         });
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
         expect(await screen.findByText('s3cr3t')).toBeTruthy();
+        expect(document.querySelector('dialog')?.hasAttribute('open')).toBe(
+            false
+        );
         expect(await screen.findByText('bot')).toBeTruthy();
         const [create] = api.calls('POST /api/v1/api-clients');
         expect(await create.json()).toEqual({ name: 'bot', expiresAt: null });
+    });
+});
+
+describe('ApiClientsPage dialog', () => {
+    afterEach(() => {
+        cleanup();
+        vi.unstubAllGlobals();
+    });
+
+    it('opens the form in a dialog and closes it with its button', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () => json(200, []),
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        const open = await screen.findByRole('button', { name: 'New client' });
+        const dialog = () => document.querySelector('dialog')!;
+        expect(dialog().hasAttribute('open')).toBe(false);
+        fireEvent.click(open);
+        expect(dialog().hasAttribute('open')).toBe(true);
+        expect(dialog().getAttribute('aria-labelledby')).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+        expect(dialog().hasAttribute('open')).toBe(false);
     });
 });

@@ -55,6 +55,16 @@ build leaves them out.
 | `dev/`             | pages for trying out components, dev server only                                                                                               |
 | `static/`          | fonts, icons, and the translations (`locales/`, written by Weblate)                                                                            |
 
+Inside a feature, `XPage.tsx` only puts the page together (title, layout);
+its parts are in `components/`, its API calls in `api.ts`, and logic worth
+testing in plain modules with tests beside them (`sessions/user-agent.ts`).
+`shared/ui` holds the building blocks: `Button` (primary, ghost, icon),
+`Card`, `Field` (input with icon and its errors under it), `Modal` (forms
+over the page), `EmptyState`, `Table`. The flowing-lines pattern
+(`.patterned`, or `Card patterned`) is for brand moments only: the sign-in
+card, empty states, the outage screen; not on tables, menus, forms in pages
+or small controls.
+
 Imports go through the aliases `@app/`, `@features/`, `@shared/`, `@dev/`,
 `@static/` (tsconfig `paths`, which Vite reads), or `./` within a folder.
 ESLint keeps the layers apart: a feature imports `shared/` and itself, never

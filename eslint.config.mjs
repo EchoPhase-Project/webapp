@@ -83,8 +83,10 @@ export default defineConfig([
                             'A feature uses shared code and itself; move what two features need to src/shared.',
                             '@app/*',
                             '@dev/*',
-                            '@features/*',
-                            `!@features/${feature}/*`
+                            // Files, not folders: a folder left out cannot
+                            // be let back in (gitignore rules).
+                            '@features/*/**',
+                            `!@features/${feature}/**`
                         ),
                     ],
                 },

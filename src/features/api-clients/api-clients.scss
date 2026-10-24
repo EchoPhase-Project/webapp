@@ -2,21 +2,16 @@
   display: grid;
   gap: 20px;
   align-content: start;
+}
 
-  h1 {
+.secret-notice {
+  display: grid;
+  gap: 10px;
+  max-width: 40rem;
+
+  p {
     margin: 0;
   }
-}
-
-.api-client-form {
-  max-width: 28rem;
-}
-
-.api-client-secret {
-  margin: 0;
-  max-width: 40rem;
-  display: grid;
-  gap: 8px;
 
   code {
     font-family: 'Fira Code', ui-monospace, monospace;
@@ -24,4 +19,10 @@
     overflow-wrap: anywhere;
     color: var(--text);
   }
+}
+
+.secret-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }

@@ -44,12 +44,12 @@ export default function AuthPages() {
                     </label>
                     <div class="card-3d-wrap">
                         <div class="card-3d-wrapper">
-                            <div class="card-front">
+                            <div class="card-front patterned">
                                 <div class="center-wrap">
                                     <LoginForm />
                                 </div>
                             </div>
-                            <div class="card-back">
+                            <div class="card-back patterned">
                                 <div class="center-wrap">
                                     <RegisterForm />
                                 </div>

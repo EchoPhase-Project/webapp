@@ -16,5 +16,9 @@
     "last_used": "Last used",
     "created": "Created",
     "actions": "Actions"
-  }
+  },
+  "new": "New client",
+  "copy": "Copy",
+  "copied": "Copied",
+  "dismiss": "Done"
 }

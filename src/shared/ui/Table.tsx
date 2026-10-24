@@ -1,5 +1,6 @@
 import { For, Show, JSX, Component, ParentComponent } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
+import EmptyState from './EmptyState';
 import './table.scss';
 
 type DataLabel = string;
@@ -72,9 +73,9 @@ export function Table<T>(props: TableProps<T>) {
         <Show
             when={props.data.length > 0}
             fallback={
-                <div class="placeholder">
+                <EmptyState>
                     <props.placeholder />
-                </div>
+                </EmptyState>
             }
         >
             <table {...props.tableProps}>

@@ -303,10 +303,6 @@ header {
   }
 }
 
-.placeholder {
-  text-align: center;
-}
-
 // A surface that is one thing (a form, a notice): set off by shadow alone.
 .card {
   background-color: var(--surface);
@@ -363,5 +359,56 @@ header {
     opacity: 0.5;
     color: var(--text-muted);
     background-color: transparent;
+  }
+}
+
+// The flowing-lines pattern, for brand moments only: the sign-in card, empty
+// states, the outage screen. Not on what is read or operated (tables,
+// menus, forms in pages, small controls), where it is noise. A mask, so it
+// takes the theme's accent instead of a colour fixed in the file.
+.patterned {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: var(--accent);
+    opacity: var(--pattern-opacity);
+    // 300% suits a card about as tall as wide; a wide strip sets cover.
+    -webkit-mask: url('../../static/assets/svg/pattern.svg') bottom center /
+      var(--pattern-size, 300%) no-repeat;
+    mask: url('../../static/assets/svg/pattern.svg') bottom center /
+      var(--pattern-size, 300%) no-repeat;
+  }
+}
+
+// A page's title with its main action beside it.
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+// A quiet secondary action in words (Done, Cancel).
+.btn.btn-ghost {
+  color: var(--text-muted);
+  background-color: transparent;
+  border-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text);
+    background-color: var(--surface-raised);
   }
 }
