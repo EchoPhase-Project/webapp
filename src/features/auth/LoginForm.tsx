@@ -1,7 +1,6 @@
 import { createSignal } from 'solid-js';
 import { FaRegularUser } from 'solid-icons/fa';
 import { BiRegularLock } from 'solid-icons/bi';
-import { useNavigate } from '@solidjs/router';
 import { groupErrors } from '@shared/api/errors';
 import { useAuth } from '@shared/api/auth-provider';
 import type { FormErrors } from '@shared/api/errors';
@@ -18,7 +17,6 @@ export default function LoginForm() {
     const i18n = useI18n();
     const t = useLocalizer('auth');
     const auth = useAuth();
-    const navigate = useNavigate();
 
     const [loginForm, setLoginForm] = createSignal<LoginCredentials>({
         username: '',
@@ -46,7 +44,7 @@ export default function LoginForm() {
 
         if (result.success) {
             setErrors({});
-            navigate('/');
+            // AuthPage takes the user on (to ?next=) once signed in.
         } else {
             setErrors(groupErrors(result.error ?? [], FIELDS));
         }

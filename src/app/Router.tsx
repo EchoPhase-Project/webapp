@@ -3,6 +3,7 @@ import { Router } from '@solidjs/router';
 import { NavProvider } from '@shared/nav/nav-context';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import { AuthProvider } from '@shared/api/auth-provider';
+import { requireAuth } from '@shared/api/auth-guards';
 import { ThemeProvider } from '@shared/theme/theme-context';
 import { RealtimeProvider } from '@features/realtime/realtime-provider';
 import { devRoutes } from '@dev/routes';
@@ -27,11 +28,15 @@ const routes = [
     },
     {
         path: '/sessions',
-        component: lazy(() => import('@features/sessions/SessionsPage')),
+        component: requireAuth(
+            lazy(() => import('@features/sessions/SessionsPage'))
+        ),
     },
     {
         path: '/api-clients',
-        component: lazy(() => import('@features/api-clients/ApiClientsPage')),
+        component: requireAuth(
+            lazy(() => import('@features/api-clients/ApiClientsPage'))
+        ),
     },
     ...(import.meta.env.DEV ? devRoutes() : []),
     {

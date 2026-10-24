@@ -24,6 +24,27 @@ const csrf: Middleware = {
     },
 };
 
+const unauthorizedListeners = new Set<() => void>();
+
+/**
+ * Called when the API answers 401 outside /auth/*: the session ended (the
+ * server refreshes expired access tokens itself). Returns an unsubscribe.
+ */
+export function onUnauthorized(listener: () => void): () => void {
+    unauthorizedListeners.add(listener);
+    return () => unauthorizedListeners.delete(listener);
+}
+
+// /auth/* answers 401 as part of signing in (me while signed out, a wrong
+// password): that is no news.
+const sessionEnd: Middleware = {
+    onResponse({ response, schemaPath }) {
+        if (response.status === 401 && !schemaPath.startsWith('/api/v1/auth/'))
+            unauthorizedListeners.forEach((listener) => listener());
+        return response;
+    },
+};
+
 /**
  * The API, typed by its contract (schema.d.ts, `npm run gen:api`): paths,
  * parameters, bodies and answers. Cookies go along; the outage watch sees
@@ -35,7 +56,7 @@ export const api = createClient<paths>({
     credentials: 'include',
     fetch: (request) => watchedFetch(request),
 });
-api.use(csrf);
+api.use(csrf, sessionEnd);
 
 export const NetworkError: ErrorItem = {
     code: 'network_error',

@@ -1,5 +1,4 @@
 import { createSignal } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
 import { FaRegularUser } from 'solid-icons/fa';
 import { BiRegularLock } from 'solid-icons/bi';
 import { AiOutlineTags } from 'solid-icons/ai';
@@ -25,7 +24,6 @@ export default function RegisterForm() {
 
     const [errors, setErrors] = createSignal<FormErrors>({});
     const auth = useAuth();
-    const navigate = useNavigate();
 
     const i18n = useI18n();
     const t = useLocalizer('auth');
@@ -52,7 +50,7 @@ export default function RegisterForm() {
 
         if (result.success) {
             setErrors({});
-            navigate('/');
+            // AuthPage takes the user on (to ?next=) once signed in.
         } else {
             setErrors(groupErrors(result.error ?? [], FIELDS));
         }

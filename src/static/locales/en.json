@@ -5,6 +5,7 @@
   "nav": {
     "home": "Home",
     "about": "About",
+    "login": "Log in",
     "logout": "Logout",
     "settings": "Settings",
     "sessions": {

@@ -4,6 +4,7 @@ import {
     ParentComponent,
     createSignal,
     createResource,
+    onCleanup,
     Accessor,
 } from 'solid-js';
 import type {
@@ -14,7 +15,7 @@ import type {
     ErrorItem,
 } from './types';
 import { CsrfService } from './csrf';
-import { api, send, type ApiResult } from './client';
+import { api, onUnauthorized, send, type ApiResult } from './client';
 
 type Outcome = { success: boolean; error?: ErrorItem[] };
 
@@ -47,6 +48,14 @@ export const AuthProvider: ParentComponent = (props) => {
         });
 
     const isAuthenticated = () => !!user();
+
+    // The session ended under us: signed out, so guarded pages send to /auth.
+    onCleanup(
+        onUnauthorized(() => {
+            CsrfService.clearToken();
+            setUser(null);
+        })
+    );
 
     const [roles, { refetch: refetchRoles }] = createResource(
         isAuthenticated,
