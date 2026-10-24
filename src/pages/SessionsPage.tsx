@@ -2,7 +2,7 @@ import { createRenderEffect } from 'solid-js';
 import { useRootMeta } from '@lib/root';
 import { Component } from 'solid-js';
 import { Table, Cell, Row } from '@components/Table';
-import { useSession } from '@lib/api';
+import { SessionProvider, useSession } from '@lib/api';
 import type { Session } from '@lib/api';
 import { AiOutlineClose } from 'solid-icons/ai';
 import { useLocalizer } from '@lib/i18n';
@@ -28,7 +28,7 @@ const parseUserAgent = (
         .replace('{os}', os);
 };
 
-export default function SessionsPage() {
+function Sessions() {
     const { setTitle, setDescription } = useRootMeta();
     const { sessions, revokeSession, revokeAllSessions, isLoading } =
         useSession();
@@ -89,5 +89,14 @@ export default function SessionsPage() {
                 )}
             />
         </div>
+    );
+}
+
+/** Sessions are fetched here only, not on every page of the app. */
+export default function SessionsPage() {
+    return (
+        <SessionProvider>
+            <Sessions />
+        </SessionProvider>
     );
 }

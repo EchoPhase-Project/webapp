@@ -1,0 +1,9 @@
+# Only the public pages are for search engines; the rest of the app is
+# behind sign-in. An allowlist, so a new page is private until listed here.
+# The scripts and styles stay crawlable: the pages render with them.
+User-agent: *
+Allow: /$
+Allow: /about$
+Allow: /js/
+Allow: /assets/
+Disallow: /

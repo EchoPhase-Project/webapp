@@ -5,7 +5,6 @@ import solidPlugin from 'vite-plugin-solid';
 import compress from 'vite-plugin-compression';
 import commonjs from '@rollup/plugin-commonjs';
 import path from 'path';
-import Sitemap from 'vite-plugin-sitemap';
 
 const ClientSideRouting = {
     name: 'dynamic-router',
@@ -28,7 +27,6 @@ export default defineConfig(({ mode }) => {
             compress({ algorithm: 'gzip' }),
             ClientSideRouting,
             commonjs({}),
-            Sitemap(),
         ],
         resolve: {
             alias: {
@@ -78,7 +76,7 @@ export default defineConfig(({ mode }) => {
             // origin: 'http://localhost:8080',
         },
         root: path.resolve(import.meta.dirname),
-        publicDir: path.resolve(import.meta.dirname, 'static'),
+        publicDir: path.resolve(import.meta.dirname, 'public'),
         // base: '/app',
         build: {
             target: 'esnext',

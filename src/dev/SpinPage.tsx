@@ -1,5 +1,5 @@
 import { onMount } from 'solid-js';
-import { Spin } from '@lib/spin';
+import { Spin } from './spin';
 
 export default function SpinTestPage() {
     let cardRef: HTMLDivElement | undefined;

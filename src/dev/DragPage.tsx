@@ -1,4 +1,4 @@
-import { DragAndDrop } from '@lib/drag-and-drop';
+import { DragAndDrop } from './drag-and-drop';
 import { IoAlert } from 'solid-icons/io';
 import { onMount } from 'solid-js';
 
