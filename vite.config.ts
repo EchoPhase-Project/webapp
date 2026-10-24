@@ -52,7 +52,8 @@ export default defineConfig(({ mode }) => {
             port: 5173,
             strictPort: true,
             proxy: {
-                '/api': { target: apiTarget, changeOrigin: true, ws: true },
+                // With the slash: /api-clients is a page, not the API.
+                '/api/': { target: apiTarget, changeOrigin: true, ws: true },
             },
         },
         preview: {
