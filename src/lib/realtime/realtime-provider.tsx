@@ -31,7 +31,7 @@ const RealtimeContext = createContext<RealtimeContextValue>();
 const MaxBackoffMs = 30_000;
 
 /**
- * The realtime gateway for the signed-in user: one WebSocket to /gateway/,
+ * The realtime gateway for the signed-in user: one WebSocket to /api/v1/gateway,
  * subscribed to the requested intents the token allows. Pings at half the
  * heartbeat interval the server announces; reconnects with backoff after a
  * drop, first asking /auth/me so an expired access token gets refreshed (or
@@ -100,7 +100,7 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
         if (!wanted) return;
 
         const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
-        const ws = new WebSocket(`${scheme}://${location.host}/gateway/`);
+        const ws = new WebSocket(`${scheme}://${location.host}/api/v1/gateway`);
         socket = ws;
 
         ws.onopen = () =>
