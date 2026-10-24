@@ -1,0 +1,27 @@
+.api-clients-container {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.api-client-form {
+  max-width: 28rem;
+}
+
+.api-client-secret {
+  margin: 0;
+  max-width: 40rem;
+  display: grid;
+  gap: 8px;
+
+  code {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+    color: var(--text);
+  }
+}

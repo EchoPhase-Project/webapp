@@ -7,6 +7,7 @@ import { useAuth } from '@shared/api/auth-provider';
 import type { Session } from '@shared/api/types';
 import { AiOutlineClose } from 'solid-icons/ai';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import './sessions.scss';
 
 const NoSessionsPlaceholder: Component = () => {
     const t = useLocalizer('sessions');
@@ -110,7 +111,7 @@ export default function SessionsPage() {
                         >
                             <div>
                                 <button
-                                    class="btn"
+                                    class="btn btn-icon"
                                     disabled={isLoading()}
                                     aria-label={t('revoke', 'Revoke session')}
                                     onClick={() =>

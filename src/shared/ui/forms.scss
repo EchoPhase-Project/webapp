@@ -1,162 +1,123 @@
-@mixin input-types($types...) {
-  %text {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  %password {
-    @extend %text;
-  }
-
-  %submit {
-    width: fit-content;
-  }
-
-  @each $type in $types {
-    input[type='#{$type}'] {
-      font-family: inherit;
-      @extend %#{$type} !optional;
-      &::placeholder {
-        @include prefixes.prefix(font-feature-settings, inherit, webkit);
-      }
-    }
-  }
-}
-
-@mixin default-placeholder($prefixes...) {
-  $iterator: (placeholder, input-placeholder);
-
-  %placeholder {
-    color: var(--text-muted);
-    opacity: 1;
-    @include prefixes.prefix(transition-property, 'color, opacity', webkit);
-    @include prefixes.prefix(
-      transition-duration,
-      var(--transition-speed),
-      webkit
-    );
-    @include prefixes.prefix(transition-timing-function, linear, webkit);
-  }
-
-  %input {
-    opacity: 0;
-  }
-
-  @each $prefix in $prefixes {
-    @each $key in $iterator {
-      $prefix-str: '';
-      @if $prefix != 'std' {
-        $prefix-str: '-' + $prefix + '-';
-      }
-
-      input::#{$prefix-str}#{$key} {
-        @extend %placeholder !optional;
-      }
-
-      input:focus::#{$prefix-str}#{$key} {
-        @extend %input !optional;
-      }
-    }
-  }
-}
-
-%default-flex {
-  max-width: 100%;
-  gap: 1em;
-  display: flex;
-}
-
-%default-form-items {
-  align-items: center;
-  @include input-types(text, password, submit);
-}
+// Forms: a column of fields 14px apart; each field an icon and an input on a
+// raised background, its errors directly below in small danger text.
 
 .vert-form {
-  @extend %default-flex;
-  @extend %default-form-items;
-  flex-direction: column;
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
 }
 
-.horiz-form {
-  @extend %default-flex;
-  @extend %default-form-items;
-  flex-direction: row;
-
-  @include comp.media('max-width: 768px') {
-    flex-direction: column;
-  }
-
-  @include comp.media('min-width: 768px') {
-    flex-direction: row;
-  }
+.form-title {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
 }
 
-.form-group {
-  @extend %default-flex;
-  margin: 0;
-  padding: 0.8em 1.4em;
-  position: relative;
-  border-radius: 0.3em;
-  border: 1px solid var(--input-border);
+// A field, its label (when shown) and its errors, kept together.
+.field-wrap {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
   background-color: var(--surface-raised);
+  border: 1px solid var(--input-border);
+  color: var(--text-muted);
+  @include prefixes.prefix(transition, 'border-color, box-shadow', webkit);
   @include prefixes.prefix(
-    box-shadow,
-    color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px 12px 0px,
+    transition-duration,
+    var(--transition-speed),
     webkit
   );
-  @include prefixes.prefix(
-    transition,
-    box-shadow var(--transition-speed) linear,
-    webkit
-  );
-
-  @include default-placeholder(ms, moz, webkit);
 
   &:focus-within {
     border-color: var(--focus);
-    box-shadow:
-      0 0 0 1px var(--focus),
-      color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px 12px 0px;
+    box-shadow: 0 0 0 1px var(--focus);
+  }
+
+  &.invalid {
+    box-shadow: 0 0 0 2px var(--danger);
   }
 }
 
-.form-style {
-  padding: 0;
-  letter-spacing: 0.5px;
-  outline: none;
-  color: var(--text);
-  background-color: transparent;
-  border: none;
-  @include prefixes.prefix(
-    transition,
-    box-shadow var(--transition-speed) linear,
-    webkit
-  );
-  @include prefixes.prefix(font-smoothing, antialiased, webkit);
-
-  &:focus,
-  &:active {
-    border: none;
-    outline: none;
-  }
-}
-
-.input-icon {
-  font-size: 1.5em;
+.field-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
   color: var(--accent);
-  @include prefixes.prefix(
-    transition,
-    color var(--transition-speed) linear,
-    webkit
-  );
+}
+
+.field-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
+  color: var(--text);
+
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  &:focus::placeholder {
+    opacity: 0.5;
+  }
+
+  // The browser's own picker icon (datetime-local) in the theme's colours.
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+  }
+}
+
+// Errors: under their field, or (about the form as a whole) at its top.
+.errorlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  color: var(--danger);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.error-summary {
+  outline: none;
+  text-align: center;
+}
+
+// The form's own button sits a little apart from the last field.
+.vert-form > .btn {
+  justify-self: center;
+  margin-top: 4px;
 }
 
 .disabled {
   pointer-events: none;
   color: var(--primary);
   background-color: var(--on-primary);
-  box-shadow: 0 8px 24px 0
-    color-mix(in srgb, var(--on-primary) 20%, transparent);
 }
 
 // Labels kept for screen readers while the placeholder shows the hint.
@@ -170,24 +131,4 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-.form-group:has([aria-invalid='true']) {
-  box-shadow: 0 0 0 2px var(--danger);
-}
-
-.errorlist {
-  margin: 0.4em 0 0;
-  padding-left: 1.2em;
-  color: var(--danger);
-  font-size: 0.9em;
-}
-
-.error-summary {
-  outline: none;
-
-  a {
-    color: inherit;
-    text-decoration: underline;
-  }
 }

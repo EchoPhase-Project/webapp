@@ -19,12 +19,6 @@
   cursor: pointer;
 }
 
-.form-title {
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  font-size: 1.75em;
-}
-
 .mt-4 {
   margin-top: 1.5rem;
 }
@@ -170,18 +164,15 @@ h6 {
 
 .card-front,
 .card-back {
-  min-width: 20em;
+  width: min(22rem, calc(100vw - 2rem));
   display: flex;
   position: relative;
   grid-row-start: 1;
   grid-column-end: 1;
   grid-column-start: 1;
   background-color: var(--surface);
-  background-image: url('../../static/assets/svg/pat.svg');
-  background-position: bottom center;
-  background-repeat: no-repeat;
-  background-size: 300%;
-  border-radius: 0.4em;
+  border-radius: 10px;
+  box-shadow: color-mix(in srgb, var(--shadow) 25%, transparent) 0 7px 18px 0;
   @include prefixes.prefix(transform-style, preserve-3d, webkit);
   @include prefixes.prefix(backface-visibility, hidden, webkit, moz, o);
   align-content: center;
@@ -196,11 +187,7 @@ h6 {
 
 .center-wrap {
   position: relative;
-  padding: 2rem;
+  padding: 22px;
   transform: translate3d(0, 0, 1.75rem) perspective(100px);
   z-index: 20;
-}
-
-.btn-form {
-  margin-top: 0.5em;
 }

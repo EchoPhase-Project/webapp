@@ -1,6 +1,9 @@
 import { Table, Cell, Row } from '@shared/ui/Table';
 import { Component } from 'solid-js';
 
+// The status pill's variant per webhook state.
+const pill = { active: 'ok', inactive: 'bad', pending: 'warn' } as const;
+
 type Webhook = {
     id: string;
     userId: string;
@@ -85,11 +88,11 @@ export default function WebhooksPage() {
                             text={webhook.url}
                             props={{ class: 'url' }}
                         />
-                        <Cell
-                            label="Status"
-                            text={webhook.status}
-                            props={{ class: 'status' }}
-                        />
+                        <Cell label="Status" props={{ class: 'status' }}>
+                            <span class={`status-pill ${pill[webhook.status]}`}>
+                                {webhook.status}
+                            </span>
+                        </Cell>
                         <Cell
                             label="Intents"
                             text={webhook.intents}

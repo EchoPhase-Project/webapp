@@ -1,0 +1,17 @@
+.sessions-container {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+  }
+}

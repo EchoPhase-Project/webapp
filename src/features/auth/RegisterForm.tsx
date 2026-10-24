@@ -9,8 +9,7 @@ import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/ErrorSummary';
-import FieldError, { errorId } from '@shared/ui/FieldError';
-import '@shared/ui/forms.scss';
+import Field from '@shared/ui/Field';
 
 const FIELDS = ['name', 'username', 'password'] as const;
 const inputId = (field: string) => `register-${field}`;
@@ -28,16 +27,6 @@ export default function RegisterForm() {
     const i18n = useI18n();
     const t = useLocalizer('auth');
     const isDisabled = () => auth.isLoading() || i18n.isLoading();
-
-    // aria wiring shared by every input: invalid state and its error list.
-    const errorProps = (field: string) => ({
-        id: inputId(field),
-        name: field,
-        'aria-invalid': !!errors()[field],
-        'aria-describedby': errors()[field]
-            ? errorId(inputId(field))
-            : undefined,
-    });
 
     async function handleRegister(e: Event) {
         e.preventDefault();
@@ -66,78 +55,63 @@ export default function RegisterForm() {
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
-            <label class="visually-hidden" for={inputId('name')}>
-                {t('form.fullname', 'Your Full Name')}
-            </label>
-            <div class="form-group">
-                <FaRegularUser class="input-icon" />
-                <input
-                    {...errorProps('name')}
-                    class="form-style"
-                    type="text"
-                    autocomplete="name"
-                    disabled={isDisabled()}
-                    placeholder={t('form.fullname', 'Your Full Name')}
-                    value={registerForm().name}
-                    onInput={(e) =>
-                        setRegisterForm((f) => ({
-                            ...f,
-                            name: e.currentTarget.value,
-                        }))
-                    }
-                />
-            </div>
-            <FieldError for={inputId('name')} errors={errors().name} />
+            <Field
+                id={inputId('name')}
+                name="name"
+                label={t('form.fullname', 'Your Full Name')}
+                icon={FaRegularUser}
+                errors={errors().name}
+                type="text"
+                autocomplete="name"
+                disabled={isDisabled()}
+                value={registerForm().name}
+                onInput={(e) =>
+                    setRegisterForm((f) => ({
+                        ...f,
+                        name: e.currentTarget.value,
+                    }))
+                }
+            />
 
-            <label class="visually-hidden" for={inputId('username')}>
-                {t('form.username', 'Your Username')}
-            </label>
-            <div class="form-group">
-                <AiOutlineTags class="input-icon" />
-                <input
-                    {...errorProps('username')}
-                    class="form-style"
-                    type="text"
-                    autocomplete="username"
-                    disabled={isDisabled()}
-                    placeholder={t('form.username', 'Your Username')}
-                    value={registerForm().username}
-                    onInput={(e) =>
-                        setRegisterForm((f) => ({
-                            ...f,
-                            username: e.currentTarget.value,
-                        }))
-                    }
-                />
-            </div>
-            <FieldError for={inputId('username')} errors={errors().username} />
+            <Field
+                id={inputId('username')}
+                name="username"
+                label={t('form.username', 'Your Username')}
+                icon={AiOutlineTags}
+                errors={errors().username}
+                type="text"
+                autocomplete="username"
+                disabled={isDisabled()}
+                value={registerForm().username}
+                onInput={(e) =>
+                    setRegisterForm((f) => ({
+                        ...f,
+                        username: e.currentTarget.value,
+                    }))
+                }
+            />
 
-            <label class="visually-hidden" for={inputId('password')}>
-                {t('form.password', 'Your Password')}
-            </label>
-            <div class="form-group">
-                <BiRegularLock class="input-icon" />
-                <input
-                    {...errorProps('password')}
-                    class="form-style"
-                    type="password"
-                    autocomplete="new-password"
-                    disabled={isDisabled()}
-                    placeholder={t('form.password', 'Your Password')}
-                    value={registerForm().password}
-                    onInput={(e) =>
-                        setRegisterForm((f) => ({
-                            ...f,
-                            password: e.currentTarget.value,
-                        }))
-                    }
-                />
-            </div>
-            <FieldError for={inputId('password')} errors={errors().password} />
+            <Field
+                id={inputId('password')}
+                name="password"
+                label={t('form.password', 'Your Password')}
+                icon={BiRegularLock}
+                errors={errors().password}
+                type="password"
+                autocomplete="new-password"
+                disabled={isDisabled()}
+                value={registerForm().password}
+                onInput={(e) =>
+                    setRegisterForm((f) => ({
+                        ...f,
+                        password: e.currentTarget.value,
+                    }))
+                }
+            />
 
             <button
                 type="submit"
-                class="btn btn-form"
+                class="btn"
                 disabled={isDisabled()}
                 aria-busy={isDisabled()}
             >

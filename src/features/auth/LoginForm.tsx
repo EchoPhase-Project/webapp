@@ -7,8 +7,7 @@ import type { FormErrors } from '@shared/api/errors';
 import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/ErrorSummary';
-import FieldError, { errorId } from '@shared/ui/FieldError';
-import '@shared/ui/forms.scss';
+import Field from '@shared/ui/Field';
 
 const FIELDS = ['username', 'password'] as const;
 const inputId = (field: string) => `login-${field}`;
@@ -26,16 +25,6 @@ export default function LoginForm() {
     const [errors, setErrors] = createSignal<FormErrors>({});
 
     const isDisabled = () => auth.isLoading() || i18n.isLoading();
-
-    // aria wiring shared by every input: invalid state and its error list.
-    const errorProps = (field: string) => ({
-        id: inputId(field),
-        name: field,
-        'aria-invalid': !!errors()[field],
-        'aria-describedby': errors()[field]
-            ? errorId(inputId(field))
-            : undefined,
-    });
 
     async function handleLogin(e: Event) {
         e.preventDefault();
@@ -60,55 +49,45 @@ export default function LoginForm() {
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
-            <label class="visually-hidden" for={inputId('username')}>
-                {t('form.username', 'Your Username')}
-            </label>
-            <div class="form-group">
-                <FaRegularUser class="input-icon" />
-                <input
-                    {...errorProps('username')}
-                    class="form-style"
-                    type="text"
-                    autocomplete="username"
-                    placeholder={t('form.username', 'Your Username')}
-                    value={loginForm().username}
-                    disabled={isDisabled()}
-                    onInput={(e) =>
-                        setLoginForm((f) => ({
-                            ...f,
-                            username: e.currentTarget.value,
-                        }))
-                    }
-                />
-            </div>
-            <FieldError for={inputId('username')} errors={errors().username} />
+            <Field
+                id={inputId('username')}
+                name="username"
+                label={t('form.username', 'Your Username')}
+                icon={FaRegularUser}
+                errors={errors().username}
+                type="text"
+                autocomplete="username"
+                value={loginForm().username}
+                disabled={isDisabled()}
+                onInput={(e) =>
+                    setLoginForm((f) => ({
+                        ...f,
+                        username: e.currentTarget.value,
+                    }))
+                }
+            />
 
-            <label class="visually-hidden" for={inputId('password')}>
-                {t('form.password', 'Your Password')}
-            </label>
-            <div class="form-group">
-                <BiRegularLock class="input-icon" />
-                <input
-                    {...errorProps('password')}
-                    class="form-style"
-                    type="password"
-                    autocomplete="current-password"
-                    placeholder={t('form.password', 'Your Password')}
-                    value={loginForm().password}
-                    disabled={isDisabled()}
-                    onInput={(e) =>
-                        setLoginForm((f) => ({
-                            ...f,
-                            password: e.currentTarget.value,
-                        }))
-                    }
-                />
-            </div>
-            <FieldError for={inputId('password')} errors={errors().password} />
+            <Field
+                id={inputId('password')}
+                name="password"
+                label={t('form.password', 'Your Password')}
+                icon={BiRegularLock}
+                errors={errors().password}
+                type="password"
+                autocomplete="current-password"
+                value={loginForm().password}
+                disabled={isDisabled()}
+                onInput={(e) =>
+                    setLoginForm((f) => ({
+                        ...f,
+                        password: e.currentTarget.value,
+                    }))
+                }
+            />
 
             <button
                 type="submit"
-                class="btn btn-form"
+                class="btn"
                 disabled={isDisabled()}
                 aria-busy={isDisabled()}
             >

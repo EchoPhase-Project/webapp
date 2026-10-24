@@ -16,8 +16,8 @@ import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import { Table, Cell, Row } from '@shared/ui/Table';
 import ErrorSummary from '@shared/ui/ErrorSummary';
-import FieldError, { errorId } from '@shared/ui/FieldError';
-import '@shared/ui/forms.scss';
+import Field from '@shared/ui/Field';
+import './api-clients.scss';
 
 const FIELDS = ['name', 'expiresAt'] as const;
 const COLUMNS = ['name', 'expires', 'last_used', 'created', 'actions'] as const;
@@ -75,15 +75,6 @@ export default function ApiClientsPage() {
     const show = (iso: string | null) =>
         DateHelper.format(iso, user()?.timeZone, i18n.currentLocale()) || '—';
 
-    const errorProps = (field: string) => ({
-        id: inputId(field),
-        name: field,
-        'aria-invalid': !!errors()[field],
-        'aria-describedby': errors()[field]
-            ? errorId(inputId(field))
-            : undefined,
-    });
-
     async function create(e: Event) {
         e.preventDefault();
         setBusy(true);
@@ -132,41 +123,41 @@ export default function ApiClientsPage() {
         <div class="api-clients-container">
             <h1>{t('title', 'API clients')}</h1>
 
-            <form class="vert-form" onSubmit={(e) => void create(e)} noValidate>
+            <form
+                class="card vert-form api-client-form"
+                onSubmit={(e) => void create(e)}
+                noValidate
+            >
                 <h4 class="form-title">{t('form.title', 'New client')}</h4>
                 <ErrorSummary errors={errors()} inputId={inputId} />
 
-                <label for={inputId('name')}>{t('form.name', 'Name')}</label>
-                <div class="form-group">
-                    <input
-                        {...errorProps('name')}
-                        class="form-style"
-                        type="text"
-                        maxLength={64}
-                        disabled={busy()}
-                        value={name()}
-                        onInput={(e) => setName(e.currentTarget.value)}
-                    />
-                </div>
-                <FieldError for={inputId('name')} errors={errors().name} />
+                <Field
+                    id={inputId('name')}
+                    name="name"
+                    label={t('form.name', 'Name')}
+                    showLabel
+                    errors={errors().name}
+                    type="text"
+                    maxLength={64}
+                    disabled={busy()}
+                    value={name()}
+                    onInput={(e) => setName(e.currentTarget.value)}
+                />
 
-                <label for={inputId('expiresAt')}>
-                    {t('form.expires', 'Expires (optional, your local time)')}
-                </label>
-                <div class="form-group">
-                    <input
-                        {...errorProps('expiresAt')}
-                        class="form-style"
-                        type="datetime-local"
-                        min={DateHelper.toLocalInput(new Date())}
-                        disabled={busy()}
-                        value={expiresAt()}
-                        onInput={(e) => setExpiresAt(e.currentTarget.value)}
-                    />
-                </div>
-                <FieldError
-                    for={inputId('expiresAt')}
+                <Field
+                    id={inputId('expiresAt')}
+                    name="expiresAt"
+                    label={t(
+                        'form.expires',
+                        'Expires (optional, your local time)'
+                    )}
+                    showLabel
                     errors={errors().expiresAt}
+                    type="datetime-local"
+                    min={DateHelper.toLocalInput(new Date())}
+                    disabled={busy()}
+                    value={expiresAt()}
+                    onInput={(e) => setExpiresAt(e.currentTarget.value)}
                 />
 
                 <button class="btn" type="submit" disabled={busy()}>
@@ -175,7 +166,7 @@ export default function ApiClientsPage() {
             </form>
 
             <Show when={secret()}>
-                <p class="api-client-secret" role="status">
+                <p class="card api-client-secret" role="status">
                     {t('secret', 'Secret (shown once, copy it now):')}{' '}
                     <code>{secret()}</code>
                 </p>
@@ -206,7 +197,7 @@ export default function ApiClientsPage() {
                             props={{ class: 'actions' }}
                         >
                             <button
-                                class="btn"
+                                class="btn btn-icon"
                                 aria-label={t(
                                     'delete',
                                     'Delete {name}'
