@@ -1,8 +1,8 @@
-import { createRenderEffect } from 'solid-js';
+import { createRenderEffect, createResource, createSignal } from 'solid-js';
 import { useRootMeta } from '@lib/root';
 import { Component } from 'solid-js';
 import { Table, Cell, Row } from '@components/Table';
-import { SessionProvider, useSession } from '@lib/api';
+import { api, send, useAuth } from '@lib/api';
 import type { Session } from '@lib/api';
 import { AiOutlineClose } from 'solid-icons/ai';
 import { useLocalizer } from '@lib/i18n';
@@ -28,10 +28,43 @@ const parseUserAgent = (
         .replace('{os}', os);
 };
 
-function Sessions() {
+/** The signed-in user's sessions, fetched by this page only. */
+export default function SessionsPage() {
     const { setTitle, setDescription } = useRootMeta();
-    const { sessions, revokeSession, revokeAllSessions, isLoading } =
-        useSession();
+    const { isAuthenticated } = useAuth();
+    const [busy, setBusy] = createSignal(false);
+
+    const [sessions, { refetch }] = createResource(
+        isAuthenticated,
+        async (): Promise<Session[]> => {
+            const result = await send(api.GET('/api/v1/sessions'));
+            return result.ok ? result.data.data : [];
+        }
+    );
+
+    const revoking = async (call: () => Promise<unknown>) => {
+        setBusy(true);
+        try {
+            await call();
+            await refetch();
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const revokeSession = (id: string) =>
+        revoking(() =>
+            send(
+                api.DELETE('/api/v1/sessions/{id}', {
+                    params: { path: { id } },
+                })
+            )
+        );
+
+    const revokeAllSessions = () =>
+        revoking(() => send(api.DELETE('/api/v1/sessions')));
+
+    const isLoading = () => busy() || sessions.loading;
     const t = useLocalizer('sessions');
 
     createRenderEffect(() => {
@@ -39,7 +72,7 @@ function Sessions() {
         setDescription(t('description', 'List of current active sessions.'));
     });
 
-    const data = (): Session[] => sessions()?.data ?? [];
+    const data = (): Session[] => sessions() ?? [];
 
     const headers = () => [
         t('columns.device', 'Device'),
@@ -89,14 +122,5 @@ function Sessions() {
                 )}
             />
         </div>
-    );
-}
-
-/** Sessions are fetched here only, not on every page of the app. */
-export default function SessionsPage() {
-    return (
-        <SessionProvider>
-            <Sessions />
-        </SessionProvider>
     );
 }

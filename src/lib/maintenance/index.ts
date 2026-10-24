@@ -2,10 +2,12 @@ import { createOutageWatch } from './outage';
 
 export * from './outage';
 
-const original = globalThis.fetch.bind(globalThis);
+// Looked up on each call, not captured at load: tests stub the global.
+const platformFetch: typeof fetch = (input, init) =>
+    globalThis.fetch(input, init);
 
 const watch = createOutageWatch({
-    fetch: original,
+    fetch: platformFetch,
     setTimeout: (run, ms) => globalThis.setTimeout(run, ms),
     clearTimeout: (handle) =>
         globalThis.clearTimeout(handle as ReturnType<typeof setTimeout>),
@@ -18,14 +20,8 @@ export const outage = watch.outage;
 
 export const retryNow = watch.retryNow;
 
-let installed = false;
-
 /**
- * Puts the watch in front of fetch, once, before the app makes its first
- * call: every provider and page keeps calling fetch as it does.
+ * fetch with the outage watch in front: the API client sends everything
+ * through it, so an outage shows as one screen, not as each page failing.
  */
-export function watchApi() {
-    if (installed) return;
-    installed = true;
-    globalThis.fetch = watch.watch(original);
-}
+export const watchedFetch = watch.watch(platformFetch);

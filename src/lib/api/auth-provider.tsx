@@ -12,9 +12,11 @@ import type {
     RegisterData,
     ProfileUpdate,
     ErrorItem,
-} from '@lib/api';
+} from './types';
 import { CsrfService } from '@lib/csrf';
-import { readErrors } from './errors';
+import { api, send, type ApiResult } from './client';
+
+type Outcome = { success: boolean; error?: ErrorItem[] };
 
 interface AuthContextValue {
     /** undefined while loading, null when signed out. */
@@ -24,200 +26,90 @@ interface AuthContextValue {
         User | null | undefined | Promise<User | null | undefined>;
     isAuthenticated: Accessor<boolean>;
     isLoading: Accessor<boolean>;
-    csrfToken: Accessor<string | null>;
-    refetchCsrf: () => Promise<string | null>;
-    login: (
-        credentials: LoginCredentials
-    ) => Promise<{ success: boolean; error?: ErrorItem[] }>;
-    register: (
-        data: RegisterData
-    ) => Promise<{ success: boolean; error?: ErrorItem[] }>;
-    updateProfile: (
-        data: ProfileUpdate
-    ) => Promise<{ success: boolean; error?: ErrorItem[] }>;
+    login: (credentials: LoginCredentials) => Promise<Outcome>;
+    register: (data: RegisterData) => Promise<Outcome>;
+    updateProfile: (data: ProfileUpdate) => Promise<Outcome>;
     logout: () => Promise<void>;
-    addCsrfToken: () => Record<string, string>;
-    hasCsrfToken: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>();
 
+const outcome = (result: ApiResult<unknown>): Outcome =>
+    result.ok ? { success: true } : { success: false, error: result.errors };
+
 export const AuthProvider: ParentComponent = (props) => {
     const [isLoading, setIsLoading] = createSignal(false);
 
-    const fetchMe = async (): Promise<User | null> => {
-        const res = await fetch(`/api/v1/auth/me`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (!res.ok) return null;
-        return res.json();
-    };
-
     const [user, { refetch: refetchUser, mutate: setUser }] =
-        createResource<User | null>(fetchMe);
+        createResource<User | null>(async () => {
+            const result = await send(api.GET('/api/v1/auth/me'));
+            return result.ok ? result.data : null;
+        });
 
     const isAuthenticated = () => !!user();
 
-    const fetchRoles = async (): Promise<string[] | null> => {
-        if (!isAuthenticated()) return null;
-        const res = await fetch(`/api/v1/roles/me`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (!res.ok) return null;
-        return res.json();
-    };
-
-    const [roles, { refetch: refetchRoles }] = createResource<
-        string[] | null,
-        boolean
-    >(() => isAuthenticated(), fetchRoles);
-
-    const [csrfToken, setCsrfToken] = createSignal<string | null>(
-        CsrfService.getToken()
+    const [roles, { refetch: refetchRoles }] = createResource(
+        isAuthenticated,
+        async (): Promise<string[] | null> => {
+            const result = await send(api.GET('/api/v1/roles/me'));
+            return result.ok ? result.data : null;
+        }
     );
 
-    const refetchCsrf = async (): Promise<string | null> => {
-        CsrfService.clearToken();
-        setCsrfToken(null);
-        return null;
-    };
-
-    const addCsrfToken = (): Record<string, string> => {
-        const t = csrfToken();
-        if (!t) throw new Error('CSRF token is not available.');
-        return { [CsrfService.HEADER]: t };
-    };
-
-    const hasCsrfToken = () => csrfToken() !== null;
-
-    const signedIn = async (res: Response) => {
-        const token = res.headers.get(CsrfService.HEADER);
-        if (token) {
-            CsrfService.saveToken(token);
-            setCsrfToken(token);
-        }
-        await refetchUser();
-        await refetchRoles();
-    };
-
-    const login = async (credentials: LoginCredentials) => {
+    const busy = async <T,>(work: () => Promise<T>): Promise<T> => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
-            const res = await fetch(`/api/v1/auth/login`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(credentials),
-            });
-            if (res.ok) {
-                await signedIn(res);
-                return { success: true };
-            } else {
-                return { success: false, error: await readErrors(res) };
-            }
-        } catch {
-            return {
-                success: false,
-                error: [
-                    {
-                        code: 'network_error',
-                        message: 'Network error occurred',
-                    },
-                ],
-            };
+            return await work();
         } finally {
             setIsLoading(false);
         }
     };
 
-    const register = async (data: RegisterData) => {
-        try {
-            setIsLoading(true);
-            const res = await fetch(`/api/v1/auth/register`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            if (res.ok) {
-                // Registering also signs in: same cookies and CSRF token as login.
-                await signedIn(res);
-                return { success: true };
-            } else {
-                return { success: false, error: await readErrors(res) };
-            }
-        } catch {
-            return {
-                success: false,
-                error: [
-                    {
-                        code: 'network_error',
-                        message: 'Network error occurred',
-                    },
-                ],
-            };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Changes the signed-in user's name and/or time zone; omitted fields stay.
-    const updateProfile = async (data: ProfileUpdate) => {
-        try {
-            setIsLoading(true);
-            const res = await fetch(`/api/v1/auth/me`, {
-                method: 'PATCH',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...addCsrfToken(),
-                },
-                body: JSON.stringify(data),
-            });
-            if (!res.ok)
-                return { success: false, error: await readErrors(res) };
-            setUser((await res.json()) as User);
-            return { success: true };
-        } catch {
-            return {
-                success: false,
-                error: [
-                    {
-                        code: 'network_error',
-                        message: 'Network error occurred',
-                    },
-                ],
-            };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const logout = async () => {
-        try {
-            setIsLoading(true);
-            // Revokes this device's session and clears the token cookies.
-            await fetch(`/api/v1/sessions/current`, {
-                method: 'DELETE',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...addCsrfToken(),
-                },
-            });
-        } catch (err) {
-            console.error('Logout failed:', err);
-        } finally {
+    // The CSRF token comes with the answer (the client keeps it).
+    const signedIn = async (result: ApiResult<unknown>) => {
+        if (result.ok) {
             await refetchUser();
             await refetchRoles();
-            await refetchCsrf();
-            setIsLoading(false);
         }
+        return outcome(result);
     };
+
+    const login = (credentials: LoginCredentials) =>
+        busy(async () =>
+            signedIn(
+                await send(
+                    api.POST('/api/v1/auth/login', { body: credentials })
+                )
+            )
+        );
+
+    // Registering also signs in: same cookies and CSRF token as login.
+    const register = (data: RegisterData) =>
+        busy(async () =>
+            signedIn(
+                await send(api.POST('/api/v1/auth/register', { body: data }))
+            )
+        );
+
+    // Changes the signed-in user's name and/or time zone; omitted fields stay.
+    const updateProfile = (data: ProfileUpdate) =>
+        busy(async () => {
+            const result = await send(
+                api.PATCH('/api/v1/auth/me', { body: data })
+            );
+            if (result.ok) setUser(result.data);
+            return outcome(result);
+        });
+
+    const logout = () =>
+        busy(async () => {
+            // Revokes this device's session and clears the token cookies.
+            const result = await send(api.DELETE('/api/v1/sessions/current'));
+            if (!result.ok) console.error('Logout failed:', result.errors);
+            CsrfService.clearToken();
+            await refetchUser();
+            await refetchRoles();
+        });
 
     const value: AuthContextValue = {
         user,
@@ -225,14 +117,10 @@ export const AuthProvider: ParentComponent = (props) => {
         refetchUser,
         isAuthenticated,
         isLoading,
-        csrfToken,
-        refetchCsrf,
         login,
         register,
         updateProfile,
         logout,
-        addCsrfToken,
-        hasCsrfToken,
     };
 
     return (

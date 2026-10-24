@@ -8,7 +8,7 @@ import {
     type Accessor,
     type ParentComponent,
 } from 'solid-js';
-import { useAuth } from '@lib/api';
+import { api, send as call, untyped, useAuth } from '@lib/api';
 import {
     Op,
     type GatewayIntent,
@@ -71,19 +71,14 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
 
     // Only the intents the token may have: asking for others is an error.
     const allowedIntents = async (): Promise<string[]> => {
-        try {
-            const res = await fetch('/api/v1/gateway/intents', {
-                credentials: 'include',
-            });
-            if (!res.ok) return [];
-            const all = (await res.json()) as GatewayIntent[];
-            const allowed = new Set(
-                all.filter((i) => i.allowed).map((i) => i.name)
-            );
-            return wantedIntents().filter((name) => allowed.has(name));
-        } catch {
-            return [];
-        }
+        const result = untyped<GatewayIntent[]>(
+            await call(api.GET('/api/v1/gateway/intents'))
+        );
+        if (!result.ok) return [];
+        const allowed = new Set(
+            result.data.filter((i) => i.allowed).map((i) => i.name)
+        );
+        return wantedIntents().filter((name) => allowed.has(name));
     };
 
     const stopTimers = () => {
@@ -157,10 +152,10 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
             retryTimer = window.setTimeout(async () => {
                 // Refreshes an expired access token through the refresh
                 // cookie; a 401 means the session is over.
-                const me = await fetch('/api/v1/auth/me', {
-                    credentials: 'include',
-                }).catch(() => undefined);
-                if (me?.status === 401) {
+                const me = await api
+                    .GET('/api/v1/auth/me')
+                    .catch(() => undefined);
+                if (me?.response.status === 401) {
                     await auth.refetchUser();
                     return;
                 }

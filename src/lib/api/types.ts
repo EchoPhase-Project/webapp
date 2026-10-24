@@ -38,3 +38,9 @@ export interface ApiClient {
     SecretRotatedAt: string | null;
     CreatedAt: string;
 }
+
+/** The answer to creating an API client; the secret is shown this once. Not in the OpenAPI document. */
+export interface CreatedApiClient {
+    clientId: string;
+    clientSecret: string;
+}

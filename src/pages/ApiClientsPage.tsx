@@ -7,8 +7,8 @@ import {
 } from 'solid-js';
 import { AiOutlineClose } from 'solid-icons/ai';
 import { useRootMeta } from '@lib/root';
-import { groupErrors, readErrors, useAuth } from '@lib/api';
-import type { ApiClient, ErrorItem, FormErrors } from '@lib/api';
+import { api, groupErrors, send, untyped, useAuth } from '@lib/api';
+import type { ApiClient, CreatedApiClient, FormErrors } from '@lib/api';
 import { DateHelper } from '@lib/date';
 import { useI18n, useLocalizer } from '@lib/i18n';
 import { Table, Cell, Row } from '@components/Table';
@@ -26,9 +26,6 @@ const COLUMN_TEXT: Record<(typeof COLUMNS)[number], string> = {
     actions: 'Actions',
 };
 const inputId = (field: string) => `api-client-${field}`;
-const networkError: ErrorItem[] = [
-    { code: 'network_error', message: 'Network error occurred' },
-];
 
 const NoClientsPlaceholder: Component = () => {
     const t = useLocalizer('api-clients');
@@ -37,7 +34,7 @@ const NoClientsPlaceholder: Component = () => {
 
 export default function ApiClientsPage() {
     const { setTitle, setDescription } = useRootMeta();
-    const { user, isAuthenticated, addCsrfToken } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const i18n = useI18n();
     const t = useLocalizer('api-clients');
 
@@ -54,10 +51,10 @@ export default function ApiClientsPage() {
     const [clients, { refetch }] = createResource(
         isAuthenticated,
         async (): Promise<ApiClient[]> => {
-            const res = await fetch('/api/v1/api-clients', {
-                credentials: 'include',
-            });
-            return res.ok ? res.json() : [];
+            const result = untyped<ApiClient[]>(
+                await send(api.GET('/api/v1/api-clients'))
+            );
+            return result.ok ? result.data : [];
         }
     );
 
@@ -89,31 +86,26 @@ export default function ApiClientsPage() {
         setBusy(true);
         setSecret(null);
         try {
-            const res = await fetch('/api/v1/api-clients', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...addCsrfToken(),
-                },
-                // The API takes moments with Z or an offset only: send UTC.
-                body: JSON.stringify({
-                    name: name(),
-                    expiresAt: DateHelper.fromLocalInput(expiresAt()),
-                }),
-            });
-            if (!res.ok) {
-                setErrors(groupErrors(await readErrors(res), FIELDS));
+            const result = untyped<CreatedApiClient>(
+                await send(
+                    api.POST('/api/v1/api-clients', {
+                        // The API takes moments with Z or an offset only: send UTC.
+                        body: {
+                            name: name(),
+                            expiresAt: DateHelper.fromLocalInput(expiresAt()),
+                        },
+                    })
+                )
+            );
+            if (!result.ok) {
+                setErrors(groupErrors(result.errors, FIELDS));
                 return;
             }
-            const created = await res.json();
             setErrors({});
             setName('');
             setExpiresAt('');
-            setSecret(created.clientSecret);
+            setSecret(result.data.clientSecret);
             await refetch();
-        } catch {
-            setErrors(groupErrors(networkError, FIELDS));
         } finally {
             setBusy(false);
         }
@@ -122,11 +114,11 @@ export default function ApiClientsPage() {
     async function remove(id: string) {
         setBusy(true);
         try {
-            await fetch(`/api/v1/api-clients/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-                headers: { ...addCsrfToken() },
-            });
+            await send(
+                api.DELETE('/api/v1/api-clients/{id}', {
+                    params: { path: { id } },
+                })
+            );
             await refetch();
         } finally {
             setBusy(false);
