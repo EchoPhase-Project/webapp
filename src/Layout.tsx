@@ -3,6 +3,7 @@ import type { ParentProps } from 'solid-js';
 import { useNav, NavBuilder } from '@lib/nav';
 import { Header } from '@/components/Header';
 import RealtimeNotices from '@/components/RealtimeNotices';
+import MaintenanceScreen from '@/components/MaintenanceScreen';
 import '@styles/global.scss';
 
 const Layout: Component<ParentProps> = (props) => {
@@ -21,6 +22,8 @@ const Layout: Component<ParentProps> = (props) => {
             <main>{props.children}</main>
 
             <RealtimeNotices />
+
+            <MaintenanceScreen />
         </div>
     );
 };

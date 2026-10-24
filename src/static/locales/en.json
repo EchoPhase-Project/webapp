@@ -25,5 +25,17 @@
       "title": "Discord gateway stopped"
     },
     "dismiss": "Dismiss"
+  },
+  "outage": {
+    "maintenance": {
+      "title": "Under maintenance",
+      "text": "EchoPhase is being updated. We will be back shortly."
+    },
+    "unavailable": {
+      "title": "Can't reach EchoPhase",
+      "text": "The service is not responding right now."
+    },
+    "auto": "This page comes back by itself when the service does.",
+    "retry": "Try now"
   }
 }

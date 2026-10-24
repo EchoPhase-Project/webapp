@@ -88,6 +88,12 @@ http {
 			proxy_connect_timeout 10s;
 			proxy_send_timeout 30s;
 			proxy_read_timeout 30s;
+
+			# The server unreachable or too slow: nginx's own 502/504 become
+			# the API's kind of error, which the webapp shows as an outage.
+			# Errors the server itself returns pass through untouched (no
+			# proxy_intercept_errors), its maintenance 503 included.
+			error_page 502 504 = @api_unavailable;
 		}
 
 		location /gateway/ {
@@ -112,6 +118,13 @@ http {
 			
 			proxy_buffering off;
 			proxy_cache off;
+		}
+
+		location @api_unavailable {
+			default_type application/json;
+			add_header Retry-After 30 always;
+			add_header Cache-Control "no-store" always;
+			return 503 '{"code":"Unavailable","message":"EchoPhase is not responding. Please try again shortly.","field":null}';
 		}
         
         location ~* \.(js|css|woff2?|ttf|otf|svg|png|jpg|ico)$ {
