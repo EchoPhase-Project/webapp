@@ -1,4 +1,4 @@
-import { createSignal, type Accessor } from 'solid-js';
+import { createSignal } from 'solid-js';
 
 /**
  * The service being away: under maintenance (the server says so, 503 with
@@ -194,7 +194,7 @@ export function createOutageWatch(deps: OutageWatchDeps) {
         };
 
     return {
-        outage: outage as Accessor<Outage | null>,
+        outage: outage,
         watch,
         /** Look now instead of waiting (the "Try now" button). */
         retryNow: () => void check(),

@@ -105,7 +105,8 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
         ws.onmessage = (message) => {
             let data: ProtocolMessage | RealtimeEvent;
             try {
-                data = JSON.parse(message.data as string);
+                data = JSON.parse(message.data as string) as
+                    ProtocolMessage | RealtimeEvent;
             } catch {
                 return;
             }
@@ -132,7 +133,7 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
                 return;
             }
 
-            const event = data as RealtimeEvent;
+            const event = data;
             if (typeof event.type === 'string') dispatch(event);
         };
 
@@ -193,7 +194,7 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
         let set = handlers.get(type);
         if (!set) handlers.set(type, (set = new Set()));
         set.add(handler);
-        return () => set!.delete(handler);
+        return () => set.delete(handler);
     };
 
     return (

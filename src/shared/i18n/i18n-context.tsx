@@ -14,7 +14,7 @@ export interface Translations {
 interface I18nContextType {
     currentLocale: () => string;
     translations: () => Translations | undefined;
-    setLocale: (locale: string) => Promise<void>;
+    setLocale: (locale: string) => void;
     t: (key: string, fallback?: string) => string;
     availableLocales: () => { code: string; nativeName: string }[] | undefined;
     isLoading: () => boolean;
@@ -185,7 +185,7 @@ export function I18nProvider(props: { children: JSX.Element }) {
         return loadFile(namespaceLoaders, `${namespace}.${locale}`);
     }
 
-    async function setLocale(locale: string): Promise<void> {
+    function setLocale(locale: string): void {
         if (!globalLoaders[locale]) {
             console.warn(
                 `Locale "${locale}" not supported, fallback to '${defaultLocale}'`

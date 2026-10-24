@@ -13,7 +13,7 @@ function levenshteinLimited(a: string, b: string, maxDist: number): number {
 
     if (Math.abs(lenA - lenB) > maxDist) return maxDist + 1;
 
-    const dp = new Array(lenB + 1);
+    const dp = new Array<number>(lenB + 1);
     for (let j = 0; j <= lenB; j++) {
         dp[j] = j;
     }
@@ -223,7 +223,7 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                         ? searchTerm()
                         : (selectedOption()?.label ?? 'Select')}
                 </span>
-                <i class="uil uil-arrow-down"></i>
+                <i class="uil uil-arrow-down" />
             </div>
 
             {isOpen() && (

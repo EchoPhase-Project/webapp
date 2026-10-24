@@ -26,13 +26,37 @@ build leaves them out.
 | Task                                                      | What                                                                             |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `contract:pull [--version v]`                             | download the server's API contract (`./api-version`) to `artifacts/openapi.json` |
-| `gen:api`                                                 | regenerate `src/shared/api/schema.d.ts` from it                                     |
+| `gen:api`                                                 | regenerate `src/shared/api/schema.d.ts` from it                                  |
 | `check`                                                   | contract types up to date, `tsc`, ESLint, tests, build                           |
-| `test`, `test:coverage`                                   | Vitest unit tests (`src/**/*.test.ts`); coverage to `artifacts/coverage`         |
+| `test`, `test:coverage`                                   | Vitest tests (`src/**/*.test.ts[x]`); coverage to `artifacts/coverage`           |
 | `coverage:html`                                           | the same as a browsable report: `artifacts/coverage/index.html`                  |
 | `docker:build`, `docker:push [--tag t]`, `docker:publish` | the webapp image                                                                 |
 | `image-tag`, `docker:info`                                | this checkout's image tag                                                        |
 | `ci:image`, `ci:run`                                      | Woodpecker step image, manual pipeline run                                       |
+
+### Layout of `src/`
+
+| Folder             | What                                                                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`             | entry (`main.tsx`), `Root` (head), `Layout`, routes and providers                                                                              |
+| `features/<name>/` | one feature each: its pages, components, styles and tests (`auth`, `home`, `sessions`, `api-clients`, `realtime`, `maintenance`)               |
+| `shared/`          | what features share: `api/` (typed client, auth, outage watch), `i18n/`, `theme/`, `nav/`, `ui/`, `lib/`, `styles/`, `testing/` (test helpers) |
+| `dev/`             | pages for trying out components, dev server only                                                                                               |
+| `static/`          | fonts, icons, and the translations (`locales/`, written by Weblate)                                                                            |
+
+Imports go through the aliases `@app/`, `@features/`, `@shared/`, `@dev/`,
+`@static/` (tsconfig `paths`, which Vite reads), or `./` within a folder.
+ESLint keeps the layers apart: a feature imports `shared/` and itself, never
+another feature (move what two need into `shared/`); `shared/` imports no
+feature.
+
+The API is called through `api` in `shared/api/client.ts` (openapi-fetch over
+`schema.d.ts`): paths, parameters and bodies are checked against the contract,
+the CSRF token and cookies go along, and `send()` turns an answer into
+`{ ok, data }` or `{ ok, errors }`.
+
+Tests sit next to what they test (`*.test.ts[x]`). Component tests render with
+`renderPage` and answer API calls with `fakeApi` (`shared/testing/`), in jsdom.
 
 ### The API contract
 

@@ -96,7 +96,7 @@ export class Spin {
 
         info.__moveHandler__ = moveHandler as EventListener;
         info.__leaveHandler__ = leaveHandler as EventListener;
-        info.__enterHandler__ = enterHandler as EventListener;
+        info.__enterHandler__ = enterHandler;
 
         el.addEventListener('mouseenter', enterHandler);
 

@@ -16,7 +16,12 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             include: ['src/**/*.{ts,tsx}'],
-            exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts', 'src/dev/**'],
+            exclude: [
+                'src/**/*.test.{ts,tsx}',
+                'src/**/*.d.ts',
+                'src/dev/**',
+                'src/shared/testing/**',
+            ],
             reporter: ['text-summary', 'lcov', 'html'],
             reportsDirectory: 'artifacts/coverage',
         },

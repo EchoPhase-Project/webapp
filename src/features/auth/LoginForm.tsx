@@ -53,7 +53,11 @@ export default function LoginForm() {
     }
 
     return (
-        <form class="vert-form" onSubmit={handleLogin} noValidate>
+        <form
+            class="vert-form"
+            onSubmit={(e) => void handleLogin(e)}
+            noValidate
+        >
             <h4 class="form-title">{t('login', 'Log In')}</h4>
 
             <ErrorSummary errors={errors()} inputId={inputId} />

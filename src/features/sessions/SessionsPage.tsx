@@ -87,7 +87,7 @@ export default function SessionsPage() {
                 <button
                     class="btn"
                     disabled={isLoading() || data().length === 0}
-                    onClick={revokeAllSessions}
+                    onClick={() => void revokeAllSessions()}
                 >
                     {t('revoke_all', 'Revoke All')}
                 </button>
@@ -113,7 +113,9 @@ export default function SessionsPage() {
                                     class="btn"
                                     disabled={isLoading()}
                                     aria-label={t('revoke', 'Revoke session')}
-                                    onClick={() => revokeSession(session.id)}
+                                    onClick={() =>
+                                        void revokeSession(session.id)
+                                    }
                                 >
                                     <AiOutlineClose />
                                 </button>

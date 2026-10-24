@@ -68,7 +68,7 @@ export default function HomePage() {
                 icon: AiOutlineInfoCircle,
                 text: t('nav.logout', 'Logout'),
                 events: {
-                    onClick: () => logout(),
+                    onClick: () => void logout(),
                 },
             },
         ]);

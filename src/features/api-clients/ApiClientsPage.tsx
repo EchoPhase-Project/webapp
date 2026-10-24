@@ -132,7 +132,7 @@ export default function ApiClientsPage() {
         <div class="api-clients-container">
             <h1>{t('title', 'API clients')}</h1>
 
-            <form class="vert-form" onSubmit={create} noValidate>
+            <form class="vert-form" onSubmit={(e) => void create(e)} noValidate>
                 <h4 class="form-title">{t('form.title', 'New client')}</h4>
                 <ErrorSummary errors={errors()} inputId={inputId} />
 
@@ -212,7 +212,7 @@ export default function ApiClientsPage() {
                                     'Delete {name}'
                                 ).replace('{name}', client.Name)}
                                 disabled={busy()}
-                                onClick={() => remove(client.Id)}
+                                onClick={() => void remove(client.Id)}
                             >
                                 <AiOutlineClose />
                             </button>

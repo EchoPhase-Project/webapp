@@ -86,11 +86,17 @@ function harness(status: () => Response | Promise<Response>) {
     let statusCalls = 0;
     const watch = createOutageWatch({
         fetch: async (input) => {
-            if (String(input) === StatusUrl) {
+            const url =
+                typeof input === 'string'
+                    ? input
+                    : input instanceof URL
+                      ? input.href
+                      : input.url;
+            if (url === StatusUrl) {
                 statusCalls++;
                 return status();
             }
-            throw new Error(`unexpected ${String(input)}`);
+            throw new Error(`unexpected ${url}`);
         },
         setTimeout: (run, ms) => timers.push({ run, ms }),
         clearTimeout: () => timers.splice(0),

@@ -59,7 +59,11 @@ export default function RegisterForm() {
     }
 
     return (
-        <form class="vert-form" onSubmit={handleRegister} noValidate>
+        <form
+            class="vert-form"
+            onSubmit={(e) => void handleRegister(e)}
+            noValidate
+        >
             <h4 class="form-title">{t('signup', 'Sign Up')}</h4>
 
             <ErrorSummary errors={errors()} inputId={inputId} />

@@ -1,60 +1,122 @@
+import fs from 'node:fs';
 import js from '@eslint/js';
 import globals from 'globals';
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsparser from '@typescript-eslint/parser';
-import solidPlugin from 'eslint-plugin-solid';
+import tseslint from 'typescript-eslint';
+import solid from 'eslint-plugin-solid/configs/typescript';
 import { defineConfig } from 'eslint/config';
 
+// Who may import whom: app wires everything; a feature uses shared code and
+// itself, never another feature; shared code knows no feature. Paths go
+// through the aliases (@app, @features, @shared, @dev), or ./ in one folder.
+const layer = (message, ...group) => ({ group, message });
+const noParent = layer(
+    'Import through an alias (@shared/..., @features/...), not ../',
+    '../*'
+);
+const features = fs.readdirSync('src/features');
+
 export default defineConfig([
-    {
-        files: ['**/*.{js,mjs,cjs,ts,mts,cts,tsx}'],
-        plugins: { js },
-        extends: ['js/recommended'],
-        languageOptions: {
-            globals: globals.browser,
-            parser: tsparser,
-            parserOptions: {
-                ecmaVersion: 2021,
-                sourceType: 'module',
-                ecmaFeatures: { jsx: true },
-            },
-        },
-    },
+    { ignores: ['src/shared/api/schema.d.ts'] },
+
+    js.configs.recommended,
+    tseslint.configs.recommendedTypeChecked,
+    solid,
 
     {
-        files: ['**/*.{ts,mts,cts,tsx}'],
-        plugins: { '@typescript-eslint': tseslint },
+        files: ['src/**/*.{ts,tsx}'],
         languageOptions: {
-            parser: tsparser,
+            globals: globals.browser,
             parserOptions: {
-                ecmaVersion: 2021,
-                sourceType: 'module',
-                ecmaFeatures: { jsx: true },
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
             },
         },
         rules: {
-            ...tseslint.configs.recommended.rules,
             // TypeScript checks undefined names itself; the core rule does not
             // know types such as EventListener (typescript-eslint's advice).
             'no-undef': 'off',
-        },
-    },
-
-    {
-        files: ['**/*.{tsx,ts}'],
-        plugins: { solid: solidPlugin },
-        rules: {
-            'solid/reactivity': 'warn',
-            'solid/jsx-no-undef': 'error',
+            'solid/reactivity': 'error',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+            ],
+            'no-restricted-imports': ['error', { patterns: [noParent] }],
         },
     },
 
     {
         // `let el; <div ref={el} />`: Solid's compiler assigns refs, which
         // ESLint 10's no-unassigned-vars cannot see.
-        files: ['**/*.tsx'],
+        files: ['src/**/*.tsx'],
+        rules: { 'no-unassigned-vars': 'off' },
+    },
+
+    {
+        files: ['src/shared/**'],
         rules: {
-            'no-unassigned-vars': 'off',
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        noParent,
+                        layer(
+                            'Shared code cannot depend on app, features or dev pages.',
+                            '@app/*',
+                            '@features/*',
+                            '@dev/*'
+                        ),
+                    ],
+                },
+            ],
+        },
+    },
+
+    ...features.map((feature) => ({
+        files: [`src/features/${feature}/**`],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        noParent,
+                        layer(
+                            'A feature uses shared code and itself; move what two features need to src/shared.',
+                            '@app/*',
+                            '@dev/*',
+                            '@features/*',
+                            `!@features/${feature}/*`
+                        ),
+                    ],
+                },
+            ],
+        },
+    })),
+
+    {
+        files: ['src/dev/**'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        noParent,
+                        layer(
+                            'Dev pages try out shared code only.',
+                            '@app/*',
+                            '@features/*'
+                        ),
+                    ],
+                },
+            ],
+        },
+    },
+
+    {
+        // Tests stub and poke at things on purpose.
+        files: ['src/**/*.test.{ts,tsx}'],
+        rules: {
+            '@typescript-eslint/unbound-method': 'off',
+            '@typescript-eslint/no-non-null-assertion': 'off',
         },
     },
 ]);
