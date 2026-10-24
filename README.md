@@ -11,7 +11,10 @@ The image reads its settings from the environment at start:
 (GlitchTip's host:port, a full name such as
 `glitchtip.monitoring.svc.cluster.local:80`) and `ERRORS_PROJECT` (its project
 id). Browsers send reports to `/errors` on the webapp itself, so GlitchTip
-needs no public address.
+needs no public address. Visit statistics go to Umami the same way:
+`UMAMI_WEBSITE_ID` (empty: no tracker loaded) and `UMAMI_UPSTREAM` (its
+host:port, a full name); the tracker and its reports use `/stats/` on the
+webapp, without cookies and honouring Do Not Track.
 
 Run it with the rest of EchoPhase: [charts](https://github.com/EchoPhase-Project/charts)
 (Helm, Docker Compose); the image is `ghcr.io/echophase-project/webapp`.
