@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '@styles/utils.scss' as utils;
+@use 'utils' as utils;
 
 $button-bg-primary: #ffeba7;
 $button-bg-primary-rgb: utils.hex-to-rgb($button-bg-primary);

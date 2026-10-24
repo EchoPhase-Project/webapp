@@ -1,22 +1,12 @@
 import { defineConfig } from 'vitest/config';
 import solidPlugin from 'vite-plugin-solid';
-import path from 'path';
 
-// Separate from vite.config.ts: the build's plugins (lib index generation,
-// formatting, compression, sitemap) have no place in a test run.
-const src = (...p: string[]) => path.resolve(import.meta.dirname, 'src', ...p);
-
+// Separate from vite.config.ts: compression and the bundle report have no
+// place in a test run.
 export default defineConfig({
     plugins: [solidPlugin()],
     resolve: {
-        alias: {
-            '@': src(),
-            '@lib': src('lib'),
-            '@forms': src('forms'),
-            '@styles': src('styles'),
-            '@static': src('static'),
-            '@components': src('components'),
-        },
+        tsconfigPaths: true,
     },
     test: {
         // Plain logic by default; vite-plugin-solid would otherwise ask for
@@ -26,7 +16,7 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             include: ['src/**/*.{ts,tsx}'],
-            exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
+            exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts', 'src/dev/**'],
             reporter: ['text-summary', 'lcov', 'html'],
             reportsDirectory: 'artifacts/coverage',
         },

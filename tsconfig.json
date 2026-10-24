@@ -24,7 +24,6 @@
       "@forms/*": ["./src/forms/*"],
       "@styles/*": ["./src/styles/*"],
       "@static/*": ["./src/static/*"],
-      "@shaders/*": ["./src/shaders/*"],
       "@assets/*": ["./src/static/assets/*"],
       "@components/*": ["./src/components/*"]
     }

@@ -2,7 +2,7 @@
 // 500, 600 and bold are the real cuts, not the regular one thickened.
 @font-face {
   font-family: 'Inter';
-  src: url('@static/fonts/InterVariable.woff2') format('woff2');
+  src: url('../static/fonts/InterVariable.woff2') format('woff2');
   font-display: swap;
   font-style: normal;
   font-weight: 100 900;
@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: 'Inter';
-  src: url('@static/fonts/InterVariable-Italic.woff2') format('woff2');
+  src: url('../static/fonts/InterVariable-Italic.woff2') format('woff2');
   font-display: swap;
   font-style: italic;
   font-weight: 100 900;
@@ -20,8 +20,8 @@
   font-family: 'Fira Code';
   src:
     local('Fira Code'),
-    url('@static/fonts/FiraCode.woff2') format('woff2'),
-    url('@static/fonts/FiraCode.ttf') format('truetype');
+    url('../static/fonts/FiraCode.woff2') format('woff2'),
+    url('../static/fonts/FiraCode.ttf') format('truetype');
   font-display: swap;
   font-style: normal;
   font-weight: normal;
@@ -220,7 +220,7 @@ select {
   font-size: 0.85em;
   padding: 0.75em 4em 0.75em 0.75em;
   background:
-    url('@assets/svg/arrow.svg') no-repeat right 0.8em center / 1.4em,
+    url('../static/assets/svg/arrow.svg') no-repeat right 0.8em center / 1.4em,
     linear-gradient(
       to left,
       rgba(var(--text-primary-rgb), 0.3) 3em,

@@ -50,5 +50,5 @@ description = "Unit tests with coverage: artifacts/coverage/lcov.info"
 run = "npx --no-install vitest run --coverage"
 
 [dev]
-description = "Vite dev server (proxies the API, see vite.config.ts)"
+description = "Vite dev server; proxies /api to API_TARGET (default http://localhost:8080)"
 run = "npm run dev"

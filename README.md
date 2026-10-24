@@ -1,8 +1,9 @@
 # EchoPhase webapp
 
 The web client of [EchoPhase](https://github.com/EchoPhase-Project/server)
-(SolidJS + Vite), served by nginx, which also proxies `/api` and `/gateway` to
-the server (`API_UPSTREAM`, default `echophase:8080`).
+(SolidJS + Vite), served by nginx, which also proxies `/api` (the realtime
+gateway socket, `/api/v1/gateway`, included) to the server (`API_UPSTREAM`,
+default `echophase:8080`).
 
 Run it with the rest of EchoPhase: [charts](https://github.com/EchoPhase-Project/charts)
 (Helm, Docker Compose); the image is `ghcr.io/echophase-project/webapp`.
@@ -14,8 +15,13 @@ Tools and tasks are defined for [mise](https://mise.jdx.dev):
 ```bash
 mise install --locked          # Node, oras, woodpecker-cli as in mise.lock
 mise run install               # npm ci
-mise run dev                   # Vite dev server
+mise run dev                   # Vite dev server on :5173
 ```
+
+The dev server proxies `/api` (and the gateway socket) to a server at
+`API_TARGET`, by default `http://localhost:8080`. Pages for trying out
+components are under `/dev/*` (`src/dev/`); only the dev server has them, a
+build leaves them out.
 
 | Task                                                      | What                                                                             |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------- |

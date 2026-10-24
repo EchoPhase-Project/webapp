@@ -1,90 +1,18 @@
-# Visual Studio temporary files
-.vs/
-
-# ReSharper folders
-_ReSharper*
-
-# NuGet package directory
-packages/
-
-# MSTest test Results
-[Tt]est[Rr]esult*
-
-# NCrunch
-_NCrunch_*
-.*crunch*.local.xml
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# User-specific files
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Mono-specific files
-*.pidb
-*.idea/workspace.xml
-.idea/
-
-# Visual Studio Code directories
-.vscode/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# JetBrains Rider
-.idea/
-
-# Rider files
-.idea
-
-# Files for debugging
-*.pdb
-
-# VS Code
-.vscode/
-
-# Ignore build output and logs
-bin/
-obj/
-dist/
-*.log
-
-# Ignore NuGet packages
-*.nupkg
-packages/
-*.lock.json
-
-# Ignore Rider specific files
-*.sln.iml
-
-# Ignore node_modules directory if using npm for webapp packages
+# The image builds from package*.json and the sources; nothing else.
 node_modules/
-
-# Ignore backup and session files for vim
-*.tmp
-*.vim
-
-Logs/
+dist/
+artifacts/
+coverage/
 *.log
-
-*.env
-*.crt
-*.key
 
 # Never in the build context: local settings (tokens), git, CI files.
 mise.local.toml
+mise.local.lock
 .git/
 .woodpecker/
 .github/
-artifacts/
 .image-tag
+
+# Editors
+.vscode/
+.idea/

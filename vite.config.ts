@@ -1,98 +1,69 @@
-import { ViteDevServer, defineConfig } from 'vite';
-import { IncomingMessage, ServerResponse } from 'http';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig, type PluginOption } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import compress from 'vite-plugin-compression';
-import commonjs from '@rollup/plugin-commonjs';
-import path from 'path';
+import { compression } from 'vite-plugin-compression2';
+import { visualizer } from 'rollup-plugin-visualizer';
+import path from 'node:path';
 
-const ClientSideRouting = {
-    name: 'dynamic-router',
-    configureServer(server: ViteDevServer) {
-        server.middlewares.use(
-            (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-                if (req.url?.search(/^\/@\d+/) !== -1) {
-                    req.url = '/';
-                }
-                next();
-            }
-        );
-    },
-};
+// Where `vite` (dev) sends /api, the realtime gateway socket included.
+const apiTarget = process.env.API_TARGET ?? 'http://localhost:8080';
 
 export default defineConfig(({ mode }) => {
-    const settings = {
-        plugins: [
-            solidPlugin(),
-            compress({ algorithm: 'gzip' }),
-            ClientSideRouting,
-            commonjs({}),
-        ],
+    const plugins: PluginOption[] = [
+        solidPlugin(),
+        // .gz next to each asset for nginx's gzip_static, so it does not
+        // compress on every request. Same threshold as its gzip_min_length.
+        compression({
+            algorithms: ['gzip'],
+            threshold: 1024,
+            logLevel: 'silent',
+        }),
+    ];
+
+    if (mode === 'analyze')
+        plugins.push(
+            visualizer({
+                filename: 'dist/bundle-analysis.html',
+                open: true,
+                gzipSize: true,
+                brotliSize: true,
+            })
+        );
+
+    return {
+        plugins,
         resolve: {
-            alias: {
-                '@': path.resolve(import.meta.dirname, 'src'),
-                '@lib': path.resolve(import.meta.dirname, 'src', 'lib'),
-                '@forms': path.resolve(import.meta.dirname, 'src', 'forms'),
-                '@styles': path.resolve(import.meta.dirname, 'src', 'styles'),
-                '@static': path.resolve(import.meta.dirname, 'src', 'static'),
-                '@shaders': path.resolve(import.meta.dirname, 'src', 'shaders'),
-                '@assets': path.resolve(
-                    import.meta.dirname,
-                    'src',
-                    'static',
-                    'assets'
-                ),
-                '@components': path.resolve(
-                    import.meta.dirname,
-                    'src',
-                    'components'
-                ),
-            },
-            extensions: ['.js', '.jsx', '.ts', '.tsx', '.scss', '.css'],
+            // The aliases (@app, @shared...) are tsconfig.json's paths.
+            tsconfigPaths: true,
         },
         css: {
             preprocessorOptions: {
                 scss: {
+                    // Sass does not see tsconfig's paths: it looks under src.
+                    loadPaths: [path.resolve(import.meta.dirname, 'src')],
                     additionalData: [
-                        `@use "@styles/variables.scss" as vars;`,
-                        `@use "@styles/media.scss" as comp;`,
-                        `@use "@styles/utils.scss" as utils;`,
-                        `@use "@styles/prefixes.scss" as prefixes;`,
+                        `@use "styles/variables" as vars;`,
+                        `@use "styles/media" as comp;`,
+                        `@use "styles/utils" as utils;`,
+                        `@use "styles/prefixes" as prefixes;`,
                     ].join('\n'),
                 },
             },
         },
         server: {
             port: 5173,
-            open: true,
             strictPort: true,
-            hmr: true,
-            // origin: 'http://localhost:8080',
+            proxy: {
+                '/api': { target: apiTarget, changeOrigin: true, ws: true },
+            },
         },
         preview: {
             port: 4173,
-            open: true,
             strictPort: true,
-            // origin: 'http://localhost:8080',
         },
-        root: path.resolve(import.meta.dirname),
-        publicDir: path.resolve(import.meta.dirname, 'public'),
-        // base: '/app',
         build: {
             target: 'esnext',
-            outDir: 'dist',
-            emptyOutDir: true,
-            sourcemap: false,
-            cssCodeSplit: true,
-            minify: 'terser',
-            commonjsOptions: {
-                include: [/node_modules/],
-            },
+            sourcemap: mode === 'analyze',
             rollupOptions: {
-                input: {
-                    index: path.resolve(import.meta.dirname, 'index.html'),
-                    main: path.resolve(import.meta.dirname, 'src', 'index.tsx'),
-                },
                 output: {
                     entryFileNames: 'js/[name].[hash].js',
                     chunkFileNames: 'js/[name].[hash].js',
@@ -101,23 +72,4 @@ export default defineConfig(({ mode }) => {
             },
         },
     };
-
-    if (mode === 'analyze') {
-        settings.plugins.push(
-            visualizer({
-                filename: path.resolve(
-                    import.meta.dirname,
-                    'dist',
-                    'bundle-analysis.html'
-                ),
-                open: true,
-                gzipSize: true,
-                brotliSize: true,
-            })
-        );
-
-        settings.build.sourcemap = true;
-    }
-
-    return settings;
 });
