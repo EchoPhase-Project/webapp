@@ -19,13 +19,11 @@
     "resolveJsonModule": true,
     "checkJs": false,
     "paths": {
-      "@/*": ["./src/*"],
-      "@lib/*": ["./src/lib/*"],
-      "@forms/*": ["./src/forms/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@static/*": ["./src/static/*"],
-      "@assets/*": ["./src/static/assets/*"],
-      "@components/*": ["./src/components/*"]
+      "@app/*": ["./src/app/*"],
+      "@features/*": ["./src/features/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@dev/*": ["./src/dev/*"],
+      "@static/*": ["./src/static/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

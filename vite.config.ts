@@ -41,10 +41,10 @@ export default defineConfig(({ mode }) => {
                     // Sass does not see tsconfig's paths: it looks under src.
                     loadPaths: [path.resolve(import.meta.dirname, 'src')],
                     additionalData: [
-                        `@use "styles/variables" as vars;`,
-                        `@use "styles/media" as comp;`,
-                        `@use "styles/utils" as utils;`,
-                        `@use "styles/prefixes" as prefixes;`,
+                        `@use "shared/styles/variables" as vars;`,
+                        `@use "shared/styles/media" as comp;`,
+                        `@use "shared/styles/utils" as utils;`,
+                        `@use "shared/styles/prefixes" as prefixes;`,
                     ].join('\n'),
                 },
             },

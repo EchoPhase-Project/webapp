@@ -20,7 +20,7 @@ echo "artifacts/openapi.json: $CONTRACT_REPO:$version"
 '''
 
 ["gen:api"]
-description = "Regenerate src/lib/api/schema.d.ts from the contract"
+description = "Regenerate src/shared/api/schema.d.ts from the contract"
 depends = ["contract:pull"]
 run = "OPENAPI=artifacts/openapi.json npm run gen:api"
 

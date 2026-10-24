@@ -1,4 +1,4 @@
-import { Table, Cell, Row } from '@components/Table';
+import { Table, Cell, Row } from '@shared/ui/Table';
 import { Component } from 'solid-js';
 
 type Webhook = {

@@ -26,7 +26,7 @@ build leaves them out.
 | Task                                                      | What                                                                             |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `contract:pull [--version v]`                             | download the server's API contract (`./api-version`) to `artifacts/openapi.json` |
-| `gen:api`                                                 | regenerate `src/lib/api/schema.d.ts` from it                                     |
+| `gen:api`                                                 | regenerate `src/shared/api/schema.d.ts` from it                                     |
 | `check`                                                   | contract types up to date, `tsc`, ESLint, tests, build                           |
 | `test`, `test:coverage`                                   | Vitest unit tests (`src/**/*.test.ts`); coverage to `artifacts/coverage`         |
 | `coverage:html`                                           | the same as a browsable report: `artifacts/coverage/index.html`                  |
