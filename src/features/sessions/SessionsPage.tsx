@@ -3,6 +3,7 @@ import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import { listSessions, revokeAllSessions, revokeSession } from './api';
 import SessionsTable from './components/SessionsTable';
 import './sessions.scss';
@@ -23,6 +24,7 @@ export default function SessionsPage() {
         listSessions
     );
     const [busy, setBusy] = createSignal(false);
+    const [confirming, setConfirming] = createSignal(false);
     const isLoading = () => busy() || sessions.loading;
 
     async function revoking(call: () => Promise<unknown>) {
@@ -41,7 +43,7 @@ export default function SessionsPage() {
                 <h1>{t('heading', 'Active Sessions')}</h1>
                 <Button
                     disabled={isLoading() || (sessions() ?? []).length === 0}
-                    onClick={() => void revoking(revokeAllSessions)}
+                    onClick={() => setConfirming(true)}
                 >
                     {t('revoke_all', 'Revoke All')}
                 </Button>
@@ -51,6 +53,26 @@ export default function SessionsPage() {
                 busy={isLoading()}
                 onRevoke={(id) => void revoking(() => revokeSession(id))}
             />
+
+            <ConfirmDialog
+                open={confirming()}
+                title={t('confirm_revoke_all.title', 'Revoke every session?')}
+                confirm={t('revoke_all', 'Revoke All')}
+                busy={busy()}
+                onConfirm={() =>
+                    void revoking(revokeAllSessions).finally(() =>
+                        setConfirming(false)
+                    )
+                }
+                onCancel={() => setConfirming(false)}
+            >
+                <p>
+                    {t(
+                        'confirm_revoke_all.text',
+                        'Every device is signed out, this one included: you will sign in again.'
+                    )}
+                </p>
+            </ConfirmDialog>
         </div>
     );
 }

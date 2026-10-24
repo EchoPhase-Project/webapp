@@ -7,6 +7,7 @@ import type { FormErrors } from '@shared/api/errors';
 import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import Button from '@shared/ui/Button';
 import Field from '@shared/ui/Field';
 
 const FIELDS = ['username', 'password'] as const;
@@ -85,16 +86,11 @@ export default function LoginForm() {
                 }
             />
 
-            <button
-                type="submit"
-                class="btn"
-                disabled={isDisabled()}
-                aria-busy={isDisabled()}
-            >
+            <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
                     ? i18n.t('loading', 'Loading…')
                     : t('form.submit', 'SUBMIT')}
-            </button>
+            </Button>
         </form>
     );
 }

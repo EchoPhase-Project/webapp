@@ -1,0 +1,20 @@
+.about {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.about-card {
+  display: grid;
+  place-items: center;
+  padding-block: 40px;
+}
+
+.about-icon {
+  font-size: 48px;
+  color: var(--accent);
+}

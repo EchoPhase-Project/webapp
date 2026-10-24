@@ -106,3 +106,42 @@ describe('ApiClientsPage dialog', () => {
         expect(dialog().hasAttribute('open')).toBe(false);
     });
 });
+
+describe('ApiClientsPage delete', () => {
+    afterEach(() => {
+        cleanup();
+        vi.unstubAllGlobals();
+    });
+
+    it('deletes a client only after the confirmation', async () => {
+        let clients = [
+            {
+                Id: 'c1',
+                Name: 'bot',
+                ExpiresAt: null,
+                LastUsedAt: null,
+                SecretRotatedAt: null,
+                CreatedAt: '2026-10-24T12:00:00Z',
+            },
+        ];
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () => json(200, clients),
+            'DELETE /api/v1/api-clients/c1': () => {
+                clients = [];
+                return json(200);
+            },
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Delete bot' })
+        );
+        expect(api.calls('DELETE /api/v1/api-clients/c1')).toHaveLength(0);
+        expect(screen.getByText(/bot stops working at once/)).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+        expect(await screen.findByText('No API clients')).toBeTruthy();
+        expect(api.calls('DELETE /api/v1/api-clients/c1')).toHaveLength(1);
+    });
+});

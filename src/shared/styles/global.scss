@@ -412,3 +412,16 @@ header {
     background-color: var(--surface-raised);
   }
 }
+
+// The destructive action, once confirmed (Delete in a ConfirmDialog).
+.btn.btn-danger {
+  color: var(--on-danger);
+  background-color: var(--danger);
+  border-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--on-danger);
+    background-color: color-mix(in srgb, var(--danger) 85%, var(--text));
+  }
+}

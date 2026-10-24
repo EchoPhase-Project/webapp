@@ -18,7 +18,7 @@ const COLUMN_TEXT: Record<(typeof COLUMNS)[number], string> = {
 export default function ApiClientsTable(props: {
     clients: ApiClient[];
     busy: boolean;
-    onDelete: (id: string) => void;
+    onDelete: (client: ApiClient) => void;
 }) {
     const { user } = useAuth();
     const i18n = useI18n();
@@ -62,7 +62,7 @@ export default function ApiClientsTable(props: {
                                 client.Name
                             )}
                             disabled={props.busy}
-                            onClick={() => props.onDelete(client.Id)}
+                            onClick={() => props.onDelete(client)}
                         >
                             <AiOutlineClose />
                         </Button>

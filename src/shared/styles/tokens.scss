@@ -43,6 +43,8 @@
   --focus: #0090ff;
 
   --danger: #ce2c31;
+  // Text on a red button (a destructive action).
+  --on-danger: #ffffff;
   --success: #1f7d54;
   --warning: #c44a00;
 }
@@ -73,6 +75,7 @@
   --focus: #8fb8ff;
 
   --danger: #f2766b;
+  --on-danger: #1f2029;
   --success: #4fc48c;
   --warning: #e8a943;
 }

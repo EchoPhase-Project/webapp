@@ -3,6 +3,8 @@ import { AiOutlineClose } from 'solid-icons/ai';
 import { useRealtimeEvent } from './realtime-provider';
 import { type RealtimeEvent } from './types';
 import { useI18n } from '@shared/i18n/i18n-context';
+import Button from '@shared/ui/Button';
+import Card from '@shared/ui/Card';
 import './notices.scss';
 
 interface Notice {
@@ -55,19 +57,19 @@ export default function RealtimeNotices() {
             <div class="notices" role="status" aria-live="polite">
                 <For each={notices()}>
                     {(notice) => (
-                        <div class="notice">
+                        <Card class="notice">
                             <div class="notice-body">
                                 <strong>{notice.title}</strong>
                                 <p>{notice.text}</p>
                             </div>
-                            <button
-                                class="notice-close"
+                            <Button
+                                variant="icon"
                                 aria-label={i18n.t('notice.dismiss', 'Dismiss')}
                                 onClick={() => dismiss(notice.id)}
                             >
                                 <AiOutlineClose />
-                            </button>
-                        </div>
+                            </Button>
+                        </Card>
                     )}
                 </For>
             </div>

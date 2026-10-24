@@ -1,37 +1,22 @@
-// Over everything, page and notices included: nothing behind it works now.
+// The outage dialog: centred text, the page behind blurred out of reach.
 .outage {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-}
-
-.outage-card {
-  width: min(28rem, 100%);
-  padding: 1.5rem 1.75rem;
-  border-radius: 0.75rem;
-  border-top: 4px solid var(--accent);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--shadow) 30%, transparent);
   text-align: center;
 
-  h2 {
-    margin: 0 0 0.75rem;
+  .modal-header {
+    justify-content: center;
   }
 
   p {
-    margin: 0 0 0.75rem;
+    margin: 0;
     overflow-wrap: anywhere;
   }
 
-  .outage-hint {
-    font-size: 0.9em;
-    opacity: 0.75;
+  .btn {
+    justify-self: center;
   }
+}
+
+.modal:has(.outage)::backdrop {
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(6px);
 }

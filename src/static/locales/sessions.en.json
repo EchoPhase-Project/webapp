@@ -13,5 +13,9 @@
     "unknown_os": "Unknown OS",
     "unknown_browser": "Unknown Browser",
     "browser_on_os": "{browser} on {os}"
+  },
+  "confirm_revoke_all": {
+    "title": "Revoke every session?",
+    "text": "Every device is signed out, this one included: you will sign in again."
   }
 }

@@ -3,9 +3,10 @@ import { splitProps, type JSX } from 'solid-js';
 type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
     /**
      * primary: the gold main action; ghost: a quiet secondary one; icon: a
-     * secondary icon action that turns red on hover (delete, revoke).
+     * secondary icon action that turns red on hover (delete, revoke);
+     * danger: the confirmed destructive action itself.
      */
-    variant?: 'primary' | 'ghost' | 'icon';
+    variant?: 'primary' | 'ghost' | 'icon' | 'danger';
     /** Working: disabled, and announced as busy. */
     busy?: boolean;
 };

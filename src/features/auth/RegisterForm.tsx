@@ -9,6 +9,7 @@ import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import Button from '@shared/ui/Button';
 import Field from '@shared/ui/Field';
 
 const FIELDS = ['name', 'username', 'password'] as const;
@@ -109,16 +110,11 @@ export default function RegisterForm() {
                 }
             />
 
-            <button
-                type="submit"
-                class="btn"
-                disabled={isDisabled()}
-                aria-busy={isDisabled()}
-            >
+            <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
                     ? i18n.t('loading', 'Loading…')
                     : t('form.submit', 'SUBMIT')}
-            </button>
+            </Button>
         </form>
     );
 }

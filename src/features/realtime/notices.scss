@@ -9,32 +9,27 @@
   width: min(22rem, calc(100vw - 2rem));
 }
 
-.notice {
+// A Card, tighter; the accent stripe says it is news, not content.
+.card.notice {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  padding: 12px 14px;
   border-left: 4px solid var(--accent);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--shadow) 25%, transparent);
+
+  strong {
+    font-size: 0.9rem;
+  }
 
   p {
     margin: 0.25rem 0 0;
-    font-size: 0.9em;
+    font-size: 0.85rem;
+    color: var(--text-muted);
     overflow-wrap: anywhere;
   }
 }
 
 .notice-body {
   flex: 1;
-}
-
-.notice-close {
-  border: none;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-  padding: 0.125rem;
+  min-width: 0;
 }

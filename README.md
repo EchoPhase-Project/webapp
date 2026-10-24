@@ -58,9 +58,10 @@ build leaves them out.
 Inside a feature, `XPage.tsx` only puts the page together (title, layout);
 its parts are in `components/`, its API calls in `api.ts`, and logic worth
 testing in plain modules with tests beside them (`sessions/user-agent.ts`).
-`shared/ui` holds the building blocks: `Button` (primary, ghost, icon),
-`Card`, `Field` (input with icon and its errors under it), `Modal` (forms
-over the page), `EmptyState`, `Table`. The flowing-lines pattern
+`shared/ui` holds the building blocks: `Button` (primary, ghost, icon,
+danger), `Card`, `Field` (input with icon and its errors under it), `Modal`
+(forms over the page; `dismissible={false}` for the outage screen),
+`ConfirmDialog` (asks before what cannot be undone), `EmptyState`, `Table`. The flowing-lines pattern
 (`.patterned`, or `Card patterned`) is for brand moments only: the sign-in
 card, empty states, the outage screen; not on tables, menus, forms in pages
 or small controls.

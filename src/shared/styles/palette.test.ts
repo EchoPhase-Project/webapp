@@ -71,6 +71,7 @@ describe.each([
 
     it('button text reads on the button, and the button on the navy hover', () => {
         expect(contrast(t['on-primary'], t.primary)).toBeGreaterThanOrEqual(7);
+        expect(contrast(t['on-danger'], t.danger)).toBeGreaterThanOrEqual(4.5);
     });
 });
 

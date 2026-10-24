@@ -1,4 +1,4 @@
-import { createEffect, createUniqueId, on, type JSX } from 'solid-js';
+import { createEffect, createUniqueId, on, Show, type JSX } from 'solid-js';
 import { AiOutlineClose } from 'solid-icons/ai';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from './Button';
@@ -6,20 +6,34 @@ import './modal.scss';
 
 type ModalProps = {
     open: boolean;
-    title: string;
-    onClose: () => void;
+    title: JSX.Element;
+    /** Called to close it (close button, Escape, a click beside it). */
+    onClose?: () => void;
+    /** false: it stays until the owner closes it (no button, no Escape). */
+    dismissible?: boolean;
+    /** alertdialog: something that needs an answer or blocks everything. */
+    role?: 'dialog' | 'alertdialog';
+    /** On the dialog's card, e.g. "patterned". */
+    class?: string;
     children: JSX.Element;
 };
 
 /**
- * A dialog over the page, for a form such as a new API client. The native
- * <dialog>: the rest of the page is inert, focus stays inside, Escape and a
- * click beside it close it, and focus goes back to what opened it.
+ * A dialog over the page: a form such as a new API client, a confirmation,
+ * the outage screen. The native <dialog>: the rest of the page is inert,
+ * focus stays inside and starts on the first field (or what has autofocus),
+ * Escape and a click beside it close it when it may be dismissed, and focus
+ * goes back to what opened it.
  */
 export default function Modal(props: ModalProps) {
     const i18n = useI18n();
     const titleId = createUniqueId();
     let dialog: HTMLDialogElement | undefined;
+
+    const dismissible = () => props.dismissible ?? true;
+    const close = () => {
+        if (dismissible()) props.onClose?.();
+    };
 
     createEffect(
         on(
@@ -32,9 +46,11 @@ export default function Modal(props: ModalProps) {
                         dialog.showModal();
                     else dialog.setAttribute('open', '');
                     // The dialog would focus its close button; a form wants
-                    // its first field.
+                    // its first field, a confirmation its autofocus button.
                     dialog
-                        .querySelector<HTMLElement>('input, select, textarea')
+                        .querySelector<HTMLElement>(
+                            '[autofocus], input, select, textarea'
+                        )
                         ?.focus();
                 } else if (!open && dialog.open) {
                     if (typeof dialog.close === 'function') dialog.close();
@@ -48,27 +64,30 @@ export default function Modal(props: ModalProps) {
         <dialog
             ref={dialog}
             class="modal"
+            role={props.role ?? 'dialog'}
             aria-labelledby={titleId}
-            // Escape: let the owner close it, so its state stays the truth.
+            // Escape: the owner decides, so its state stays the truth.
             onCancel={(e) => {
                 e.preventDefault();
-                props.onClose();
+                close();
             }}
             // A click on the backdrop lands on the dialog element itself.
             onClick={(e) => {
-                if (e.target === e.currentTarget) props.onClose();
+                if (e.target === e.currentTarget) close();
             }}
         >
-            <div class="modal-body">
+            <div class={['modal-body', props.class].filter(Boolean).join(' ')}>
                 <header class="modal-header">
                     <h2 id={titleId}>{props.title}</h2>
-                    <Button
-                        variant="icon"
-                        aria-label={i18n.t('close', 'Close')}
-                        onClick={() => props.onClose()}
-                    >
-                        <AiOutlineClose />
-                    </Button>
+                    <Show when={dismissible()}>
+                        <Button
+                            variant="icon"
+                            aria-label={i18n.t('close', 'Close')}
+                            onClick={close}
+                        >
+                            <AiOutlineClose />
+                        </Button>
+                    </Show>
                 </header>
                 {props.children}
             </div>

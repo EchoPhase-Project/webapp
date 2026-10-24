@@ -1,6 +1,8 @@
 import { onMount } from 'solid-js';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { IoBeerOutline } from 'solid-icons/io';
+import Card from '@shared/ui/Card';
+import './about.scss';
 
 const About = () => {
     const { setTitle, setDescription } = useRootMeta();
@@ -11,9 +13,11 @@ const About = () => {
     });
 
     return (
-        <div>
+        <div class="about">
             <h1>About Page</h1>
-            <IoBeerOutline style={{ 'font-size': '48px', color: 'orange' }} />
+            <Card patterned class="about-card">
+                <IoBeerOutline class="about-icon" />
+            </Card>
         </div>
     );
 };

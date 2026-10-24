@@ -20,5 +20,10 @@
   "new": "New client",
   "copy": "Copy",
   "copied": "Copied",
-  "dismiss": "Done"
+  "dismiss": "Done",
+  "confirm_delete": {
+    "title": "Delete this API client?",
+    "text": "{name} stops working at once: bots and scripts using it can no longer sign in.",
+    "action": "Delete"
+  }
 }
