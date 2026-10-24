@@ -19,8 +19,14 @@ COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
 # The stock entrypoint renders templates/*.template into this directory.
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
 # Only this variable is substituted; Kubernetes injects many others.
-ENV NGINX_ENVSUBST_FILTER=^API_UPSTREAM$
+ENV NGINX_ENVSUBST_FILTER=^(API_UPSTREAM|SENTRY_DSN|ERRORS_UPSTREAM|ERRORS_PROJECT|NGINX_LOCAL_RESOLVERS)$
 ENV API_UPSTREAM=echophase:8080
+# The resolver for ERRORS_UPSTREAM: the entrypoint exports the pod's.
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+# No error reporting unless SENTRY_DSN is set; the upstream is a black hole.
+ENV SENTRY_DSN=""
+ENV ERRORS_UPSTREAM=127.0.0.1:9
+ENV ERRORS_PROJECT=0
 
 COPY --from=node-build /src/dist /usr/share/nginx/html
 

@@ -5,6 +5,14 @@ The web client of [EchoPhase](https://github.com/EchoPhase-Project/server)
 gateway socket, `/api/v1/gateway`, included) to the server (`API_UPSTREAM`,
 default `echophase:8080`).
 
+The image reads its settings from the environment at start:
+`API_UPSTREAM` (the server), and for error reports to GlitchTip
+`SENTRY_DSN` (empty: none, and the SDK is not loaded), `ERRORS_UPSTREAM`
+(GlitchTip's host:port, a full name such as
+`glitchtip.monitoring.svc.cluster.local:80`) and `ERRORS_PROJECT` (its project
+id). Browsers send reports to `/errors` on the webapp itself, so GlitchTip
+needs no public address.
+
 Run it with the rest of EchoPhase: [charts](https://github.com/EchoPhase-Project/charts)
 (Helm, Docker Compose); the image is `ghcr.io/echophase-project/webapp`.
 

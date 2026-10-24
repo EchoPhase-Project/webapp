@@ -1,7 +1,12 @@
 # Rendered at container start by the nginx image's entrypoint (envsubst).
-# Only API_UPSTREAM is replaced (NGINX_ENVSUBST_FILTER in the Dockerfile), so
-# nginx's own variables stay intact.
-#   API_UPSTREAM  host:port of the API service (set by the Helm chart)
+# Only these are replaced (NGINX_ENVSUBST_FILTER in the Dockerfile), so
+# nginx's own variables stay intact:
+#   API_UPSTREAM           host:port of the API service (set by the Helm chart)
+#   SENTRY_DSN             DSN of the webapp's errors (GlitchTip); empty: none sent
+#   ERRORS_UPSTREAM        host:port of GlitchTip, a full name (the resolver
+#                          does not use search domains)
+#   ERRORS_PROJECT         its project id of the webapp
+#   NGINX_LOCAL_RESOLVERS  the pod's DNS servers (the image's entrypoint)
 worker_processes auto;
 events {
     worker_connections 1024;
@@ -60,6 +65,7 @@ http {
     limit_req_zone $auth_limit_key     zone=auth:10m rate=20r/m;
     limit_req_zone $binary_remote_addr zone=api:10m  rate=30r/s;
     limit_conn_zone $binary_remote_addr zone=realtime:10m;
+    limit_req_zone $binary_remote_addr zone=errors:10m rate=2r/s;
 
     limit_req_status  429;
     limit_conn_status 429;
@@ -70,6 +76,10 @@ http {
         server_name _;
         root /usr/share/nginx/html;
         index index.html;
+
+        # For ERRORS_UPSTREAM, looked up per request: without GlitchTip the
+        # webapp still starts, /errors just fails.
+        resolver ${NGINX_LOCAL_RESOLVERS} valid=30s ipv6=off;
         
 		location /api/ {
 			limit_req zone=auth burst=10 nodelay;
@@ -129,6 +139,31 @@ http {
 			add_header Retry-After 30 always;
 			add_header Cache-Control "no-store" always;
 			return 503 '{"code":"Unavailable","message":"EchoPhase is not responding. Please try again shortly.","field":null}';
+		}
+
+		# What the webapp reads at start from the environment (no rebuild per
+		# deployment): where its errors go, if anywhere.
+		location = /config.json {
+			default_type application/json;
+			add_header Cache-Control "no-store" always;
+			return 200 '{"sentryDsn":"${SENTRY_DSN}"}';
+		}
+
+		# The browser's error reports (the Sentry SDK's tunnel) on to GlitchTip,
+		# which needs no public address for them.
+		location = /errors {
+			limit_req zone=errors burst=20 nodelay;
+			client_max_body_size 1m;
+
+			set $errors_upstream ${ERRORS_UPSTREAM};
+			# ?sentry_key=: GlitchTip wants the DSN's key there; the SDK puts it
+			# only in the body, so the webapp adds it to the tunnel's URL.
+			proxy_pass http://$errors_upstream/api/${ERRORS_PROJECT}/envelope/$is_args$args;
+			proxy_http_version 1.1;
+			proxy_set_header Connection "";
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_connect_timeout 5s;
+			proxy_read_timeout 10s;
 		}
         
         location ~* \.(js|css|woff2?|ttf|otf|svg|png|jpg|ico)$ {
