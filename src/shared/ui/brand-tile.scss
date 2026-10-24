@@ -1,0 +1,14 @@
+.brand-tile {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  border-radius: 0.25em;
+  background-color: var(--bg);
+  color: var(--accent);
+
+  svg {
+    font-size: 0.7em;
+  }
+}

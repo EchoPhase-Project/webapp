@@ -52,155 +52,204 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DESKTOP NAV  (sidebar, expands on hover, ≥768 px)
+   DESKTOP NAV  (sidebar, widens while hovered, ≥768 px)
    Applied via .navbar--desktop
 ───────────────────────────────────────────────────────────────────────────── */
 
+// After Codewars: a rail of icons on its own solid surface that widens while
+// hovered (or while the keyboard is in it) to show the labels. The icons keep
+// their place (each link is as wide as the rail, its icon at the same left
+// offset); only the width and the labels' opacity change, so nothing jumps.
+// Sizes in px: the page's font size grows with the window, the rail should
+// not.
 .navbar--desktop {
-  display: flex;
-  @include prefixes.prefix(flex-wrap, wrap, ms);
-  @include prefixes.prefix(align-items, center, ms, webkit);
-  @include prefixes.prefix(justify-content, space-between, ms, webkit);
-  padding: 0.5em 1em;
+  --nav-collapsed: 60px;
+  --nav-expanded: 232px;
+  --nav-pad: 10px;
+  --nav-link-h: 40px;
+  --nav-icon: 20px;
+  // Hover and the open item: a tint of the text on the panel's surface.
+  --nav-hover: color-mix(in srgb, var(--text) 7%, transparent);
 
   position: fixed;
   top: 0;
   left: 0;
-  width: fit-content;
-  height: 100vh;
-
-  background-color: color-mix(in srgb, var(--bg) 80%, transparent);
-  backdrop-filter: blur(20px);
-  box-sizing: border-box;
   z-index: 2;
+  width: var(--nav-collapsed);
+  height: 100vh;
+  padding: var(--nav-pad);
+  box-sizing: border-box;
+  font-size: 14px;
+  background-color: var(--surface);
+  box-shadow: color-mix(in srgb, var(--shadow) 8%, transparent) 1px 0 0 0;
+  transition:
+    width 200ms ease,
+    box-shadow 200ms ease;
 
-  &:hover {
-    .link-text {
-      display: inline;
-    }
+  &:hover,
+  &:has(:focus-visible) {
+    width: var(--nav-expanded);
+    box-shadow: color-mix(in srgb, var(--shadow) 16%, transparent) 8px 0 24px 0;
 
-    .logo .nav-icon:before {
-      transform: rotateX(-180deg);
-    }
-
-    .nav-chevron {
-      display: block;
-    }
-
-    .nav-submenu {
-      display: flex;
+    .link-text,
+    .nav-item-burger {
+      opacity: 1;
     }
   }
 
   .navbar-nav {
-    width: 100%;
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 4px;
     height: 100%;
-    gap: 0.65em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  /* ── Nav item ── */
-  .nav-item {
-    width: 100%;
+  .nav-item,
+  .logo {
     position: relative;
+  }
 
-    &:last-child {
-      margin-top: auto;
-    }
+  // The last item (sign in or out) sits at the bottom of the rail.
+  .navbar-nav > :last-child:not(.logo) {
+    margin-top: auto;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
-    gap: 1em;
-    border-radius: 0.5em;
-    color: var(--text);
-    text-decoration: none;
-    filter: grayscale(100%) opacity(0.7);
-    padding: 1.1em 0.75em !important;
+    gap: 12px;
+    height: var(--nav-link-h);
+    padding: 0
+      calc((var(--nav-collapsed) - 2 * var(--nav-pad) - var(--nav-icon)) / 2);
+    border-radius: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--text-muted);
     cursor: pointer;
-    @include prefixes.prefix(
-      transition-property,
-      'box-shadow, color, filter, background',
-      webkit
-    );
-    @include prefixes.prefix(
-      transition-duration,
-      var(--transition-speed),
-      webkit
-    );
-    @include prefixes.prefix(transition-timing-function, ease, webkit);
+    transition:
+      color var(--transition-speed) ease,
+      background-color var(--transition-speed) ease;
 
-    &:hover {
-      filter: grayscale(0%) opacity(1);
-      color: var(--text-hover);
-      background: var(--surface);
-      box-shadow: color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px
-        12px 0px;
+    &:hover,
+    &:focus-visible {
+      color: var(--text);
+      background-color: var(--nav-hover);
+
+      .nav-icon {
+        color: var(--accent);
+      }
     }
   }
 
-  /* ── Chevron ── */
-  .nav-chevron {
-    display: none;
-    margin-left: auto;
-    font-size: 0.75em;
+  .nav-icon {
+    font-size: var(--nav-icon);
+    color: var(--text-muted);
+  }
+
+  // The icon is the flex item (its <i> is display: contents): it must not
+  // shrink in the narrow rail.
+  .nav-link svg,
+  .nav-link img {
+    flex: none;
+  }
+
+  .link-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  // An item with a sub-menu: a small burger that turns into a cross.
+  .nav-item-burger {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  .nav-item[data-open] > .nav-link {
     color: var(--text);
-    opacity: 0.5;
-    @include prefixes.prefix(
-      transition,
-      transform var(--transition-speed) ease,
-      webkit
-    );
+    background-color: var(--nav-hover);
 
-    .nav-item[data-open] & {
-      transform: rotate(180deg);
+    .nav-icon {
+      color: var(--accent);
     }
   }
 
-  /* ── Sub-menu fly-out ── */
-  .nav-submenu {
-    display: none;
-    list-style: none;
-    padding: 0.4em;
-    margin: 0;
-    flex-direction: column;
-    gap: 0.2em;
-    background-color: color-mix(in srgb, var(--bg) 95%, transparent);
-    border-radius: 0.5em;
-    box-shadow: color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px 12px
-      0px;
-    border: 1px solid color-mix(in srgb, var(--shadow) 10%, transparent);
+  // The brand at the top: its tile, a little apart from the links.
+  .logo {
+    margin-bottom: 12px;
 
-    /* Fly out to the right */
+    .nav-link {
+      padding: 0 6px;
+      color: var(--text);
+      font-size: 15px;
+
+      &:hover,
+      &:focus-visible {
+        background-color: transparent;
+      }
+    }
+
+    .nav-icon {
+      font-size: 28px;
+    }
+
+    .link-text {
+      font-weight: 700;
+    }
+  }
+
+  /* ── Sub-menu: floating just right of the panel, level with its item ── */
+  .nav-submenu {
     position: absolute;
-    left: calc(100% + 0.5em);
-    top: 0;
-    min-width: 14em;
+    top: -6px;
+    // The item is inset by the panel's padding: past it, then a small gap.
+    left: calc(100% + var(--nav-pad) + 8px);
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 248px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    border-radius: 10px;
+    // The panel's own surface, so the two read as one.
+    background-color: var(--surface);
+    box-shadow: color-mix(in srgb, var(--shadow) 18%, transparent) 0 8px 24px 0;
+    animation: nav-submenu-in 160ms ease-out;
+
+    // An invisible bridge over the gap: the pointer crossing it to the
+    // sub-menu never leaves the panel, which would close the sub-menu.
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -8px;
+      width: 8px;
+    }
 
     &-item {
       display: flex;
       align-items: flex-start;
-      gap: 0.75em;
-      padding: 0.65em 0.75em;
-      border-radius: 0.35em;
-      cursor: pointer;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
       color: var(--text);
-      @include prefixes.prefix(
-        transition,
-        'background var(--transition-speed) ease, color var(--transition-speed) ease',
-        webkit
-      );
+      cursor: pointer;
+      transition: background-color var(--transition-speed) ease;
 
-      &:hover {
-        background: var(--surface);
-        color: var(--text-hover);
+      &:hover,
+      &:focus-visible {
+        background-color: var(--nav-hover);
 
         .submenu-label {
           color: var(--text-hover);
@@ -208,60 +257,86 @@
       }
     }
   }
+}
 
-  /* ── Logo item ── */
-  .logo {
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    border-radius: 0.5em;
-    color: var(--text-hover);
-    background: var(--surface);
-    font-size: 1.25em;
-    letter-spacing: 0.3ch;
+// Three lines folding into a cross. Closing: turn back first, then spread
+// apart; opening swaps the delays: meet in the middle, then turn.
+.burger-lines {
+  --burger-w: 14px;
+  --burger-gap: 4px;
+  --burger-line: 1.5px;
+
+  position: relative;
+  flex: none;
+  display: block;
+  width: var(--burger-w);
+  height: calc(2 * var(--burger-gap) + var(--burger-line));
+  margin-left: auto;
+
+  span {
+    position: absolute;
+    left: 0;
     width: 100%;
-    @include prefixes.prefix(
-      transition,
-      box-shadow var(--transition-speed) ease-in,
-      webkit
-    );
-    box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0px 7px 12px
-      0px;
+    height: var(--burger-line);
+    border-radius: var(--burger-line);
+    background-color: currentColor;
+    transition:
+      top 150ms ease 150ms,
+      transform 150ms ease,
+      opacity 0ms linear 150ms;
 
-    &:hover {
-      box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0px 7px
-        12px 0px;
+    &:nth-child(1) {
+      top: 0;
     }
 
-    .link-text {
-      margin-left: 0;
+    &:nth-child(2) {
+      top: var(--burger-gap);
     }
 
-    // The brand mark keeps its colour; other items are grey until hovered.
-    .nav-link {
-      filter: none;
-    }
-
-    .nav-icon:before {
-      transform: rotate(0deg);
-      @include prefixes.prefix(transition-property, 'transform, color', webkit);
-      @include prefixes.prefix(
-        transition-duration,
-        var(--transition-speed),
-        webkit
-      );
-      @include prefixes.prefix(transition-timing-function, ease, webkit);
+    &:nth-child(3) {
+      top: calc(2 * var(--burger-gap));
     }
   }
 
-  /* Hidden text until hover */
-  .link-text {
-    letter-spacing: 0.2ch;
-    display: none;
-    margin-left: 0;
-    margin-right: auto;
-    word-spacing: 0.1ch;
-    font-size: 0.95em;
+  &--open span {
+    transition:
+      top 150ms ease,
+      transform 150ms ease 150ms,
+      opacity 0ms linear 150ms;
+
+    &:nth-child(1) {
+      top: var(--burger-gap);
+      transform: rotate(45deg);
+    }
+
+    &:nth-child(2) {
+      opacity: 0;
+    }
+
+    &:nth-child(3) {
+      top: var(--burger-gap);
+      transform: rotate(-45deg);
+    }
+  }
+}
+
+@keyframes nav-submenu-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar--desktop,
+  .navbar--desktop .link-text,
+  .navbar--desktop .nav-item-burger,
+  .burger-lines span {
+    transition: none;
+  }
+
+  .navbar--desktop .nav-submenu {
+    animation: none;
   }
 }
 

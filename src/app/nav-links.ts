@@ -4,7 +4,7 @@ import { VsSettings } from 'solid-icons/vs';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavLink } from '@shared/nav/nav-link';
-import BrandMark from '@shared/ui/BrandMark';
+import BrandTile from '@shared/ui/BrandTile';
 
 /**
  * The app's navigation, the same on every page: what needs a session only
@@ -50,7 +50,7 @@ export function useNavLinks(): () => NavLink[] {
 
     return () => [
         {
-            icon: BrandMark,
+            icon: BrandTile,
             text: t('nav.home', 'Home'),
             events: { onClick: () => navigate('/') },
         },
