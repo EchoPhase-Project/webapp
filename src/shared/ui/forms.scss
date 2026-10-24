@@ -97,7 +97,7 @@
   padding: 0.8em 1.4em;
   position: relative;
   border-radius: 0.3em;
-  border: 1px solid var(--border);
+  border: 1px solid var(--input-border);
   background-color: var(--surface-raised);
   @include prefixes.prefix(
     box-shadow,

@@ -13,7 +13,6 @@ table {
   @include comp.media('min-width: 768px') {
     border-radius: 1em;
     background-color: var(--surface);
-    border: 1px solid var(--border);
     background-image: url('../../static/assets/svg/pat.svg');
     background-position: bottom center;
     background-repeat: no-repeat;
@@ -71,7 +70,6 @@ td {
     min-width: 16em;
     max-width: 100%;
     background-color: var(--surface);
-    border: 1px solid var(--border);
     background-image: url('../../static/assets/svg/pat.svg');
     background-position: bottom center;
     background-repeat: no-repeat;
