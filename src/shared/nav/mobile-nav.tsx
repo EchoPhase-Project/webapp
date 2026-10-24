@@ -1,6 +1,7 @@
 import { For, Show, createSignal, createMemo, onCleanup } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { IoEllipsisHorizontal } from 'solid-icons/io';
+import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavLink, NavSubItem } from './nav-link';
 import './navbar.scss';
 
@@ -17,6 +18,7 @@ function MobileBottomSheet(props: {
     onClose: () => void;
     openSheet: (mode: SheetMode) => void;
 }) {
+    const { t } = useI18n();
     return (
         <>
             <div
@@ -28,7 +30,9 @@ function MobileBottomSheet(props: {
                 class="mobile-sheet"
                 role="menu"
                 aria-label={
-                    props.mode.kind === 'overflow' ? 'More items' : 'Submenu'
+                    props.mode.kind === 'overflow'
+                        ? t('nav.more_items', 'More items')
+                        : t('nav.submenu', 'Submenu')
                 }
             >
                 <div class="mobile-sheet-handle" aria-hidden="true" />
@@ -226,18 +230,22 @@ function MobileNavItem(props: {
 // ─── MobileMoreButton ─────────────────────────────────────────────────────────
 
 function MobileMoreButton(props: { count: number; onClick: () => void }) {
+    const { t } = useI18n();
     return (
         <li class="mobile-nav-item">
             <button
                 class="mobile-nav-btn"
-                aria-label={`More navigation items (${props.count})`}
+                aria-label={t(
+                    'nav.more_count',
+                    'More navigation items ({count})'
+                ).replace('{count}', String(props.count))}
                 aria-haspopup="menu"
                 onClick={() => props.onClick()}
             >
                 <i class="nav-icon" aria-hidden="true">
                     <IoEllipsisHorizontal />
                 </i>
-                <span class="mobile-nav-label">More</span>
+                <span class="mobile-nav-label">{t('nav.more', 'More')}</span>
             </button>
         </li>
     );
@@ -246,6 +254,7 @@ function MobileMoreButton(props: { count: number; onClick: () => void }) {
 // ─── MobileNav ────────────────────────────────────────────────────────────────
 
 export function MobileNav(props: { links: NavLink[] }) {
+    const { t } = useI18n();
     const [sheet, setSheet] = createSignal<SheetMode | null>(null);
 
     const openSheet = (mode: SheetMode) => setSheet(mode);
@@ -274,7 +283,10 @@ export function MobileNav(props: { links: NavLink[] }) {
 
     return (
         <>
-            <nav class="navbar navbar--mobile" aria-label="Mobile navigation">
+            <nav
+                class="navbar navbar--mobile"
+                aria-label={t('nav.label', 'Main navigation')}
+            >
                 <ul class="mobile-navbar-nav">
                     <For each={visibleLinks()}>
                         {(link) => (

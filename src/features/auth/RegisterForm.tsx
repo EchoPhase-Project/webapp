@@ -1,4 +1,5 @@
 import { createSignal } from 'solid-js';
+import { A } from '@solidjs/router';
 import { FaRegularUser } from 'solid-icons/fa';
 import { BiRegularLock } from 'solid-icons/bi';
 import { AiOutlineTags } from 'solid-icons/ai';
@@ -15,7 +16,7 @@ import Field from '@shared/ui/Field';
 const FIELDS = ['name', 'username', 'password'] as const;
 const inputId = (field: string) => `register-${field}`;
 
-export default function RegisterForm() {
+export default function RegisterForm(props: { onSwitch: () => void }) {
     const [registerForm, setRegisterForm] = createSignal<RegisterData>({
         name: '',
         username: '',
@@ -52,14 +53,14 @@ export default function RegisterForm() {
             onSubmit={(e) => void handleRegister(e)}
             noValidate
         >
-            <h4 class="form-title">{t('signup', 'Sign Up')}</h4>
+            <h1 class="form-title">{t('signup.title', 'Sign up')}</h1>
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
             <Field
                 id={inputId('name')}
                 name="name"
-                label={t('form.fullname', 'Your Full Name')}
+                label={t('form.fullname', 'Full name')}
                 icon={FaRegularUser}
                 errors={errors().name}
                 type="text"
@@ -77,7 +78,7 @@ export default function RegisterForm() {
             <Field
                 id={inputId('username')}
                 name="username"
-                label={t('form.username', 'Your Username')}
+                label={t('form.username', 'Username')}
                 icon={AiOutlineTags}
                 errors={errors().username}
                 type="text"
@@ -95,7 +96,7 @@ export default function RegisterForm() {
             <Field
                 id={inputId('password')}
                 name="password"
-                label={t('form.password', 'Your Password')}
+                label={t('form.password', 'Password')}
                 icon={BiRegularLock}
                 errors={errors().password}
                 type="password"
@@ -113,8 +114,26 @@ export default function RegisterForm() {
             <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
                     ? i18n.t('loading', 'Loading…')
-                    : t('form.submit', 'SUBMIT')}
+                    : t('signup.submit', 'Create account')}
             </Button>
+
+            <p class="auth-legal">
+                {t('signup.legal_before', 'By signing up you accept the')}{' '}
+                <A href="/terms">{t('signup.terms', 'Terms of Use')}</A>{' '}
+                {t('signup.legal_and', 'and the')}{' '}
+                <A href="/privacy">{t('signup.privacy', 'Privacy Policy')}</A>.
+            </p>
+
+            <p class="auth-switch">
+                {t('signup.switch_question', 'Already have an account?')}{' '}
+                <button
+                    type="button"
+                    class="link-button"
+                    onClick={() => props.onSwitch()}
+                >
+                    {t('signup.switch', 'Log in')}
+                </button>
+            </p>
         </form>
     );
 }

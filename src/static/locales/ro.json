@@ -1,12 +1,24 @@
 {
   "loading": "Se încarcă…",
-  "unauthorized": "Neautorizat",
+  "unauthorized": "Autentificare necesară",
   "select_language": "Selectează limba",
+  "no_matches": "Niciun rezultat",
+  "close": "Închide",
+  "cancel": "Anulează",
+  "theme": {
+    "to_dark": "Treci la tema întunecată",
+    "to_light": "Treci la tema luminoasă"
+  },
   "nav": {
+    "label": "Navigare principală",
     "home": "Acasă",
-    "about": "Despre",
+    "login": "Autentificare",
     "logout": "Deconectare",
     "settings": "Setări",
+    "more": "Mai mult",
+    "more_items": "Alte secțiuni",
+    "more_count": "Alte secțiuni de navigare ({count})",
+    "submenu": "Submeniu",
     "sessions": {
       "label": "Sesiuni",
       "description": "Vezi sesiunile active"
@@ -15,6 +27,62 @@
       "label": "Clienți API",
       "description": "Date de acces pentru boți și scripturi"
     }
+  },
+  "footer": {
+    "label": "Site",
+    "about": "Despre",
+    "terms": "Termeni de utilizare",
+    "privacy": "Politica de confidențialitate",
+    "cookies": "Setări cookie",
+    "source": "Cod sursă",
+    "product": "Produs",
+    "features": "Funcționalități",
+    "start": "Începe",
+    "resources": "Resurse",
+    "self_host": "Rulează-l singur",
+    "issues": "Raportează o problemă",
+    "legal": "Juridic",
+    "tagline": "Boți și servicii, conectate într-un singur loc.",
+    "status_ok": "Serviciul funcționează",
+    "status_down": "Serviciu indisponibil"
+  },
+  "consent": {
+    "banner": {
+      "title": "Cookie-uri și statistici",
+      "text": "EchoPhase folosește cookie-urile necesare pentru a te menține autentificat. Cu permisiunea ta, numără și vizitele paginilor și primește rapoarte de erori, ambele fără date personale, ca să vedem ce putem îmbunătăți.",
+      "policy": "Politica de confidențialitate"
+    },
+    "settings": {
+      "title": "Setări cookie",
+      "intro": "Alege ce poate colecta EchoPhase în plus față de ce îi trebuie ca să funcționeze. Poți schimba oricând alegerea din subsolul paginii."
+    },
+    "necessary": {
+      "label": "Necesare",
+      "description": "Cookie-urile de autentificare și de protecție a cererilor, plus tema, limba și această alegere, păstrate în browser. Site-ul nu funcționează fără ele."
+    },
+    "analytics": {
+      "label": "Statistici",
+      "description": "Ce pagini sunt vizitate, de pe ce tip de dispozitiv și din ce țară, numărate de propriul nostru Umami. Fără cookie-uri, fără profilul tău, nimic partajat."
+    },
+    "errors": {
+      "label": "Rapoarte de erori",
+      "description": "Când ceva se strică în pagină, ce s-a stricat și unde, trimis propriului nostru GlitchTip, ca să fie reparat. Fără date personale."
+    },
+    "always_on": "Mereu active",
+    "customize": "Personalizează",
+    "reject_all": "Respinge tot",
+    "accept_all": "Acceptă tot",
+    "save": "Salvează alegerea"
+  },
+  "legal": {
+    "updated": "Actualizat",
+    "contents": "Cuprins",
+    "eyebrow": "Documente"
+  },
+  "not_found": {
+    "title": "Pagina nu a fost găsită",
+    "text": "Nu există nimic la această adresă. Poate a fost mutată sau linkul are o greșeală.",
+    "home": "Mergi la pagina principală"
   },
   "notice": {
     "reauth": {
@@ -25,5 +93,35 @@
       "title": "Gateway-ul Discord s-a oprit"
     },
     "dismiss": "Închide"
+  },
+  "outage": {
+    "maintenance": {
+      "title": "Mentenanță în curs",
+      "text": "EchoPhase este actualizat. Revenim în curând."
+    },
+    "unavailable": {
+      "title": "EchoPhase nu poate fi accesat",
+      "text": "Serviciul nu răspunde momentan."
+    },
+    "auto": "Pagina revine singură când serviciul funcționează din nou.",
+    "retry": "Încearcă acum"
+  },
+  "errors": {
+    "network_error": "Serverul nu a putut fi contactat. Verifică conexiunea și încearcă din nou.",
+    "http_429": "Prea multe încercări. Așteaptă puțin și încearcă din nou.",
+    "http_500": "Ceva nu a mers bine la noi. Încearcă mai târziu.",
+    "http_502": "Serviciul nu este disponibil momentan. Încearcă mai târziu.",
+    "http_503": "Serviciul nu este disponibil momentan. Încearcă mai târziu.",
+    "http_504": "Serviciul a răspuns prea greu. Încearcă mai târziu.",
+    "Unauthorized": "Autentifică-te pentru a continua.",
+    "Forbidden": "Nu ai permisiunea să faci asta.",
+    "InvalidCredentials": "Nume de utilizator sau parolă greșită.",
+    "LockedOut": "Contul este blocat temporar. Încearcă mai târziu.",
+    "DuplicateUserName": "Acest nume de utilizator este deja folosit.",
+    "InvalidUserName": "Numele de utilizator poate conține doar litere latine, cifre și - . _ @ +",
+    "PasswordTooShort": "Parola trebuie să aibă cel puțin 8 caractere.",
+    "PasswordRequiresDigit": "Parola trebuie să conțină o cifră (0–9).",
+    "PasswordRequiresLower": "Parola trebuie să conțină o literă mică (a–z).",
+    "PasswordRequiresUpper": "Parola trebuie să conțină o literă mare (A–Z)."
   }
 }

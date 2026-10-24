@@ -32,7 +32,11 @@ export default function ErrorSummary(props: {
             <div class="error-summary" role="alert" tabindex="-1" ref={ref}>
                 <ul class="errorlist">
                     <For each={general()}>
-                        {(item) => <li>{i18n.t(item.code, item.message)}</li>}
+                        {(item) => (
+                            <li>
+                                {i18n.t(`errors.${item.code}`, item.message)}
+                            </li>
+                        )}
                     </For>
                 </ul>
             </div>

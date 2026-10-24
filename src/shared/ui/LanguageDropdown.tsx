@@ -28,7 +28,8 @@ export function LanguageDropdown(props: { returnUrl?: string }) {
             options={options()}
             selectedValue={currentLocale()}
             onChange={handleChange}
-            ariaLabel={t('select_language', 'Select Language')}
+            ariaLabel={t('select_language', 'Select language')}
+            noResults={t('no_matches', 'No matches')}
         />
     );
 }

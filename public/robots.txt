@@ -4,6 +4,8 @@
 User-agent: *
 Allow: /$
 Allow: /about$
+Allow: /terms$
+Allow: /privacy$
 Allow: /js/
 Allow: /assets/
 Disallow: /

@@ -1,10 +1,23 @@
 {
-  "login": "Autentificare",
-  "signup": "Înregistrare",
   "form": {
-    "username": "Numele de utilizator",
+    "username": "Nume de utilizator",
     "password": "Parola",
-    "fullname": "Numele complet",
-    "submit": "Trimite"
+    "fullname": "Numele complet"
+  },
+  "login": {
+    "title": "Autentificare",
+    "submit": "Intră în cont",
+    "switch_question": "Nu ai cont?",
+    "switch": "Înregistrează-te"
+  },
+  "signup": {
+    "title": "Înregistrare",
+    "submit": "Creează cont",
+    "switch_question": "Ai deja cont?",
+    "switch": "Autentifică-te",
+    "legal_before": "Înregistrându-te, accepți",
+    "terms": "Termenii de utilizare",
+    "legal_and": "și",
+    "privacy": "Politica de confidențialitate"
   }
 }

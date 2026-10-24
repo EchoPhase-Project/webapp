@@ -1,22 +1,33 @@
 import { useTheme } from './theme-context';
+import { useI18n } from '@shared/i18n/i18n-context';
 import { FaRegularMoon } from 'solid-icons/fa';
 import { OcSun2 } from 'solid-icons/oc';
 import './theme.scss';
 
 export function ThemeToggle() {
     const [theme, setTheme] = useTheme();
+    const { t } = useI18n();
 
     const toggle = () => {
         setTheme(theme() === 'light' ? 'dark' : 'light');
     };
 
     return (
-        <div class="theme-toggle" onClick={toggle}>
+        <button
+            type="button"
+            class="theme-toggle"
+            onClick={toggle}
+            aria-label={
+                theme() === 'light'
+                    ? t('theme.to_dark', 'Switch to dark theme')
+                    : t('theme.to_light', 'Switch to light theme')
+            }
+        >
             {theme() === 'dark' ? (
                 <FaRegularMoon class="theme" />
             ) : (
                 <OcSun2 class="theme" />
             )}
-        </div>
+        </button>
     );
 }

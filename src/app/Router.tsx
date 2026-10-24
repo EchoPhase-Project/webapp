@@ -1,6 +1,5 @@
 import { Component, lazy } from 'solid-js';
 import { Router } from '@solidjs/router';
-import { NavProvider } from '@shared/nav/nav-context';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import { AuthProvider } from '@shared/api/auth-provider';
 import { requireAuth } from '@shared/api/auth-guards';
@@ -20,7 +19,15 @@ const routes = [
     },
     {
         path: '/about',
-        component: lazy(() => import('@features/home/AboutPage')),
+        component: lazy(() => import('@features/about/AboutPage')),
+    },
+    {
+        path: '/terms',
+        component: lazy(() => import('@features/legal/TermsPage')),
+    },
+    {
+        path: '/privacy',
+        component: lazy(() => import('@features/legal/PrivacyPage')),
     },
     {
         path: '/auth',
@@ -50,11 +57,9 @@ const RouterComponent = (props: RouterComponentProps) => (
         <I18nProvider>
             <AuthProvider>
                 <RealtimeProvider>
-                    <NavProvider>
-                        <Router base={props.base} root={props.root}>
-                            {routes}
-                        </Router>
-                    </NavProvider>
+                    <Router base={props.base} root={props.root}>
+                        {routes}
+                    </Router>
                 </RealtimeProvider>
             </AuthProvider>
         </I18nProvider>

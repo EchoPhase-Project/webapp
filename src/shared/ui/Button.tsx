@@ -4,9 +4,10 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
     /**
      * primary: the gold main action; ghost: a quiet secondary one; icon: a
      * secondary icon action that turns red on hover (delete, revoke);
-     * danger: the confirmed destructive action itself.
+     * danger: the confirmed destructive action itself; danger-outline: a
+     * button that leads to one (it asks first), red but not loud.
      */
-    variant?: 'primary' | 'ghost' | 'icon' | 'danger';
+    variant?: 'primary' | 'ghost' | 'icon' | 'danger' | 'danger-outline';
     /** Working: disabled, and announced as busy. */
     busy?: boolean;
 };

@@ -1,10 +1,23 @@
 {
-  "login": "Log In",
-  "signup": "Sign Up",
   "form": {
-    "username": "Your Username",
-    "password": "Your Password",
-    "fullname": "Your Full Name",
-    "submit": "Submit"
+    "username": "Username",
+    "password": "Password",
+    "fullname": "Full name"
+  },
+  "login": {
+    "title": "Log in",
+    "submit": "Log in",
+    "switch_question": "No account yet?",
+    "switch": "Sign up"
+  },
+  "signup": {
+    "title": "Sign up",
+    "submit": "Create account",
+    "switch_question": "Already have an account?",
+    "switch": "Log in",
+    "legal_before": "By signing up you accept the",
+    "terms": "Terms of Use",
+    "legal_and": "and the",
+    "privacy": "Privacy Policy"
   }
 }

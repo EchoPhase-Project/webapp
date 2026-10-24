@@ -1,24 +1,37 @@
-import { createSignal, onMount, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import { Navigate, useSearchParams } from '@solidjs/router';
 import { useAuth } from '@shared/api/auth-provider';
 import { safeNext } from '@shared/api/auth-guards';
-import { useLocalizer } from '@shared/i18n/i18n-context';
+import BrandMark from '@shared/ui/BrandMark';
 import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm';
-import { BsArrowUpRight } from 'solid-icons/bs';
-import { useNav } from '@shared/nav/nav-context';
 import './auth.scss';
 
-export default function AuthPages() {
-    const [isRegister, setIsRegister] = createSignal(false);
-    const { setNavLinks } = useNav();
-    const t = useLocalizer('auth');
-    const auth = useAuth();
-    const [search] = useSearchParams<{ next?: string }>();
+type AuthSearch = { next?: string; mode?: string };
 
-    onMount(() => {
-        setNavLinks([]);
-    });
+/**
+ * Sign-in and sign-up on one card: its two sides, turned by the link under
+ * each form. ?mode=signup opens on the sign-up side (the About page links
+ * there); the side out of view is inert, so Tab never reaches it.
+ */
+export default function AuthPage() {
+    const auth = useAuth();
+    const [search, setSearch] = useSearchParams<AuthSearch>();
+    const isRegister = () => search.mode === 'signup';
+
+    let card: HTMLDivElement | undefined;
+
+    const turn = (register: boolean) => {
+        setSearch({ mode: register ? 'signup' : undefined }, { replace: true });
+        // Focus follows to the side now in view, once it is no longer inert.
+        queueMicrotask(() =>
+            card
+                ?.querySelector<HTMLInputElement>(
+                    `.${register ? 'auth-back' : 'auth-front'} input`
+                )
+                ?.focus()
+        );
+    };
 
     return (
         <Show
@@ -26,35 +39,24 @@ export default function AuthPages() {
             fallback={<Navigate href={safeNext(search.next)} />}
         >
             <div class="auth-wrapper">
-                <div class="auth-section">
-                    <h6 class="auth-tabs">
-                        <span>{t('login', 'Log In')}</span>
-                        <span>{t('signup', 'Sign Up')}</span>
-                    </h6>
-                    <input
-                        class="hidden-checkbox"
-                        type="checkbox"
-                        id="reg-log"
-                        name="reg-log"
-                        checked={isRegister()}
-                        onInput={(e) => setIsRegister(e.currentTarget.checked)}
-                    />
-                    <label for="reg-log">
-                        <BsArrowUpRight class="arrow" />
-                    </label>
-                    <div class="card-3d-wrap">
-                        <div class="card-3d-wrapper">
-                            <div class="card-front patterned">
-                                <div class="center-wrap">
-                                    <LoginForm />
-                                </div>
-                            </div>
-                            <div class="card-back patterned">
-                                <div class="center-wrap">
-                                    <RegisterForm />
-                                </div>
-                            </div>
-                        </div>
+                <div
+                    ref={card}
+                    class="auth-card"
+                    classList={{ 'auth-card--back': isRegister() }}
+                >
+                    <div
+                        class="auth-face auth-front patterned"
+                        inert={isRegister()}
+                    >
+                        <BrandMark class="auth-mark" />
+                        <LoginForm onSwitch={() => turn(true)} />
+                    </div>
+                    <div
+                        class="auth-face auth-back patterned"
+                        inert={!isRegister()}
+                    >
+                        <BrandMark class="auth-mark" />
+                        <RegisterForm onSwitch={() => turn(false)} />
                     </div>
                 </div>
             </div>

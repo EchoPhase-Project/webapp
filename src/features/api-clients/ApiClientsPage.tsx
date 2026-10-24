@@ -11,6 +11,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import Modal from '@shared/ui/Modal';
+import PageHeader from '@shared/ui/PageHeader';
 import type { ApiClient } from '@shared/api/types';
 import { deleteApiClient, listApiClients } from './api';
 import ApiClientForm from './components/ApiClientForm';
@@ -63,13 +64,20 @@ export default function ApiClientsPage() {
 
     return (
         <div class="api-clients-container">
-            <div class="page-header">
-                <h1>{t('title', 'API clients')}</h1>
-                <Button onClick={() => setCreating(true)}>
-                    <AiOutlinePlus />
-                    {t('new', 'New client')}
-                </Button>
-            </div>
+            <PageHeader
+                eyebrow={t('nav.settings', 'Settings')}
+                title={t('title', 'API clients')}
+                description={t(
+                    'description',
+                    'Credentials for bots and scripts that call the API.'
+                )}
+                actions={
+                    <Button onClick={() => setCreating(true)}>
+                        <AiOutlinePlus />
+                        {t('new', 'New client')}
+                    </Button>
+                }
+            />
 
             <Show when={secret()}>
                 {(value) => (

@@ -122,44 +122,17 @@ a {
   }
 }
 
-// Gold grid fading out from the top right, over a soft glow (from Termicont).
-// Fixed and click-through, so it never scrolls or blocks the page.
-.page-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 70% 15%,
-    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
-    transparent 60%
-  );
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.05;
-    background-image:
-      linear-gradient(
-        color-mix(in srgb, var(--accent) 100%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--accent) 100%, transparent) 1px,
-        transparent 1px
-      );
-    background-size: 60px 60px;
-    -webkit-mask-image: radial-gradient(
-      ellipse at 70% 15%,
-      black,
-      transparent 70%
-    );
-    mask-image: radial-gradient(ellipse at 70% 15%, black, transparent 70%);
-  }
+// The page: header, content, footer; the content grows, so the footer stays
+// at the bottom of the window on a short page.
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 main {
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   padding: 0 6.5em;
@@ -284,8 +257,17 @@ header {
   pointer-events: none;
 }
 
+// A thin scrollbar in a muted tone, darker under the pointer. The standard
+// properties (Firefox, Chromium) take precedence; ::-webkit-* is for Safari.
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-muted) 45%, transparent)
+    transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 1.4em;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -293,13 +275,13 @@ header {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--text);
-  border-radius: 1em;
-  border: 6px solid transparent;
+  background-color: color-mix(in srgb, var(--text-muted) 45%, transparent);
+  border-radius: 999px;
+  border: 3px solid transparent;
   background-clip: content-box;
 
   &:hover {
-    background-color: var(--text-hover);
+    background-color: var(--text-muted);
   }
 }
 
@@ -387,19 +369,6 @@ header {
   }
 }
 
-// A page's title with its main action beside it.
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-
-  h1 {
-    margin: 0;
-  }
-}
-
 // A quiet secondary action in words (Done, Cancel).
 .btn.btn-ghost {
   color: var(--text-muted);
@@ -410,6 +379,27 @@ header {
   &:focus-visible {
     color: var(--text);
     background-color: var(--surface-raised);
+  }
+}
+
+// What leads to a destructive action (it asks first): red, but outlined so
+// it does not outshout the page.
+.btn.btn-danger-outline {
+  color: var(--danger);
+  background-color: transparent;
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 10%, transparent);
+    border-color: var(--danger);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    color: var(--danger);
+    background-color: transparent;
   }
 }
 

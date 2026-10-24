@@ -1,0 +1,60 @@
+{
+  "title": "Terms of Use",
+  "description": "The rules for using EchoPhase: your account, acceptable use, your content and our responsibilities.",
+  "updated": "2026-10-24",
+  "intro": "These terms are the agreement between you and the EchoPhase project for using this website, its API and the service behind them (\"EchoPhase\" or \"the service\"). Please read them: by creating an account or using the service you accept them. If you do not agree, do not use the service.",
+  "sections": {
+    "service": {
+      "title": "The service",
+      "body": "EchoPhase lets you manage bots and connect services: connect accounts such as Discord or Twitch, automate tasks with workflows, and reach it all through the web app, the API and the realtime gateway. The service is provided by the EchoPhase project, a small open-source project, free of charge. We may add, change or remove features as the project evolves."
+    },
+    "account": {
+      "title": "Your account",
+      "body": "- You must be at least 16 years old, or the age of digital consent where you live if it is higher.\n- Give accurate information and keep your password and API client secrets secret. You are responsible for everything done with your account and its credentials.\n- An account is for one person. Accounts created by automated means are not allowed.\n- Tell us right away if you think someone else has access to your account. You can end all sessions yourself on the Sessions page."
+    },
+    "api": {
+      "title": "API clients, connections and workflows",
+      "body": "API clients, connected accounts and workflows act on your behalf: you are responsible for what they do, as if you did it yourself. When you connect an outside platform, you must also follow that platform's terms and developer policies (for example Discord's or Twitch's); EchoPhase is not affiliated with them. Respect the limits we set on requests, runs and storage, and do not try to get around them."
+    },
+    "acceptable": {
+      "title": "Acceptable use",
+      "body": "Do not use EchoPhase to:\n\n- break the law or help others break it;\n- send spam, harass, threaten or impersonate others;\n- distribute malware or attack, probe or overload this or any other system;\n- get around authentication, permissions, rate limits or other security measures;\n- collect other people's personal data without their permission;\n- break the terms of a connected platform or run bots that do;\n- disrupt the service for other users.\n\nTo report a security problem, contact us privately instead of testing it on the live service."
+    },
+    "content": {
+      "title": "Your content",
+      "body": "What you create and store in EchoPhase (workflows, their data, names, settings) remains yours. You give us permission to store, process and run it only as needed to provide the service to you. You are responsible for your content and confirm you have the right to use it. We may remove content that breaks these terms or the law."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "body": "How we handle personal data is described in the [Privacy Policy](/privacy), which is part of these terms."
+    },
+    "open-source": {
+      "title": "Open source",
+      "body": "The source code of EchoPhase is published under the BSD 3-Clause License. That licence governs the code; these terms govern the service run on this website. You are free to run EchoPhase yourself, under the licence."
+    },
+    "availability": {
+      "title": "Availability and changes",
+      "body": "We work to keep EchoPhase available, but it is provided without any guarantee of uptime. It may be interrupted for maintenance, updates or reasons beyond our control, and features may change. We may end the service; if so, we will announce it in advance where possible and give you time to export your data."
+    },
+    "termination": {
+      "title": "Suspension and termination",
+      "body": "You may stop using EchoPhase at any time and ask us to delete your account. We may suspend or close an account that breaks these terms, puts the service or other users at risk, or that we are required by law to close. Where possible, we will tell you why and give you a chance to respond."
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "body": "The service is provided \"as is\" and \"as available\", without warranties of any kind, express or implied, including fitness for a particular purpose and non-infringement. We do not guarantee that it will be error-free, secure or uninterrupted, or that data will never be lost: keep your own copies of what matters to you."
+    },
+    "liability": {
+      "title": "Limitation of liability",
+      "body": "To the extent the law allows, the EchoPhase project and its contributors are not liable for indirect, incidental or consequential damages, or for lost profits, data or goodwill, arising from your use of the service or your inability to use it. Nothing in these terms limits liability that cannot be limited by law, or your rights as a consumer."
+    },
+    "changes": {
+      "title": "Changes to these terms",
+      "body": "We may update these terms. The date at the top shows the latest version. For significant changes, we will tell you on the site before they take effect. If you keep using the service after that, you accept the new terms; if you do not agree, stop using it and ask us to delete your account."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Questions about these terms: reach the EchoPhase project through its [GitHub organisation](https://github.com/EchoPhase-Project)."
+    }
+  }
+}

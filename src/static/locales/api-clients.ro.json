@@ -16,5 +16,14 @@
     "last_used": "Ultima utilizare",
     "created": "Creat",
     "actions": "Acțiuni"
+  },
+  "new": "Client nou",
+  "copy": "Copiază",
+  "copied": "Copiat",
+  "dismiss": "Gata",
+  "confirm_delete": {
+    "title": "Ștergi acest client API?",
+    "text": "{name} nu mai funcționează imediat: boții și scripturile care îl folosesc nu se mai pot autentifica.",
+    "action": "Șterge"
   }
 }

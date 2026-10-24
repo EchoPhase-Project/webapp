@@ -16,7 +16,9 @@ export default function FieldError(props: {
         <Show when={props.errors?.length}>
             <ul class="errorlist field-errors" id={errorId(props.for)}>
                 <For each={props.errors}>
-                    {(error) => <li>{i18n.t(error.code, error.message)}</li>}
+                    {(error) => (
+                        <li>{i18n.t(`errors.${error.code}`, error.message)}</li>
+                    )}
                 </For>
             </ul>
         </Show>

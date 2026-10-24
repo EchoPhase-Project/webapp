@@ -1,0 +1,49 @@
+{
+  "title": "Despre",
+  "description": "EchoPhase este o platformă open-source pentru gestionarea boților și conectarea serviciilor.",
+  "eyebrow": "Despre EchoPhase",
+  "heading": "Boți și servicii, conectate într-un singur loc",
+  "lead": "EchoPhase este o platformă open-source pentru gestionarea boților și conectarea serviciilor: conectează-ți conturile, automatizează sarcini cu fluxuri de lucru și accesează totul printr-un singur API.",
+  "cta": {
+    "start": "Începe",
+    "signed_in": "Clienții tăi API",
+    "source": "Cod sursă"
+  },
+  "features_title": "Ce poți face",
+  "principles_title": "Cum este construit",
+  "items": {
+    "connections": {
+      "title": "Conexiuni",
+      "text": "Conectează o singură dată conturile Discord și Twitch; EchoPhase le ține tokenurile actualizate și criptate, iar boții tăi le folosesc."
+    },
+    "workflows": {
+      "title": "Fluxuri de lucru",
+      "text": "Automatizează sarcini din blocuri care rulează după un program sau la evenimente, cu o stocare care se păstrează între rulări."
+    },
+    "api": {
+      "title": "API și clienți API",
+      "text": "Tot ce face aplicația web se află în API. Dă fiecărui bot sau script propriul client, doar cu permisiunile de care are nevoie."
+    },
+    "realtime": {
+      "title": "Gateway în timp real",
+      "text": "Un singur WebSocket pentru evenimentele conexiunilor și fluxurilor tale de lucru, pe măsură ce au loc."
+    },
+    "open": {
+      "title": "Open source",
+      "text": "Serverul, aplicația web și chart-ul sunt publice sub licența BSD 3-Clause."
+    },
+    "self_hosted": {
+      "title": "Îl poți rula singur",
+      "text": "Rulează-ți propria instanță cu chart-ul Helm sau cu Docker Compose."
+    },
+    "private": {
+      "title": "Privat în mod implicit",
+      "text": "Fără reclame sau instrumente de urmărire terțe; statisticile și rapoartele de erori sunt găzduite de noi și doar cu permisiunea ta."
+    }
+  },
+  "footnote": "Întrebări sau idei? Deschide un issue pe",
+  "footnote_policies": "Vezi și",
+  "terms": "Termenii de utilizare",
+  "and": "și",
+  "privacy": "Politica de confidențialitate"
+}

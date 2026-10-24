@@ -13,7 +13,7 @@ import Field from '@shared/ui/Field';
 const FIELDS = ['username', 'password'] as const;
 const inputId = (field: string) => `login-${field}`;
 
-export default function LoginForm() {
+export default function LoginForm(props: { onSwitch: () => void }) {
     const i18n = useI18n();
     const t = useLocalizer('auth');
     const auth = useAuth();
@@ -46,14 +46,14 @@ export default function LoginForm() {
             onSubmit={(e) => void handleLogin(e)}
             noValidate
         >
-            <h4 class="form-title">{t('login', 'Log In')}</h4>
+            <h1 class="form-title">{t('login.title', 'Log in')}</h1>
 
             <ErrorSummary errors={errors()} inputId={inputId} />
 
             <Field
                 id={inputId('username')}
                 name="username"
-                label={t('form.username', 'Your Username')}
+                label={t('form.username', 'Username')}
                 icon={FaRegularUser}
                 errors={errors().username}
                 type="text"
@@ -71,7 +71,7 @@ export default function LoginForm() {
             <Field
                 id={inputId('password')}
                 name="password"
-                label={t('form.password', 'Your Password')}
+                label={t('form.password', 'Password')}
                 icon={BiRegularLock}
                 errors={errors().password}
                 type="password"
@@ -89,8 +89,19 @@ export default function LoginForm() {
             <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
                     ? i18n.t('loading', 'Loading…')
-                    : t('form.submit', 'SUBMIT')}
+                    : t('login.submit', 'Log in')}
             </Button>
+
+            <p class="auth-switch">
+                {t('login.switch_question', 'No account yet?')}{' '}
+                <button
+                    type="button"
+                    class="link-button"
+                    onClick={() => props.onSwitch()}
+                >
+                    {t('login.switch', 'Sign up')}
+                </button>
+            </p>
         </form>
     );
 }

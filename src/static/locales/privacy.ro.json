@@ -1,0 +1,56 @@
+{
+  "title": "Politica de confidențialitate",
+  "description": "Ce date colectează EchoPhase, de ce, cât timp le păstrează și cum le poți controla.",
+  "updated": "2026-10-24",
+  "intro": "Această politică explică ce informații colectează EchoPhase când folosești acest site și API-ul lui, de ce, cât timp sunt păstrate și ce poți face în privința lor. Pe scurt: colectăm ce este necesar pentru funcționarea serviciului, nu vindem nimic și nu folosim nimic pentru reclame, iar statisticile vizitelor și rapoartele de erori sunt colectate doar cu permisiunea ta.",
+  "sections": {
+    "summary": {
+      "title": "Pe scurt",
+      "body": "- Păstrăm contul tău și ce creezi în EchoPhase, ca serviciul să poată funcționa pentru tine.\n- Parolele, tokenurile de reîmprospătare și secretele clienților API sunt stocate doar ca hash-uri ireversibile; tokenurile conturilor conectate sunt criptate.\n- Statisticile și rapoartele de erori rulează pe propriile noastre servere (Umami și GlitchTip), fără instrumente de urmărire terțe, și doar cu permisiunea ta.\n- Nu vindem datele tale, nu afișăm reclame și nu îți creăm un profil.\n- Îți poți vedea, exporta și șterge datele și poți schimba oricând alegerea privind cookie-urile."
+    },
+    "who": {
+      "title": "Cine suntem",
+      "body": "EchoPhase este o platformă open-source pentru gestionarea boților și conectarea serviciilor, condusă de proiectul EchoPhase. Pentru acest site și serviciul din spatele lui, proiectul EchoPhase este responsabil de datele tale (operatorul de date). Cum ne poți contacta găsești la [Contact](#section-contact)."
+    },
+    "collect": {
+      "title": "Ce colectăm",
+      "body": "Contul tău: numele de utilizator, numele pe care îl dai, fusul orar și, dacă încarci una, o imagine de profil. Parola nu este stocată niciodată, ci doar un hash Argon2 al ei.\n\nSesiunile tale: pentru fiecare dispozitiv de pe care te autentifici, când a început sesiunea și când a fost folosită ultima dată, plus o descriere a dispozitivului (browserul și sistemul de operare, din antetul User-Agent), ca să poți vedea și încheia sesiuni pe pagina Sesiuni.\n\nCe creezi: clienți API (nume, permisiuni, expirare, ultima utilizare; secretul doar ca hash), conturile pe care le conectezi (de exemplu Discord sau Twitch: id-ul și numele contului, permisiunile acordate și tokenurile lui, criptate), fluxuri de lucru (workflow), rulările lor și valorile pe care le stochează, precum și webhook-uri.\n\nÎnregistrări tehnice: ca orice site, serverele noastre văd adresa ta IP, adresa cerută, ora, răspunsul și User-Agent-ul browserului. Acestea apar în jurnalele serverului și în urmele cererilor, pe care le folosim pentru ca serviciul să fie sigur și să funcționeze.\n\nStatisticile vizitelor, doar dacă le permiți: paginile vizitate, site-ul de proveniență, browserul, sistemul de operare, tipul dispozitivului, dimensiunea ecranului, limba și țara dedusă din adresa IP. Umami nu stochează adresa IP și nu setează cookie-uri; o vizită este recunoscută după un hash cu sare care se schimbă regulat, astfel încât vizitele nu pot fi legate de tine.\n\nRapoartele de erori, doar dacă le permiți: când pagina eșuează, mesajul erorii, locul din cod unde a apărut, adresa paginii, browserul și sistemul de operare. Nu se atașează adresa IP, contul sau conținutul formularelor."
+    },
+    "cookies": {
+      "title": "Cookie-uri și stocarea în browser",
+      "body": "Folosim doar cookie-urile de care site-ul are nevoie ca să funcționeze. Sunt setate de propriul nostru server și nu sunt partajate niciodată:\n\n- Access-Token: te menține autentificat în timpul vizitei; este șters la închiderea browserului.\n- Refresh-Token: te menține autentificat între vizite; până la 400 de zile sau până te deconectezi ori închei sesiunea.\n- XSRF-TOKEN: îți protejează cererile împotriva falsificării cererilor între site-uri; pe durata vizitei.\n- EchoPhase.ConnectionNonce: doar cât timp conectezi un cont extern, câteva minute.\n\nSite-ul mai reține în stocarea locală a browserului tema (theme), limba (app_locale) și alegerea privind cookie-urile (consent). Statisticile și rapoartele de erori nu folosesc cookie-uri. Îți poți revizui oricând alegerea din Setări cookie, în partea de jos a fiecărei pagini."
+    },
+    "why": {
+      "title": "De ce le folosim",
+      "body": "- Pentru a furniza serviciul pentru care te-ai înregistrat: contul, sesiunile, clienții API, conexiunile și fluxurile de lucru (executarea acordului nostru cu tine).\n- Pentru ca serviciul să fie sigur și să funcționeze: înregistrări tehnice, limitarea încercărilor repetate, investigarea abuzurilor (interesul nostru legitim pentru un serviciu sigur).\n- Pentru a îmbunătăți site-ul: statistici și rapoarte de erori (consimțământul tău, pe care îl poți retrage oricând).\n- Pentru a respecta obligațiile legale, când legea ne cere să păstrăm sau să predăm informații."
+    },
+    "sharing": {
+      "title": "Cu cine le partajăm",
+      "body": "EchoPhase rulează pe servere pe care le administrăm noi înșine; statisticile (Umami) și urmărirea erorilor (GlitchTip) sunt și ele găzduite de noi. Nu vindem date personale și nu le partajăm pentru reclame.\n\nCând conectezi un cont extern sau un flux de lucru apelează un serviciu extern, EchoPhase îi trimite acelui serviciu ce este necesar pentru a acționa în numele tău, conform propriei lui politici de confidențialitate (de exemplu a Discord sau a Twitch).\n\nDezvăluim informații autorităților doar când legea o cere și doar cât cere."
+    },
+    "retention": {
+      "title": "Cât timp le păstrăm",
+      "body": "- Contul tău și ce creezi: până le ștergi sau până când contul tău este șters la cererea ta.\n- Sesiunile: până le închei sau te deconectezi; sesiunile inactive sunt eliminate la curățări regulate.\n- Jurnalele serverului: rotite și suprascrise automat după scurt timp.\n- Urmele cererilor: 14 zile.\n- Rapoartele de erori: 90 de zile.\n- Statisticile vizitelor: păstrate ca statistici; nu pot fi legate de tine.\n\nCând contul tău este șters, tot ce îi aparține (sesiuni, clienți API, conexiuni, fluxuri de lucru și datele lor) este șters odată cu el."
+    },
+    "rights": {
+      "title": "Drepturile tale",
+      "body": "În funcție de locul în care trăiești (de exemplu conform GDPR în UE), ai dreptul:\n\n- să afli ce date deținem despre tine și să primești o copie, într-un format portabil;\n- să le corectezi dacă sunt greșite;\n- să le ștergi;\n- să te opui modului în care le folosim sau să îl restricționezi;\n- să îți retragi oricând consimțământul din Setări cookie, în partea de jos a paginii, fără a afecta ce s-a făcut înainte;\n- să depui o plângere la autoritatea de protecție a datelor.\n\nPentru a-ți exercita oricare dintre aceste drepturi, scrie-ne (vezi [Contact](#section-contact)). Răspundem în cel mult o lună."
+    },
+    "security": {
+      "title": "Cum le protejăm",
+      "body": "Conexiunile sunt criptate (HTTPS). Parolele sunt hash-uite cu Argon2; tokenurile de reîmprospătare și secretele clienților API sunt stocate doar ca hash-uri, iar tokenurile conturilor conectate sunt criptate. Cookie-urile de autentificare nu pot fi citite de scripturi și sunt trimise doar acestui site. Încercările repetate sunt limitate. Niciun sistem nu este perfect sigur, dar facem tot posibilul să îți protejăm datele și te vom anunța dacă o breșă le pune în pericol."
+    },
+    "children": {
+      "title": "Copii",
+      "body": "EchoPhase nu este destinat copiilor sub 16 ani și nu colectăm cu bună știință datele lor. Dacă crezi că un copil ne-a oferit date personale, contactează-ne și le vom șterge."
+    },
+    "changes": {
+      "title": "Modificări ale acestei politici",
+      "body": "Putem actualiza această politică pe măsură ce serviciul se schimbă. Data de sus arată cea mai recentă versiune. Dacă o modificare afectează ce colectăm sau ce ai permis, te vom anunța pe site și, când privește statisticile sau rapoartele de erori, îți vom cere din nou alegerea."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Întrebări, cereri privind datele tale sau nemulțumiri: contactează proiectul EchoPhase prin [organizația sa de pe GitHub](https://github.com/EchoPhase-Project). Te rugăm să nu publici date personale în issue-uri publice; cere acolo un canal privat."
+    }
+  }
+}

@@ -1,0 +1,98 @@
+.about {
+  display: grid;
+  gap: 36px;
+  align-content: start;
+
+  h2 {
+    margin: 0 0 14px;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+}
+
+// The brand moment: the pattern, the name, what it is, where to go.
+.about-hero {
+  --pattern-size: cover;
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  padding: 44px 40px;
+
+  @include comp.media('max-width: 600px') {
+    padding: 28px 22px;
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 22em;
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+}
+
+.about-eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.about-lead {
+  margin: 0;
+  max-width: 40em;
+  font-size: 1.02rem;
+  color: var(--text-muted);
+}
+
+.about-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+
+  a.btn {
+    text-decoration: none;
+  }
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 16px;
+}
+
+.about-item {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+
+  h3 {
+    margin: 4px 0 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+}
+
+.about-item-icon {
+  font-size: 22px;
+  color: var(--accent);
+}
+
+.about-footnote {
+  margin: 0;
+}
+
+// The second action, quieter than the gold one but still a button.
+.about-actions .btn.btn-ghost {
+  border-color: color-mix(in srgb, var(--text) 18%, transparent);
+}

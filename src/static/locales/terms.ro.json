@@ -1,0 +1,60 @@
+{
+  "title": "Termeni de utilizare",
+  "description": "Regulile de utilizare a EchoPhase: contul tău, utilizarea acceptabilă, conținutul tău și responsabilitățile noastre.",
+  "updated": "2026-10-24",
+  "intro": "Acești termeni sunt acordul dintre tine și proiectul EchoPhase privind utilizarea acestui site, a API-ului său și a serviciului din spatele lor („EchoPhase” sau „serviciul”). Te rugăm să îi citești: creând un cont sau folosind serviciul, îi accepți. Dacă nu ești de acord, nu folosi serviciul.",
+  "sections": {
+    "service": {
+      "title": "Serviciul",
+      "body": "EchoPhase îți permite să gestionezi boți și să conectezi servicii: să conectezi conturi precum Discord sau Twitch, să automatizezi sarcini cu fluxuri de lucru (workflow) și să accesezi totul prin aplicația web, API și gateway-ul în timp real. Serviciul este oferit gratuit de proiectul EchoPhase, un mic proiect open-source. Putem adăuga, schimba sau elimina funcții pe măsură ce proiectul evoluează."
+    },
+    "account": {
+      "title": "Contul tău",
+      "body": "- Trebuie să ai cel puțin 16 ani sau vârsta consimțământului digital din țara ta, dacă aceasta este mai mare.\n- Oferă informații corecte și păstrează secrete parola și secretele clienților API. Ești responsabil pentru tot ce se face cu contul tău și cu datele lui de acces.\n- Un cont este pentru o singură persoană. Conturile create automat nu sunt permise.\n- Anunță-ne imediat dacă crezi că altcineva are acces la contul tău. Poți încheia singur toate sesiunile pe pagina Sesiuni."
+    },
+    "api": {
+      "title": "Clienți API, conexiuni și fluxuri de lucru",
+      "body": "Clienții API, conturile conectate și fluxurile de lucru acționează în numele tău: ești responsabil pentru ce fac, ca și cum ai fi făcut-o tu. Când conectezi o platformă externă, trebuie să respecți și termenii și politicile pentru dezvoltatori ale acelei platforme (de exemplu ale Discord sau Twitch); EchoPhase nu este afiliat cu ele. Respectă limitele pe care le stabilim pentru cereri, rulări și stocare și nu încerca să le ocolești."
+    },
+    "acceptable": {
+      "title": "Utilizare acceptabilă",
+      "body": "Nu folosi EchoPhase pentru:\n\n- a încălca legea sau a-i ajuta pe alții să o încalce;\n- a trimite spam, a hărțui, a amenința sau a te da drept altcineva;\n- a distribui programe malițioase sau a ataca, scana ori supraîncărca acest sistem sau oricare altul;\n- a ocoli autentificarea, permisiunile, limitele de cereri sau alte măsuri de securitate;\n- a colecta datele personale ale altora fără permisiunea lor;\n- a încălca termenii unei platforme conectate sau a rula boți care îi încalcă;\n- a perturba serviciul pentru alți utilizatori.\n\nPentru a raporta o problemă de securitate, contactează-ne în privat în loc să o testezi pe serviciul în funcțiune."
+    },
+    "content": {
+      "title": "Conținutul tău",
+      "body": "Ce creezi și stochezi în EchoPhase (fluxuri de lucru, datele lor, nume, setări) rămâne al tău. Ne dai permisiunea să le stocăm, procesăm și rulăm doar cât este necesar pentru a-ți furniza serviciul. Ești responsabil pentru conținutul tău și confirmi că ai dreptul să îl folosești. Putem elimina conținutul care încalcă acești termeni sau legea."
+    },
+    "privacy": {
+      "title": "Confidențialitate",
+      "body": "Modul în care tratăm datele personale este descris în [Politica de confidențialitate](/privacy), care face parte din acești termeni."
+    },
+    "open-source": {
+      "title": "Open source",
+      "body": "Codul sursă EchoPhase este publicat sub licența BSD 3-Clause. Licența se aplică codului; acești termeni se aplică serviciului care rulează pe acest site. Ești liber să rulezi EchoPhase pe cont propriu, conform licenței."
+    },
+    "availability": {
+      "title": "Disponibilitate și modificări",
+      "body": "Facem tot posibilul ca EchoPhase să fie disponibil, dar este oferit fără nicio garanție privind timpul de funcționare. Poate fi întrerupt pentru mentenanță, actualizări sau din motive independente de noi, iar funcțiile se pot schimba. Putem închide serviciul; în acest caz, îl vom anunța din timp când este posibil și îți vom lăsa timp să îți exporți datele."
+    },
+    "termination": {
+      "title": "Suspendare și închidere",
+      "body": "Poți înceta oricând să folosești EchoPhase și ne poți cere să îți ștergem contul. Putem suspenda sau închide un cont care încalcă acești termeni, pune în pericol serviciul sau alți utilizatori ori pe care legea ne obligă să îl închidem. Când este posibil, îți vom spune motivul și îți vom da ocazia să răspunzi."
+    },
+    "disclaimer": {
+      "title": "Declinarea garanțiilor",
+      "body": "Serviciul este oferit „ca atare” și „în măsura disponibilității”, fără garanții de niciun fel, exprese sau implicite, inclusiv privind adecvarea pentru un anumit scop și neîncălcarea drepturilor. Nu garantăm că va funcționa fără erori, în siguranță sau fără întreruperi, ori că datele nu se vor pierde niciodată: păstrează-ți propriile copii ale lucrurilor importante pentru tine."
+    },
+    "liability": {
+      "title": "Limitarea răspunderii",
+      "body": "În măsura permisă de lege, proiectul EchoPhase și contribuitorii săi nu răspund pentru daune indirecte, incidentale sau consecutive ori pentru pierderi de profit, date sau reputație cauzate de utilizarea serviciului sau de imposibilitatea de a-l folosi. Nimic din acești termeni nu limitează răspunderea care nu poate fi limitată prin lege sau drepturile tale de consumator."
+    },
+    "changes": {
+      "title": "Modificări ale acestor termeni",
+      "body": "Putem actualiza acești termeni. Data de sus arată cea mai recentă versiune. Pentru modificări importante, te vom anunța pe site înainte ca acestea să intre în vigoare. Dacă folosești în continuare serviciul după aceea, accepți noii termeni; dacă nu ești de acord, nu mai folosi serviciul și cere-ne să îți ștergem contul."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Întrebări despre acești termeni: contactează proiectul EchoPhase prin [organizația sa de pe GitHub](https://github.com/EchoPhase-Project)."
+    }
+  }
+}

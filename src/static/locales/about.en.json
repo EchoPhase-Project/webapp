@@ -1,0 +1,49 @@
+{
+  "title": "About",
+  "description": "EchoPhase is an open-source platform for managing bots and connecting services.",
+  "eyebrow": "About EchoPhase",
+  "heading": "Bots and services, connected in one place",
+  "lead": "EchoPhase is an open-source platform for managing bots and connecting services: link your accounts, automate tasks with workflows and reach everything through one API.",
+  "cta": {
+    "start": "Get started",
+    "signed_in": "Your API clients",
+    "source": "Source code"
+  },
+  "features_title": "What you can do",
+  "principles_title": "How it is made",
+  "items": {
+    "connections": {
+      "title": "Connections",
+      "text": "Link Discord and Twitch accounts once; EchoPhase keeps their tokens fresh and encrypted, and your bots use them."
+    },
+    "workflows": {
+      "title": "Workflows",
+      "text": "Automate tasks from blocks that run on a schedule or on events, with storage that persists between runs."
+    },
+    "api": {
+      "title": "API and API clients",
+      "text": "Everything the web app does is in the API. Give each bot or script its own client with only the permissions it needs."
+    },
+    "realtime": {
+      "title": "Realtime gateway",
+      "text": "One WebSocket for events from your connections and workflows, as they happen."
+    },
+    "open": {
+      "title": "Open source",
+      "text": "Server, web app and chart are public under the BSD 3-Clause License."
+    },
+    "self_hosted": {
+      "title": "Yours to run",
+      "text": "Run your own instance with the Helm chart or Docker Compose."
+    },
+    "private": {
+      "title": "Private by default",
+      "text": "No ads or third-party trackers; statistics and error reports are self-hosted and only with your permission."
+    }
+  },
+  "footnote": "Questions or ideas? Open an issue on",
+  "footnote_policies": "See also the",
+  "terms": "Terms of Use",
+  "and": "and",
+  "privacy": "Privacy Policy"
+}

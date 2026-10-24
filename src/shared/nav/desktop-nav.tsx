@@ -1,5 +1,6 @@
 import { For, Show, createSignal, onCleanup } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavLink, NavSubItem } from './nav-link';
 import './navbar.scss';
 
@@ -141,8 +142,12 @@ function DesktopNavItem(props: { link: NavLink; isLogo: boolean }) {
  * Expands on hover to show link labels and chevrons.
  */
 export function DesktopNav(props: { links: NavLink[] }) {
+    const { t } = useI18n();
     return (
-        <nav class="navbar navbar--desktop" aria-label="Desktop navigation">
+        <nav
+            class="navbar navbar--desktop"
+            aria-label={t('nav.label', 'Main navigation')}
+        >
             <ul class="navbar-nav">
                 <For each={props.links}>
                     {(link, index) => (

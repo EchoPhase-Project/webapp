@@ -1,0 +1,74 @@
+// The banner: a card in the bottom corner, above the mobile nav bar; it
+// covers no content a visitor needs to read before choosing.
+.consent-banner {
+  position: fixed;
+  z-index: 60;
+  right: 20px;
+  bottom: 20px;
+  width: min(32rem, calc(100vw - 40px));
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  animation: consent-in 200ms ease-out;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  @include comp.media('max-width: 767px') {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    // Above the mobile nav bar.
+    bottom: calc(4.5em + 10px);
+  }
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.consent-settings {
+  > p {
+    margin: 0;
+  }
+}
+
+.consent-categories {
+  display: grid;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.consent-always {
+  flex: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--success);
+  white-space: nowrap;
+}
+
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consent-banner {
+    animation: none;
+  }
+}

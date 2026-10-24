@@ -4,6 +4,7 @@ import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import PageHeader from '@shared/ui/PageHeader';
 import { listSessions, revokeAllSessions, revokeSession } from './api';
 import SessionsTable from './components/SessionsTable';
 import './sessions.scss';
@@ -39,15 +40,25 @@ export default function SessionsPage() {
 
     return (
         <div class="sessions-container">
-            <div class="page-header">
-                <h1>{t('heading', 'Active Sessions')}</h1>
-                <Button
-                    disabled={isLoading() || (sessions() ?? []).length === 0}
-                    onClick={() => setConfirming(true)}
-                >
-                    {t('revoke_all', 'Revoke All')}
-                </Button>
-            </div>
+            <PageHeader
+                eyebrow={t('nav.settings', 'Settings')}
+                title={t('heading', 'Active sessions')}
+                description={t(
+                    'lead',
+                    'The devices signed in to your account. End a session you do not recognise, and change your password if you think someone else has it.'
+                )}
+                actions={
+                    <Button
+                        variant="danger-outline"
+                        disabled={
+                            isLoading() || (sessions() ?? []).length === 0
+                        }
+                        onClick={() => setConfirming(true)}
+                    >
+                        {t('revoke_all', 'Revoke all')}
+                    </Button>
+                }
+            />
             <SessionsTable
                 sessions={sessions() ?? []}
                 busy={isLoading()}
@@ -57,7 +68,7 @@ export default function SessionsPage() {
             <ConfirmDialog
                 open={confirming()}
                 title={t('confirm_revoke_all.title', 'Revoke every session?')}
-                confirm={t('revoke_all', 'Revoke All')}
+                confirm={t('revoke_all', 'Revoke all')}
                 busy={busy()}
                 onConfirm={() =>
                     void revoking(revokeAllSessions).finally(() =>

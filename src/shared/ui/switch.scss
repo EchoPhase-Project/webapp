@@ -1,0 +1,67 @@
+// A setting's row: its name and explanation, the switch on the right.
+.switch-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.switch-text {
+  display: grid;
+  gap: 2px;
+}
+
+.switch-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.switch-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+// The track; its knob is ::before. Off: a muted track; on: the gold one.
+.switch {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 2px 0 0;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--text-muted) 45%, transparent);
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--surface);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 35%, transparent);
+    transition: transform var(--transition-speed);
+  }
+
+  &:checked {
+    background-color: var(--primary);
+    box-shadow: inset 0 0 0 1px var(--primary-border);
+
+    &::before {
+      transform: translateX(16px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .switch::before {
+    transition: none;
+  }
+}

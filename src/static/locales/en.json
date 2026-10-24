@@ -1,15 +1,24 @@
 {
   "loading": "Loading…",
   "unauthorized": "Unauthorized",
-  "select_language": "Select Language",
+  "select_language": "Select language",
+  "no_matches": "No matches",
   "close": "Close",
   "cancel": "Cancel",
+  "theme": {
+    "to_dark": "Switch to dark theme",
+    "to_light": "Switch to light theme"
+  },
   "nav": {
+    "label": "Main navigation",
     "home": "Home",
-    "about": "About",
     "login": "Log in",
-    "logout": "Logout",
+    "logout": "Log out",
     "settings": "Settings",
+    "more": "More",
+    "more_items": "More items",
+    "more_count": "More navigation items ({count})",
+    "submenu": "Submenu",
     "sessions": {
       "label": "Sessions",
       "description": "View active sessions"
@@ -18,6 +27,62 @@
       "label": "API clients",
       "description": "Credentials for bots and scripts"
     }
+  },
+  "footer": {
+    "label": "Site",
+    "about": "About",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie settings",
+    "source": "Source code",
+    "product": "Product",
+    "features": "Features",
+    "start": "Get started",
+    "resources": "Resources",
+    "self_host": "Run it yourself",
+    "issues": "Report a problem",
+    "legal": "Legal",
+    "tagline": "Bots and services, connected in one place.",
+    "status_ok": "Service is running",
+    "status_down": "Service unavailable"
+  },
+  "consent": {
+    "banner": {
+      "title": "Cookies and statistics",
+      "text": "EchoPhase uses the cookies it needs to keep you signed in. With your permission it also counts page visits and receives error reports, both without personal data, to see what to improve.",
+      "policy": "Privacy Policy"
+    },
+    "settings": {
+      "title": "Cookie settings",
+      "intro": "Choose what EchoPhase may collect beyond what it needs to work. You can change this at any time from the page footer."
+    },
+    "necessary": {
+      "label": "Necessary",
+      "description": "Sign-in and request protection cookies, and your theme, language and this choice, kept in your browser. The site does not work without them."
+    },
+    "analytics": {
+      "label": "Statistics",
+      "description": "Which pages are visited, from which kind of device and country, counted by our own Umami. No cookies, no profile of you, nothing shared."
+    },
+    "errors": {
+      "label": "Error reports",
+      "description": "When something breaks in the page, what broke and where, sent to our own GlitchTip, so it gets fixed. No personal data."
+    },
+    "always_on": "Always on",
+    "customize": "Customize",
+    "reject_all": "Reject all",
+    "accept_all": "Accept all",
+    "save": "Save choices"
+  },
+  "legal": {
+    "updated": "Last updated",
+    "contents": "Contents",
+    "eyebrow": "Documents"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "text": "There is nothing at this address. It may have moved, or the link may be mistyped.",
+    "home": "Go to the home page"
   },
   "notice": {
     "reauth": {
@@ -40,5 +105,23 @@
     },
     "auto": "This page comes back by itself when the service does.",
     "retry": "Try now"
+  },
+  "errors": {
+    "network_error": "Could not reach the server. Check your connection and try again.",
+    "http_429": "Too many attempts. Wait a moment and try again.",
+    "http_500": "Something went wrong on our side. Try again later.",
+    "http_502": "The service is not available right now. Try again later.",
+    "http_503": "The service is not available right now. Try again later.",
+    "http_504": "The service took too long to answer. Try again later.",
+    "Unauthorized": "Sign in to continue.",
+    "Forbidden": "You do not have permission to do this.",
+    "InvalidCredentials": "Wrong username or password.",
+    "LockedOut": "This account is locked for now. Try again later.",
+    "DuplicateUserName": "This username is already taken.",
+    "InvalidUserName": "The username may contain only Latin letters, digits and - . _ @ +",
+    "PasswordTooShort": "The password must be at least 8 characters long.",
+    "PasswordRequiresDigit": "The password must contain a digit (0–9).",
+    "PasswordRequiresLower": "The password must contain a lowercase letter (a–z).",
+    "PasswordRequiresUpper": "The password must contain an uppercase letter (A–Z)."
   }
 }

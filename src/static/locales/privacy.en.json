@@ -1,0 +1,56 @@
+{
+  "title": "Privacy Policy",
+  "description": "What EchoPhase collects, why, how long it keeps it and how to control it.",
+  "updated": "2026-10-24",
+  "intro": "This policy explains what information EchoPhase collects when you use this website and its API, why, how long it is kept and what you can do about it. In short: we collect what the service needs to work, nothing is sold or used for advertising, and visit statistics and error reports are collected only if you allow them.",
+  "sections": {
+    "summary": {
+      "title": "The short version",
+      "body": "- We keep your account and what you create in EchoPhase so the service can work for you.\n- Passwords, refresh tokens and API client secrets are stored only as one-way hashes; tokens of connected accounts are encrypted.\n- Statistics and error reports run on our own servers (Umami and GlitchTip), not with third-party trackers, and only with your permission.\n- We do not sell your data, show ads or build profiles of you.\n- You can see, export and delete your data, and change your cookie choice at any time."
+    },
+    "who": {
+      "title": "Who we are",
+      "body": "EchoPhase is an open-source platform for managing bots and connecting services, run by the EchoPhase project. For this website and the service behind it, the EchoPhase project is responsible for your data (the \"controller\"). How to reach us is in [Contact](#section-contact)."
+    },
+    "collect": {
+      "title": "What we collect",
+      "body": "Your account: your username, the name you give, your time zone and, if you upload one, a profile picture. Your password is never stored, only an Argon2 hash of it.\n\nYour sessions: for each device you sign in on, when the session started and was last used and a description of the device (browser and operating system, from the User-Agent header), so you can review and end sessions on the Sessions page.\n\nWhat you create: API clients (name, permissions, expiry, last use; the secret only as a hash), accounts you connect (such as Discord or Twitch: the account's id and name, the permissions granted and its tokens, encrypted), workflows, their runs and the values they store, and webhooks.\n\nTechnical records: like every website, our servers see your IP address, the requested address, the time, the response and your browser's User-Agent. They appear in server logs and request traces, which we use to keep the service secure and working.\n\nVisit statistics, only if you allow them: the pages viewed, the referring site, browser, operating system, device type, screen size, language and the country derived from your IP address. Umami stores no IP address and sets no cookies; a visit is recognised by a salted hash that changes regularly, so visits cannot be tied to you.\n\nError reports, only if you allow them: when the page fails, the error message, where in the code it happened, the page address, and browser and operating system. No IP address, account or form contents are attached."
+    },
+    "cookies": {
+      "title": "Cookies and storage in your browser",
+      "body": "We use only the cookies the site needs to work. They are set by our own server and never shared:\n\n- Access-Token: keeps you signed in during a visit; removed when the browser closes.\n- Refresh-Token: keeps you signed in between visits; up to 400 days, or until you sign out or end the session.\n- XSRF-TOKEN: protects your requests against cross-site request forgery; for the visit.\n- EchoPhase.ConnectionNonce: only while you connect an outside account, for a few minutes.\n\nThe site also remembers in your browser's local storage your theme (theme), your language (app_locale) and your cookie choice (consent). Statistics and error reports use no cookies. You can review your choice at any time with Cookie settings at the bottom of every page."
+    },
+    "why": {
+      "title": "Why we use it",
+      "body": "- To provide the service you signed up for: your account, sessions, API clients, connections and workflows (performing our agreement with you).\n- To keep the service secure and running: technical records, limits on repeated attempts, investigating abuse (our legitimate interest in a safe service).\n- To improve the site: statistics and error reports (your consent, which you can withdraw at any time).\n- To meet legal obligations, when the law requires us to keep or hand over information."
+    },
+    "sharing": {
+      "title": "Who we share it with",
+      "body": "EchoPhase runs on servers we operate ourselves; the statistics (Umami) and error tracking (GlitchTip) are self-hosted too. We do not sell personal data or share it for advertising.\n\nWhen you connect an outside account or a workflow calls an outside service, EchoPhase sends that service what is needed to act on your behalf, under that service's own privacy policy (for example Discord's or Twitch's).\n\nWe disclose information to authorities only when the law requires it, and only what it requires."
+    },
+    "retention": {
+      "title": "How long we keep it",
+      "body": "- Your account and what you create: until you delete them, or until your account is deleted at your request.\n- Sessions: until you end them or sign out; idle sessions are removed in regular clean-ups.\n- Server logs: rotated and overwritten automatically after a short time.\n- Request traces: 14 days.\n- Error reports: 90 days.\n- Visit statistics: kept as statistics; they cannot be tied to you.\n\nWhen your account is deleted, everything it owns (sessions, API clients, connections, workflows and their data) is deleted with it."
+    },
+    "rights": {
+      "title": "Your rights",
+      "body": "Depending on where you live (for example under the GDPR in the EU), you have the right to:\n\n- know what we hold about you and get a copy, in a portable format;\n- have it corrected if it is wrong;\n- have it deleted;\n- object to or restrict how we use it;\n- withdraw your consent at any time, without affecting what was done before, with Cookie settings at the bottom of the page;\n- complain to your data protection authority.\n\nTo use any of these rights, write to us (see [Contact](#section-contact)). We answer within one month."
+    },
+    "security": {
+      "title": "How we protect it",
+      "body": "Connections are encrypted (HTTPS). Passwords are hashed with Argon2; refresh tokens and API client secrets are stored only as hashes, and tokens of connected accounts are encrypted. Sign-in cookies cannot be read by scripts and are sent only to this site. Repeated attempts are limited. No system is perfectly secure, but we work to keep your data safe and will tell you if a breach puts it at risk."
+    },
+    "children": {
+      "title": "Children",
+      "body": "EchoPhase is not meant for children under 16, and we do not knowingly collect their data. If you believe a child has given us personal data, contact us and we will delete it."
+    },
+    "changes": {
+      "title": "Changes to this policy",
+      "body": "We may update this policy as the service changes. The date at the top shows the latest version. If a change affects what we collect or what you allowed, we will tell you on the site, and ask for your choice again when it concerns statistics or error reports."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Questions, requests about your data or concerns: reach the EchoPhase project through its [GitHub organisation](https://github.com/EchoPhase-Project). Please do not post personal data in public issues; ask there for a private channel instead."
+    }
+  }
+}

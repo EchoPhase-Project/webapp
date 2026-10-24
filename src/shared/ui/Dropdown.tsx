@@ -59,6 +59,8 @@ type DropdownProps<T> = {
     selectedValue: T;
     onChange: (value: T) => void;
     ariaLabel?: string;
+    /** Shown when the search matches nothing. */
+    noResults?: string;
 };
 
 export function Dropdown<T>(props: DropdownProps<T>) {
@@ -255,7 +257,9 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                         )}
                     </For>
                     {filteredOptions().length === 0 && (
-                        <div class="dropdown-no-results">No matches</div>
+                        <div class="dropdown-no-results">
+                            {props.noResults ?? 'No matches'}
+                        </div>
                     )}
                 </div>
             )}

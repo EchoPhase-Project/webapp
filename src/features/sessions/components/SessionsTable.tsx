@@ -18,7 +18,7 @@ export default function SessionsTable(props: {
         return t('device.browser_on_os', '{browser} on {os}')
             .replace(
                 '{browser}',
-                parsed.browser ?? t('device.unknown_browser', 'Unknown Browser')
+                parsed.browser ?? t('device.unknown_browser', 'Unknown browser')
             )
             .replace('{os}', parsed.os ?? t('device.unknown_os', 'Unknown OS'));
     };

@@ -1,0 +1,99 @@
+// A policy: the contents beside the text on wide screens, above it on narrow
+// ones; the text in a readable measure.
+.legal {
+  display: grid;
+  gap: 28px;
+}
+
+.legal-layout {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+
+  @include comp.media('max-width: 991px') {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.legal-toc {
+  position: sticky;
+  top: 20px;
+  font-size: 0.85rem;
+
+  @include comp.media('max-width: 991px') {
+    position: static;
+  }
+
+  .legal-toc-title {
+    margin: 0 0 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  ol {
+    margin: 0;
+    padding-left: 1.4em;
+    display: grid;
+    gap: 4px;
+    color: var(--text-muted);
+  }
+
+  a {
+    color: var(--text-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--text-hover);
+    }
+  }
+}
+
+.legal-body {
+  max-width: 48rem;
+  padding: 28px 32px;
+  line-height: 1.7;
+
+  @include comp.media('max-width: 600px') {
+    padding: 20px;
+  }
+
+  section {
+    scroll-margin-top: 20px;
+    padding-top: 22px;
+    margin-top: 22px;
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 10px;
+  }
+
+  ul {
+    margin: 0 0 10px;
+    padding-left: 1.3em;
+    display: grid;
+    gap: 4px;
+  }
+
+  > :last-child > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.legal-number {
+  color: var(--accent);
+}
+
+.legal-intro p:last-child {
+  margin-bottom: 0;
+}
