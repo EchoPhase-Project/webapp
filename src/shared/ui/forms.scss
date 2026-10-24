@@ -27,8 +27,8 @@
   $iterator: (placeholder, input-placeholder);
 
   %placeholder {
-    color: var(--text-primary);
-    opacity: 0.7;
+    color: var(--text-muted);
+    opacity: 1;
     @include prefixes.prefix(transition-property, 'color, opacity', webkit);
     @include prefixes.prefix(
       transition-duration,
@@ -97,10 +97,11 @@
   padding: 0.8em 1.4em;
   position: relative;
   border-radius: 0.3em;
-  background-color: var(--bg);
+  border: 1px solid var(--border);
+  background-color: var(--surface-raised);
   @include prefixes.prefix(
     box-shadow,
-    rgba(var(--box-shadow-color-primary-rgb), 0.3) 0px 7px 12px 0px,
+    color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px 12px 0px,
     webkit
   );
   @include prefixes.prefix(
@@ -112,7 +113,10 @@
   @include default-placeholder(ms, moz, webkit);
 
   &:focus-within {
-    box-shadow: rgba(var(--shadow-color-rgb), 0.5) 0px 7px 12px 0px;
+    border-color: var(--focus);
+    box-shadow:
+      0 0 0 1px var(--focus),
+      color-mix(in srgb, var(--shadow) 30%, transparent) 0px 7px 12px 0px;
   }
 }
 
@@ -120,7 +124,7 @@
   padding: 0;
   letter-spacing: 0.5px;
   outline: none;
-  color: var(--text-primary);
+  color: var(--text);
   background-color: transparent;
   border: none;
   @include prefixes.prefix(
@@ -139,7 +143,7 @@
 
 .input-icon {
   font-size: 1.5em;
-  color: var(--button-bg-primary);
+  color: var(--accent);
   @include prefixes.prefix(
     transition,
     color var(--transition-speed) linear,
@@ -149,9 +153,10 @@
 
 .disabled {
   pointer-events: none;
-  color: var(--button-bg-primary);
-  background-color: var(--button-fg-primary);
-  box-shadow: 0 8px 24px 0 rgba(var(--button-fg-primary), 0.2);
+  color: var(--primary);
+  background-color: var(--on-primary);
+  box-shadow: 0 8px 24px 0
+    color-mix(in srgb, var(--on-primary) 20%, transparent);
 }
 
 // Labels kept for screen readers while the placeholder shows the hint.
@@ -168,13 +173,13 @@
 }
 
 .form-group:has([aria-invalid='true']) {
-  box-shadow: 0 0 0 2px var(--error-color, #d64545);
+  box-shadow: 0 0 0 2px var(--danger);
 }
 
 .errorlist {
   margin: 0.4em 0 0;
   padding-left: 1.2em;
-  color: var(--error-color, #d64545);
+  color: var(--danger);
   font-size: 0.9em;
 }
 

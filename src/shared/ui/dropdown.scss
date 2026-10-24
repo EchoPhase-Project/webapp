@@ -4,10 +4,12 @@
     box-shadow var(--transition-speed) ease-in,
     webkit
   );
-  box-shadow: rgba(var(--shadow-color-rgb), 0.4) 0px 7px 12px 0px;
+  box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0px 7px 12px
+    0px;
 
   &:hover {
-    box-shadow: rgba(var(--shadow-color-rgb), 0.6) 0px 7px 12px 0px;
+    box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0px 7px 12px
+      0px;
   }
 }
 
@@ -15,6 +17,7 @@
   display: inline-block;
   padding: 0 0.75em;
   background-color: var(--surface);
+  border: 1px solid var(--border);
   background-image: url(../../static/assets/svg/pat.svg);
   background-position: bottom center;
   background-repeat: no-repeat;
@@ -23,7 +26,7 @@
   transition: all 0.5s ease;
   position: relative;
   font-size: 0.9em;
-  color: var(--text-primary);
+  color: var(--text);
   text-align: left;
   outline: 0;
   @extend %shadow;
@@ -43,7 +46,7 @@
 
     > i {
       font-size: 13px;
-      color: var(--text-primary-hover);
+      color: var(--text-hover);
       cursor: pointer;
       transition: all 0.3s ease-in-out;
       float: right;
@@ -93,7 +96,7 @@
     @extend %shadow;
 
     .dropdown-item {
-      color: var(--text-primary);
+      color: var(--text);
       padding: 10px;
       transition: all 0.2s ease-in-out;
       cursor: pointer;

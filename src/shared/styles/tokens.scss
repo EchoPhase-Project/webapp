@@ -1,0 +1,70 @@
+@use 'variables' as vars;
+
+// Colour tokens: what a colour is for, not what it looks like. Both themes
+// define the same ones; components use only these. Contrast (WCAG) is
+// checked by palette.test.ts: text 7:1, muted text, links and status colours
+// 4.5:1, accents and focus 3:1, on every surface.
+//
+// Translucent shades: color-mix(in srgb, var(--shadow) 40%, transparent).
+
+:root {
+  color-scheme: light;
+
+  --font-primary: #{vars.$font-primary};
+  --font-secondary: #{vars.$font-secondary};
+  --transition-speed: #{vars.$transition-speed};
+
+  // Sand paper, navy ink, gold.
+  --bg: #f3ebe0;
+  --surface: #fbf7f1;
+  --surface-raised: #ffffff;
+  --border: #d6c6b1;
+  --shadow: #3b2a16;
+
+  --text: #20222a;
+  --text-muted: #585c68;
+  // Hover lights up in the accent, not a duller grey.
+  --text-hover: #826012;
+
+  --primary: #f5c84c;
+  --on-primary: #14245e;
+  // Gold on sand is faint (1.3:1): buttons get an edge.
+  --primary-border: #826012;
+
+  --accent: #826012;
+  --link: #1a56c4;
+  --link-hover: #12408f;
+  --focus: #1a56c4;
+
+  --danger: #b42318;
+  --success: #1d7348;
+  --warning: #8f5300;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  // Graphite, soft white, gold.
+  --bg: #15161c;
+  --surface: #1f2029;
+  --surface-raised: #292a35;
+  --border: #3a3c4a;
+  --shadow: #000000;
+
+  --text: #e7e5eb;
+  --text-muted: #a4a7b5;
+  --text-hover: #d9b45c;
+
+  --primary: #f5c84c;
+  --on-primary: #14245e;
+  --primary-border: transparent;
+
+  --accent: #d9b45c;
+  --link: #7ab0ff;
+  --link-hover: #a8caff;
+  --focus: #8fb8ff;
+
+  --danger: #f2766b;
+  --success: #4fc48c;
+  --warning: #e8a943;
+}

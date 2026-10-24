@@ -15,10 +15,11 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
-  border-left: 4px solid var(--gold);
+  border-left: 4px solid var(--accent);
   background: var(--surface);
-  color: var(--text-primary);
-  box-shadow: 0 4px 16px rgba(var(--shadow-color-rgb), 0.25);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--shadow) 25%, transparent);
 
   p {
     margin: 0.25rem 0 0;

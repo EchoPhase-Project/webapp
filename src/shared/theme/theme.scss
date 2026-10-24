@@ -4,15 +4,18 @@
     box-shadow var(--transition-speed) ease-in,
     webkit
   );
-  box-shadow: rgba(var(--shadow-color-rgb), 0.4) 0px 7px 12px 0px;
+  box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0px 7px 12px
+    0px;
 
   &:hover {
-    box-shadow: rgba(var(--shadow-color-rgb), 0.6) 0px 7px 12px 0px;
+    box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0px 7px 12px
+      0px;
   }
 }
 
 .theme-toggle {
   background-color: var(--surface);
+  border: 1px solid var(--border);
   background-image: url(../../static/assets/svg/pat.svg);
   background-position: bottom center;
   background-repeat: no-repeat;
@@ -25,7 +28,7 @@
 }
 
 .theme {
-  color: var(--text-primary);
+  color: var(--text);
   height: 100%;
   transition: all 0.5s ease;
 }

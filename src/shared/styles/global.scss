@@ -1,3 +1,5 @@
+@use 'tokens';
+
 // Inter as a variable font: every weight from 100 to 900 in one file, so
 // 500, 600 and bold are the real cuts, not the regular one thickened.
 @font-face {
@@ -30,6 +32,12 @@
     'cv27', 'cv28', 'cv29', 'cv30', 'cv31', 'ss06', 'ss07', 'ss09'; // not working in Chromium <= 136.0.0.0
 }
 
+// Keyboard focus, visible on both themes; inputs show it on their group.
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 body,
 html {
   margin: 0;
@@ -43,7 +51,7 @@ body {
   font-family: 'Inter', 'Fira Code', sans-serif;
   font-variant-ligatures: contextual common-ligatures;
   line-height: 1.7;
-  color: var(--text-primary);
+  color: var(--text);
   overflow-x: hidden;
   @include prefixes.prefix(font-smoothing, antialiased, webkit);
   @include prefixes.prefix(font-smoothing, grayscale, moz-osx);
@@ -85,7 +93,7 @@ body {
 }
 
 a {
-  color: var(--link-color);
+  color: var(--link);
   text-decoration: none;
   cursor: pointer;
   @include prefixes.prefix(
@@ -95,7 +103,7 @@ a {
   );
 
   &:hover {
-    color: var(--link-color-dark);
+    color: var(--link-hover);
     text-decoration: none;
   }
 }
@@ -120,7 +128,7 @@ a {
   pointer-events: none;
   background: radial-gradient(
     ellipse at 70% 15%,
-    rgba(var(--gold-rgb), 0.1) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
     transparent 60%
   );
 
@@ -130,8 +138,15 @@ a {
     inset: 0;
     opacity: 0.05;
     background-image:
-      linear-gradient(rgba(var(--gold-rgb), 1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(var(--gold-rgb), 1) 1px, transparent 1px);
+      linear-gradient(
+        color-mix(in srgb, var(--accent) 100%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--accent) 100%, transparent) 1px,
+        transparent 1px
+      );
     background-size: 60px 60px;
     -webkit-mask-image: radial-gradient(
       ellipse at 70% 15%,
@@ -178,11 +193,11 @@ main {
   @include prefixes.prefix(align-items, center, webkit, moz, ms, o);
   @include prefixes.prefix(justify-items, center, webkit, moz, ms, o);
   @include prefixes.prefix(flex-pack, justify, webkit, ms);
-  border: none;
+  border: 1px solid var(--primary-border);
   border-radius: 0.3em;
-  color: var(--button-fg-primary);
-  background-color: var(--button-bg-primary);
-  box-shadow: 0 0 24px 0 rgba(var(--button-bg-primary-rgb), 0.2);
+  color: var(--on-primary);
+  background-color: var(--primary);
+  box-shadow: 0 0 24px 0 color-mix(in srgb, var(--primary) 20%, transparent);
   white-space: nowrap;
   vertical-align: middle;
   padding: 0.375em 0.75em;
@@ -190,21 +205,22 @@ main {
 
   &:active,
   &:focus {
-    color: var(--button-fg-primary);
-    background-color: var(--button-bg-primary);
+    color: var(--on-primary);
+    background-color: var(--primary);
   }
 
   &:hover,
   &:disabled {
-    color: var(--button-bg-primary);
-    background-color: var(--button-fg-primary);
+    color: var(--primary);
+    background-color: var(--on-primary);
   }
 
   &:active,
   &:focus,
   &:hover,
   &:disabled {
-    box-shadow: 0 8px 24px 0 rgba(var(--button-fg-primary-rgb), 0.2);
+    box-shadow: 0 8px 24px 0
+      color-mix(in srgb, var(--on-primary) 20%, transparent);
   }
 
   &:not(:disabled):not(.disabled) {
@@ -224,12 +240,12 @@ select {
       1.4em,
     linear-gradient(
       to left,
-      rgba(var(--text-primary-rgb), 0.3) 3em,
-      rgba(var(--text-primary-rgb), 0.2) 3em
+      color-mix(in srgb, var(--text) 30%, transparent) 3em,
+      color-mix(in srgb, var(--text) 20%, transparent) 3em
     );
-  color: var(--text-primary);
+  color: var(--text);
   border-radius: 1em;
-  box-shadow: 0 0 1em 0 rgba(var(--shadow-color-rgb), 0.2);
+  box-shadow: 0 0 1em 0 color-mix(in srgb, var(--shadow) 20%, transparent);
   cursor: pointer;
 
   &::-ms-expand {
@@ -242,7 +258,7 @@ select {
 
   option {
     color: inherit;
-    background-color: rgba(var(--bg-rgb), 0.8);
+    background-color: color-mix(in srgb, var(--bg) 80%, transparent);
   }
 }
 
@@ -283,13 +299,13 @@ header {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--text-primary);
+  background-color: var(--text);
   border-radius: 1em;
   border: 6px solid transparent;
   background-clip: content-box;
 
   &:hover {
-    background-color: var(--text-primary-hover);
+    background-color: var(--text-hover);
   }
 }
 

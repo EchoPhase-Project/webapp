@@ -39,10 +39,10 @@
 }
 
 .link {
-  color: var(--text-primary);
+  color: var(--text);
 
   &:hover {
-    color: var(--button-bg-primary);
+    color: var(--accent);
   }
 }
 
@@ -59,7 +59,7 @@ ul {
 h4 {
   font-size: 1.65em;
   font-weight: 600;
-  color: var(--text-primary) !important;
+  color: var(--text) !important;
 }
 
 h6 {
@@ -69,7 +69,7 @@ h6 {
     padding: 0 1.4em;
     text-transform: uppercase;
     font-weight: 700;
-    color: var(--text-primary) !important;
+    color: var(--text) !important;
   }
 }
 
@@ -116,7 +116,7 @@ h6 {
     padding: 0;
     margin: 0.7em auto;
     cursor: pointer;
-    background-color: var(--button-bg-primary);
+    background-color: var(--primary);
   }
 
   &:checked + label > .arrow,
@@ -130,8 +130,8 @@ h6 {
     font-size: var(--checkbox-size, $checkbox-size);
     line-height: var(--checkbox-size, $checkbox-size);
     border-radius: 50%;
-    color: var(--button-bg-primary);
-    background-color: var(--button-fg-primary);
+    color: var(--primary);
+    background-color: var(--on-primary);
     z-index: 6;
     top: 50%;
     left: 0%;
@@ -177,6 +177,7 @@ h6 {
   grid-column-end: 1;
   grid-column-start: 1;
   background-color: var(--surface);
+  border: 1px solid var(--border);
   background-image: url('../../static/assets/svg/pat.svg');
   background-position: bottom center;
   background-repeat: no-repeat;

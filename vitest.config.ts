@@ -13,6 +13,9 @@ export default defineConfig({
         // jsdom. A component test opts in with `// @vitest-environment jsdom`.
         environment: 'node',
         include: ['src/**/*.test.{ts,tsx}'],
+        // Stylesheets come out empty in tests, ?raw too; the palette test
+        // reads the colour tokens.
+        css: { include: [/tokens\.scss/] },
         coverage: {
             provider: 'v8',
             include: ['src/**/*.{ts,tsx}'],

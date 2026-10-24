@@ -43,7 +43,6 @@ export default defineConfig(({ mode }) => {
                     additionalData: [
                         `@use "shared/styles/variables" as vars;`,
                         `@use "shared/styles/media" as comp;`,
-                        `@use "shared/styles/utils" as utils;`,
                         `@use "shared/styles/prefixes" as prefixes;`,
                     ].join('\n'),
                 },

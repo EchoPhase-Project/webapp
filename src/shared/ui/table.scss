@@ -13,6 +13,7 @@ table {
   @include comp.media('min-width: 768px') {
     border-radius: 1em;
     background-color: var(--surface);
+    border: 1px solid var(--border);
     background-image: url('../../static/assets/svg/pat.svg');
     background-position: bottom center;
     background-repeat: no-repeat;
@@ -25,7 +26,8 @@ table {
       box-shadow var(--transition-speed) ease-in,
       webkit
     );
-    box-shadow: rgba(var(--shadow-color-rgb), 0.4) 0px 7px 12px 0px;
+    box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0px 7px 12px
+      0px;
   }
   @include comp.media('max-width: 768px') {
     display: block;
@@ -69,6 +71,7 @@ td {
     min-width: 16em;
     max-width: 100%;
     background-color: var(--surface);
+    border: 1px solid var(--border);
     background-image: url('../../static/assets/svg/pat.svg');
     background-position: bottom center;
     background-repeat: no-repeat;
@@ -80,10 +83,12 @@ td {
       box-shadow var(--transition-speed) ease-in,
       webkit
     );
-    box-shadow: rgba(var(--shadow-color-rgb), 0.4) 0px 7px 12px 0px;
+    box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0px 7px 12px
+      0px;
 
     &:hover {
-      box-shadow: rgba(var(--shadow-color-rgb), 0.6) 0px 7px 12px 0px;
+      box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0px 7px
+        12px 0px;
     }
   }
 
@@ -92,7 +97,7 @@ td {
     justify-content: space-between;
     align-items: center;
     padding: 1em;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border);
     gap: 0.75em;
 
     &:last-child {

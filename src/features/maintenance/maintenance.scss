@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(var(--bg-rgb), 0.85);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
   backdrop-filter: blur(6px);
 }
 
@@ -15,10 +15,11 @@
   width: min(28rem, 100%);
   padding: 1.5rem 1.75rem;
   border-radius: 0.75rem;
-  border-top: 4px solid var(--gold);
+  border-top: 4px solid var(--accent);
   background: var(--surface);
-  color: var(--text-primary);
-  box-shadow: 0 8px 32px rgba(var(--shadow-color-rgb), 0.3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--shadow) 30%, transparent);
   text-align: center;
 
   h2 {
