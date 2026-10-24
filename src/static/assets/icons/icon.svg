@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- EchoPhase: a wave and its echo a quarter period behind, in the app's amber on navy. -->
+  <defs>
+    <clipPath id="echophase-wave-area"><rect x="8" y="8" width="48" height="48" rx="6"/></clipPath>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#14245e"/>
+  <g clip-path="url(#echophase-wave-area)" fill="none" stroke="#ffc53d" stroke-linecap="round">
+    <path d="M-1 32q11-20 22 0t22 0 22 0" stroke-width="4" opacity=".45"/>
+  </g>
+  <path fill="none" stroke="#ffc53d" stroke-linecap="round" d="M10 32q11-20 22 0t22 0" stroke-width="5.5"/>
+</svg>

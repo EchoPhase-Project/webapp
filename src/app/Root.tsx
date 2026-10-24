@@ -2,6 +2,7 @@ import { ParentComponent, createSignal } from 'solid-js';
 import { MetaProvider, Title, Meta, Link } from '@solidjs/meta';
 import { RootMetaContext } from '@shared/meta/page-meta';
 import appleTouchIcon from '@static/assets/icons/apple-touch-icon.png';
+import svgIcon from '@static/assets/icons/icon.svg';
 import legacyIcon from '@static/assets/icons/favicon.ico';
 import mediumIcon from '@static/assets/icons/favicon-32x32.png';
 import smallIcon from '@static/assets/icons/favicon-16x16.png';
@@ -33,6 +34,7 @@ const Root: ParentComponent = (props) => {
                     <Meta name="twitter:title" content={title()} />
                     <Meta name="twitter:description" content={description()} />
 
+                    <Link rel="icon" type="image/svg+xml" href={svgIcon} />
                     <Link
                         rel="icon"
                         type="image/vnd.microsoft.icon"
