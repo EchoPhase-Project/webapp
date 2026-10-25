@@ -1,0 +1,18 @@
+{
+  "title": "Profile",
+  "description": "Your picture, name and time zone.",
+  "picture": {
+    "title": "Picture",
+    "hint": "PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.",
+    "upload": "Upload",
+    "change": "Change",
+    "remove": "Remove"
+  },
+  "details": {
+    "title": "Details",
+    "name": "Display name",
+    "time_zone": "Time zone",
+    "save": "Save",
+    "saved": "Saved"
+  }
+}

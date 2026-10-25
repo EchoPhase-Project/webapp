@@ -1,0 +1,28 @@
+{
+  "title": "Fișiere",
+  "description": "Fișierele încărcate de dvs. și cele create pentru dvs.",
+  "eyebrow": "Stocare",
+  "lead": "Fișierele încărcate de dvs. și cele create pentru dvs. Până la 100 MB fiecare; imaginile se deschid în browser, restul se descarcă.",
+  "upload": "Încarcă",
+  "more": "Arată mai multe",
+  "empty": "Încă nu aveți fișiere",
+  "delete": "Șterge {name}",
+  "columns": {
+    "name": "Nume",
+    "purpose": "Scop",
+    "size": "Mărime",
+    "uploaded": "Încărcat",
+    "actions": "Acțiuni"
+  },
+  "purposes": {
+    "Avatar": "Imagine de profil",
+    "Import": "Import",
+    "Artifact": "Rezultat al fluxului",
+    "Attachment": "Atașament"
+  },
+  "confirm_delete": {
+    "title": "Ștergeți acest fișier?",
+    "action": "Șterge",
+    "text": "{name} va fi șters definitiv; linkurile către el nu vor mai funcționa."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Files",
+  "description": "Files you uploaded, and those made for you.",
+  "eyebrow": "Storage",
+  "lead": "Files you uploaded, and those made for you. Up to 100 MB each; pictures open in the browser, everything else downloads.",
+  "upload": "Upload",
+  "more": "Show more",
+  "empty": "No files yet",
+  "delete": "Delete {name}",
+  "columns": {
+    "name": "Name",
+    "purpose": "Purpose",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "actions": "Actions"
+  },
+  "purposes": {
+    "Avatar": "Profile picture",
+    "Import": "Import",
+    "Artifact": "Workflow result",
+    "Attachment": "Attachment"
+  },
+  "confirm_delete": {
+    "title": "Delete this file?",
+    "action": "Delete",
+    "text": "{name} is deleted for good; links to it stop working."
+  }
+}

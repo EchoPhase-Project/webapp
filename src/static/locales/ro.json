@@ -26,6 +26,11 @@
     "api_clients": {
       "label": "Clienți API",
       "description": "Date de acces pentru boți și scripturi"
+    },
+    "files": "Fișiere",
+    "profile": {
+      "label": "Profil",
+      "description": "Imagine, nume și fus orar"
     }
   },
   "footer": {
@@ -122,6 +127,11 @@
     "PasswordTooShort": "Parola trebuie să aibă cel puțin 8 caractere.",
     "PasswordRequiresDigit": "Parola trebuie să conțină o cifră (0–9).",
     "PasswordRequiresLower": "Parola trebuie să conțină o literă mică (a–z).",
-    "PasswordRequiresUpper": "Parola trebuie să conțină o literă mare (A–Z)."
+    "PasswordRequiresUpper": "Parola trebuie să conțină o literă mare (A–Z).",
+    "FileTooLarge": "Fișierul este prea mare.",
+    "QuotaExceeded": "Spațiul de stocare este plin. Ștergeți câteva fișiere și încercați din nou.",
+    "UnsupportedType": "Acest tip de fișier nu poate fi încărcat aici.",
+    "InvalidTimeZone": "Fus orar necunoscut. Alegeți unul din listă, de exemplu Europe/Bucharest.",
+    "http_413": "Fișierul este prea mare."
   }
 }

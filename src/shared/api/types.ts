@@ -24,6 +24,12 @@ export type Session = Schemas['SessionResponse'];
 
 export type SessionsResponse = Schemas['SessionResponseCursorPageResponse'];
 
+/** A stored file as the API describes it (no content). */
+export type StoredFile = Schemas['FileResponse'];
+
+/** What a file is for: decides its limits and who may read it. */
+export type FilePurpose = Schemas['FilePurpose'];
+
 export type CreateApiClientData = Schemas['CreateApiClientRequest'];
 
 /**

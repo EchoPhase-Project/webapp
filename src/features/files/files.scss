@@ -1,0 +1,31 @@
+.files-container {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+// The name takes what the others leave: they are as wide as their content.
+table.files {
+  @include comp.media('min-width: 768px') {
+    th:nth-child(2) {
+      width: 11rem;
+    }
+
+    th:nth-child(3) {
+      width: 6.5rem;
+    }
+
+    th:nth-child(4) {
+      width: 12.5rem;
+    }
+
+    th:last-child {
+      width: 6rem;
+    }
+  }
+}
+
+.files-more {
+  display: flex;
+  justify-content: center;
+}

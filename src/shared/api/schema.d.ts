@@ -375,6 +375,95 @@ export interface paths {
         };
         trace?: never;
     };
+    '/api/v1/auth/me/avatar': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'multipart/form-data': {
+                        /**
+                         * Format: binary
+                         * @description A PNG, JPEG or WebP picture.
+                         */
+                        File: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['FileResponse'];
+                    };
+                };
+                /** @description Content Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Unsupported Media Type */
+                415: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/v1/blocks/runs': {
         parameters: {
             query?: never;
@@ -496,6 +585,48 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
+                header?: never;
+                path: {
+                    runId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/blocks/runs/{runId}/retry': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Starts a run that did not succeed again with the same input. With
+         *     `workflow=current`, a workflow's run uses the workflow as saved
+         *     now; by default the program as it ran. 202 with the new run's id.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    workflow?: string;
+                };
                 header?: never;
                 path: {
                     runId: string;
@@ -896,7 +1027,267 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    '/gateway': {
+    '/api/v1/files': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's files, oldest first, a page at a time: pass the last id as `after`. */
+        get: {
+            parameters: {
+                query?: {
+                    purpose?: components['schemas']['FilePurpose'];
+                    after?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['FileResponse'][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Uploads a file (multipart/form-data: file, purpose). */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'multipart/form-data': {
+                        /**
+                         * Format: binary
+                         * @description The file.
+                         */
+                        File: string;
+                        Purpose?: components['schemas']['FilePurpose'];
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['FileResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Content Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Unsupported Media Type */
+                415: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/files/{id}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['FileResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/files/{id}/content': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The file's content. Supports a single byte range (Range: bytes=…)
+         *     and If-None-Match; a file never changes, so it may be cached long.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/octet-stream': string;
+                        'application/json': string;
+                    };
+                };
+                /** @description Partial Content */
+                206: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/octet-stream': string;
+                        'application/json': string;
+                    };
+                };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/octet-stream': components['schemas']['ErrorBody'];
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Range Not Satisfiable */
+                416: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/octet-stream': components['schemas']['ProblemDetails'];
+                        'application/json': components['schemas']['ProblemDetails'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/gateway': {
         parameters: {
             query?: never;
             header?: never;
@@ -1068,6 +1459,63 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/maintenance': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Turns maintenance on (again: replaces message and end). */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['EnableMaintenanceRequest'];
+                    'text/json': components['schemas']['EnableMaintenanceRequest'];
+                    'application/*+json': components['schemas']['EnableMaintenanceRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1573,6 +2021,212 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/v1/status': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/storage': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Keys in order (no values), a page at a time: pass the last key as `after`. */
+        get: {
+            parameters: {
+                query?: {
+                    workflowId?: string;
+                    prefix?: string;
+                    after?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['StorageEntryResponse'][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/storage/value': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    key: string;
+                    workflowId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['StorageEntryResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        /** Writes a value, as a Storage block's set would. */
+        put: {
+            parameters: {
+                query: {
+                    key: string;
+                    workflowId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['PutStorageRequest'];
+                    'text/json': components['schemas']['PutStorageRequest'];
+                    'application/*+json': components['schemas']['PutStorageRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['StorageEntryResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query: {
+                    key: string;
+                    workflowId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/v1/auth/token': {
         parameters: {
             query?: never;
@@ -1882,6 +2536,13 @@ export interface paths {
                     content: {
                         'application/json': components['schemas']['ProblemDetails'];
                     };
+                };
+                /** @description Gateway Timeout */
+                504: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -2248,6 +2909,8 @@ export interface components {
             timeoutSeconds?: number | null;
             saveExecutionData: components['schemas']['ExecutionDataPolicy'];
             timeZone?: string | null;
+            /** Format: uuid */
+            errorWorkflowId?: string | null;
         };
         BlockRetry: {
             /** Format: int32 */
@@ -2264,20 +2927,7 @@ export interface components {
             outputs: string[];
             paramsSchema: components['schemas']['JsonNode'];
         };
-        /** @enum {string} */
-        BlockTypes:
-            | 'Set'
-            | 'Print'
-            | 'If'
-            | 'For'
-            | 'While'
-            | 'Merge'
-            | 'ManualTrigger'
-            | 'WebhookTrigger'
-            | 'ScheduleTrigger'
-            | 'DiscordEventTrigger'
-            | 'DiscordGetUserGuilds'
-            | 'TwitchGetVips';
+        BlockTypes: string;
         CreateApiClientRequest: {
             /** @description Display name, e.g. the bot or server it runs on. */
             name: string;
@@ -2287,6 +2937,15 @@ export interface components {
              * @description Optional; the client stops working afterwards. With Z or an offset.
              */
             expiresAt?: string | null;
+        };
+        EnableMaintenanceRequest: {
+            /** @description Shown to users; a default one when absent. */
+            message?: string | null;
+            /**
+             * Format: int32
+             * @description It ends by itself after this long; absent: until turned off.
+             */
+            minutes?: number | null;
         };
         /**
          * @description The API's error body: a stable code to branch on, a readable message and,
@@ -2303,8 +2962,34 @@ export interface components {
          * @enum {integer}
          */
         ExecutionDataPolicy: 0 | 1 | 2;
+        /** @enum {string} */
+        FilePurpose: 'Avatar' | 'Import' | 'Artifact' | 'Attachment';
+        FileResponse: {
+            /**
+             * Format: uuid
+             * @description The file's id.
+             */
+            id: string;
+            purpose: components['schemas']['FilePurpose'];
+            /** @description The name it was uploaded with. */
+            name: string;
+            /** @description The type found in its content. */
+            contentType: string;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+            /** @description Hex SHA-256 of the content. */
+            sha256: string;
+            /**
+             * Format: date-time
+             * @description When it was uploaded.
+             */
+            createdAt: string;
+        };
         GatewayConnectRequest: {
-            /** @description The Discord connection to open the gateway with. */
+            /** @description The Discord bot connection to connect with. */
             name: string;
             /**
              * Format: int32
@@ -2334,11 +3019,22 @@ export interface components {
             password: string;
         };
         MeResponse: {
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description The user's id.
+             */
             id: string;
+            /** @description The name to sign in with. */
             userName?: string | null;
+            /** @description The display name. */
             name: string;
+            /** @description IANA time zone the user's times are shown in. */
             timeZone: string;
+            /**
+             * Format: uuid
+             * @description The user's picture, a file to fetch from /api/v1/files/{id}/content; null: none.
+             */
+            avatarFileId?: string | null;
         };
         ProblemDetails: {
             type?: string | null;
@@ -2349,6 +3045,15 @@ export interface components {
             instance?: string | null;
         } & {
             [key: string]: unknown;
+        };
+        PutStorageRequest: {
+            /** @description Any JSON value. */
+            value: unknown;
+            /**
+             * Format: int32
+             * @description Seconds until it expires; absent: kept until deleted.
+             */
+            ttlSeconds?: number | null;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -2434,6 +3139,27 @@ export interface components {
             reason: string;
             /** @description Your own password, to confirm. */
             password: string;
+        };
+        StorageEntryResponse: {
+            /** @description The key. */
+            key: string;
+            /**
+             * Format: int32
+             * @description Bytes of the value as JSON.
+             */
+            size: number;
+            /**
+             * Format: date-time
+             * @description Last write.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description When it goes; null: kept until deleted.
+             */
+            expiresAt?: string | null;
+            /** @description The value; only when one entry is fetched. */
+            value?: unknown;
         };
         /** @description Profile fields to change; an omitted (null) field stays as it is. */
         UpdateProfileRequest: {

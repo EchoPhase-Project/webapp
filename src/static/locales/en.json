@@ -26,6 +26,11 @@
     "api_clients": {
       "label": "API clients",
       "description": "Credentials for bots and scripts"
+    },
+    "files": "Files",
+    "profile": {
+      "label": "Profile",
+      "description": "Picture, name and time zone"
     }
   },
   "footer": {
@@ -122,6 +127,11 @@
     "PasswordTooShort": "The password must be at least 8 characters long.",
     "PasswordRequiresDigit": "The password must contain a digit (0–9).",
     "PasswordRequiresLower": "The password must contain a lowercase letter (a–z).",
-    "PasswordRequiresUpper": "The password must contain an uppercase letter (A–Z)."
+    "PasswordRequiresUpper": "The password must contain an uppercase letter (A–Z).",
+    "FileTooLarge": "The file is too large.",
+    "QuotaExceeded": "Your storage is full. Delete some files and try again.",
+    "UnsupportedType": "This kind of file cannot be uploaded here.",
+    "InvalidTimeZone": "Unknown time zone. Pick one from the list, e.g. Europe/Moscow.",
+    "http_413": "The file is too large."
   }
 }

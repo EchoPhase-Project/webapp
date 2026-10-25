@@ -1,0 +1,43 @@
+.profile-container {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  max-width: 40rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+}
+
+.profile-picture {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+
+  @include comp.media('max-width: 480px') {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.profile-picture-text {
+  display: grid;
+  gap: 10px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.profile-picture-actions,
+.profile-form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.profile-details {
+  display: grid;
+  gap: 14px;
+}

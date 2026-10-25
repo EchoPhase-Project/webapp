@@ -1,0 +1,18 @@
+{
+  "title": "Profil",
+  "description": "Imaginea, numele și fusul dvs. orar.",
+  "picture": {
+    "title": "Imagine",
+    "hint": "PNG, JPEG sau WebP, până la 5 MB. Ceilalți o văd lângă numele dvs.",
+    "upload": "Încarcă",
+    "change": "Schimbă",
+    "remove": "Elimină"
+  },
+  "details": {
+    "title": "Detalii",
+    "name": "Nume afișat",
+    "time_zone": "Fus orar",
+    "save": "Salvează",
+    "saved": "Salvat"
+  }
+}

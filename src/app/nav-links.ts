@@ -1,5 +1,10 @@
 import { useNavigate } from '@solidjs/router';
-import { AiOutlineLogin, AiOutlineLogout } from 'solid-icons/ai';
+import {
+    AiOutlineFolder,
+    AiOutlineLogin,
+    AiOutlineLogout,
+    AiOutlineUser,
+} from 'solid-icons/ai';
 import { VsSettings } from 'solid-icons/vs';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
@@ -18,9 +23,23 @@ export function useNavLinks(): () => NavLink[] {
 
     const signedIn = (): NavLink[] => [
         {
+            icon: AiOutlineFolder,
+            text: t('nav.files', 'Files'),
+            events: { onClick: () => navigate('/files') },
+        },
+        {
             icon: VsSettings,
             text: t('nav.settings', 'Settings'),
             items: [
+                {
+                    icon: AiOutlineUser,
+                    label: t('nav.profile.label', 'Profile'),
+                    description: t(
+                        'nav.profile.description',
+                        'Picture, name and time zone'
+                    ),
+                    events: { onClick: () => navigate('/profile') },
+                },
                 {
                     icon: VsSettings,
                     label: t('nav.sessions.label', 'Sessions'),

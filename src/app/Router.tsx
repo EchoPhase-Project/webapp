@@ -34,6 +34,16 @@ const routes = [
         component: lazy(() => import('@features/auth/AuthPage')),
     },
     {
+        path: '/profile',
+        component: requireAuth(
+            lazy(() => import('@features/profile/ProfilePage'))
+        ),
+    },
+    {
+        path: '/files',
+        component: requireAuth(lazy(() => import('@features/files/FilesPage'))),
+    },
+    {
         path: '/sessions',
         component: requireAuth(
             lazy(() => import('@features/sessions/SessionsPage'))
