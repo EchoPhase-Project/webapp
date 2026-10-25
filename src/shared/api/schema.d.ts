@@ -1693,6 +1693,15 @@ export interface paths {
                         'application/json': components['schemas']['ErrorBody'];
                     };
                 };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
             };
         };
         post?: never;
@@ -3595,6 +3604,11 @@ export interface components {
              * @description When to be reminded, with Z or an offset; null: no reminder (the owner's choice).
              */
             remindAt?: string | null;
+            /**
+             * Format: uuid
+             * @description On update: the stamp it was read with; 409 when someone saved since.
+             */
+            expectedStamp?: string | null;
         };
         NoteResponse: {
             /**
@@ -3615,6 +3629,11 @@ export interface components {
             remindAt?: string | null;
             access: components['schemas']['NoteAccess'];
             owner: components['schemas']['NoteUserResponse'];
+            /**
+             * Format: uuid
+             * @description Changes on every save: send it back as expectedStamp to save only over this version.
+             */
+            stamp: string;
             /**
              * Format: date-time
              * @description When it was created.

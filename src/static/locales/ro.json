@@ -140,6 +140,7 @@
     "QuotaExceeded": "Spațiul de stocare este plin. Ștergeți câteva fișiere și încercați din nou.",
     "UnsupportedType": "Acest tip de fișier nu poate fi încărcat aici.",
     "InvalidTimeZone": "Fus orar necunoscut. Alegeți unul din listă, de exemplu Europe/Bucharest.",
-    "http_413": "Fișierul este prea mare."
+    "http_413": "Fișierul este prea mare.",
+    "Conflict": "Între timp, altcineva a modificat acest lucru. Deschideți-l din nou pentru a vedea modificarea, apoi faceți-o pe a dvs."
   }
 }

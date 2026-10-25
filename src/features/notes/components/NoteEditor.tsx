@@ -58,6 +58,8 @@ export default function NoteEditor(props: {
                 body: body(),
                 pinned: pinned(),
                 remindAt: DateHelper.fromLocalInput(remindAt()),
+                // Saved only over the version opened: someone else's save meanwhile is a conflict.
+                expectedStamp: props.note?.stamp ?? null,
             };
             const result = props.note
                 ? await updateNote(props.note.id, input)

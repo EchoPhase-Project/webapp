@@ -140,6 +140,7 @@
     "QuotaExceeded": "Your storage is full. Delete some files and try again.",
     "UnsupportedType": "This kind of file cannot be uploaded here.",
     "InvalidTimeZone": "Unknown time zone. Pick one from the list, e.g. Europe/Moscow.",
-    "http_413": "The file is too large."
+    "http_413": "The file is too large.",
+    "Conflict": "Someone changed this meanwhile. Open it again to see their change, then make yours."
   }
 }

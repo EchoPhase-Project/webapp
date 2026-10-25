@@ -13,6 +13,7 @@ const note = (over: Record<string, unknown> = {}) => ({
     remindAt: null,
     access: 'Owner',
     owner: { id: 'u1', userName: 'dusty', name: 'Dusty' },
+    stamp: 's1',
     createdAt: '2026-10-25T10:00:00Z',
     updatedAt: '2026-10-25T10:00:00Z',
     ...over,
