@@ -40,6 +40,34 @@ export type NoteInput = Schemas['NoteRequest'];
 
 export type NoteShare = Schemas['NoteShareResponse'];
 
+/** A workflow as listed (no program). */
+export type WorkflowSummary = Schemas['WorkflowSummaryResponse'];
+
+/** One of the caller's connections (provider, name, status). */
+export type ConnectionSummary = Schemas['ConnectionSummary'];
+
+/** Workflows published together, as the caller sees the package. */
+export type WorkflowPackage = Schemas['PackageResponse'];
+
+/** Private, Unlisted or Public. */
+export type PackageVisibility = Schemas['PackageVisibility'];
+
+export type PackageInput = Schemas['PackageRequest'];
+
+export type PackagePublish = Schemas['PublishPackageRequest'];
+
+export type PackageVersion = Schemas['PackageVersionResponse'];
+
+/** A version with its workflows and the connections they need. */
+export type PackageContent = Schemas['PackageVersionContentResponse'];
+
+/** A connection a package's workflows use. */
+export type PackageConnection = Schemas['PackageConnection'];
+
+export type PackageInstall = Schemas['PackageInstallResponse'];
+
+export type PackageShare = Schemas['PackageShareResponse'];
+
 export type AppNotification = Schemas['NotificationResponse'];
 
 export type NotificationInbox = Schemas['NotificationInboxResponse'];

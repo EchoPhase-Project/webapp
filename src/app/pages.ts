@@ -1,6 +1,7 @@
 import { lazy, type Component } from 'solid-js';
 import {
     AiOutlineAppstore,
+    AiOutlineCompass,
     AiOutlineFolder,
     AiOutlineUser,
 } from 'solid-icons/ai';
@@ -70,6 +71,25 @@ export const PAGES: Page[] = [
     {
         path: '/auth',
         component: lazy(() => import('@features/auth/AuthPage')),
+    },
+    {
+        path: '/explore',
+        component: lazy(() => import('@features/packages/ExplorePage')),
+        auth: true,
+        nav: {
+            icon: AiOutlineCompass,
+            key: 'nav.explore.label',
+            text: 'Explore',
+            description: {
+                key: 'nav.explore.description',
+                text: 'Workflow packages to install',
+            },
+        },
+    },
+    {
+        path: '/explore/:id',
+        component: lazy(() => import('@features/packages/PackagePage')),
+        auth: true,
     },
     {
         path: '/notes',

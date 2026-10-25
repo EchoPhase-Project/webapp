@@ -713,7 +713,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ConnectionSummary'][];
+                    };
                 };
             };
         };
@@ -3099,6 +3101,668 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/v1/workflow-packages': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's packages, then those shared with them. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageResponse'][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * A new package with its first version, from the caller's workflows.
+         *     A program that uses a workflow left out of the package fails it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['CreatePackageRequest'];
+                    'text/json': components['schemas']['CreatePackageRequest'];
+                    'application/*+json': components['schemas']['CreatePackageRequest'];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/explore': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public packages, most installed first; `q` searches name and summary, `tag` filters. */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    tag?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageResponse'][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        /** Changes name, summary, README, visibility and tags; versions stay as published. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['PackageRequest'];
+                    'text/json': components['schemas']['PackageRequest'];
+                    'application/*+json': components['schemas']['PackageRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Deletes the package; copies others installed stay theirs. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/versions': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Its versions, newest first. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageVersionResponse'][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** A new version from the caller's workflows as they are now; 409 when nothing changed. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['PublishPackageRequest'];
+                    'text/json': components['schemas']['PublishPackageRequest'];
+                    'application/*+json': components['schemas']['PublishPackageRequest'];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageVersionResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/content': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A version with its workflows; the latest without `version`. */
+        get: {
+            parameters: {
+                query?: {
+                    version?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageVersionContentResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/install': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Copies a version's workflows into the caller's, inactive, linked to
+         *     each other and to the caller's connections; webhooks get new secrets.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['InstallPackageRequest'];
+                    'text/json': components['schemas']['InstallPackageRequest'];
+                    'application/*+json': components['schemas']['InstallPackageRequest'];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageInstallResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/shares': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whom a private package is shared with: only its owner may see. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageShareResponse'][];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        /** Lets a user read and install the package. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['SharePackageRequest'];
+                    'text/json': components['schemas']['SharePackageRequest'];
+                    'application/*+json': components['schemas']['SharePackageRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageShareResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/shares/{userId}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Stops sharing with a user: its owner may, and so may that user (to leave it). */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/v1/workflows': {
         parameters: {
             query?: never;
@@ -3120,7 +3784,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowSummaryResponse'][];
+                    };
                 };
             };
         };
@@ -3230,6 +3896,176 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflows/{id}/export': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The workflow as an export file ({ format, name, version, contentHash,
+         *     exportedAt, program }), or one saved version with ?version=N. The
+         *     ETag is the program's hash: If-None-Match answers 304 while it is
+         *     unchanged.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    version?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': string;
+                    };
+                };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflows/import': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A new workflow from an export file sent as the body; inactive until
+         *     turned on. `intact` is false when the program does not match the
+         *     file's contentHash (it was edited after export).
+         */
+        post: {
+            parameters: {
+                query?: {
+                    /** @description Instead of the name in the file. */
+                    name?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': unknown;
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflows/import/file': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The same, from an uploaded file (multipart/form-data: file, name). */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'multipart/form-data': {
+                        /**
+                         * Format: binary
+                         * @description The export file (JSON).
+                         */
+                        File: string;
+                        /** @description Instead of the name in the file. */
+                        Name?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3400,9 +4236,9 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         ApiClientClaims: {
-            permissions: {
+            permissions?: {
                 [key: string]: string[];
-            };
+            } | null;
         };
         AuthorizeConnectionRequest: {
             /** @description Connection name; an existing name reconnects that connection. */
@@ -3475,6 +4311,28 @@ export interface components {
             paramsSchema: components['schemas']['JsonNode'];
         };
         BlockTypes: string;
+        ConnectionSummary: {
+            /** Format: uuid */
+            id: string;
+            provider: string;
+            name: string;
+            authType: string;
+            status: string;
+            /** Format: uuid */
+            oAuthAppId?: string | null;
+            externalAccountId?: string | null;
+            externalLogin?: string | null;
+            scopes: string[];
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            lastValidatedAt?: string | null;
+            lastError?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         CreateApiClientRequest: {
             /** @description Display name, e.g. the bot or server it runs on. */
             name: string;
@@ -3484,6 +4342,10 @@ export interface components {
              * @description Optional; the client stops working afterwards. With Z or an offset.
              */
             expiresAt?: string | null;
+        };
+        CreatePackageRequest: {
+            package: components['schemas']['PackageRequest'];
+            publish: components['schemas']['PublishPackageRequest'];
         };
         EnableMaintenanceRequest: {
             /** @description Shown to users; a default one when absent. */
@@ -3559,6 +4421,31 @@ export interface components {
              * @description Null: until revoked. With Z or an offset.
              */
             expiresAt?: string | null;
+        };
+        InstallPackageRequest: {
+            /**
+             * Format: int32
+             * @description Which version; absent: the latest.
+             */
+            version?: number | null;
+            /** @description For each connection the package uses (by its name), one of the caller's; absent: one by the same name, if any. */
+            connections?: {
+                [key: string]: string;
+            } | null;
+        };
+        InstalledWorkflowResponse: {
+            /**
+             * Format: uuid
+             * @description The new workflow's id.
+             */
+            id: string;
+            /** @description Its name. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Which of the package's workflows it is a copy of.
+             */
+            key: string;
         };
         JsonNode: {
             options?: components['schemas']['JsonNodeOptions'];
@@ -3701,6 +4588,150 @@ export interface components {
              */
             createdAt: string;
         };
+        /**
+         * @description What a user may do with a package.
+         * @enum {string}
+         */
+        PackageAccess: 'Read' | 'Owner';
+        PackageConnection: {
+            name: string;
+            provider?: string | null;
+        };
+        PackageInstallResponse: {
+            /** @description The caller's new workflows, inactive. */
+            workflows: components['schemas']['InstalledWorkflowResponse'][];
+            /**
+             * Format: int32
+             * @description The version installed.
+             */
+            version: number;
+            /** @description Connections the caller has no match for: create them (or edit the copies) before turning them on. */
+            missingConnections: components['schemas']['PackageConnection'][];
+        };
+        PackageRequest: {
+            /** @description Its name. */
+            name: string;
+            /** @description One or two sentences for its card. */
+            summary?: string | null;
+            /** @description Markdown. */
+            readme?: string | null;
+            visibility: components['schemas']['PackageVisibility'];
+            /** @description Up to 10: letters, digits and dashes (spaces become dashes, case is dropped). */
+            tags?: string[] | null;
+            /**
+             * Format: uuid
+             * @description On update: the stamp it was read with; 409 when someone saved since.
+             */
+            expectedStamp?: string | null;
+        };
+        PackageResponse: {
+            /**
+             * Format: uuid
+             * @description The package's id.
+             */
+            id: string;
+            /** @description Its name. */
+            name: string;
+            /** @description One or two sentences for its card. */
+            summary: string;
+            /** @description Markdown; render it without raw HTML. */
+            readme: string;
+            visibility: components['schemas']['PackageVisibility'];
+            /** @description The author's tags. */
+            tags: string[];
+            /**
+             * Format: int32
+             * @description The newest version's number.
+             */
+            latestVersion: number;
+            /**
+             * Format: int32
+             * @description How many users (its owner aside) installed it.
+             */
+            installs: number;
+            access: components['schemas']['PackageAccess'];
+            owner: components['schemas']['PackageUserResponse'];
+            /**
+             * Format: uuid
+             * @description Changes on every save: send it back as expectedStamp to save only over this version.
+             */
+            stamp: string;
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it or its versions last changed.
+             */
+            updatedAt: string;
+        };
+        PackageShareResponse: {
+            user: components['schemas']['PackageUserResponse'];
+            /**
+             * Format: date-time
+             * @description Since when.
+             */
+            createdAt: string;
+        };
+        PackageUserResponse: {
+            /**
+             * Format: uuid
+             * @description The user's id.
+             */
+            id: string;
+            /** @description Their username. */
+            userName?: string | null;
+            /** @description Their display name. */
+            name: string;
+        };
+        PackageVersionContentResponse: {
+            /**
+             * Format: int32
+             * @description Its number.
+             */
+            version: number;
+            /** @description What changed, Markdown. */
+            changelog: string;
+            /** @description SHA-256 of its workflows and connections. */
+            contentHash: string;
+            /**
+             * Format: date-time
+             * @description When it was published.
+             */
+            createdAt: string;
+            /** @description Its workflows; their programs name each other by key, and webhook secrets are empty. */
+            workflows: components['schemas']['PackageWorkflow'][];
+            /** @description The connections they use: an install names one of the installer's for each. */
+            connections: components['schemas']['PackageConnection'][];
+        };
+        PackageVersionResponse: {
+            /**
+             * Format: int32
+             * @description Its number: 1, 2, … in publish order.
+             */
+            version: number;
+            /** @description What changed, Markdown. */
+            changelog: string;
+            /** @description SHA-256 of its workflows and connections. */
+            contentHash: string;
+            /**
+             * Format: date-time
+             * @description When it was published.
+             */
+            createdAt: string;
+        };
+        /** @enum {string} */
+        PackageVisibility: 'Private' | 'Unlisted' | 'Public';
+        PackageWorkflow: {
+            /** Format: uuid */
+            key: string;
+            name: string;
+            main: boolean;
+            contentHash: string;
+            program: components['schemas']['BlockProgram'];
+        };
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -3710,6 +4741,17 @@ export interface components {
             instance?: string | null;
         } & {
             [key: string]: unknown;
+        };
+        PublishPackageRequest: {
+            /** @description The caller's workflows to publish, the main one first unless `main` says. */
+            workflows: string[];
+            /**
+             * Format: uuid
+             * @description The one to open first.
+             */
+            main?: string | null;
+            /** @description What changed, Markdown. */
+            changelog?: string | null;
         };
         PutStorageRequest: {
             /** @description Any JSON value. */
@@ -3803,6 +4845,10 @@ export interface components {
             /** @description May change the title and text, not only read. */
             canEdit: boolean;
         };
+        SharePackageRequest: {
+            /** @description Whom to share it with. */
+            userName: string;
+        };
         StartImpersonationRequest: {
             /** @description The user to act as. */
             username: string;
@@ -3838,6 +4884,52 @@ export interface components {
             name?: string | null;
             /** @description IANA time zone, e.g. "Europe/Moscow". */
             timeZone?: string | null;
+        };
+        WorkflowSourceResponse: {
+            /**
+             * Format: uuid
+             * @description The package it was installed from (it may be gone since).
+             */
+            packageId: string;
+            /**
+             * Format: int32
+             * @description That package's version.
+             */
+            version?: number | null;
+            /**
+             * Format: uuid
+             * @description Which of the package's workflows it is a copy of.
+             */
+            key?: string | null;
+        };
+        WorkflowSummaryResponse: {
+            /**
+             * Format: uuid
+             * @description The workflow's id.
+             */
+            id: string;
+            /** @description Its name. */
+            name: string;
+            /** @description Its triggers start runs. */
+            active: boolean;
+            /**
+             * Format: int32
+             * @description Bumped on every change of its program.
+             */
+            version: number;
+            /** @description SHA-256 of its program; null until a workflow saved before hashes is saved again. */
+            contentHash?: string | null;
+            source?: components['schemas']['WorkflowSourceResponse'];
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it last changed.
+             */
+            updatedAt: string;
         };
     };
     responses: never;

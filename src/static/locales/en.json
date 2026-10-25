@@ -39,7 +39,11 @@
       "label": "Notes",
       "description": "Markdown, shared and from workflows"
     },
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "explore": {
+      "label": "Explore",
+      "description": "Workflow packages to install"
+    }
   },
   "footer": {
     "label": "Site",

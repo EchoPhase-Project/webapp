@@ -1,0 +1,91 @@
+{
+  "back": "Explore",
+  "blocks": "{count} blocks",
+  "by": "by {name}",
+  "card": {
+    "installs": "{count} installs",
+    "shared": "Shared with you",
+    "tags": "Tags"
+  },
+  "delete": {
+    "body": "Its versions go with it and nobody can install it any more. Copies already installed stay with whoever installed them.",
+    "confirm": "Delete",
+    "open": "Delete",
+    "title": "Delete this package?"
+  },
+  "description": "Workflow packages to read and install.",
+  "editor": {
+    "edit": "Edit package",
+    "loading": "Loading…",
+    "main": "main",
+    "name": "Name",
+    "new": "Publish workflows",
+    "no_workflows": "You have no workflows of your own to publish.",
+    "nothing": "Nothing to preview yet",
+    "open": "Edit",
+    "preview": "Preview",
+    "publish": "Publish",
+    "readme": "README",
+    "readme_placeholder": "What it does, what it needs (connections, settings), how to start it. Markdown works.",
+    "save": "Save",
+    "summary": "Summary: a sentence or two for its card",
+    "tags": "Tags, separated by commas (up to 10)",
+    "visibility": "Who sees it",
+    "workflows": "Workflows (the first ticked opens first)",
+    "workflows_hint": "Include every workflow they call or use for errors. Webhook secrets are left out; anything else in the blocks (an API key in a header) is published as it is.",
+    "write": "Write"
+  },
+  "empty": "Nobody has published a package yet.",
+  "empty_mine": "You have no packages yet.",
+  "eyebrow": "Workflows",
+  "first": "Publish your first",
+  "install": {
+    "close": "Done",
+    "connections": "Connections they use",
+    "done": "Installed. Your new workflows, turned off:",
+    "later": "None yet: set it up later",
+    "lead": "Copies {count} workflows into yours, turned off, linked to each other. Webhooks get new secrets.",
+    "missing": "Before turning them on, add these connections (or pick others in the workflows): {names}.",
+    "open": "Install",
+    "submit": "Install",
+    "title": "Install version {version}"
+  },
+  "lead": "Workflows published together with a README. Installing one copies its workflows into yours, linked to each other and to your connections; the author’s stay theirs.",
+  "leave": "Leave this package",
+  "new": "Publish workflows",
+  "no_readme": "No README.",
+  "none_found": "No packages match.",
+  "not_found": "This package does not exist, or it is not shared with you.",
+  "publish": {
+    "changelog": "What changed (Markdown, optional)",
+    "open": "New version",
+    "submit": "Publish",
+    "title": "Publish a new version",
+    "unchanged": "Nothing changed since the latest version: edit the workflows first, or choose others."
+  },
+  "search": "Search packages",
+  "share": {
+    "add": "Share",
+    "none": "Nobody yet. Shares matter while it is private.",
+    "remove": "Stop sharing with {name}",
+    "title": "Shared with",
+    "username": "Username"
+  },
+  "tab": {
+    "explore": "Everyone’s",
+    "mine": "Mine and shared"
+  },
+  "tag_clear": "Stop filtering by #{tag}",
+  "title": "Explore",
+  "updated": "updated {date}",
+  "versions": "Versions",
+  "visibility": {
+    "Private": "Private",
+    "Private_hint": "You and the people you share it with",
+    "Public": "Public",
+    "Public_hint": "Everyone, listed in Explore",
+    "Unlisted": "Unlisted",
+    "Unlisted_hint": "Anyone signed in who has the link"
+  },
+  "workflows": "Workflows in version {version}"
+}
