@@ -39,7 +39,11 @@
       "label": "Заметки",
       "description": "Markdown, общие и от сценариев"
     },
-    "workspace": "Рабочее место"
+    "workspace": "Рабочее место",
+    "explore": {
+      "label": "Обзор",
+      "description": "Пакеты workflow для установки"
+    }
   },
   "footer": {
     "label": "Сайт",

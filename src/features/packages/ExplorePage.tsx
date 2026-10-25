@@ -1,8 +1,9 @@
 import {
+    createEffect,
     createRenderEffect,
-    createResource,
     createSignal,
-    For,
+    on,
+    onCleanup,
     Show,
 } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
@@ -14,6 +15,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Field from '@shared/ui/Field';
+import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
 import { explorePackages, myPackages } from './api';
 import PackageCard from './components/PackageCard';
@@ -53,27 +55,82 @@ export default function ExplorePage() {
         timer = setTimeout(() => setSearch(value.trim()), 250);
     };
 
-    const [packages] = createResource(
-        () =>
-            isAuthenticated() ? { tab: tab(), q: search(), tag: tag() } : false,
-        async ({ tab, q, tag }): Promise<WorkflowPackage[]> => {
-            if (tab === 'explore') return explorePackages(q, tag);
-            // Their own list is short: filtered here.
-            const needle = q.toLowerCase();
-            return (await myPackages()).filter(
-                (p) =>
-                    (!tag || p.tags.includes(tag)) &&
-                    (!needle ||
-                        p.name.toLowerCase().includes(needle) ||
-                        p.summary.toLowerCase().includes(needle))
-            );
+    const [packages, setPackages] = createSignal<WorkflowPackage[]>([]);
+    // Where the next page of Explore starts; null: nothing more.
+    const [next, setNext] = createSignal<string | null>(null);
+    const [loading, setLoading] = createSignal(false);
+    const [loaded, setLoaded] = createSignal(false);
+    // A newer list (another tab, search or tag) makes older answers stale.
+    let generation = 0;
+
+    async function load(more: boolean) {
+        const mine = generation;
+        setLoading(true);
+        try {
+            if (tab() === 'mine') {
+                // Their own list is short: whole, filtered here.
+                const needle = search().toLowerCase();
+                const list = (await myPackages()).filter(
+                    (p) =>
+                        (!tag() || p.tags.includes(tag())) &&
+                        (!needle ||
+                            p.name.toLowerCase().includes(needle) ||
+                            p.summary.toLowerCase().includes(needle))
+                );
+                if (mine !== generation) return;
+                setPackages(list);
+                setNext(null);
+            } else {
+                const result = await explorePackages(
+                    search(),
+                    tag(),
+                    more ? (next() ?? undefined) : undefined
+                );
+                if (mine !== generation || !result.ok) return;
+                setPackages((list) =>
+                    more ? [...list, ...result.data.items] : result.data.items
+                );
+                setNext(result.data.next);
+            }
+            setLoaded(true);
+        } finally {
+            if (mine === generation) setLoading(false);
         }
+    }
+
+    createEffect(
+        on(
+            () => (isAuthenticated() ? [tab(), search(), tag()] : false),
+            (key) => {
+                if (!key) return;
+                generation++;
+                setLoaded(false);
+                setPackages([]);
+                setNext(null);
+                void load(false);
+            }
+        )
     );
+
+    const loadMore = () => {
+        if (next() && !loading()) void load(true);
+    };
+
+    // The next page comes as the end of the list scrolls into view.
+    const watchEnd = (el: HTMLElement) => {
+        if (typeof IntersectionObserver === 'undefined') return;
+        const observer = new IntersectionObserver(
+            (entries) => entries.some((e) => e.isIntersecting) && loadMore(),
+            { rootMargin: '400px' }
+        );
+        observer.observe(el);
+        onCleanup(() => observer.disconnect());
+    };
 
     const [creating, setCreating] = createSignal(false);
 
-    const selectTab = (next: Tab) =>
-        setParams({ tab: next === 'mine' ? 'mine' : undefined });
+    const selectTab = (target: Tab) =>
+        setParams({ tab: target === 'mine' ? 'mine' : undefined });
 
     return (
         <div class="packages-container">
@@ -140,9 +197,9 @@ export default function ExplorePage() {
             </div>
 
             <Show
-                when={(packages() ?? []).length > 0}
+                when={packages().length > 0}
                 fallback={
-                    <Show when={!packages.loading}>
+                    <Show when={loaded()}>
                         <EmptyState
                             action={
                                 <Show
@@ -168,16 +225,25 @@ export default function ExplorePage() {
                     </Show>
                 }
             >
-                <div class="packages-masonry">
-                    <For each={packages()}>
-                        {(pkg) => (
-                            <PackageCard
-                                pkg={pkg}
-                                onTag={(next) => setParams({ tag: next })}
-                            />
-                        )}
-                    </For>
-                </div>
+                <Masonry each={packages()}>
+                    {(pkg) => (
+                        <PackageCard
+                            pkg={pkg}
+                            onTag={(picked) => setParams({ tag: picked })}
+                        />
+                    )}
+                </Masonry>
+                <Show when={next()}>
+                    <div class="packages-more" ref={watchEnd}>
+                        <Button
+                            variant="ghost"
+                            busy={loading()}
+                            onClick={loadMore}
+                        >
+                            {t('more', 'Show more')}
+                        </Button>
+                    </div>
+                </Show>
             </Show>
 
             <PackageEditorModal

@@ -3191,12 +3191,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Public packages, most installed first; `q` searches name and summary, `tag` filters. */
+        /**
+         * Public packages, most installed first, a page at a time (pass the
+         *     answer's nextCursor as `cursor`); `q` searches name and summary, `tag` filters.
+         */
         get: {
             parameters: {
                 query?: {
                     q?: string;
                     tag?: string;
+                    cursor?: string;
                     limit?: number;
                 };
                 header?: never;
@@ -3211,7 +3215,16 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        'application/json': components['schemas']['PackageResponse'][];
+                        'application/json': components['schemas']['PackageResponseCursorPageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
                     };
                 };
             };
@@ -4666,6 +4679,12 @@ export interface components {
              * @description When it or its versions last changed.
              */
             updatedAt: string;
+        };
+        /** @description One page of a cursor-paginated list; pass NextCursor to get the next one. */
+        PackageResponseCursorPageResponse: {
+            data: components['schemas']['PackageResponse'][];
+            nextCursor?: string | null;
+            readonly hasMore: boolean;
         };
         PackageShareResponse: {
             user: components['schemas']['PackageUserResponse'];

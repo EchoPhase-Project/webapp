@@ -39,7 +39,11 @@
       "label": "Notițe",
       "description": "Markdown, partajate și din fluxuri"
     },
-    "workspace": "Spațiu de lucru"
+    "workspace": "Spațiu de lucru",
+    "explore": {
+      "label": "Explorare",
+      "description": "Pachete de workflow de instalat"
+    }
   },
   "footer": {
     "label": "Site",

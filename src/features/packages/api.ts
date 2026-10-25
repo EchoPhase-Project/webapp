@@ -11,19 +11,39 @@ import type {
     WorkflowSummary,
 } from '@shared/api/types';
 
-/** Public packages, most installed first; `q` searches name and summary. */
+/** A page of public packages and the cursor of the next (null: the last). */
+export interface ExplorePage {
+    items: WorkflowPackage[];
+    next: string | null;
+}
+
+/** Public packages, most installed first, a page at a time; `q` searches name and summary. */
 export async function explorePackages(
     q?: string,
-    tag?: string
-): Promise<WorkflowPackage[]> {
+    tag?: string,
+    cursor?: string
+): Promise<ApiResult<ExplorePage>> {
     const result = await send(
         api.GET('/api/v1/workflow-packages/explore', {
             params: {
-                query: { q: q || undefined, tag: tag || undefined, limit: 100 },
+                query: {
+                    q: q || undefined,
+                    tag: tag || undefined,
+                    cursor,
+                    limit: 30,
+                },
             },
         })
     );
-    return result.ok ? result.data : [];
+    return result.ok
+        ? {
+              ok: true,
+              data: {
+                  items: result.data.data,
+                  next: result.data.nextCursor ?? null,
+              },
+          }
+        : result;
 }
 
 /** The caller's packages, then those shared with them. */

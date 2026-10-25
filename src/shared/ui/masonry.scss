@@ -1,0 +1,17 @@
+// Masonry.tsx: rows of 4px with no row gap (the gap is in each item's span),
+// columns of at least 17rem, 14px apart.
+.masonry {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+  grid-auto-rows: 4px;
+  column-gap: 14px;
+  align-items: start;
+}
+
+.masonry-item {
+  min-width: 0;
+
+  > * {
+    margin: 0;
+  }
+}

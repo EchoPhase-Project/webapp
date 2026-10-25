@@ -22,6 +22,9 @@ export const pkg = (over: Record<string, unknown> = {}) => ({
     ...over,
 });
 
+const page = (data: unknown[], nextCursor: string | null = null) =>
+    json(200, { data, nextCursor, hasMore: nextCursor !== null });
+
 describe('ExplorePage', () => {
     afterEach(() => {
         cleanup();
@@ -33,7 +36,7 @@ describe('ExplorePage', () => {
         fakeApi({
             ...signedIn,
             'GET /api/v1/workflow-packages/explore': () =>
-                json(200, [
+                page([
                     pkg(),
                     pkg({
                         id: 'p2',
@@ -53,10 +56,34 @@ describe('ExplorePage', () => {
         expect(screen.getAllByText('7 installs')).toHaveLength(2);
     });
 
+    it('loads the next page with the cursor of the last', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/workflow-packages/explore': (request) =>
+                new URL(request.url).searchParams.get('cursor') === 'c1'
+                    ? page([pkg({ id: 'p2', name: 'Second page' })])
+                    : page([pkg()], 'c1'),
+        });
+
+        renderPage(() => <ExplorePage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Show more' })
+        );
+
+        expect(
+            await screen.findByRole('link', { name: 'Second page' })
+        ).toBeTruthy();
+        expect(screen.getByRole('link', { name: 'Guild tools' })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: 'Show more' })).toBeNull();
+        expect(api.calls('GET /api/v1/workflow-packages/explore')).toHaveLength(
+            2
+        );
+    });
+
     it('filters by a tag picked on a card', async () => {
         const api = fakeApi({
             ...signedIn,
-            'GET /api/v1/workflow-packages/explore': () => json(200, [pkg()]),
+            'GET /api/v1/workflow-packages/explore': () => page([pkg()]),
         });
 
         renderPage(() => <ExplorePage />);
@@ -85,7 +112,7 @@ describe('ExplorePage', () => {
     it('lists the caller’s own and shared packages on the second tab', async () => {
         fakeApi({
             ...signedIn,
-            'GET /api/v1/workflow-packages/explore': () => json(200, []),
+            'GET /api/v1/workflow-packages/explore': () => page([]),
             'GET /api/v1/workflow-packages': () =>
                 json(200, [
                     pkg({
@@ -109,7 +136,7 @@ describe('ExplorePage', () => {
     it('publishes the ticked workflows, the first as the main one', async () => {
         const api = fakeApi({
             ...signedIn,
-            'GET /api/v1/workflow-packages/explore': () => json(200, []),
+            'GET /api/v1/workflow-packages/explore': () => page([]),
             'GET /api/v1/workflows': () =>
                 json(200, [
                     {

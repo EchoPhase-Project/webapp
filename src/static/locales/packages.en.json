@@ -52,6 +52,7 @@
   },
   "lead": "Workflows published together with a README. Installing one copies its workflows into yours, linked to each other and to your connections; the author’s stay theirs.",
   "leave": "Leave this package",
+  "more": "Show more",
   "new": "Publish workflows",
   "no_readme": "No README.",
   "none_found": "No packages match.",
