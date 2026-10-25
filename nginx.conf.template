@@ -118,6 +118,35 @@ http {
 			error_page 502 504 = @api_unavailable;
 		}
 
+		# Files and the avatar: large bodies both ways. Uploads stream to the
+		# server (which enforces the real limits) instead of being buffered
+		# here, downloads stream back; the ceiling is the server's 1 GiB plus
+		# the multipart framing. A regex, so it wins over /api/ for these.
+		location ~ ^/api/v1/(files(/.*)?|auth/me/avatar)$ {
+			limit_req zone=auth burst=10 nodelay;
+			limit_req zone=api  burst=60 nodelay;
+			client_max_body_size 1100m;
+
+			proxy_pass http://${API_UPSTREAM};
+			proxy_http_version 1.1;
+
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+
+			proxy_set_header Connection "";
+
+			proxy_request_buffering off;
+			proxy_buffering off;
+
+			proxy_connect_timeout 10s;
+			proxy_send_timeout 300s;
+			proxy_read_timeout 300s;
+
+			error_page 502 504 = @api_unavailable;
+		}
+
 		# The realtime gateway socket. Exact, so it wins over /api/ for this
 		# path only: /api/v1/gateway/intents stays a plain API request.
 		location = /api/v1/gateway {
