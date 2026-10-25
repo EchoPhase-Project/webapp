@@ -1,320 +1,349 @@
-import { For, Show, createSignal, createMemo, onCleanup } from 'solid-js';
+import {
+    createEffect,
+    createMemo,
+    createSignal,
+    createUniqueId,
+    For,
+    on,
+    Show,
+    type JSX,
+} from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import { useLocation } from '@solidjs/router';
+import { AiOutlineClose, AiOutlineDown } from 'solid-icons/ai';
 import { IoEllipsisHorizontal } from 'solid-icons/io';
 import { useI18n } from '@shared/i18n/i18n-context';
-import type { NavLink, NavSubItem } from './nav-link';
+import Avatar from '@shared/ui/Avatar';
+import type { NavItem, NavModel, NavSection } from './nav-link';
+import NavScroll from './nav-scroll';
+import { NavEntry, NavItemContent } from './nav-parts';
 import './navbar.scss';
 
-const MAX_VISIBLE = 4;
+/** Destinations on the bar itself; everything is in the drawer behind "More". */
+const ON_BAR = 3;
 
-type SheetMode =
-    | { kind: 'submenu'; items: NavSubItem[] }
-    | { kind: 'overflow'; links: NavLink[] };
+/** How far a swipe to the right goes before the drawer closes, in px. */
+const SWIPE_CLOSE = 60;
 
-// ─── MobileBottomSheet ────────────────────────────────────────────────────────
+/** The pages of the model in order, groups opened: what the bar picks from. */
+function destinations(nav: NavModel): NavItem[] {
+    return [
+        nav.home,
+        ...nav.sections.flatMap((s): NavItem[] =>
+            s.items?.length ? s.items : [s]
+        ),
+    ];
+}
 
-function MobileBottomSheet(props: {
-    mode: SheetMode;
-    onClose: () => void;
-    openSheet: (mode: SheetMode) => void;
+/** A row of the drawer that expands downward into its pages (an accordion). */
+function DrawerGroup(props: {
+    /** What the row shows: its icon and label. */
+    content: JSX.Element;
+    items: NavItem[];
+    open: boolean;
+    onToggle: () => void;
+    onDone: () => void;
+    class?: string;
 }) {
-    const { t } = useI18n();
+    const id = createUniqueId();
     return (
-        <>
-            <div
-                class="mobile-sheet-backdrop"
-                onClick={() => props.onClose()}
-                aria-hidden="true"
-            />
-            <div
-                class="mobile-sheet"
-                role="menu"
-                aria-label={
-                    props.mode.kind === 'overflow'
-                        ? t('nav.more_items', 'More items')
-                        : t('nav.submenu', 'Submenu')
+        <li class={['drawer-group', props.class].filter(Boolean).join(' ')}>
+            <button
+                type="button"
+                class="drawer-row"
+                aria-expanded={props.open}
+                aria-controls={id}
+                onClick={() => props.onToggle()}
+            >
+                {props.content}
+                <AiOutlineDown class="drawer-chevron" aria-hidden="true" />
+            </button>
+            <ul id={id} class="drawer-sublist" hidden={!props.open}>
+                <For each={props.items}>
+                    {(item) => (
+                        <li>
+                            <NavEntry
+                                item={item}
+                                class="drawer-subrow"
+                                onDone={props.onDone}
+                            >
+                                <NavItemContent item={item} />
+                            </NavEntry>
+                        </li>
+                    )}
+                </For>
+            </ul>
+        </li>
+    );
+}
+
+function SectionIcon(props: { section: NavSection | NavItem }) {
+    return (
+        <i class="nav-icon" aria-hidden="true">
+            <Show when={props.section.icon}>
+                {(Icon) => <Dynamic component={Icon()} />}
+            </Show>
+        </i>
+    );
+}
+
+/**
+ * The drawer behind "More": the whole navigation, sliding in from the right.
+ * Home on top, the sections in the middle (groups expand in place, the
+ * current page's open to start with), the account or signing in at the
+ * bottom. A modal dialog: the page behind is inert, focus stays inside and
+ * returns to "More"; Escape, a tap beside it, a swipe to the right or
+ * following a link closes it.
+ */
+function Drawer(props: { nav: NavModel; open: boolean; onClose: () => void }) {
+    const { t } = useI18n();
+    const location = useLocation();
+    let dialog: HTMLDialogElement | undefined;
+    const [expanded, setExpanded] = createSignal<Set<string>>(new Set());
+
+    const ACCOUNT = '\u0000account';
+    const toggle = (key: string) =>
+        setExpanded((current) => {
+            const next = new Set(current);
+            if (!next.delete(key)) next.add(key);
+            return next;
+        });
+
+    // Opening: the group of the current page starts expanded.
+    createEffect(
+        on(
+            () => props.open,
+            (open) => {
+                if (!dialog) return;
+                if (open && !dialog.open) {
+                    const here = props.nav.sections.find((s) =>
+                        s.items?.some(
+                            (i) =>
+                                i.href && location.pathname.startsWith(i.href)
+                        )
+                    );
+                    setExpanded(new Set(here ? [here.label] : []));
+                    if (typeof dialog.showModal === 'function')
+                        dialog.showModal();
+                    else dialog.setAttribute('open', '');
+                } else if (!open && dialog.open) {
+                    if (typeof dialog.close === 'function') dialog.close();
+                    else dialog.removeAttribute('open');
                 }
-            >
-                <div class="mobile-sheet-handle" aria-hidden="true" />
+            }
+        )
+    );
 
-                <Show when={props.mode.kind === 'submenu'}>
-                    <ul class="mobile-sheet-list">
-                        <For
-                            each={
-                                (
-                                    props.mode as {
-                                        kind: 'submenu';
-                                        items: NavSubItem[];
-                                    }
-                                ).items
-                            }
-                        >
-                            {(item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <li role="none">
-                                        <div
-                                            class="mobile-sheet-item"
-                                            role="menuitem"
-                                            tabIndex={0}
-                                            aria-label={item.label}
-                                            onClick={(e) => {
-                                                props.onClose();
-                                                item.events?.onClick?.(e);
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' '
-                                                ) {
-                                                    e.preventDefault();
-                                                    props.onClose();
-                                                    item.events?.onKeyDown?.(e);
-                                                } else if (e.key === 'Escape') {
-                                                    props.onClose();
-                                                }
-                                            }}
-                                        >
-                                            <Show when={Icon}>
-                                                <i
-                                                    class="submenu-icon"
-                                                    aria-hidden="true"
-                                                >
-                                                    <Dynamic component={Icon} />
-                                                </i>
-                                            </Show>
-                                            <div class="submenu-content">
-                                                <span class="submenu-label">
-                                                    {item.label}
-                                                </span>
-                                                <Show when={item.description}>
-                                                    <span class="submenu-description">
-                                                        {item.description}
-                                                    </span>
-                                                </Show>
-                                            </div>
-                                        </div>
-                                    </li>
-                                );
-                            }}
-                        </For>
-                    </ul>
-                </Show>
+    let startX: number | null = null;
 
-                <Show when={props.mode.kind === 'overflow'}>
-                    <ul class="mobile-sheet-list">
-                        <For
-                            each={
-                                (
-                                    props.mode as {
-                                        kind: 'overflow';
-                                        links: NavLink[];
-                                    }
-                                ).links
-                            }
-                        >
-                            {(link) => {
-                                const hasItems = !!link.items?.length;
-                                return (
-                                    <li role="none">
-                                        <div
-                                            class="mobile-sheet-item mobile-sheet-item--link"
-                                            role="menuitem"
-                                            tabIndex={0}
-                                            aria-label={link.text}
-                                            aria-haspopup={
-                                                hasItems ? 'menu' : undefined
-                                            }
-                                            onClick={(e) => {
-                                                if (hasItems) {
-                                                    props.openSheet({
-                                                        kind: 'submenu',
-                                                        items: link.items!,
-                                                    });
-                                                } else {
-                                                    props.onClose();
-                                                    link.events?.onClick?.(e);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' '
-                                                ) {
-                                                    e.preventDefault();
-                                                    if (hasItems) {
-                                                        props.openSheet({
-                                                            kind: 'submenu',
-                                                            items: link.items!,
-                                                        });
-                                                    } else {
-                                                        props.onClose();
-                                                        link.events?.onKeyDown?.(
-                                                            e
-                                                        );
-                                                    }
-                                                } else if (e.key === 'Escape') {
-                                                    props.onClose();
-                                                }
-                                            }}
-                                        >
-                                            <i
-                                                class="submenu-icon"
-                                                aria-hidden="true"
+    return (
+        <dialog
+            ref={dialog}
+            class="nav-drawer"
+            aria-label={t('nav.label', 'Main navigation')}
+            onClose={() => props.onClose()}
+            onCancel={(e) => {
+                e.preventDefault();
+                props.onClose();
+            }}
+            // A tap on the backdrop lands on the dialog itself.
+            onClick={(e) => {
+                if (e.target === dialog) props.onClose();
+            }}
+            onTouchStart={(e) => (startX = e.touches[0]?.clientX ?? null)}
+            onTouchEnd={(e) => {
+                const endX = e.changedTouches[0]?.clientX;
+                if (
+                    startX !== null &&
+                    endX !== undefined &&
+                    endX - startX > SWIPE_CLOSE
+                )
+                    props.onClose();
+                startX = null;
+            }}
+        >
+            <div class="drawer-panel">
+                <div class="drawer-top">
+                    <NavEntry
+                        item={props.nav.home}
+                        class="drawer-row drawer-home"
+                        onDone={props.onClose}
+                    >
+                        <SectionIcon section={props.nav.home} />
+                        <span class="drawer-label">EchoPhase</span>
+                    </NavEntry>
+                    <button
+                        type="button"
+                        class="drawer-close"
+                        aria-label={t('nav.close', 'Close the menu')}
+                        onClick={() => props.onClose()}
+                    >
+                        <AiOutlineClose />
+                    </button>
+                </div>
+
+                <NavScroll class="drawer-middle">
+                    <ul class="drawer-list">
+                        <For each={props.nav.sections}>
+                            {(section) => (
+                                <Show
+                                    when={section.items?.length}
+                                    fallback={
+                                        <li>
+                                            <NavEntry
+                                                item={section}
+                                                class="drawer-row"
+                                                onDone={props.onClose}
                                             >
-                                                <link.icon />
-                                            </i>
-                                            <div class="submenu-content">
-                                                <span class="submenu-label">
-                                                    {link.text}
-                                                </span>
-                                                <Show when={hasItems}>
-                                                    <span class="submenu-description">
-                                                        {link.items!.length}{' '}
-                                                        items
-                                                    </span>
-                                                </Show>
-                                            </div>
-                                            <Show when={hasItems}>
-                                                <i
-                                                    class="mobile-sheet-chevron"
-                                                    aria-hidden="true"
+                                                <SectionIcon
+                                                    section={section}
                                                 />
-                                            </Show>
-                                        </div>
-                                    </li>
-                                );
-                            }}
+                                                <span class="drawer-label">
+                                                    {section.label}
+                                                </span>
+                                            </NavEntry>
+                                        </li>
+                                    }
+                                >
+                                    <DrawerGroup
+                                        content={
+                                            <>
+                                                <SectionIcon
+                                                    section={section}
+                                                />
+                                                <span class="drawer-label">
+                                                    {section.label}
+                                                </span>
+                                            </>
+                                        }
+                                        items={section.items ?? []}
+                                        open={expanded().has(section.label)}
+                                        onToggle={() => toggle(section.label)}
+                                        onDone={props.onClose}
+                                    />
+                                </Show>
+                            )}
                         </For>
                     </ul>
-                </Show>
+                </NavScroll>
+
+                <div class="drawer-bottom">
+                    <Show
+                        when={props.nav.account}
+                        fallback={
+                            <Show when={props.nav.login}>
+                                {(login) => (
+                                    <ul class="drawer-list">
+                                        <li>
+                                            <NavEntry
+                                                item={login()}
+                                                class="drawer-row"
+                                                onDone={props.onClose}
+                                            >
+                                                <SectionIcon
+                                                    section={login()}
+                                                />
+                                                <span class="drawer-label">
+                                                    {login().label}
+                                                </span>
+                                            </NavEntry>
+                                        </li>
+                                    </ul>
+                                )}
+                            </Show>
+                        }
+                    >
+                        {(account) => (
+                            <ul class="drawer-list">
+                                <DrawerGroup
+                                    class="drawer-account"
+                                    content={
+                                        <>
+                                            <Avatar
+                                                name={account().name}
+                                                seed={account().id}
+                                                fileId={account().avatarFileId}
+                                                size={32}
+                                            />
+                                            <span class="drawer-label drawer-account-text">
+                                                <span>{account().name}</span>
+                                                <Show when={account().userName}>
+                                                    <span class="drawer-account-username">
+                                                        @{account().userName}
+                                                    </span>
+                                                </Show>
+                                            </span>
+                                        </>
+                                    }
+                                    items={account().items}
+                                    open={expanded().has(ACCOUNT)}
+                                    onToggle={() => toggle(ACCOUNT)}
+                                    onDone={props.onClose}
+                                />
+                            </ul>
+                        )}
+                    </Show>
+                </div>
             </div>
-        </>
+        </dialog>
     );
 }
 
-// ─── MobileNavItem ────────────────────────────────────────────────────────────
-
-function MobileNavItem(props: {
-    link: NavLink;
-    openSheet: (mode: SheetMode) => void;
-}) {
-    const hasItems = () => !!props.link.items?.length;
-
-    return (
-        <li class="mobile-nav-item">
-            <button
-                class="mobile-nav-btn"
-                aria-label={props.link.text}
-                aria-haspopup={hasItems() ? 'menu' : undefined}
-                onClick={(e) => {
-                    if (hasItems()) {
-                        props.openSheet({
-                            kind: 'submenu',
-                            items: props.link.items!,
-                        });
-                    } else {
-                        props.link.events?.onClick?.(e);
-                    }
-                }}
-            >
-                <i class="nav-icon" aria-hidden="true">
-                    <props.link.icon />
-                </i>
-                <span class="mobile-nav-label">{props.link.text}</span>
-            </button>
-        </li>
-    );
-}
-
-// ─── MobileMoreButton ─────────────────────────────────────────────────────────
-
-function MobileMoreButton(props: { count: number; onClick: () => void }) {
+/**
+ * Navigation on phones (<768px): a bar at the bottom with the first pages
+ * and "More", which slides in the drawer with everything. Signed out there
+ * is no bar: the header offers signing in.
+ */
+export function MobileNav(props: { nav: NavModel }) {
     const { t } = useI18n();
-    return (
-        <li class="mobile-nav-item">
-            <button
-                class="mobile-nav-btn"
-                aria-label={t(
-                    'nav.more_count',
-                    'More navigation items ({count})'
-                ).replace('{count}', String(props.count))}
-                aria-haspopup="menu"
-                onClick={() => props.onClick()}
-            >
-                <i class="nav-icon" aria-hidden="true">
-                    <IoEllipsisHorizontal />
-                </i>
-                <span class="mobile-nav-label">{t('nav.more', 'More')}</span>
-            </button>
-        </li>
-    );
-}
+    const [open, setOpen] = createSignal(false);
+    let more: HTMLButtonElement | undefined;
+    const bar = createMemo(() => destinations(props.nav).slice(0, ON_BAR));
 
-// ─── MobileNav ────────────────────────────────────────────────────────────────
-
-export function MobileNav(props: { links: NavLink[] }) {
-    const { t } = useI18n();
-    const [sheet, setSheet] = createSignal<SheetMode | null>(null);
-
-    const openSheet = (mode: SheetMode) => setSheet(mode);
-    const closeSheet = () => setSheet(null);
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') closeSheet();
+    const close = () => {
+        setOpen(false);
+        more?.focus();
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    onCleanup(() => document.removeEventListener('keydown', handleKeyDown));
-
-    const visibleLinks = createMemo(() =>
-        props.links.length > MAX_VISIBLE
-            ? props.links.slice(0, MAX_VISIBLE - 1)
-            : props.links
-    );
-
-    const overflowLinks = createMemo(() =>
-        props.links.length > MAX_VISIBLE
-            ? props.links.slice(MAX_VISIBLE - 1)
-            : []
-    );
-
-    const hasOverflow = () => overflowLinks().length > 0;
-
     return (
-        <>
+        <Show when={props.nav.account}>
             <nav
                 class="navbar navbar--mobile"
                 aria-label={t('nav.label', 'Main navigation')}
             >
                 <ul class="mobile-navbar-nav">
-                    <For each={visibleLinks()}>
-                        {(link) => (
-                            <MobileNavItem link={link} openSheet={openSheet} />
+                    <For each={bar()}>
+                        {(item) => (
+                            <li class="mobile-nav-item">
+                                <NavEntry item={item} class="mobile-nav-btn">
+                                    <SectionIcon section={item} />
+                                    <span class="mobile-nav-label">
+                                        {item.label}
+                                    </span>
+                                </NavEntry>
+                            </li>
                         )}
                     </For>
-
-                    <Show when={hasOverflow()}>
-                        <MobileMoreButton
-                            count={overflowLinks().length}
-                            onClick={() =>
-                                openSheet({
-                                    kind: 'overflow',
-                                    links: overflowLinks(),
-                                })
-                            }
-                        />
-                    </Show>
+                    <li class="mobile-nav-item">
+                        <button
+                            ref={more}
+                            type="button"
+                            class="mobile-nav-btn"
+                            aria-expanded={open()}
+                            aria-haspopup="dialog"
+                            onClick={() => setOpen(true)}
+                        >
+                            <i class="nav-icon" aria-hidden="true">
+                                <IoEllipsisHorizontal />
+                            </i>
+                            <span class="mobile-nav-label">
+                                {t('nav.more', 'More')}
+                            </span>
+                        </button>
+                    </li>
                 </ul>
             </nav>
-
-            <Show when={sheet() !== null}>
-                <MobileBottomSheet
-                    mode={sheet()!}
-                    onClose={closeSheet}
-                    openSheet={openSheet}
-                />
-            </Show>
-        </>
+            <Drawer nav={props.nav} open={open()} onClose={close} />
+        </Show>
     );
 }

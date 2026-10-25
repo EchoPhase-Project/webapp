@@ -24,6 +24,13 @@
   --border: #d9d9e0;
   --input-border: #cdced6;
   --shadow: #1c2024;
+  // Generated avatars (a gradient per user): their colours' saturation and
+  // lightness, so any hue sits well on this theme.
+  --avatar-saturation: 78%;
+  --avatar-lightness: 64%;
+  // The initial on a generated avatar: dark reads on every hue at this
+  // lightness (3:1 at least, palette.test.ts); white would not on yellow.
+  --avatar-initial: #1c2024;
 
   --text: #1c2024;
   --text-muted: #60646c;
@@ -59,6 +66,9 @@
   --border: #33354a;
   --input-border: transparent;
   --shadow: #141414;
+  --avatar-saturation: 70%;
+  --avatar-lightness: 64%;
+  --avatar-initial: #1c2024;
 
   --text: #c5c3ca;
   --text-muted: #a3a1ad;

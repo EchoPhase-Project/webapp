@@ -1,6 +1,6 @@
 import { Component, onCleanup, Show } from 'solid-js';
 import type { ParentProps } from 'solid-js';
-import { useLocation } from '@solidjs/router';
+import { A, useLocation } from '@solidjs/router';
 import { NavBuilder } from '@shared/nav/nav-builder';
 import { Header } from '@shared/ui/Header';
 import RealtimeNotices from '@features/realtime/RealtimeNotices';
@@ -9,17 +9,19 @@ import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { notesChanged } from '@features/notes/notes-changes';
 import { useAuth } from '@shared/api/auth-provider';
+import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
 import ConsentBanner from '@features/consent/ConsentBanner';
 import ConsentSettings from '@features/consent/ConsentSettings';
-import { useNavLinks } from './nav-links';
+import { useNav } from './nav-links';
 import Footer from './Footer';
 import '@shared/styles/global.scss';
 
 const Layout: Component<ParentProps> = (props) => {
-    const navLinks = useNavLinks();
+    const nav = useNav();
     const realtime = useRealtime();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const { t } = useI18n();
     // A note shared with the user shows up in an open list at once.
     onCleanup(
         realtime.subscribe('notification.created', (event) => {
@@ -35,15 +37,23 @@ const Layout: Component<ParentProps> = (props) => {
     return (
         <div class="container">
             <Show when={showNav()}>
-                <NavBuilder links={navLinks()} />
+                <NavBuilder nav={nav()} />
             </Show>
 
             <Header
                 actions={
-                    <Show when={isAuthenticated()}>
-                        <QuickNoteButton />
-                        <NotificationBell feed={realtime} />
-                    </Show>
+                    <>
+                        <Show when={isAuthenticated()}>
+                            <QuickNoteButton />
+                            <NotificationBell feed={realtime} />
+                        </Show>
+                        {/* Phones have no bar while signed out: signing in is here. */}
+                        <Show when={user() === null && showNav()}>
+                            <A href="/auth" class="header-button header-login">
+                                {t('nav.login', 'Log in')}
+                            </A>
+                        </Show>
+                    </>
                 }
             />
 

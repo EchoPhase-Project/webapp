@@ -53,28 +53,33 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DESKTOP NAV  (sidebar, widens while hovered, ≥768 px)
-   Applied via .navbar--desktop
 ───────────────────────────────────────────────────────────────────────────── */
 
 // After Codewars: a rail of icons on its own solid surface that widens while
-// hovered (or while the keyboard is in it) to show the labels. The icons keep
-// their place (each link is as wide as the rail, its icon at the same left
-// offset); only the width and the labels' opacity change, so nothing jumps.
-// Sizes in px: the page's font size grows with the window, the rail should
-// not.
+// hovered (or while the keyboard is in it) to show the labels. Three parts:
+// home on top, the sections in the middle (scrolling, scrollbar hidden), the
+// account at the bottom. The icons keep their place; only the width and the
+// labels' opacity change. Sizes in px: the page's font grows with the
+// window, the rail should not.
 .navbar--desktop {
   --nav-collapsed: 60px;
   --nav-expanded: 232px;
   --nav-pad: 10px;
   --nav-link-h: 40px;
   --nav-icon: 20px;
-  // Hover and the open item: a tint of the text on the panel's surface.
+  // Hover, the open item and the current page: a tint of the text.
   --nav-hover: color-mix(in srgb, var(--text) 7%, transparent);
+  --nav-inset: calc(
+    (var(--nav-collapsed) - 2 * var(--nav-pad) - var(--nav-icon)) / 2
+  );
 
   position: fixed;
   top: 0;
   left: 0;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   width: var(--nav-collapsed);
   height: 100vh;
   padding: var(--nav-pad);
@@ -97,51 +102,65 @@
     }
   }
 
+  .nav-top,
+  .nav-bottom {
+    flex: none;
+  }
+
+  .nav-middle {
+    flex: 1;
+    min-height: 0;
+  }
+
   .navbar-nav {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    height: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .nav-item,
-  .logo {
+  .nav-item {
     position: relative;
-  }
-
-  // The last item (sign in or out) sits at the bottom of the rail.
-  .navbar-nav > :last-child:not(.logo) {
-    margin-top: auto;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
     height: var(--nav-link-h);
-    padding: 0
-      calc((var(--nav-collapsed) - 2 * var(--nav-pad) - var(--nav-icon)) / 2);
+    padding: 0 var(--nav-inset);
+    border: none;
     border-radius: 8px;
     box-sizing: border-box;
     overflow: hidden;
     white-space: nowrap;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
     color: var(--text-muted);
+    background: none;
     cursor: pointer;
     transition:
       color var(--transition-speed) ease,
       background-color var(--transition-speed) ease;
 
     &:hover,
-    &:focus-visible {
+    &:focus-visible,
+    &.nav-current {
       color: var(--text);
       background-color: var(--nav-hover);
 
       .nav-icon {
         color: var(--accent);
       }
+    }
+
+    // Inside the rail the ring would be clipped by its edge.
+    &:focus-visible {
+      outline-offset: -2px;
     }
   }
 
@@ -167,7 +186,7 @@
     transition: opacity 150ms ease;
   }
 
-  // An item with a sub-menu: a small burger that turns into a cross.
+  // An item with a list: a small burger that turns into a cross.
   .nav-item-burger {
     opacity: 0;
     transition: opacity 150ms ease;
@@ -182,19 +201,16 @@
     }
   }
 
-  // The brand at the top: its tile, a little apart from the links.
-  .logo {
-    margin-bottom: 12px;
+  // The brand at the top: its tile, a little apart from the sections.
+  .nav-home {
+    padding: 0 6px;
+    color: var(--text);
+    font-size: 15px;
 
-    .nav-link {
-      padding: 0 6px;
-      color: var(--text);
-      font-size: 15px;
-
-      &:hover,
-      &:focus-visible {
-        background-color: transparent;
-      }
+    &:hover,
+    &:focus-visible,
+    &.nav-current {
+      background-color: transparent;
     }
 
     .nav-icon {
@@ -206,55 +222,161 @@
     }
   }
 
-  /* ── Sub-menu: floating just right of the panel, level with its item ── */
-  .nav-submenu {
-    position: absolute;
-    top: -6px;
-    // The item is inset by the panel's padding: past it, then a small gap.
-    left: calc(100% + var(--nav-pad) + 8px);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 248px;
-    margin: 0;
-    padding: 6px;
-    list-style: none;
-    border-radius: 10px;
-    // The panel's own surface, so the two read as one.
-    background-color: var(--surface);
-    box-shadow: color-mix(in srgb, var(--shadow) 18%, transparent) 0 8px 24px 0;
-    animation: nav-submenu-in 160ms ease-out;
+  // The account: the avatar where the icons are, name and @username beside.
+  .nav-account {
+    height: 48px;
+    padding: 0 calc(var(--nav-inset) - 4px);
 
-    // An invisible bridge over the gap: the pointer crossing it to the
-    // sub-menu never leaves the panel, which would close the sub-menu.
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -8px;
-      width: 8px;
+    .avatar {
+      flex: none;
     }
+  }
 
-    &-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 8px 10px;
-      border-radius: 6px;
-      color: var(--text);
-      cursor: pointer;
-      transition: background-color var(--transition-speed) ease;
+  .nav-account-text {
+    display: grid;
+    line-height: 1.25;
+  }
 
-      &:hover,
-      &:focus-visible {
-        background-color: var(--nav-hover);
+  .nav-account-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
 
-        .submenu-label {
-          color: var(--text-hover);
-        }
-      }
+  .nav-account-username {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+}
+
+/* ── The scrolling middle: scrollbar hidden, arrows while there is more ── */
+.nav-scroll-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.nav-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.nav-scroll-sentinel {
+  display: block;
+  height: 1px;
+}
+
+// Over the edge of the list, fading it out; clickable, but not in the tab
+// order (the items themselves are reachable).
+.nav-scroll-arrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  height: 28px;
+  padding: 0;
+  border: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+
+  &--up {
+    top: 0;
+    align-items: flex-start;
+    background: linear-gradient(var(--surface) 35%, transparent);
+  }
+
+  &--down {
+    bottom: 0;
+    align-items: flex-end;
+    background: linear-gradient(transparent, var(--surface) 65%);
+  }
+
+  &--shown {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+/* ── A group's or the account's list: beside the rail, level with its item ── */
+.nav-flyout {
+  position: fixed;
+  z-index: 10;
+  min-width: 248px;
+  padding: 6px;
+  border-radius: 10px;
+  font-size: 14px;
+  // The panel's own surface, so the two read as one.
+  background-color: var(--surface);
+  box-shadow: color-mix(in srgb, var(--shadow) 18%, transparent) 0 8px 24px 0;
+  animation: nav-submenu-in 160ms ease-out;
+
+  // An invisible bridge over the gap: the pointer crossing it never leaves
+  // the nav, which would close the list.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -8px;
+    width: 8px;
+  }
+}
+
+.nav-flyout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-flyout-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  background: none;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+
+  &:hover,
+  &:focus-visible,
+  &.nav-current {
+    background-color: color-mix(in srgb, var(--text) 7%, transparent);
+
+    .submenu-label {
+      color: var(--text-hover);
     }
   }
 }
@@ -327,51 +449,54 @@
   }
 }
 
+@keyframes nav-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .navbar--desktop,
   .navbar--desktop .link-text,
   .navbar--desktop .nav-item-burger,
+  .nav-scroll-arrow,
   .burger-lines span {
     transition: none;
   }
 
-  .navbar--desktop .nav-submenu {
+  .nav-flyout,
+  .nav-drawer[open] .drawer-panel {
     animation: none;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MOBILE NAV  (bottom bar + bottom sheet, <768 px)
-   Applied via .navbar--mobile
+   MOBILE NAV  (a bar at the bottom, a drawer from the right, <768 px)
 ───────────────────────────────────────────────────────────────────────────── */
 
 .navbar--mobile {
   position: fixed;
   bottom: 0;
   left: 0;
+  z-index: 50;
   width: 100vw;
-  height: fit-content;
+  padding: 0.4em 0.5em calc(0.4em + env(safe-area-inset-bottom));
+  box-sizing: border-box;
   background-color: color-mix(in srgb, var(--bg) 85%, transparent);
   backdrop-filter: blur(20px);
-  box-sizing: border-box;
-  padding: 0.4em 0.5em;
-  z-index: 50;
   border-top: 1px solid color-mix(in srgb, var(--shadow) 10%, transparent);
 
   .mobile-navbar-nav {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    list-style: none;
+    width: 100%;
     margin: 0;
     padding: 0;
-    width: 100%;
-    gap: 0;
+    list-style: none;
   }
 }
 
-/* Mobile nav item */
 .mobile-nav-item {
   flex: 1;
   display: flex;
@@ -383,134 +508,227 @@
   flex-direction: column;
   align-items: center;
   gap: 0.2em;
-  background: none;
-  border: none;
-  color: var(--text);
-  filter: grayscale(100%) opacity(0.65);
   padding: 0.5em 0.75em;
+  border: none;
   border-radius: 0.5em;
+  font: inherit;
+  text-decoration: none;
+  color: var(--text-muted);
+  background: none;
   cursor: pointer;
-  @include prefixes.prefix(
-    transition,
-    'filter var(--transition-speed) ease, background var(--transition-speed) ease',
-    webkit
-  );
+  transition:
+    color var(--transition-speed) ease,
+    background-color var(--transition-speed) ease;
 
   &:hover,
-  &:focus-visible {
-    filter: grayscale(0%) opacity(1);
-    background: color-mix(in srgb, var(--surface) 50%, transparent);
-    outline: none;
+  &:focus-visible,
+  &.nav-current,
+  &[aria-expanded='true'] {
+    color: var(--text);
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+
+    .nav-icon {
+      color: var(--accent);
+    }
   }
 
   .nav-icon {
     font-size: 1.5em;
+    color: var(--text-muted);
   }
 }
 
 .mobile-nav-label {
-  font-size: 0.65em;
+  max-width: 5.5em;
+  overflow: hidden;
+  font-size: 0.68em;
   letter-spacing: 0.05ch;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 5em;
 }
 
-/* ── Bottom sheet ── */
-.mobile-sheet-backdrop {
+/* ── The drawer: a modal dialog sliding in from the right ── */
+.nav-drawer {
   position: fixed;
-  inset: 0;
-  background: color-mix(in srgb, var(--shadow) 35%, transparent);
-  z-index: 60;
-  backdrop-filter: blur(2px);
-}
+  inset: 0 0 0 auto;
+  width: min(20rem, 86vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: var(--text);
+  background: transparent;
 
-.mobile-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: var(--surface);
-  border-radius: 1em 1em 0 0;
-  box-shadow: color-mix(in srgb, var(--shadow) 35%, transparent) 0px -4px 20px
-    0px;
-  z-index: 61;
-  padding: 0.75em 0 1.5em;
-  max-height: 70vh;
-  overflow-y: auto;
-  animation: sheet-slide-up 0.22s ease-out;
+  &::backdrop {
+    background: color-mix(in srgb, var(--shadow) 40%, transparent);
+    backdrop-filter: blur(2px);
+  }
 
-  @keyframes sheet-slide-up {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
+  &[open] .drawer-panel {
+    animation: nav-drawer-in 220ms ease-out;
   }
 }
 
-.mobile-sheet-handle {
-  width: 2.5em;
-  height: 0.25em;
-  background: color-mix(in srgb, var(--shadow) 25%, transparent);
-  border-radius: 1em;
-  margin: 0 auto 0.75em;
-}
-
-.mobile-sheet-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 0.5em;
-}
-
-.mobile-sheet-item {
+.drawer-panel {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75em;
-  padding: 0.75em;
-  border-radius: 0.5em;
-  cursor: pointer;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background-color: var(--surface);
+  box-shadow: color-mix(in srgb, var(--shadow) 30%, transparent) -8px 0 24px 0;
+}
+
+.drawer-top,
+.drawer-bottom {
+  flex: none;
+}
+
+.drawer-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-middle {
+  flex: 1;
+  min-height: 0;
+}
+
+.drawer-bottom {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.drawer-list,
+.drawer-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drawer-sublist {
+  padding: 2px 0 6px 18px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.drawer-row,
+.drawer-subrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
   color: var(--text);
-  @include prefixes.prefix(
-    transition,
-    background var(--transition-speed) ease,
-    webkit
-  );
+  background: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible,
+  &.nav-current {
+    background-color: color-mix(in srgb, var(--text) 7%, transparent);
+
+    .nav-icon {
+      color: var(--accent);
+    }
+  }
+
+  .nav-icon {
+    font-size: 1.3em;
+    color: var(--text-muted);
+  }
+}
+
+.drawer-subrow {
+  align-items: flex-start;
+}
+
+.drawer-home {
+  flex: 1;
+  font-weight: 700;
+
+  .nav-icon {
+    font-size: 1.6em;
+  }
+}
+
+.drawer-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-chevron {
+  flex: none;
+  color: var(--text-muted);
+  transition: transform var(--transition-speed) ease;
+}
+
+[aria-expanded='true'] > .drawer-chevron {
+  transform: rotate(180deg);
+}
+
+.drawer-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  color: var(--text-muted);
+  background: none;
+  cursor: pointer;
 
   &:hover,
   &:focus-visible {
-    background: var(--bg);
-    outline: none;
-
-    .submenu-label {
-      color: var(--text-hover);
-    }
-  }
-
-  &--link {
-    align-items: center;
-    padding: 0.9em 0.75em;
-
-    .submenu-icon {
-      font-size: 1.4em;
-    }
-
-    .submenu-label {
-      font-size: 1em;
-    }
+    color: var(--text);
+    background-color: color-mix(in srgb, var(--text) 7%, transparent);
   }
 }
 
-.mobile-sheet-chevron {
-  margin-left: auto;
-  width: 0.5em;
-  height: 0.5em;
-  border-right: 1.5px solid var(--text);
-  border-bottom: 1.5px solid var(--text);
-  transform: rotate(-45deg);
-  opacity: 0.4;
-  flex-shrink: 0;
-  align-self: center;
+// The account row: avatar, the name and under it the @username.
+.drawer-account .drawer-row {
+  min-height: 52px;
+}
+
+.drawer-account-text {
+  display: grid;
+  line-height: 1.25;
+
+  > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.drawer-account-username {
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+// The drawer's scroll arrows fade into its own surface too.
+.drawer-middle .nav-scroll-arrow--up {
+  background: linear-gradient(var(--surface) 35%, transparent);
 }

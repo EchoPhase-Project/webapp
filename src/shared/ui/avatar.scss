@@ -1,4 +1,4 @@
-// A round picture; without one, the initial on the accent.
+// A round picture; without one, a gradient of the user's own (Avatar.tsx).
 .avatar {
   --avatar-size: 40px;
 
@@ -9,9 +9,8 @@
   height: var(--avatar-size);
   border-radius: 50%;
   overflow: hidden;
-  background-color: color-mix(in srgb, var(--accent) 22%, var(--surface));
-  color: var(--accent);
-  font-weight: 600;
+  background-color: var(--surface-raised);
+  font-weight: 700;
   font-size: calc(var(--avatar-size) * 0.42);
   line-height: 1;
   user-select: none;
@@ -21,4 +20,8 @@
     height: 100%;
     object-fit: cover;
   }
+}
+
+.avatar-initial {
+  color: var(--avatar-initial);
 }

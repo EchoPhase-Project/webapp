@@ -28,6 +28,28 @@ export function contrast(a: string, b: string): number {
     return (hi + 0.05) / (lo + 0.05);
 }
 
+/** A --name: N% token of one theme block, as a fraction. */
+function percent(header: string, name: string): number {
+    const start = tokens.indexOf(header);
+    const block = tokens.slice(start, tokens.indexOf('\n}', start));
+    const match = block.match(new RegExp(`--${name}:\\s*([0-9.]+)%;`));
+    if (!match) throw new Error(`--${name} is not in ${header}`);
+    return Number(match[1]) / 100;
+}
+
+// hsl() as #rrggbb, the way the browser computes it.
+function hsl(hue: number, s: number, l: number): string {
+    const k = (n: number) => (n + hue / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const channel = (n: number) =>
+        Math.round(
+            255 * (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)))
+        )
+            .toString(16)
+            .padStart(2, '0');
+    return `#${channel(0)}${channel(8)}${channel(4)}`;
+}
+
 const surfaces = ['bg', 'surface', 'surface-raised'];
 // Foreground token, the least contrast it needs on every surface.
 const rules: [string, number][] = [
@@ -67,6 +89,16 @@ describe.each([
                 contrast(t[name], t[surface]),
                 `${name} on ${surface}`
             ).toBeGreaterThanOrEqual(min);
+    });
+
+    it('the initial reads on a generated avatar of any hue (large text, 3:1)', () => {
+        const s = percent(header, 'avatar-saturation');
+        const l = percent(header, 'avatar-lightness');
+        for (let hue = 0; hue < 360; hue++)
+            expect(
+                contrast(t['avatar-initial'], hsl(hue, s, l)),
+                `hue ${hue}`
+            ).toBeGreaterThanOrEqual(3);
     });
 
     it('button text reads on the button, and the button on the navy hover', () => {

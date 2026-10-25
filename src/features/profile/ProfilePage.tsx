@@ -63,8 +63,10 @@ export default function ProfilePage() {
                         <Card class="profile-picture">
                             <Avatar
                                 name={me().name}
+                                seed={me().id}
                                 fileId={me().avatarFileId}
                                 size={96}
+                                initial
                             />
                             <div class="profile-picture-text">
                                 <h2>{t('picture.title', 'Picture')}</h2>

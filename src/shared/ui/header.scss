@@ -38,3 +38,14 @@
   color: var(--on-primary);
   background-color: var(--primary);
 }
+
+// Signing in from the header: only on phones, where the sidebar's is not.
+.header-login {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  @include comp.media('min-width: 768px') {
+    display: none;
+  }
+}
