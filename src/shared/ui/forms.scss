@@ -68,6 +68,13 @@
   padding: 0;
   border: none;
   outline: none;
+
+  // The group (.field:focus-within) shows the ring; the global
+  // :focus-visible rule would add a second one on the input itself.
+  &:focus-visible {
+    outline: none;
+  }
+
   background: transparent;
   font: inherit;
   font-size: 0.9rem;

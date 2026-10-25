@@ -1,21 +1,27 @@
-// A round action of the top bar, like the theme toggle: an icon on the
-// surface, a count in the corner when there is news.
-.header-button {
+// An action of the top bar, like the theme toggle: a compact 32px square,
+// an icon on the surface, a count in the corner when there is news.
+.header-button,
+.header .theme-toggle {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  box-sizing: border-box;
   border: none;
+  border-radius: 8px;
   font: inherit;
+  font-size: 15px;
   color: var(--text);
   background-color: var(--surface);
-  border-radius: 1em;
-  padding: 0 0.75em;
   cursor: pointer;
-  box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0 7px 12px 0;
+  box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
   transition: box-shadow var(--transition-speed) ease-in;
 
   &:hover {
-    box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0 7px 12px 0;
+    box-shadow: color-mix(in srgb, var(--shadow) 24%, transparent) 0 2px 8px 0;
   }
 
   &[aria-expanded='true'] {
@@ -39,8 +45,20 @@
   background-color: var(--primary);
 }
 
+// The language picker, as tall as the buttons beside it.
+.header .dropdown {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
+}
+
 // Signing in from the header: only on phones, where the sidebar's is not.
 .header-login {
+  padding: 0 12px;
   font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
@@ -48,4 +66,9 @@
   @include comp.media('min-width: 768px') {
     display: none;
   }
+}
+
+.header .theme-toggle .theme {
+  width: 16px;
+  height: 16px;
 }

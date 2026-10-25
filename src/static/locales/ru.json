@@ -43,7 +43,10 @@
     "explore": {
       "label": "Обзор",
       "description": "Пакеты workflow для установки"
-    }
+    },
+    "skip": "Перейти к содержимому",
+    "close": "Закрыть меню",
+    "account": "Аккаунт"
   },
   "footer": {
     "label": "Сайт",

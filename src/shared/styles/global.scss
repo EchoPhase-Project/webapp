@@ -55,9 +55,6 @@ body {
   overflow-x: hidden;
   @include prefixes.prefix(font-smoothing, antialiased, webkit);
   @include prefixes.prefix(font-smoothing, grayscale, moz-osx);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
   text-rendering: optimizeLegibility;
 
   @include comp.media('max-width: 600px') {
@@ -81,6 +78,34 @@ body {
   }
 }
 
+// The first stop of Tab: out of sight until focused.
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--on-primary);
+  background-color: var(--primary);
+  transform: translateY(-200%);
+
+  &:focus-visible {
+    transform: none;
+  }
+}
+
+// Focused by script (skip link, a new page): no ring around the whole page
+// or its title.
+main:focus,
+main h1:focus {
+  outline: none;
+}
+
+// Set for a frame while the theme changes (theme-context): no fades.
+.no-transition,
 .no-transition * {
   transition: none !important;
 }
@@ -235,13 +260,11 @@ select {
 
 header {
   position: relative;
-  padding: 0.75em;
+  padding: 12px;
   display: flex;
   justify-content: flex-end;
-  align-items: stretch;
-  max-height: 1.5em;
-  max-height: 3em;
-  gap: 1em;
+  align-items: center;
+  gap: 8px;
 }
 
 .full-height {

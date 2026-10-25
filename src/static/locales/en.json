@@ -43,7 +43,10 @@
     "explore": {
       "label": "Explore",
       "description": "Workflow packages to install"
-    }
+    },
+    "skip": "Skip to content",
+    "close": "Close the menu",
+    "account": "Account"
   },
   "footer": {
     "label": "Site",

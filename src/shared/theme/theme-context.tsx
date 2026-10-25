@@ -26,10 +26,17 @@ export const ThemeProvider: ParentComponent = (props) => {
         setTheme(prefersDark ? 'dark' : 'light');
     }
 
+    // The switch is instant: no element's colour transition (hover fades)
+    // plays while the theme changes, so nothing lags behind the rest.
     createEffect(() => {
         const t = theme();
-        document.documentElement.setAttribute('data-theme', t);
+        const root = document.documentElement;
+        root.classList.add('no-transition');
+        root.setAttribute('data-theme', t);
         localStorage.setItem('theme', t);
+        // Styles are applied before the class goes: read one, then remove.
+        void getComputedStyle(root).color;
+        requestAnimationFrame(() => root.classList.remove('no-transition'));
     });
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');

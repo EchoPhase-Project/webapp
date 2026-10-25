@@ -1,4 +1,4 @@
-import { Component, onCleanup, Show } from 'solid-js';
+import { Component, createEffect, on, onCleanup, Show } from 'solid-js';
 import type { ParentProps } from 'solid-js';
 import { A, useLocation } from '@solidjs/router';
 import { NavBuilder } from '@shared/nav/nav-builder';
@@ -34,8 +34,23 @@ const Layout: Component<ParentProps> = (props) => {
     // The sign-in page stands alone: nowhere to go before signing in.
     const showNav = () => location.pathname !== '/auth';
 
+    // After moving to another page, focus goes to its heading: otherwise it
+    // stays on the link followed (often in the footer, which stays), and the
+    // next Tab goes on from there instead of into the new page.
+    createEffect(
+        on(
+            () => location.pathname,
+            () => focusHeading(),
+            { defer: true }
+        )
+    );
+
     return (
         <div class="container">
+            <a class="skip-link" href="#main">
+                {t('nav.skip', 'Skip to content')}
+            </a>
+
             <Show when={showNav()}>
                 <NavBuilder nav={nav()} />
             </Show>
@@ -57,7 +72,9 @@ const Layout: Component<ParentProps> = (props) => {
                 }
             />
 
-            <main>{props.children}</main>
+            <main id="main" tabIndex={-1}>
+                {props.children}
+            </main>
 
             <Footer />
 
@@ -70,5 +87,21 @@ const Layout: Component<ParentProps> = (props) => {
         </div>
     );
 };
+
+// A lazily loaded page renders a moment later: look for its heading for up
+// to a second. Not while a dialog has the focus.
+function focusHeading(tries = 30) {
+    requestAnimationFrame(() => {
+        if (document.activeElement?.closest('dialog[open]')) return;
+        const heading = document.querySelector<HTMLElement>('main h1');
+        if (!heading) {
+            if (tries > 0) focusHeading(tries - 1);
+            return;
+        }
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+        window.scrollTo({ top: 0 });
+    });
+}
 
 export default Layout;

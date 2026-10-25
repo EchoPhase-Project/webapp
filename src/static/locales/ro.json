@@ -43,7 +43,10 @@
     "explore": {
       "label": "Explorare",
       "description": "Pachete de workflow de instalat"
-    }
+    },
+    "skip": "Sari la conținut",
+    "close": "Închide meniul",
+    "account": "Cont"
   },
   "footer": {
     "label": "Site",
