@@ -1,19 +1,16 @@
 import { useNavigate } from '@solidjs/router';
-import {
-    AiOutlineFolder,
-    AiOutlineLogin,
-    AiOutlineLogout,
-    AiOutlineUser,
-} from 'solid-icons/ai';
-import { VsSettings } from 'solid-icons/vs';
+import { AiOutlineLogin, AiOutlineLogout } from 'solid-icons/ai';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
-import type { NavLink } from '@shared/nav/nav-link';
+import type { NavLink, NavSubItem } from '@shared/nav/nav-link';
 import BrandTile from '@shared/ui/BrandTile';
+import { NAV_GROUPS, PAGES, type NavGroup, type Page } from './pages';
 
 /**
- * The app's navigation, the same on every page: what needs a session only
- * once there is one, sign-in only when there is none (neither while the
+ * The app's navigation, the same on every page: the pages of the registry
+ * that have a `nav` (those needing a session only once there is one), each
+ * group as one entry with a sub-menu where its first page stands. Home
+ * first; sign-in only when signed out, sign-out last (neither while the
  * user is loading). About and the policies are in the footer.
  */
 export function useNavLinks(): () => NavLink[] {
@@ -21,51 +18,48 @@ export function useNavLinks(): () => NavLink[] {
     const { logout, isAuthenticated, user } = useAuth();
     const { t } = useI18n();
 
-    const signedIn = (): NavLink[] => [
-        {
-            icon: AiOutlineFolder,
-            text: t('nav.files', 'Files'),
-            events: { onClick: () => navigate('/files') },
-        },
-        {
-            icon: VsSettings,
-            text: t('nav.settings', 'Settings'),
-            items: [
-                {
-                    icon: AiOutlineUser,
-                    label: t('nav.profile.label', 'Profile'),
-                    description: t(
-                        'nav.profile.description',
-                        'Picture, name and time zone'
-                    ),
-                    events: { onClick: () => navigate('/profile') },
-                },
-                {
-                    icon: VsSettings,
-                    label: t('nav.sessions.label', 'Sessions'),
-                    description: t(
-                        'nav.sessions.description',
-                        'View active sessions'
-                    ),
-                    events: { onClick: () => navigate('/sessions') },
-                },
-                {
-                    icon: VsSettings,
-                    label: t('nav.api_clients.label', 'API clients'),
-                    description: t(
-                        'nav.api_clients.description',
-                        'Credentials for bots and scripts'
-                    ),
-                    events: { onClick: () => navigate('/api-clients') },
-                },
-            ],
-        },
-        {
-            icon: AiOutlineLogout,
-            text: t('nav.logout', 'Log out'),
-            events: { onClick: () => void logout() },
-        },
-    ];
+    const go = (page: Page) => ({ onClick: () => navigate(page.path) });
+
+    const subItem = (page: Page): NavSubItem => ({
+        icon: page.nav!.icon,
+        label: t(page.nav!.key, page.nav!.text),
+        description:
+            page.nav!.description &&
+            t(page.nav!.description.key, page.nav!.description.text),
+        events: go(page),
+    });
+
+    const pageLinks = (): NavLink[] => {
+        const visible = PAGES.filter(
+            (page) => page.nav && (!page.auth || isAuthenticated())
+        );
+        const links: NavLink[] = [];
+        const groups = new Map<NavGroup, NavLink>();
+        for (const page of visible) {
+            const nav = page.nav!;
+            if (!nav.group) {
+                links.push({
+                    icon: nav.icon,
+                    text: t(nav.key, nav.text),
+                    events: go(page),
+                });
+                continue;
+            }
+            let group = groups.get(nav.group);
+            if (!group) {
+                const own = NAV_GROUPS[nav.group];
+                group = {
+                    icon: own.icon,
+                    text: t(own.key, own.text),
+                    items: [],
+                };
+                groups.set(nav.group, group);
+                links.push(group);
+            }
+            group.items!.push(subItem(page));
+        }
+        return links;
+    };
 
     return () => [
         {
@@ -73,7 +67,16 @@ export function useNavLinks(): () => NavLink[] {
             text: t('nav.home', 'Home'),
             events: { onClick: () => navigate('/') },
         },
-        ...(isAuthenticated() ? signedIn() : []),
+        ...pageLinks(),
+        ...(isAuthenticated()
+            ? [
+                  {
+                      icon: AiOutlineLogout,
+                      text: t('nav.logout', 'Log out'),
+                      events: { onClick: () => void logout() },
+                  },
+              ]
+            : []),
         ...(user() === null
             ? [
                   {

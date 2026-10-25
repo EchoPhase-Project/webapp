@@ -6,55 +6,19 @@ import { requireAuth } from '@shared/api/auth-guards';
 import { ThemeProvider } from '@shared/theme/theme-context';
 import { RealtimeProvider } from '@features/realtime/realtime-provider';
 import { devRoutes } from '@dev/routes';
+import { PAGES } from './pages';
 
 interface RouterComponentProps {
     base?: string;
     root: Component;
 }
 
+// Pages from the registry (pages.ts); signed-in ones behind the guard.
 const routes = [
-    {
-        path: '/',
-        component: lazy(() => import('@features/home/HomePage')),
-    },
-    {
-        path: '/about',
-        component: lazy(() => import('@features/about/AboutPage')),
-    },
-    {
-        path: '/terms',
-        component: lazy(() => import('@features/legal/TermsPage')),
-    },
-    {
-        path: '/privacy',
-        component: lazy(() => import('@features/legal/PrivacyPage')),
-    },
-    {
-        path: '/auth',
-        component: lazy(() => import('@features/auth/AuthPage')),
-    },
-    {
-        path: '/profile',
-        component: requireAuth(
-            lazy(() => import('@features/profile/ProfilePage'))
-        ),
-    },
-    {
-        path: '/files',
-        component: requireAuth(lazy(() => import('@features/files/FilesPage'))),
-    },
-    {
-        path: '/sessions',
-        component: requireAuth(
-            lazy(() => import('@features/sessions/SessionsPage'))
-        ),
-    },
-    {
-        path: '/api-clients',
-        component: requireAuth(
-            lazy(() => import('@features/api-clients/ApiClientsPage'))
-        ),
-    },
+    ...PAGES.map((page) => ({
+        path: page.path,
+        component: page.auth ? requireAuth(page.component) : page.component,
+    })),
     ...(import.meta.env.DEV ? devRoutes() : []),
     {
         path: '*404',
