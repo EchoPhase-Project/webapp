@@ -3491,9 +3491,16 @@ export interface components {
          *     form can show it next to the field. No field: the error is about the request.
          */
         ErrorBody: {
+            /** @description Stable: branch on it. */
             code: string;
+            /** @description For people, in English. */
             message: string;
+            /** @description The input it is about (camelCase JSON name), or null. */
             field?: string | null;
+            /** @description Values agreed for the code (e.g. a limit), or null when there are none. */
+            details?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * Format: int32

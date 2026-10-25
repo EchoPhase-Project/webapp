@@ -27,12 +27,19 @@
       "label": "API clients",
       "description": "Credentials for bots and scripts"
     },
-    "files": "Files",
+    "files": {
+      "label": "Files",
+      "description": "Uploads and workflow results"
+    },
     "profile": {
       "label": "Profile",
       "description": "Picture, name and time zone"
     },
-    "notes": "Notes"
+    "notes": {
+      "label": "Notes",
+      "description": "Markdown, shared and from workflows"
+    },
+    "workspace": "Workspace"
   },
   "footer": {
     "label": "Site",

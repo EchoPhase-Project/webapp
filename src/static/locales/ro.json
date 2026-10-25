@@ -27,12 +27,19 @@
       "label": "Clienți API",
       "description": "Date de acces pentru boți și scripturi"
     },
-    "files": "Fișiere",
+    "files": {
+      "label": "Fișiere",
+      "description": "Încărcări și rezultate ale fluxurilor"
+    },
     "profile": {
       "label": "Profil",
       "description": "Imagine, nume și fus orar"
     },
-    "notes": "Notițe"
+    "notes": {
+      "label": "Notițe",
+      "description": "Markdown, partajate și din fluxuri"
+    },
+    "workspace": "Spațiu de lucru"
   },
   "footer": {
     "label": "Site",

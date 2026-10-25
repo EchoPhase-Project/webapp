@@ -1,9 +1,13 @@
 import { lazy, type Component } from 'solid-js';
-import { AiOutlineFolder, AiOutlineUser } from 'solid-icons/ai';
+import {
+    AiOutlineAppstore,
+    AiOutlineFolder,
+    AiOutlineUser,
+} from 'solid-icons/ai';
 import { VsNote, VsSettings } from 'solid-icons/vs';
 
 /** A sidebar group: its entry opens a sub-menu of the pages in it. */
-export type NavGroup = 'settings';
+export type NavGroup = 'workspace' | 'settings';
 
 /** How a page shows in the navigation; text is a key with its English fallback. */
 export interface PageNav {
@@ -29,6 +33,11 @@ export interface Page {
 
 /** The groups' own entries in the sidebar, where their first page would be. */
 export const NAV_GROUPS: Record<NavGroup, Omit<PageNav, 'group'>> = {
+    workspace: {
+        icon: AiOutlineAppstore,
+        key: 'nav.workspace',
+        text: 'Workspace',
+    },
     settings: { icon: VsSettings, key: 'nav.settings', text: 'Settings' },
 };
 
@@ -66,13 +75,31 @@ export const PAGES: Page[] = [
         path: '/notes',
         component: lazy(() => import('@features/notes/NotesPage')),
         auth: true,
-        nav: { icon: VsNote, key: 'nav.notes', text: 'Notes' },
+        nav: {
+            icon: VsNote,
+            key: 'nav.notes.label',
+            text: 'Notes',
+            description: {
+                key: 'nav.notes.description',
+                text: 'Markdown, shared and from workflows',
+            },
+            group: 'workspace',
+        },
     },
     {
         path: '/files',
         component: lazy(() => import('@features/files/FilesPage')),
         auth: true,
-        nav: { icon: AiOutlineFolder, key: 'nav.files', text: 'Files' },
+        nav: {
+            icon: AiOutlineFolder,
+            key: 'nav.files.label',
+            text: 'Files',
+            description: {
+                key: 'nav.files.description',
+                text: 'Uploads and workflow results',
+            },
+            group: 'workspace',
+        },
     },
     {
         path: '/profile',

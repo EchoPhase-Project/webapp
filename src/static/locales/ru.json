@@ -27,12 +27,19 @@
       "label": "API-клиенты",
       "description": "Ключи для ботов и скриптов"
     },
-    "files": "Файлы",
+    "files": {
+      "label": "Файлы",
+      "description": "Загрузки и результаты сценариев"
+    },
     "profile": {
       "label": "Профиль",
       "description": "Аватар, имя и часовой пояс"
     },
-    "notes": "Заметки"
+    "notes": {
+      "label": "Заметки",
+      "description": "Markdown, общие и от сценариев"
+    },
+    "workspace": "Рабочее место"
   },
   "footer": {
     "label": "Сайт",
