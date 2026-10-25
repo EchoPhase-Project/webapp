@@ -1,0 +1,24 @@
+{
+  "bell": "Notificări",
+  "bell_unread": "Notificări ({count} necitite)",
+  "read_all": "Marchează toate ca citite",
+  "empty": "Nimic nou.",
+  "delete": "Șterge notificarea",
+  "kinds": {
+    "sign_in": {
+      "title": "Autentificare nouă în contul dvs.",
+      "device": "{browser} pe {os}"
+    },
+    "storage_quota": {
+      "title": "Fișierele ocupă {percent}% din spațiul dvs.",
+      "body": "Ștergeți fișierele de care nu mai aveți nevoie pentru a putea încărca în continuare."
+    },
+    "note_shared": {
+      "read": "{by} a partajat o notiță cu dvs.",
+      "edit": "{by} a partajat o notiță cu dvs. pentru editare"
+    },
+    "note_reminder": {
+      "title": "Memento: {note}"
+    }
+  }
+}

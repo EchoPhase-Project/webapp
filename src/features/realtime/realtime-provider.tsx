@@ -52,7 +52,8 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
     let failures = 0;
     let wanted = false;
 
-    const wantedIntents = () => props.intents ?? ['blocks', 'connections'];
+    const wantedIntents = () =>
+        props.intents ?? ['blocks', 'connections', 'notifications'];
 
     const dispatch = (event: RealtimeEvent) => {
         for (const key of [event.type, '*'])

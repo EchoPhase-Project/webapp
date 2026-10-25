@@ -31,7 +31,8 @@
     "profile": {
       "label": "Profil",
       "description": "Imagine, nume și fus orar"
-    }
+    },
+    "notes": "Notițe"
   },
   "footer": {
     "label": "Site",

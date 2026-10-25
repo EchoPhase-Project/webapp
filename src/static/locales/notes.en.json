@@ -1,0 +1,49 @@
+{
+  "title": "Notes",
+  "description": "Your notes, and those shared with you.",
+  "eyebrow": "Workspace",
+  "lead": "Notes in Markdown: yours, those shared with you, and those your workflows write. Share one to read or to edit together.",
+  "new": "New note",
+  "quick": "New note",
+  "search": "Search notes",
+  "first": "Write the first one",
+  "none_found": "No notes match.",
+  "empty": "No notes yet.",
+  "editor": {
+    "new": "New note",
+    "edit": "Edit note",
+    "title": "Title (optional)",
+    "write": "Write",
+    "preview": "Preview",
+    "markdown": "Markdown works",
+    "nothing": "Nothing to preview yet",
+    "body": "Text",
+    "placeholder": "Write in Markdown: # heading, **bold**, - list, [link](https://…)",
+    "pinned": "Pin to the top",
+    "remind": "Remind me (optional, your local time)",
+    "save": "Save",
+    "leave": "Leave this note",
+    "share": "Share",
+    "delete": "Delete",
+    "owner": "Shared by {name}"
+  },
+  "share": {
+    "title": "Shared with",
+    "none": "Only you see this note.",
+    "can_edit": "can edit",
+    "can_read": "can read",
+    "remove": "Stop sharing with {name}",
+    "username": "Username",
+    "edit": "May edit",
+    "add": "Share"
+  },
+  "card": {
+    "pinned": "Pinned",
+    "from": "from {name}"
+  },
+  "confirm_delete": {
+    "title": "Delete this note?",
+    "action": "Delete",
+    "text": "{title} is deleted for good, for everyone it is shared with too."
+  }
+}

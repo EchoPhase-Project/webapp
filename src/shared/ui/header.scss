@@ -1,0 +1,40 @@
+// A round action of the top bar, like the theme toggle: an icon on the
+// surface, a count in the corner when there is news.
+.header-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: none;
+  font: inherit;
+  color: var(--text);
+  background-color: var(--surface);
+  border-radius: 1em;
+  padding: 0 0.75em;
+  cursor: pointer;
+  box-shadow: color-mix(in srgb, var(--shadow) 40%, transparent) 0 7px 12px 0;
+  transition: box-shadow var(--transition-speed) ease-in;
+
+  &:hover {
+    box-shadow: color-mix(in srgb, var(--shadow) 60%, transparent) 0 7px 12px 0;
+  }
+
+  &[aria-expanded='true'] {
+    color: var(--accent);
+  }
+}
+
+.header-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  color: var(--on-primary);
+  background-color: var(--primary);
+}

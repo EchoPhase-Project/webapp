@@ -1,0 +1,193 @@
+.notes-container {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.notes-search {
+  max-width: 28rem;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 14px;
+}
+
+// A card that opens the note: the whole card is the button.
+.note-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-height: 8rem;
+  padding: 16px;
+  border: 1px solid transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--border);
+  }
+}
+
+.note-card-head {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.note-card-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.note-card-icon {
+  flex: none;
+  color: var(--accent);
+}
+
+.note-card-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-self: end;
+  font-size: 0.78rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.note-owner {
+  margin: 0;
+}
+
+.note-tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.note-tab {
+  padding: 6px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+}
+
+.note-hint {
+  margin-left: auto;
+  font-size: 0.78rem;
+}
+
+.note-body-input {
+  width: 100%;
+  min-height: 14rem;
+  resize: vertical;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  background-color: var(--surface-raised);
+  color: var(--text);
+  font-family: 'Fira Code', ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+
+  &:focus {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 1px var(--focus);
+  }
+
+  &.invalid {
+    box-shadow: 0 0 0 2px var(--danger);
+  }
+}
+
+.note-preview {
+  min-height: 14rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.note-view {
+  display: grid;
+  gap: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.note-share {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.note-share-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    > :first-child {
+      flex: 1;
+    }
+  }
+}
+
+.note-share-form {
+  display: grid;
+  gap: 10px;
+}

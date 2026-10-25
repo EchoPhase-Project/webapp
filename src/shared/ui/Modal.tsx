@@ -15,6 +15,8 @@ type ModalProps = {
     role?: 'dialog' | 'alertdialog';
     /** On the dialog's card, e.g. "patterned". */
     class?: string;
+    /** Wider than a form's dialog: for writing (a note). */
+    wide?: boolean;
     children: JSX.Element;
 };
 
@@ -63,7 +65,7 @@ export default function Modal(props: ModalProps) {
     return (
         <dialog
             ref={dialog}
-            class="modal"
+            class={props.wide ? 'modal modal-wide' : 'modal'}
             role={props.role ?? 'dialog'}
             aria-labelledby={titleId}
             // Escape: the owner decides, so its state stays the truth.

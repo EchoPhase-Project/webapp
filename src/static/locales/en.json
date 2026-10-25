@@ -31,7 +31,8 @@
     "profile": {
       "label": "Profile",
       "description": "Picture, name and time zone"
-    }
+    },
+    "notes": "Notes"
   },
   "footer": {
     "label": "Site",

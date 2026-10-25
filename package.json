@@ -43,6 +43,7 @@
     "@sentry/browser": "^10.76.2",
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^1.0.0",
+    "markdown-it": "^15.0.2",
     "openapi-fetch": "^0.17.0",
     "solid-icons": "^1.2.0",
     "solid-js": "^1.9.17"

@@ -1,6 +1,6 @@
 import { lazy, type Component } from 'solid-js';
 import { AiOutlineFolder, AiOutlineUser } from 'solid-icons/ai';
-import { VsSettings } from 'solid-icons/vs';
+import { VsNote, VsSettings } from 'solid-icons/vs';
 
 /** A sidebar group: its entry opens a sub-menu of the pages in it. */
 export type NavGroup = 'settings';
@@ -61,6 +61,12 @@ export const PAGES: Page[] = [
     {
         path: '/auth',
         component: lazy(() => import('@features/auth/AuthPage')),
+    },
+    {
+        path: '/notes',
+        component: lazy(() => import('@features/notes/NotesPage')),
+        auth: true,
+        nav: { icon: VsNote, key: 'nav.notes', text: 'Notes' },
     },
     {
         path: '/files',

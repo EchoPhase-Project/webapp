@@ -17,6 +17,10 @@
   }
 }
 
+.modal-wide {
+  max-width: min(46rem, calc(100vw - 2rem));
+}
+
 .modal-body {
   display: grid;
   gap: 14px;

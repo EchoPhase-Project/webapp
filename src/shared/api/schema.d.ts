@@ -1528,6 +1528,544 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/v1/notes': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The caller's notes and those shared with them: their pinned ones first, then by last change. `q` searches title and text. */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteResponse'][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['NoteRequest'];
+                    'text/json': components['schemas']['NoteRequest'];
+                    'application/*+json': components['schemas']['NoteRequest'];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notes/{id}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        /** Replaces the note's content. Pinned and RemindAt are the owner's: from others they are ignored. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['NoteRequest'];
+                    'text/json': components['schemas']['NoteRequest'];
+                    'application/*+json': components['schemas']['NoteRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Deletes the note: only its owner may. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notes/{id}/shares': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whom the note is shared with: only its owner may see. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteShareResponse'][];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        /** Shares the note with a user, or changes what they may do; they are notified when it is new to them. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['ShareNoteRequest'];
+                    'text/json': components['schemas']['ShareNoteRequest'];
+                    'application/*+json': components['schemas']['ShareNoteRequest'];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NoteShareResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notes/{id}/shares/{userId}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Stops sharing the note with a user: its owner may, and so may that user (to leave it). */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notifications': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The newest notifications, and how many in the inbox are unread. */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['NotificationInboxResponse'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notifications/{id}/read': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notifications/read': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marks the whole inbox read. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/notifications/{id}': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/v1/oauth-apps': {
         parameters: {
             query?: never;
@@ -3036,6 +3574,107 @@ export interface components {
              */
             avatarFileId?: string | null;
         };
+        /** @enum {string} */
+        NoteAccess: 'Read' | 'Edit' | 'Owner';
+        NoteRequest: {
+            /** @description Empty: the text's first line. */
+            title?: string | null;
+            /** @description Markdown. */
+            body?: string | null;
+            /** @description Keep it on top of the list (the owner's choice). */
+            pinned: boolean;
+            /**
+             * Format: date-time
+             * @description When to be reminded, with Z or an offset; null: no reminder (the owner's choice).
+             */
+            remindAt?: string | null;
+        };
+        NoteResponse: {
+            /**
+             * Format: uuid
+             * @description The note's id.
+             */
+            id: string;
+            /** @description Its title. */
+            title: string;
+            /** @description Markdown; render it without raw HTML. */
+            body: string;
+            /** @description Kept on top of its owner's list. */
+            pinned: boolean;
+            /**
+             * Format: date-time
+             * @description When its owner is reminded (a notification), or null.
+             */
+            remindAt?: string | null;
+            access: components['schemas']['NoteAccess'];
+            owner: components['schemas']['NoteUserResponse'];
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it last changed.
+             */
+            updatedAt: string;
+        };
+        NoteShareResponse: {
+            user: components['schemas']['NoteUserResponse'];
+            /** @description May change the title and text. */
+            canEdit: boolean;
+            /**
+             * Format: date-time
+             * @description Since when.
+             */
+            createdAt: string;
+        };
+        NoteUserResponse: {
+            /**
+             * Format: uuid
+             * @description The user's id.
+             */
+            id: string;
+            /** @description Their username. */
+            userName?: string | null;
+            /** @description Their display name. */
+            name: string;
+        };
+        NotificationInboxResponse: {
+            /** @description The newest notifications first. */
+            items: components['schemas']['NotificationResponse'][];
+            /**
+             * Format: int32
+             * @description How many in the inbox are unread.
+             */
+            unread: number;
+        };
+        NotificationResponse: {
+            /**
+             * Format: uuid
+             * @description The notification's id.
+             */
+            id: string;
+            /** @description What it is about: workflow, sign_in, storage_quota, note_shared, note_reminder; more may come. */
+            kind: string;
+            /** @description In English: show it for a kind you have no words for. */
+            title: string;
+            /** @description More text, or empty. */
+            body: string;
+            /** @description A path in the app to open, or null. */
+            link?: string | null;
+            /** @description The kind's values, to word it with (e.g. device, percent, note). */
+            params: {
+                [key: string]: string;
+            };
+            /** @description Whether it was marked read. */
+            read: boolean;
+            /**
+             * Format: date-time
+             * @description When it was sent.
+             */
+            createdAt: string;
+        };
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -3131,6 +3770,12 @@ export interface components {
             data: components['schemas']['SessionResponse'][];
             nextCursor?: string | null;
             readonly hasMore: boolean;
+        };
+        ShareNoteRequest: {
+            /** @description Whom to share it with. */
+            userName: string;
+            /** @description May change the title and text, not only read. */
+            canEdit: boolean;
         };
         StartImpersonationRequest: {
             /** @description The user to act as. */

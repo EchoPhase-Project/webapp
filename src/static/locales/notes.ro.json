@@ -1,0 +1,49 @@
+{
+  "title": "Notițe",
+  "description": "Notițele dvs. și cele partajate cu dvs.",
+  "eyebrow": "Spațiu de lucru",
+  "lead": "Notițe în Markdown: ale dvs., cele partajate cu dvs. și cele scrise de fluxurile dvs. Partajați una pentru citire sau editare împreună.",
+  "new": "Notiță nouă",
+  "quick": "Notiță nouă",
+  "search": "Căutați în notițe",
+  "first": "Scrieți prima",
+  "none_found": "Nicio notiță nu se potrivește.",
+  "empty": "Încă nu aveți notițe.",
+  "editor": {
+    "new": "Notiță nouă",
+    "edit": "Editare notiță",
+    "title": "Titlu (opțional)",
+    "write": "Scrie",
+    "preview": "Previzualizare",
+    "markdown": "Funcționează Markdown",
+    "nothing": "Nimic de previzualizat încă",
+    "body": "Text",
+    "placeholder": "Scrieți în Markdown: # titlu, **aldin**, - listă, [link](https://…)",
+    "pinned": "Fixează sus",
+    "remind": "Amintește-mi (opțional, ora dvs. locală)",
+    "save": "Salvează",
+    "leave": "Renunță la notiță",
+    "share": "Partajează",
+    "delete": "Șterge",
+    "owner": "Partajată de {name}"
+  },
+  "share": {
+    "title": "Partajată cu",
+    "none": "Doar dvs. vedeți această notiță.",
+    "can_edit": "poate edita",
+    "can_read": "poate citi",
+    "remove": "Opriți partajarea cu {name}",
+    "username": "Nume de utilizator",
+    "edit": "Poate edita",
+    "add": "Partajează"
+  },
+  "card": {
+    "pinned": "Fixată",
+    "from": "de la {name}"
+  },
+  "confirm_delete": {
+    "title": "Ștergeți această notiță?",
+    "action": "Șterge",
+    "text": "{title} va fi ștearsă definitiv, inclusiv pentru toți cei cu care este partajată."
+  }
+}

@@ -30,6 +30,20 @@ export type StoredFile = Schemas['FileResponse'];
 /** What a file is for: decides its limits and who may read it. */
 export type FilePurpose = Schemas['FilePurpose'];
 
+/** A note as the caller sees it (their access included). */
+export type Note = Schemas['NoteResponse'];
+
+/** What the caller may do with a note: Owner, Edit or Read. */
+export type NoteAccess = Schemas['NoteAccess'];
+
+export type NoteInput = Schemas['NoteRequest'];
+
+export type NoteShare = Schemas['NoteShareResponse'];
+
+export type AppNotification = Schemas['NotificationResponse'];
+
+export type NotificationInbox = Schemas['NotificationInboxResponse'];
+
 export type CreateApiClientData = Schemas['CreateApiClientRequest'];
 
 /**

@@ -3,7 +3,7 @@ import type { Session } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
-import { parseUserAgent } from '@features/sessions/user-agent';
+import { parseUserAgent } from '@shared/lib/user-agent';
 
 export default function SessionsTable(props: {
     sessions: Session[];

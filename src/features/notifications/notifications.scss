@@ -1,0 +1,107 @@
+.notifications {
+  position: relative;
+  display: flex;
+}
+
+// Hangs from the bell, over the page.
+.notifications-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: min(24rem, calc(100vw - 32px));
+  max-height: min(32rem, 70vh);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.notifications-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+
+  h2 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.notifications-empty {
+  margin: 0;
+  padding: 18px 14px;
+}
+
+.notifications-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    padding-right: 6px;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    // Unread: a mark at the start, not colour alone.
+    &.unread .notification-title::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      vertical-align: middle;
+    }
+
+    > .btn {
+      margin-top: 8px;
+    }
+  }
+}
+
+.notification-item {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--surface-raised);
+  }
+}
+
+.notification-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.notification-body {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.notification-time {
+  font-size: 0.74rem;
+}

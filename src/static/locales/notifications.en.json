@@ -1,0 +1,24 @@
+{
+  "bell": "Notifications",
+  "bell_unread": "Notifications ({count} unread)",
+  "read_all": "Mark all read",
+  "empty": "Nothing new.",
+  "delete": "Delete notification",
+  "kinds": {
+    "sign_in": {
+      "title": "New sign-in to your account",
+      "device": "{browser} on {os}"
+    },
+    "storage_quota": {
+      "title": "Your files take {percent}% of your storage",
+      "body": "Delete files you no longer need to keep uploading."
+    },
+    "note_shared": {
+      "read": "{by} shared a note with you",
+      "edit": "{by} shared a note with you to edit"
+    },
+    "note_reminder": {
+      "title": "Reminder: {note}"
+    }
+  }
+}
