@@ -1,13 +1,13 @@
 # Contributing to the EchoPhase webapp
 
-Thank you for helping with the web client of EchoPhase. This guide covers how
-the code is organised and the rules it follows; the
-[organisation's guide](https://github.com/EchoPhase-Project/.github/blob/main/CONTRIBUTING.md)
-covers what is common to every repository (issues, licence, security reports).
+Thank you for your help with the web client of EchoPhase. This guide tells how
+the code is organised and which rules it obeys. The rules for all repositories
+(issues, licence, security reports) are in the
+[guide of the organisation](https://github.com/EchoPhase-Project/.github/blob/main/CONTRIBUTING.md).
 
-## Setting up
+## Preparation
 
-Tools are pinned with [mise](https://mise.jdx.dev) (Node, oras):
+The project pins the tools (Node, oras) with [mise](https://mise.jdx.dev):
 
 ```sh
 mise install --locked
@@ -15,166 +15,204 @@ mise run install          # npm ci
 mise run dev              # http://localhost:5173
 ```
 
-The dev server proxies `/api/` (the realtime gateway socket included) to a
-server at `API_TARGET`, by default `http://localhost:8080`; run one from
-[server](https://github.com/EchoPhase-Project/server) or point `API_TARGET` at
-another instance. Only `/api/` with the slash is proxied: `/api-clients` is a
-page. The dev server has no `/config.json`, so visit statistics and error
-reports stay off while you work. Pages for trying out components are under
-`/dev/*` (`src/dev/`); a build leaves them out.
+The dev server sends `/api/` to a server at `API_TARGET`. This includes the
+socket of the realtime gateway. The default value is `http://localhost:8080`.
+Run a server from [server](https://github.com/EchoPhase-Project/server), or
+set `API_TARGET` to a different instance.
 
-Before opening a pull request:
+The dev server sends only `/api/` with the slash: `/api-clients` is a page.
+The dev server does not have `/config.json`. Thus, visit statistics and error
+reports stay off while you work.
+
+Pages to try components are at `/dev/*` (`src/dev/`). A build does not include
+them.
+
+Before you open a pull request, run:
 
 ```sh
 mise run check            # contract types, tsc, ESLint, Prettier, tests, build
 ```
 
-CI runs the same, plus a Docker build of the image.
+CI runs the same checks. CI also builds the Docker image.
 
 ## How the code is organised
 
-| Folder                 | What                                                                                                  |
-| ---------------------- | ----------------------------------------------------------------------------------------------------- |
-| `src/app/`             | entry (`main.tsx`), `Root` (head), `Layout`, routes and providers (`Router.tsx`), navigation, footer  |
-| `src/features/<name>/` | one feature each: its page, components, API calls, styles and tests                                   |
-| `src/shared/`          | what features share: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/` |
-| `src/dev/`             | pages for trying out shared components (dev server only)                                              |
-| `src/static/`          | fonts, icons and translations (`locales/`)                                                            |
+| Folder                 | Contents                                                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/app/`             | Entry (`main.tsx`), `Root` (head), `Layout`, the page registry (`pages.ts`), routes and providers (`Router.tsx`), navigation, footer |
+| `src/features/<name>/` | One feature in each folder: its page, components, API calls, styles, and tests                                                       |
+| `src/shared/`          | The code that features share: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                       |
+| `src/dev/`             | Pages to try shared components (dev server only)                                                                                     |
+| `src/static/`          | Fonts, icons, and translations (`locales/`)                                                                                          |
 
 Import through the aliases (`@app/…`, `@features/…`, `@shared/…`, `@dev/…`,
-`@static/…`), never `../`. ESLint enforces the boundaries:
+`@static/…`). Do not use `../`. ESLint enforces these limits:
 
-- `shared` imports only `shared`;
-- a feature imports `shared` and itself, never another feature: what two
-  features need moves to `src/shared/`;
-- `dev` pages try out shared code only;
-- `app` may import anything (it puts the features together).
+- `shared` imports only `shared`.
+- A feature imports `shared` and its own files. It does not import a
+  different feature. If two features need the same code, move that code to
+  `src/shared/`.
+- `dev` pages try only shared code.
+- `app` can import all code, because it connects the features.
 
-Inside a feature, `XPage.tsx` only puts the page together (title, header,
-layout). Its parts go in `components/`, its API calls in `api.ts`, and logic
-worth testing in plain modules with tests beside them (`sessions/user-agent.ts`
-and `user-agent.test.ts`). A feature has one stylesheet, `<feature>.scss`.
+In a feature, `XPage.tsx` only assembles the page: title, header, layout. Put
+the parts of the page in `components/` and the API calls in `api.ts`. Put
+logic that must have tests in plain modules, with the tests adjacent to them
+(`sessions/user-agent.ts` and `user-agent.test.ts`). A feature has one
+stylesheet, `<feature>.scss`.
 
 ## Code style
 
-- TypeScript is strict. Prettier formats (4 spaces, 2 in SCSS and JSON, single
-  quotes, 80 columns): `npm run format`.
-- ESLint lints with types, and with the Solid rules. `solid/reactivity` is an
-  error: read props as `props.x` inside JSX or effects, and split them with
-  `splitProps` instead of destructuring.
-- Components and pages are PascalCase files (`SessionsPage.tsx`); modules,
-  hooks and providers kebab-case (`user-agent.ts`, `auth-provider.tsx`).
-- Comments are full sentences that say why or what for, not what the next line
-  does. Exported functions and components get a `/** … */` comment.
+- TypeScript is strict. Prettier formats the code: 4 spaces (2 in SCSS and
+  JSON), single quotes, 80 columns. Run `npm run format`.
+- ESLint uses type information and the Solid rules. `solid/reactivity` causes
+  an error. Read props as `props.x` in JSX or in effects. Use `splitProps`.
+  Do not destructure props.
+- Components and pages are files in PascalCase (`SessionsPage.tsx`). Modules,
+  hooks, and providers are files in kebab-case (`user-agent.ts`,
+  `auth-provider.tsx`).
+- Comments are full sentences. They tell why or for which purpose. They do
+  not tell what the next line does. Exported functions and components have a
+  `/** … */` comment.
 - A page sets its title and description with `useRootMeta()` in a
-  `createRenderEffect`, and opens with `PageHeader`.
+  `createRenderEffect`. A page starts with `PageHeader`.
 
 ## UI
 
-Build pages from `src/shared/ui` before writing new markup:
+Before you write new markup, make pages from the components in
+`src/shared/ui`:
 
-| Component                                             | For                                                                                                                                               |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Button`                                              | actions: `primary` (the main one), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (leads to one) |
-| `Field`, `FieldError`, `ErrorSummary`                 | form fields with their label and errors, wired for screen readers                                                                                 |
-| `Modal`, `ConfirmDialog`                              | dialogs (native `<dialog>`); ask before anything that cannot be undone                                                                            |
-| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | surfaces, lists, the page's opening, on/off settings                                                                                              |
+| Component                                             | Purpose                                                                                                                                                   |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action) |
+| `Field`, `FieldError`, `ErrorSummary`                 | Form fields with their labels and errors, connected for screen readers                                                                                    |
+| `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                           |
+| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings                                                                                                     |
 
 ### Styles
 
-- Colours come only from the tokens in `src/shared/styles/tokens.scss`, defined
-  for the light and the dark theme. `palette.test.ts` checks their contrast
-  (WCAG): text 7:1; muted text, links and status colours 4.5:1; accents and
-  focus 3:1. A new token needs both themes and must pass it.
-- Every stylesheet is global (no CSS modules): prefix class names with the
-  component or feature (`.sessions-…`, `.consent-…`) and never style bare
-  elements (`p`, `h1`, `header`) outside `global.scss`.
-- Every SCSS file gets the `vars`, `comp` (`@include comp.media(…)`) and
-  `prefixes` modules without importing them (`vite.config.ts`).
-- The flowing-lines pattern (`.patterned`, `Card patterned`) is for brand
-  moments only: the sign-in card, empty states, the outage screen, About. Not
-  on tables, menus or forms.
+- Use only the colour tokens in `src/shared/styles/tokens.scss`. Each token
+  has a value for the light theme and for the dark theme.
+- `palette.test.ts` examines the contrast of the tokens (WCAG): text 7:1;
+  muted text, links, and status colours 4.5:1; accents and focus 3:1. A new
+  token must have values for the two themes and must pass this test.
+- All stylesheets are global. The project does not use CSS modules. Start each
+  class name with the name of the component or the feature (`.sessions-…`,
+  `.consent-…`).
+- Do not apply styles to bare elements (`p`, `h1`, `header`) outside
+  `global.scss`.
+- Each SCSS file gets the modules `vars`, `comp` (`@include comp.media(…)`),
+  and `prefixes` automatically (`vite.config.ts`). Do not import them.
+- Use the flowing-lines pattern (`.patterned`, `Card patterned`) only for
+  brand areas: the sign-in card, empty states, the outage screen, the About
+  page. Do not use it on tables, menus, or forms.
 
 ### Accessibility
 
-- Everything interactive works with the keyboard and shows its focus.
-- Fields have labels (`Field` does it), and errors are tied to their field.
-- Colour is never the only signal of a state, an error or a link.
-- Native elements (`button`, `a`, `dialog`) before custom ones; ARIA only where
-  HTML has nothing.
+- All interactive elements must operate with the keyboard and show their
+  focus.
+- Fields have labels (`Field` adds them). Each error is connected to its
+  field.
+- Do not use colour as the only signal of a state, an error, or a link.
+- Use native elements (`button`, `a`, `dialog`) before custom elements. Use
+  ARIA only where HTML does not have a solution.
 - Animations have a `@media (prefers-reduced-motion: reduce)` block.
-- Check what you changed in both themes, and at a phone's width.
+- Examine your changes in the two themes and at the width of a phone.
 
-## Talking to the API
+## The API
 
 All calls go through the typed client in `src/shared/api/client.ts`
-(openapi-fetch) and `send()`, which returns `{ ok, data }` or `{ ok, errors }`
-instead of throwing. Types come from the server's contract: never write a
-response type by hand in `types.ts`.
+(openapi-fetch) and `send()`. `send()` returns `{ ok, data }` or
+`{ ok, errors }`. It does not throw exceptions. The types come from the server
+contract. Do not write a response type manually in `types.ts`.
 
-- `api-version` names the contract version the webapp is built against.
-  `mise run contract:pull` downloads it, `mise run gen:api` regenerates
-  `src/shared/api/schema.d.ts`, and CI fails when that file is out of date.
-- To build against a newer server: bump `api-version`, run `mise run gen:api`,
-  fix what the compiler finds, and commit both.
-- Errors are shown under their field (`groupErrors`), the rest at the top of
-  the form. Their text is translated by code: `errors.<code>` in the locale
-  files, with the server's message as the fallback.
-- Pages that need a session are wrapped in `requireAuth` in `Router.tsx`; parts
-  of a page use `SignedIn` / `SignedOut`.
+- `api-version` contains the version of the contract that the webapp uses.
+  `mise run contract:pull` downloads the contract. `mise run gen:api` makes
+  `src/shared/api/schema.d.ts` again. CI fails if that file is not current.
+- To use a newer server, do these steps:
+    1. Increase `api-version`.
+    2. Run `mise run gen:api`.
+    3. Repair the errors that the compiler finds.
+    4. Commit `api-version` and `schema.d.ts` together.
+- The page shows each error below its field (`groupErrors`). It shows the
+  other errors at the top of the form. The text of an error comes from its
+  code: `errors.<code>` in the locale files. The message from the server is
+  the fallback.
+- A page that needs a session has `auth: true` in `src/app/pages.ts`.
+  `Router.tsx` then adds `requireAuth`. Parts of a page use `SignedIn` and
+  `SignedOut`.
 
 ## Translations
 
-Every string the user sees comes from `src/static/locales/`:
-`<lang>.json` for the whole site, `<page>.<lang>.json` for one page
-(`useLocalizer('<page>')`). English is the source; the other languages are
-translated in Weblate.
+Each string that the user sees comes from `src/static/locales/`.
+`<lang>.json` contains the strings for all of the site. `<page>.<lang>.json`
+contains the strings for one page (`useLocalizer('<page>')`). English is the
+source language. Translators write the other languages in Weblate.
 
-- Add new strings to the English files only, with the English text as the
-  fallback in the code: `t('key', 'English text')`. A missing translation shows
-  in English until it is translated.
-- Do not remove or rename a key without doing the same in every language:
-  `locales.test.ts` fails on keys English no longer has.
-- The policy pages (`terms`, `privacy`) use a small markup so translators edit
-  plain text: a blank line between paragraphs, `- ` lines for a list,
-  `[text](/path)` for a link.
+- Add new strings only to the English files. In the code, give the English
+  text as the fallback: `t('key', 'English text')`. A missing translation
+  shows in English until a translator adds it.
+- If you remove a key or change its name, do the same in all languages.
+  `locales.test.ts` fails if a language has keys that English does not have.
+- The policy pages (`terms`, `privacy`) use a small markup, so that
+  translators edit plain text:
+    - A blank line between paragraphs.
+    - Lines that start with `- ` for a list.
+    - `[text](/path)` for a link.
 
 ## Privacy
 
-Nothing that collects data about visitors runs without their consent. The
-optional services (Umami statistics, GlitchTip error reports) start and stop in
-`src/shared/lib/optional-services.ts`, by the categories of
-`src/shared/lib/consent.ts`. A new one gets a category there, a switch in the
-cookie settings (`features/consent/`), a mention in the privacy policy, and a
-higher `ConsentVersion`, so everyone is asked again.
+Code that collects data about visitors must not run without their consent.
+The optional services (Umami statistics, GlitchTip error reports) start and
+stop in `src/shared/lib/optional-services.ts`. They use the categories in
+`src/shared/lib/consent.ts`. A new optional service must have:
+
+- A category in `consent.ts`.
+- A switch in the cookie settings (`features/consent/`).
+- A paragraph in the privacy policy.
+- A higher `ConsentVersion`, so that the site asks all users again.
 
 ## A new page
 
-1. A feature folder with its page, and a route in `src/app/Router.tsx`
-   (wrapped in `requireAuth` if it needs a session).
-2. A link in the navigation (`src/app/nav-links.ts`) or the footer.
-3. Its strings in a `<page>.en.json` namespace.
-4. If search engines should find it, an `Allow:` line in `public/robots.txt`:
-   the file is an allowlist, a page is private until listed.
+All pages are in the registry `PAGES` in `src/app/pages.ts`. `Router.tsx`
+makes the routes from it, and `nav-links.ts` makes the sidebar from it. Do not
+add routes or sidebar links directly.
+
+1. Make a feature folder with the page.
+2. Add an entry to `PAGES`:
+    - `path` and `component`, with `lazy(() => import('@features/<name>/XPage'))`.
+    - `auth: true` if the page needs a session.
+    - `nav` if the page shows in the sidebar: an icon, an i18n key with its
+      English text, and a `group` if the page is in a sub-menu.
+    - `public: true` if search engines must find the page.
+3. If the page is not in the sidebar, add a link to it in the footer
+   (`src/app/Footer.tsx`) or on another page.
+4. Put the strings of the page in a `<page>.en.json` namespace.
+5. For a public page, add an `Allow:` line in `public/robots.txt`. The file is
+   an allowlist: a page is private until it is in the list. `pages.test.ts`
+   fails if `robots.txt` and the `public` pages are different.
 
 ## Tests
 
-Vitest, with tests beside the code (`*.test.ts`, `*.test.tsx`). Tests run in
-Node; a component test starts with `// @vitest-environment jsdom`.
-`src/shared/testing` has what page tests need: `fakeApi()` answers API calls
-and records them, `renderPage()` renders a page with its providers.
+The tests use Vitest. They are adjacent to the code (`*.test.ts`,
+`*.test.tsx`). Tests run in Node. A component test starts with
+`// @vitest-environment jsdom`. `src/shared/testing` contains the tools for
+page tests: `fakeApi()` answers API calls and records them. `renderPage()`
+renders a page with its providers.
 
 ```sh
-mise run test             # extra arguments go to Vitest
+mise run test             # Vitest gets the extra arguments
 mise run test:coverage    # artifacts/coverage
 ```
 
 ## Commits and pull requests
 
 Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:`,
-`feat!:` for breaking changes), checked in CI; release notes are made from
-them. Keep a pull request to one change, and add screenshots of changed
-screens, in both themes.
+`feat!:` for incompatible changes). CI examines them. The release notes come
+from them.
 
-Releases are tags `vX.Y.Z` made by the maintainers: the image is published to
-`ghcr.io/echophase-project/webapp` with a GitHub release.
+Make only one change in each pull request. Add screenshots of the changed
+screens in the two themes.
+
+The maintainers make the releases with tags `vX.Y.Z`. A tag publishes the
+image to `ghcr.io/echophase-project/webapp` and makes a GitHub release.
