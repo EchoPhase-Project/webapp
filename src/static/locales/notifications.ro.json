@@ -20,5 +20,6 @@
     "note_reminder": {
       "title": "Memento: {note}"
     }
-  }
+  },
+  "unread_count": "{count} noi"
 }

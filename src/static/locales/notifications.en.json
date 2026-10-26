@@ -20,5 +20,6 @@
     "note_reminder": {
       "title": "Reminder: {note}"
     }
-  }
+  },
+  "unread_count": "{count} new"
 }

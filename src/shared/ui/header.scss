@@ -1,5 +1,5 @@
 // An action of the top bar, like the theme toggle: a compact 32px square,
-// an icon on the surface, a count in the corner when there is news.
+// an icon on the surface, a dot in the corner when there is news.
 .header-button,
 .header .theme-toggle {
   position: relative;
@@ -29,20 +29,18 @@
   }
 }
 
-.header-badge {
+// There is news: a dot in the corner, as GitHub's, always the same size
+// (the count is in the label and in the open list), ringed in the
+// button's colour so it reads apart from the icon.
+.header-dot {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
-  color: var(--on-primary);
-  background-color: var(--primary);
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
 }
 
 // The language picker, as tall as the buttons beside it, with their shadow

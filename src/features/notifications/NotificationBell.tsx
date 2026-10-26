@@ -130,9 +130,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                 >
                     <AiOutlineBell />
                     <Show when={unread() > 0}>
-                        <span class="header-badge" aria-hidden="true">
-                            {unread() > 99 ? '99+' : unread()}
-                        </span>
+                        <span class="header-dot" aria-hidden="true" />
                     </Show>
                 </button>
 
@@ -147,7 +145,17 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                         aria-label={t('bell', 'Notifications')}
                     >
                         <div class="notifications-head">
-                            <h2>{t('bell', 'Notifications')}</h2>
+                            <h2>
+                                {t('bell', 'Notifications')}
+                                <Show when={unread() > 0}>
+                                    <span class="notifications-count">
+                                        {t(
+                                            'unread_count',
+                                            '{count} new'
+                                        ).replace('{count}', String(unread()))}
+                                    </span>
+                                </Show>
+                            </h2>
                             <Show when={unread() > 0}>
                                 <Button
                                     variant="ghost"
