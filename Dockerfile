@@ -6,6 +6,9 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+# The image tag: error reports name it as their release. Not VERSION, the
+# same name as the server's argument (where VERSION meant MSBuild's Version).
+ARG ECHOPHASE_VERSION=0.0.0-local
 RUN npm run build
 
 FROM nginx:alpine

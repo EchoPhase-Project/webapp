@@ -31,6 +31,13 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins,
+        define: {
+            // The image tag the build was made as (the Docker build's
+            // ECHOPHASE_VERSION): error reports name it as their release.
+            __APP_VERSION__: JSON.stringify(
+                process.env.ECHOPHASE_VERSION || '0.0.0-local'
+            ),
+        },
         resolve: {
             // The aliases (@app, @shared...) are tsconfig.json's paths.
             tsconfigPaths: true,

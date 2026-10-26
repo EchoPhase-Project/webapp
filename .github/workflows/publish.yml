@@ -39,7 +39,7 @@ jobs:
               id: image
               run: |
                   version="${GITHUB_REF_NAME#v}"
-                  docker build -t "$IMAGE:$version" -t "$IMAGE:latest" .
+                  docker build --build-arg ECHOPHASE_VERSION="$version" -t "$IMAGE:$version" -t "$IMAGE:latest" .
                   docker push "$IMAGE:$version"
                   docker push "$IMAGE:latest"
                   digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$version")
