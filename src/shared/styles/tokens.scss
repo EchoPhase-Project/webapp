@@ -71,13 +71,14 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  // Soft graphite; inputs sit a step darker, inset in their card.
+  // Soft graphite; inputs sit a step darker, inset in their card, with a
+  // hairline so they show on the page itself too.
   --bg: #1f2029;
   --surface: #2a2b38;
   --surface-raised: #1f2029;
   --hover: #333441;
   --border: #33354a;
-  --input-border: transparent;
+  --input-border: #3a3c52;
   --shadow: #141414;
   --avatar-saturation: 70%;
   --avatar-lightness: 64%;
