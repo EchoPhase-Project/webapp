@@ -67,6 +67,10 @@ describe('ProfilePage', () => {
 
         expect(await screen.findByText('Saved')).toBeTruthy();
         const [patch] = api.calls('PATCH /api/v1/auth/me');
-        expect(await patch.json()).toEqual({ name: 'Rusty', timeZone: null });
+        expect(await patch.json()).toEqual({
+            name: 'Rusty',
+            username: null,
+            timeZone: null,
+        });
     });
 });

@@ -7,7 +7,7 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 
-const FIELDS = ['name', 'timeZone'] as const;
+const FIELDS = ['name', 'username', 'timeZone'] as const;
 const inputId = (field: string) => `profile-${field}`;
 
 // The browser's IANA zones, offered as suggestions (the server checks).
@@ -19,13 +19,15 @@ const zones = (): string[] => {
     }
 };
 
-/** The name and time zone; sends only what changed. */
+/** The name, username and time zone; sends only what changed. */
 export default function ProfileForm(props: { user: User }) {
     const { updateProfile } = useAuth();
     const t = useLocalizer('profile');
     // Seeded once: the user is in the props, edits stay local until saved.
     // eslint-disable-next-line solid/reactivity
     const [name, setName] = createSignal(props.user.name);
+    // eslint-disable-next-line solid/reactivity
+    const [username, setUsername] = createSignal(props.user.userName ?? '');
     // eslint-disable-next-line solid/reactivity
     const [timeZone, setTimeZone] = createSignal(props.user.timeZone);
     const [errors, setErrors] = createSignal<FormErrors>({});
@@ -34,6 +36,7 @@ export default function ProfileForm(props: { user: User }) {
 
     const changed = () =>
         name().trim() !== props.user.name ||
+        username().trim() !== (props.user.userName ?? '') ||
         timeZone().trim() !== props.user.timeZone;
 
     async function save(e: Event) {
@@ -43,6 +46,10 @@ export default function ProfileForm(props: { user: User }) {
         try {
             const outcome = await updateProfile({
                 name: name().trim() !== props.user.name ? name().trim() : null,
+                username:
+                    username().trim() !== (props.user.userName ?? '')
+                        ? username().trim()
+                        : null,
                 timeZone:
                     timeZone().trim() !== props.user.timeZone
                         ? timeZone().trim()
@@ -77,6 +84,27 @@ export default function ProfileForm(props: { user: User }) {
                 value={name()}
                 onInput={(e) => {
                     setName(e.currentTarget.value);
+                    setSaved(false);
+                }}
+            />
+
+            <Field
+                id={inputId('username')}
+                name="username"
+                label={t(
+                    'details.username',
+                    'Username (letters and digits; you sign in with it)'
+                )}
+                showLabel
+                errors={errors().username}
+                type="text"
+                autocomplete="username"
+                spellcheck={false}
+                maxLength={64}
+                disabled={busy()}
+                value={username()}
+                onInput={(e) => {
+                    setUsername(e.currentTarget.value);
                     setSaved(false);
                 }}
             />

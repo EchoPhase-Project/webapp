@@ -12,6 +12,8 @@ export type RegisterData = Schemas['RegisterRequest'];
 
 export type ProfileUpdate = Schemas['UpdateProfileRequest'];
 
+export type PasswordChange = Schemas['ChangePasswordRequest'];
+
 /** The API's error body. `field` names the input it is about. */
 export type ErrorItem = Schemas['ErrorBody'];
 

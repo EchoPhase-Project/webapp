@@ -148,6 +148,8 @@
     "UnsupportedType": "Acest tip de fișier nu poate fi încărcat aici.",
     "InvalidTimeZone": "Fus orar necunoscut. Alegeți unul din listă, de exemplu Europe/Bucharest.",
     "http_413": "Fișierul este prea mare.",
-    "Conflict": "Între timp, altcineva a modificat acest lucru. Deschideți-l din nou pentru a vedea modificarea, apoi faceți-o pe a dvs."
+    "Conflict": "Între timp, altcineva a modificat acest lucru. Deschideți-l din nou pentru a vedea modificarea, apoi faceți-o pe a dvs.",
+    "http_404": "Nu a fost găsit.",
+    "http_405": "Această acțiune nu e disponibilă aici."
   }
 }

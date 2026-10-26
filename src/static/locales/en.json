@@ -148,6 +148,8 @@
     "UnsupportedType": "This kind of file cannot be uploaded here.",
     "InvalidTimeZone": "Unknown time zone. Pick one from the list, e.g. Europe/Moscow.",
     "http_413": "The file is too large.",
-    "Conflict": "Someone changed this meanwhile. Open it again to see their change, then make yours."
+    "Conflict": "Someone changed this meanwhile. Open it again to see their change, then make yours.",
+    "http_404": "Not found.",
+    "http_405": "This action is not available here."
   }
 }

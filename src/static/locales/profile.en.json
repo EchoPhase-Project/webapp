@@ -1,6 +1,6 @@
 {
   "title": "Profile",
-  "description": "Your picture, name and time zone.",
+  "description": "Your picture, name, username, time zone and password.",
   "picture": {
     "title": "Picture",
     "hint": "PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.",
@@ -13,6 +13,16 @@
     "name": "Display name",
     "time_zone": "Time zone",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "username": "Username (letters and digits; you sign in with it)"
+  },
+  "password": {
+    "title": "Password",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "New password again",
+    "save": "Change password",
+    "done": "Changed. Your other devices are signed out.",
+    "differ": "The two new passwords differ."
   }
 }

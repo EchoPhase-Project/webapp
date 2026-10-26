@@ -328,7 +328,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Changes the caller's own profile: name and/or time zone. */
+        /** Changes the caller's own profile: name, time zone and/or username. */
         patch: {
             parameters: {
                 query?: never;
@@ -373,6 +373,68 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    '/api/v1/auth/me/password': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Changes the caller's password; the current one must be right (a wrong
+         *     one counts towards the lockout, as at sign-in). Every other device is
+         *     signed out; this one stays signed in.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    'application/json': components['schemas']['ChangePasswordRequest'];
+                    'text/json': components['schemas']['ChangePasswordRequest'];
+                    'application/*+json': components['schemas']['ChangePasswordRequest'];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ProblemDetails'];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     '/api/v1/auth/me/avatar': {
@@ -4324,6 +4386,12 @@ export interface components {
             paramsSchema: components['schemas']['JsonNode'];
         };
         BlockTypes: string;
+        ChangePasswordRequest: {
+            /** @description The password now: proves it is the account's owner at the keyboard. */
+            currentPassword: string;
+            /** @description The new one, held to the same rules as at registration. */
+            newPassword: string;
+        };
         ConnectionSummary: {
             /** Format: uuid */
             id: string;
@@ -4903,6 +4971,8 @@ export interface components {
             name?: string | null;
             /** @description IANA time zone, e.g. "Europe/Moscow". */
             timeZone?: string | null;
+            /** @description A new username, checked as at registration; the old one becomes free. */
+            username?: string | null;
         };
         WorkflowSourceResponse: {
             /**

@@ -1,6 +1,6 @@
 {
   "title": "Profil",
-  "description": "Imaginea, numele și fusul dvs. orar.",
+  "description": "Poza, numele, numele de utilizator, fusul orar și parola.",
   "picture": {
     "title": "Imagine",
     "hint": "PNG, JPEG sau WebP, până la 5 MB. Ceilalți o văd lângă numele dvs.",
@@ -13,6 +13,16 @@
     "name": "Nume afișat",
     "time_zone": "Fus orar",
     "save": "Salvează",
-    "saved": "Salvat"
+    "saved": "Salvat",
+    "username": "Nume de utilizator (litere și cifre; te conectezi cu el)"
+  },
+  "password": {
+    "title": "Parolă",
+    "current": "Parola actuală",
+    "new": "Parola nouă",
+    "confirm": "Parola nouă din nou",
+    "save": "Schimbă parola",
+    "done": "Schimbată. Pe celelalte dispozitive ai fost deconectat.",
+    "differ": "Cele două parole noi diferă."
   }
 }

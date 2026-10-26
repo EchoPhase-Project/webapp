@@ -11,13 +11,14 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import PageHeader from '@shared/ui/PageHeader';
 import { removeAvatar, setAvatar } from './api';
+import PasswordForm from './components/PasswordForm';
 import ProfileForm from './components/ProfileForm';
 import './profile.scss';
 
 /** The kinds of picture the server takes as an avatar. */
 const PICTURES = 'image/png,image/jpeg,image/webp';
 
-/** The signed-in user's profile: picture, name and time zone. */
+/** The signed-in user's profile: picture, name, username, time zone and password. */
 export default function ProfilePage() {
     const { setTitle, setDescription } = useRootMeta();
     const { user, refetchUser } = useAuth();
@@ -25,7 +26,12 @@ export default function ProfilePage() {
 
     createRenderEffect(() => {
         setTitle(`${t('title', 'Profile')} · EchoPhase`);
-        setDescription(t('description', 'Your picture, name and time zone.'));
+        setDescription(
+            t(
+                'description',
+                'Your picture, name, username, time zone and password.'
+            )
+        );
     });
 
     const [busy, setBusy] = createSignal(false);
@@ -53,7 +59,7 @@ export default function ProfilePage() {
                 title={t('title', 'Profile')}
                 description={t(
                     'description',
-                    'Your picture, name and time zone.'
+                    'Your picture, name, username, time zone and password.'
                 )}
             />
 
@@ -110,6 +116,11 @@ export default function ProfilePage() {
                         <Card class="profile-details">
                             <h2>{t('details.title', 'Details')}</h2>
                             <ProfileForm user={me()} />
+                        </Card>
+
+                        <Card class="profile-details">
+                            <h2>{t('password.title', 'Password')}</h2>
+                            <PasswordForm />
                         </Card>
                     </>
                 )}
