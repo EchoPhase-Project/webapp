@@ -22,9 +22,11 @@
   // A step darker than the page: fields, hover and selection stand out
   // on cards and on the page alike.
   --surface-raised: #f0f1f4;
-  // A hovered, open or current item of a menu: a grey that shows on white
-  // (labels stay in the text colour on it, palette.test.ts).
-  --hover: #e8e9ed;
+  // The navigation's own surface (sidebar, its lists, the drawer): a light
+  // grey beside the white page; a hovered, open or current item a step
+  // darker (labels stay in the text colour on it, palette.test.ts).
+  --nav-surface: #f0f1f4;
+  --hover: #e2e4ea;
   // Dividers (table rows); inputs get their own, firmer edge.
   --border: #d9d9e0;
   --input-border: #cdced6;
@@ -68,6 +70,7 @@
   --bg: #1f2029;
   --surface: #2a2b38;
   --surface-raised: #1f2029;
+  --nav-surface: #2a2b38;
   --hover: #333441;
   --border: #33354a;
   --input-border: transparent;

@@ -90,7 +90,7 @@
   padding: var(--nav-pad);
   box-sizing: border-box;
   font-size: 14px;
-  background-color: var(--surface);
+  background-color: var(--nav-surface);
   box-shadow: color-mix(in srgb, var(--shadow) 8%, transparent) 1px 0 0 0;
   transition:
     width 200ms ease,
@@ -305,13 +305,13 @@
   &--up {
     top: 0;
     align-items: flex-start;
-    background: linear-gradient(var(--surface) 35%, transparent);
+    background: linear-gradient(var(--nav-surface) 35%, transparent);
   }
 
   &--down {
     bottom: 0;
     align-items: flex-end;
-    background: linear-gradient(transparent, var(--surface) 65%);
+    background: linear-gradient(transparent, var(--nav-surface) 65%);
   }
 
   &--shown {
@@ -333,7 +333,7 @@
   border-radius: 10px;
   font-size: 14px;
   // The panel's own surface, so the two read as one.
-  background-color: var(--surface);
+  background-color: var(--nav-surface);
   box-shadow: color-mix(in srgb, var(--shadow) 18%, transparent) 0 8px 24px 0;
   animation: nav-submenu-in 160ms ease-out;
 
@@ -530,7 +530,7 @@
   &.nav-current,
   &[aria-expanded='true'] {
     color: var(--text);
-    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    background: var(--hover);
 
     .nav-icon {
       color: var(--accent);
@@ -583,7 +583,7 @@
   height: 100%;
   padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
   box-sizing: border-box;
-  background-color: var(--surface);
+  background-color: var(--nav-surface);
   box-shadow: color-mix(in srgb, var(--shadow) 30%, transparent) -8px 0 24px 0;
 }
 
@@ -735,5 +735,5 @@
 
 // The drawer's scroll arrows fade into its own surface too.
 .drawer-middle .nav-scroll-arrow--up {
-  background: linear-gradient(var(--surface) 35%, transparent);
+  background: linear-gradient(var(--nav-surface) 35%, transparent);
 }

@@ -78,6 +78,7 @@ describe.each([
             'primary',
             'on-primary',
             'hover',
+            'nav-surface',
             'border',
             'shadow',
         ])
@@ -138,6 +139,18 @@ describe.each([
                     contrast(t[name], over(surface)),
                     `${name} over the pattern on ${surface}`
                 ).toBeGreaterThanOrEqual(min);
+    });
+
+    it('the navigation reads on its own surface', () => {
+        for (const [name, min] of [
+            ['text', 7],
+            ['text-muted', 4.5],
+            ['accent', 3],
+        ] as const)
+            expect(
+                contrast(t[name], t['nav-surface']),
+                `${name} on the navigation`
+            ).toBeGreaterThanOrEqual(min);
     });
 
     it('a hovered menu item stays readable', () => {
