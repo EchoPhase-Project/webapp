@@ -16,13 +16,17 @@
   }
 }
 
+// An item of a list: its icon centred on the label's line (the first one,
+// when a description follows). The label's line is 0.9em × 1.5 = 1.35em of
+// the item; the icon's box is that tall in its own 1.2em: 1.35 / 1.2.
 .submenu {
   &-icon {
-    display: contents;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    height: 1.125em;
     font-size: 1.2em;
     color: var(--accent);
-    flex-shrink: 0;
-    margin-top: 0.1em;
   }
 
   &-content {
@@ -34,6 +38,7 @@
   &-label {
     font-size: 0.9em;
     font-weight: 500;
+    line-height: 1.5;
     letter-spacing: 0.05ch;
     color: var(--text);
     @include prefixes.prefix(
