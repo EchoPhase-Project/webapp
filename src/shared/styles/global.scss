@@ -352,14 +352,23 @@ html {
   }
 }
 
-// A secondary action as an icon (delete, revoke): quiet until hovered, then
-// in the danger colour; the gold button stays for the main action.
+// A secondary action as an icon (copy, show, close): quiet until hovered,
+// then plain; the gold button stays for the main action.
 .btn.btn-icon {
   padding: 6px;
   color: var(--text-muted);
   background-color: transparent;
   border-color: transparent;
 
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    color: var(--text);
+    background-color: var(--hover);
+  }
+}
+
+// One that removes something (delete, revoke): red when hovered.
+.btn.btn-icon-danger {
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
     color: var(--danger);

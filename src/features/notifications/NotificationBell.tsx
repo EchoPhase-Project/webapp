@@ -195,7 +195,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                                     </span>
                                                 </button>
                                                 <Button
-                                                    variant="icon"
+                                                    variant="icon-danger"
                                                     aria-label={t(
                                                         'delete',
                                                         'Delete notification'

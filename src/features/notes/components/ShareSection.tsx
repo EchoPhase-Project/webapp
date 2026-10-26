@@ -81,7 +81,7 @@ export default function ShareSection(props: { noteId: string }) {
                                         : t('share.can_read', 'can read')}
                                 </span>
                                 <Button
-                                    variant="icon"
+                                    variant="icon-danger"
                                     disabled={busy()}
                                     aria-label={t(
                                         'share.remove',

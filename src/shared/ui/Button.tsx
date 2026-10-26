@@ -3,11 +3,18 @@ import { splitProps, type JSX } from 'solid-js';
 type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
     /**
      * primary: the gold main action; ghost: a quiet secondary one; icon: a
-     * secondary icon action that turns red on hover (delete, revoke);
+     * secondary icon action (copy, show, close); icon-danger: one that
+     * removes something and turns red on hover (delete, revoke);
      * danger: the confirmed destructive action itself; danger-outline: a
      * button that leads to one (it asks first), red but not loud.
      */
-    variant?: 'primary' | 'ghost' | 'icon' | 'danger' | 'danger-outline';
+    variant?:
+        | 'primary'
+        | 'ghost'
+        | 'icon'
+        | 'icon-danger'
+        | 'danger'
+        | 'danger-outline';
     /** Working: disabled, and announced as busy. */
     busy?: boolean;
 };
@@ -29,6 +36,8 @@ export default function Button(props: ButtonProps) {
                 own.variant &&
                     own.variant !== 'primary' &&
                     `btn-${own.variant}`,
+                // The red one is an icon button too.
+                own.variant === 'icon-danger' && 'btn-icon',
                 own.class,
             ]
                 .filter(Boolean)

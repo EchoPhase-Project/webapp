@@ -56,7 +56,7 @@ export default function ApiClientsTable(props: {
                         props={{ class: 'actions' }}
                     >
                         <Button
-                            variant="icon"
+                            variant="icon-danger"
                             aria-label={t('delete', 'Delete {name}').replace(
                                 '{name}',
                                 client.Name

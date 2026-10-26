@@ -72,7 +72,7 @@ export default function FilesTable(props: {
                         props={{ class: 'actions' }}
                     >
                         <Button
-                            variant="icon"
+                            variant="icon-danger"
                             aria-label={t('delete', 'Delete {name}').replace(
                                 '{name}',
                                 file.name

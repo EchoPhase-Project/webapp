@@ -44,7 +44,7 @@ export default function SessionsTable(props: {
                         props={{ class: 'actions' }}
                     >
                         <Button
-                            variant="icon"
+                            variant="icon-danger"
                             disabled={props.busy}
                             aria-label={t('revoke', 'Revoke session')}
                             onClick={() => props.onRevoke(session.id)}

@@ -90,7 +90,7 @@ export default function PackageShares(props: { packageId: string }) {
                                     </span>
                                 </span>
                                 <Button
-                                    variant="icon"
+                                    variant="icon-danger"
                                     disabled={busy()}
                                     aria-label={t(
                                         'share.remove',
