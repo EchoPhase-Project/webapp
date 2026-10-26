@@ -12,16 +12,19 @@ export function ThemeToggle() {
         setTheme(theme() === 'light' ? 'dark' : 'light');
     };
 
+    // Said to screen readers and shown on hover, like the other buttons.
+    const label = () =>
+        theme() === 'light'
+            ? t('theme.to_dark', 'Switch to dark theme')
+            : t('theme.to_light', 'Switch to light theme');
+
     return (
         <button
             type="button"
             class="theme-toggle"
             onClick={toggle}
-            aria-label={
-                theme() === 'light'
-                    ? t('theme.to_dark', 'Switch to dark theme')
-                    : t('theme.to_light', 'Switch to light theme')
-            }
+            aria-label={label()}
+            title={label()}
         >
             {theme() === 'dark' ? (
                 <FaRegularMoon class="theme" />

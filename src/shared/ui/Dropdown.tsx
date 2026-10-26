@@ -208,6 +208,11 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                 tabindex="0"
                 class="select"
                 aria-label={props.ariaLabel}
+                // On hover: what it is for, and what is chosen (the button
+                // may show only a short label, such as "RU").
+                title={[props.ariaLabel, selectedOption()?.ariaLabel]
+                    .filter(Boolean)
+                    .join(': ')}
                 onClick={toggleDropdown}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
