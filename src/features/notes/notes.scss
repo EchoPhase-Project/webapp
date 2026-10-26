@@ -107,6 +107,7 @@
 
 .note-body-input {
   width: 100%;
+  box-sizing: border-box;
   min-height: 14rem;
   resize: vertical;
   padding: 10px 12px;

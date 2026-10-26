@@ -264,6 +264,7 @@
 
 .package-textarea {
   width: 100%;
+  box-sizing: border-box;
   min-height: 12rem;
   padding: 10px 12px;
   border: 1px solid var(--input-border);

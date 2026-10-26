@@ -16,16 +16,13 @@
   --font-secondary: #{vars.$font-secondary};
   --transition-speed: #{vars.$transition-speed};
 
-  // White surfaces on an off-white page (slate 2), set off by shadows.
+  // As the dark theme, mirrored: the page, then light grey surfaces on it
+  // (navigation, cards, header buttons, forms), and white fields set into
+  // them; a hovered, open or current item a step darker than a surface
+  // (labels stay in the text colour on it, palette.test.ts).
   --bg: #f9f9fb;
-  --surface: #ffffff;
-  // A step darker than the page: fields, hover and selection stand out
-  // on cards and on the page alike.
-  --surface-raised: #f0f1f4;
-  // The navigation's own surface (sidebar, its lists, the drawer): a light
-  // grey beside the white page; a hovered, open or current item a step
-  // darker (labels stay in the text colour on it, palette.test.ts).
-  --nav-surface: #f0f1f4;
+  --surface: #f0f1f4;
+  --surface-raised: #ffffff;
   --hover: #e2e4ea;
   // Dividers (table rows); inputs get their own, firmer edge.
   --border: #d9d9e0;
@@ -52,7 +49,7 @@
   // amber, light enough that text over it keeps its contrast (palette.test).
   --pattern-color: #ffc53d;
   --pattern-opacity: 0.18;
-  --link: #0c6fc6;
+  --link: #0c6bbe;
   --link-hover: #113264;
   --focus: #008dfa;
 
@@ -70,7 +67,6 @@
   --bg: #1f2029;
   --surface: #2a2b38;
   --surface-raised: #1f2029;
-  --nav-surface: #2a2b38;
   --hover: #333441;
   --border: #33354a;
   --input-border: transparent;
