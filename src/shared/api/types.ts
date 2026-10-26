@@ -87,6 +87,9 @@ export type PackageInstall = Schemas['PackageInstallResponse'];
 
 export type PackageShare = Schemas['PackageShareResponse'];
 
+/** A tag of public packages and how many carry it. */
+export type PackageTag = Schemas['PackageTagResponse'];
+
 export type AppNotification = Schemas['NotificationResponse'];
 
 export type NotificationInbox = Schemas['NotificationInboxResponse'];

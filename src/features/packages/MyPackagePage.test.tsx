@@ -114,9 +114,8 @@ describe('MyPackagePage', () => {
         );
         renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
 
-        const select = await screen.findByLabelText<HTMLSelectElement>(
-            /Workflow to start when an automatic run/
-        );
+        const select =
+            await screen.findByLabelText<HTMLSelectElement>('When a run fails');
         await waitFor(() => expect(select.options).toHaveLength(3));
         fireEvent.change(select, { target: { value: 'k2' } });
         fireEvent.click(
@@ -191,7 +190,7 @@ describe('MyPackagePage', () => {
         );
         renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
 
-        const input = await screen.findByLabelText(/Tags \(up to 10\)/);
+        const input = await screen.findByLabelText('Tags');
         fireEvent.input(input, { target: { value: 'Raid Bot' } });
         fireEvent.keyDown(input, { key: 'Enter' });
         expect(screen.getByText('raid-bot')).toBeTruthy();

@@ -57,10 +57,16 @@
   },
   "search": "Caută pachete",
   "search_clear": "Ștergeți căutarea",
+  "search_hint": {
+    "packages": "{count} pachete",
+    "tag": "pachete cu această etichetă",
+    "title": "Filtre"
+  },
   "search_placeholder": "Căutați pachete sau tag:nume",
   "share": {
     "add": "Partajează",
-    "none": "Nimeni încă. Partajarea contează cât timp e privat.",
+    "description": "Ei îl citesc și îl instalează cât timp este privat.",
+    "none": "Încă nimănui.",
     "remove": "Oprește partajarea cu {name}",
     "title": "Partajat cu",
     "username": "Nume de utilizator"

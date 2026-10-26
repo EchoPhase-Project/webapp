@@ -7,6 +7,7 @@ import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
 import { inputOf, updatePackage } from '@features/packages/api';
 import { tagClass } from '@features/packages/tags';
+import SettingsCard from './SettingsCard';
 
 const FIELD = 'package-tags-input';
 const MAX_TAGS = 10;
@@ -65,13 +66,27 @@ export default function TagsEditor(props: {
     }
 
     return (
-        <form
-            class="package-tags-editor"
+        <SettingsCard
+            title={t('settings.tags', 'Tags')}
+            description={t(
+                'tags.description',
+                'What it is about: Explore filters by them.'
+            )}
             onSubmit={(e) => void save(e)}
-            noValidate
+            hint={t('tags.hint', 'Enter or a comma adds one; up to 10.')}
+            actions={
+                <Button
+                    type="submit"
+                    variant="ghost"
+                    busy={busy()}
+                    disabled={!changed() && !draft().trim()}
+                >
+                    {t('settings.save', 'Save')}
+                </Button>
+            }
         >
-            <label class="field-label" for={FIELD}>
-                {t('tags.label', 'Tags (up to 10): Enter or a comma adds one')}
+            <label class="visually-hidden" for={FIELD}>
+                {t('settings.tags', 'Tags')}
             </label>
             <div class="field package-tags-field">
                 <ul class="package-tags">
@@ -131,16 +146,6 @@ export default function TagsEditor(props: {
                 </Show>
             </div>
             <FieldError for={FIELD} errors={errors().tags} />
-            <span>
-                <Button
-                    type="submit"
-                    variant="ghost"
-                    busy={busy()}
-                    disabled={!changed() && !draft().trim()}
-                >
-                    {t('settings.save', 'Save')}
-                </Button>
-            </span>
-        </form>
+        </SettingsCard>
     );
 }

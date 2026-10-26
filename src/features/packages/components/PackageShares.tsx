@@ -10,6 +10,7 @@ import {
     sharePackage,
     unsharePackage,
 } from '@features/packages/api';
+import SettingsCard from './SettingsCard';
 
 const inputId = (field: string) => `package-share-${field}`;
 
@@ -56,18 +57,27 @@ export default function PackageShares(props: { packageId: string }) {
     }
 
     return (
-        <section class="package-side-section">
-            <h2>{t('share.title', 'Shared with')}</h2>
+        <SettingsCard
+            title={t('share.title', 'Shared with')}
+            description={t(
+                'share.description',
+                'They read it and install it, while it is private.'
+            )}
+            onSubmit={(e) => void add(e)}
+            actions={
+                <Button
+                    type="submit"
+                    variant="ghost"
+                    busy={busy()}
+                    disabled={!userName().trim()}
+                >
+                    {t('share.add', 'Share')}
+                </Button>
+            }
+        >
             <Show
                 when={(shares() ?? []).length > 0}
-                fallback={
-                    <p class="muted">
-                        {t(
-                            'share.none',
-                            'Nobody yet. Shares matter while it is private.'
-                        )}
-                    </p>
-                }
+                fallback={<p class="muted">{t('share.none', 'Nobody yet.')}</p>}
             >
                 <ul class="package-share-list">
                     <For each={shares()}>
@@ -95,12 +105,8 @@ export default function PackageShares(props: { packageId: string }) {
                     </For>
                 </ul>
             </Show>
-            <form
-                class="package-share-form"
-                onSubmit={(e) => void add(e)}
-                noValidate
-            >
-                <ErrorSummary errors={errors()} inputId={inputId} />
+            <ErrorSummary errors={errors()} inputId={inputId} />
+            <div class="package-share-input">
                 <Field
                     id={inputId('userName')}
                     name="userName"
@@ -112,10 +118,7 @@ export default function PackageShares(props: { packageId: string }) {
                     value={userName()}
                     onInput={(e) => setUserName(e.currentTarget.value)}
                 />
-                <Button type="submit" variant="ghost" busy={busy()}>
-                    {t('share.add', 'Share')}
-                </Button>
-            </form>
-        </section>
+            </div>
+        </SettingsCard>
     );
 }

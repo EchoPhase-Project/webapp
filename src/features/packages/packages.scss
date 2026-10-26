@@ -261,11 +261,6 @@
   color: var(--text);
 }
 
-.package-share-form {
-  display: grid;
-  gap: 8px;
-}
-
 .package-readme {
   display: grid;
   gap: 8px;
@@ -450,4 +445,51 @@
   .field-input {
     min-width: 8rem;
   }
+}
+
+// The search's suggestions: a list under the line, as GitHub's filters.
+.packages-search-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.packages-suggestions {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--shadow) 30%, transparent);
+  list-style: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.packages-suggestion {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    background: var(--hover);
+  }
+}
+
+.packages-suggestion-label {
+  font-family: var(--font-secondary);
+  color: var(--text);
 }

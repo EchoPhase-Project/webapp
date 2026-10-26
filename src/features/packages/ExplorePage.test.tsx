@@ -119,4 +119,34 @@ describe('ExplorePage', () => {
         });
         expect(queryOf('raid', 'pings')).toBe('tag:raid pings');
     });
+
+    it('suggests the filters, then the tags in use, from the server', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/workflow-packages/explore': () => page([pkg()]),
+            'GET /api/v1/workflow-packages/explore/tags': () =>
+                json(200, [{ tag: 'discord-bot', packages: 3 }]),
+        });
+        renderPage(() => <ExplorePage />);
+
+        const search = await screen.findByRole('combobox', {
+            name: 'Search packages',
+        });
+        fireEvent.focus(search);
+        expect(screen.getByRole('option', { name: /tag:/ })).toBeTruthy();
+
+        fireEvent.keyDown(search, { key: 'Enter' });
+        expect((search as HTMLInputElement).value).toBe('tag:');
+        expect(
+            await screen.findByRole('option', { name: /discord-bot.*3/ })
+        ).toBeTruthy();
+        expect(
+            api
+                .calls('GET /api/v1/workflow-packages/explore/tags')
+                .some((r) => new URL(r.url).searchParams.get('q') === null)
+        ).toBe(true);
+
+        fireEvent.keyDown(search, { key: 'Enter' });
+        expect((search as HTMLInputElement).value).toBe('tag:discord-bot ');
+    });
 });

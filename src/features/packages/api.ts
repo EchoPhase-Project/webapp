@@ -8,6 +8,7 @@ import type {
     PackageInstall,
     PackagePublish,
     PackageShare,
+    PackageTag,
     PackageVersion,
     RunStarted,
     Workflow,
@@ -53,6 +54,16 @@ export async function explorePackages(
               },
           }
         : result;
+}
+
+/** The tags of public packages, most used first, those starting with `q`. */
+export async function exploreTags(q: string): Promise<PackageTag[]> {
+    const result = await send(
+        api.GET('/api/v1/workflow-packages/explore/tags', {
+            params: { query: { q: q || undefined, limit: 8 } },
+        })
+    );
+    return result.ok ? result.data : [];
 }
 
 /** The caller's packages, then those shared with them. */

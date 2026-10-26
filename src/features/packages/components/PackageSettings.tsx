@@ -11,8 +11,8 @@ import { deletePackage, inputOf, updatePackage } from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
 import PackageShares from './PackageShares';
 import PublishModal from './PublishModal';
+import SettingsCard from './SettingsCard';
 import TagsEditor from './TagsEditor';
-import VisibilityBadge from './VisibilityBadge';
 import VisibilityEditor from './VisibilityEditor';
 
 const ERROR_FIELD = 'package-error-workflow';
@@ -69,150 +69,147 @@ export default function PackageSettings(props: {
         }
     }
 
+    const docs = (
+        <A class="page-more" href="/docs/packages">
+            {t('settings.more', 'Read more')}
+        </A>
+    );
+
     return (
         <div class="package-settings">
-            <section class="workflow-section">
-                <span class="package-settings-head">
-                    <h2>{t('settings.general', 'General')}</h2>
+            <SettingsCard
+                title={t('settings.general', 'General')}
+                description={t(
+                    'settings.general_hint',
+                    'Its name, summary and README, as others read them.'
+                )}
+                actions={
                     <Button variant="ghost" onClick={() => setEditing(true)}>
                         {t('settings.edit', 'Edit')}
                     </Button>
-                </span>
+                }
+            >
                 <p>
                     <strong>{props.pkg.name}</strong>
-                </p>
-                <p class="muted">
-                    {props.pkg.summary ||
-                        t('settings.no_summary', 'No summary yet.')}
+                    <span class="muted">
+                        {' · '}
+                        {props.pkg.summary ||
+                            t('settings.no_summary', 'No summary yet.')}
+                    </span>
                 </p>
                 <p class="muted">
                     {props.pkg.readme.trim()
                         ? t('settings.has_readme', 'Has a README.')
                         : t('settings.no_readme', 'No README yet.')}
                 </p>
-            </section>
+            </SettingsCard>
 
-            <section class="workflow-section">
-                <h2>{t('settings.tags', 'Tags')}</h2>
-                <TagsEditor pkg={props.pkg} onSaved={(p) => props.onSaved(p)} />
-            </section>
+            <TagsEditor pkg={props.pkg} onSaved={(p) => props.onSaved(p)} />
 
-            <section class="workflow-section">
-                <span class="package-settings-head">
-                    <h2>{t('settings.visibility', 'Visibility')}</h2>
-                    <VisibilityBadge visibility={props.pkg.visibility} />
-                </span>
-                <VisibilityEditor
-                    pkg={props.pkg}
-                    onSaved={(p) => props.onSaved(p)}
-                />
-            </section>
+            <VisibilityEditor
+                pkg={props.pkg}
+                onSaved={(p) => props.onSaved(p)}
+            />
 
-            <section class="workflow-section">
-                <h2>{t('settings.errors', 'When a run fails')}</h2>
-                <form
-                    class="package-error-form"
-                    onSubmit={(e) => void saveErrorWorkflow(e)}
-                    noValidate
-                >
-                    <ErrorSummary
-                        errors={errors()}
-                        inputId={() => ERROR_FIELD}
-                    />
-                    <label class="field-label" for={ERROR_FIELD}>
-                        {t(
-                            'settings.error_workflow',
-                            'Workflow to start when an automatic run of one of them fails'
-                        )}
-                    </label>
-                    <span class="package-error-row">
-                        <select
-                            id={ERROR_FIELD}
-                            class="package-select"
-                            disabled={busy()}
-                            value={errorWorkflow()}
-                            onChange={(e) =>
-                                setErrorWorkflow(e.currentTarget.value)
-                            }
-                        >
-                            <option value="">
-                                {t('settings.no_error_workflow', 'None')}
-                            </option>
-                            <For each={props.workflows}>
-                                {(w) => <option value={w.key}>{w.name}</option>}
-                            </For>
-                        </select>
-                        <Button
-                            type="submit"
-                            variant="ghost"
-                            busy={busy()}
-                            disabled={
-                                errorWorkflow() ===
-                                (props.pkg.errorWorkflow ?? '')
-                            }
-                        >
-                            {t('settings.save', 'Save')}
-                        </Button>
-                    </span>
-                    <p class="muted package-hint">
-                        {t(
-                            'settings.error_hint',
-                            'It needs an ErrorTrigger block; its input says which workflow failed and why. Runs started by hand do not count.'
-                        )}
-                    </p>
-                    <FieldError
-                        for={ERROR_FIELD}
-                        errors={errors().errorWorkflow}
-                    />
-                </form>
-            </section>
-
-            <section class="workflow-section">
-                <h2>{t('settings.publishing', 'Publishing')}</h2>
-                <p class="muted">
-                    <Show
-                        when={props.pkg.latestVersion > 0}
-                        fallback={t(
-                            'settings.unpublished',
-                            'Not published: only you see it. A version is what others read and install.'
-                        )}
+            <SettingsCard
+                title={t('settings.errors', 'When a run fails')}
+                description={t(
+                    'settings.errors_hint',
+                    'The workflow started when an automatic run fails.'
+                )}
+                onSubmit={(e) => void saveErrorWorkflow(e)}
+                hint={
+                    <>
+                        {t('settings.error_needs', 'It needs an ErrorTrigger.')}{' '}
+                        {docs}
+                    </>
+                }
+                actions={
+                    <Button
+                        type="submit"
+                        variant="ghost"
+                        busy={busy()}
+                        disabled={
+                            errorWorkflow() === (props.pkg.errorWorkflow ?? '')
+                        }
                     >
-                        {t(
-                            'settings.published',
-                            'Published, latest v{version}.'
-                        ).replace('{version}', String(props.pkg.latestVersion))}
+                        {t('settings.save', 'Save')}
+                    </Button>
+                }
+            >
+                <ErrorSummary errors={errors()} inputId={() => ERROR_FIELD} />
+                <label class="visually-hidden" for={ERROR_FIELD}>
+                    {t('settings.errors', 'When a run fails')}
+                </label>
+                <select
+                    id={ERROR_FIELD}
+                    class="package-select"
+                    disabled={busy()}
+                    value={errorWorkflow()}
+                    onChange={(e) => setErrorWorkflow(e.currentTarget.value)}
+                >
+                    <option value="">
+                        {t('settings.no_error_workflow', 'None')}
+                    </option>
+                    <For each={props.workflows}>
+                        {(w) => <option value={w.key}>{w.name}</option>}
+                    </For>
+                </select>
+                <FieldError for={ERROR_FIELD} errors={errors().errorWorkflow} />
+            </SettingsCard>
+
+            <SettingsCard
+                title={t('settings.publishing', 'Publishing')}
+                description={
+                    props.pkg.latestVersion > 0
+                        ? t(
+                              'settings.published',
+                              'Published, latest v{version}.'
+                          ).replace(
+                              '{version}',
+                              String(props.pkg.latestVersion)
+                          )
+                        : t(
+                              'settings.unpublished',
+                              'Not published: only you see it.'
+                          )
+                }
+                hint={
+                    <Show when={props.pkg.latestVersion > 0} fallback={docs}>
+                        <A href={`/explore/${props.pkg.id}`}>
+                            {t('settings.open_explore', 'See it as others do')}
+                        </A>
                     </Show>
-                </p>
-                <span class="package-settings-actions">
+                }
+                actions={
                     <Button
                         disabled={props.workflows.length === 0}
                         onClick={() => setPublishing(true)}
                     >
                         {tp('publish.open', 'New version')}
                     </Button>
-                    <Show when={props.pkg.latestVersion > 0}>
-                        <A
-                            class="btn btn-ghost"
-                            href={`/explore/${props.pkg.id}`}
-                        >
-                            {t('settings.open_explore', 'See it as others do')}
-                        </A>
-                    </Show>
-                </span>
-            </section>
+                }
+            />
 
             <PackageShares packageId={props.pkg.id} />
 
-            <section class="workflow-section">
-                <h2>{t('settings.danger', 'Delete')}</h2>
-                <Button
-                    variant="danger-outline"
-                    disabled={busy()}
-                    onClick={() => setDeleting(true)}
-                >
-                    {t('settings.delete', 'Delete this package')}
-                </Button>
-            </section>
+            <SettingsCard
+                danger
+                title={t('settings.danger', 'Delete')}
+                description={t(
+                    'settings.delete_hint',
+                    'Its workflows, versions and storage go with it.'
+                )}
+                actions={
+                    <Button
+                        variant="danger-outline"
+                        disabled={busy()}
+                        onClick={() => setDeleting(true)}
+                    >
+                        {t('settings.delete', 'Delete this package')}
+                    </Button>
+                }
+            />
 
             <PackageEditorModal
                 open={editing()}

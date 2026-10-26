@@ -5,6 +5,8 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import { inputOf, updatePackage } from '@features/packages/api';
+import SettingsCard from './SettingsCard';
+import VisibilityBadge from './VisibilityBadge';
 
 const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
 
@@ -41,10 +43,24 @@ export default function VisibilityEditor(props: {
     }
 
     return (
-        <form
-            class="package-visibility-editor"
+        <SettingsCard
+            title={tw('settings.visibility', 'Visibility')}
+            badge={<VisibilityBadge visibility={props.pkg.visibility} />}
             onSubmit={(e) => void save(e)}
-            noValidate
+            hint={tw(
+                'settings.visibility_hint',
+                'Others see published versions only.'
+            )}
+            actions={
+                <Button
+                    type="submit"
+                    variant="ghost"
+                    busy={busy()}
+                    disabled={visibility() === props.pkg.visibility}
+                >
+                    {tw('settings.save', 'Save')}
+                </Button>
+            }
         >
             <ErrorSummary
                 errors={errors()}
@@ -92,16 +108,6 @@ export default function VisibilityEditor(props: {
                     )}
                 </For>
             </fieldset>
-            <span>
-                <Button
-                    type="submit"
-                    variant="ghost"
-                    busy={busy()}
-                    disabled={visibility() === props.pkg.visibility}
-                >
-                    {tw('settings.save', 'Save')}
-                </Button>
-            </span>
-        </form>
+        </SettingsCard>
     );
 }

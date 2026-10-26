@@ -175,63 +175,13 @@
 .package-settings {
   display: grid;
   gap: 16px;
-
-  // Each part its own box, as in a settings page; fields sit inset in it.
-  > .workflow-section,
-  > .package-side-section {
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-  }
-
-  .package-share-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-
-    .field-wrap {
-      flex: 1 1 14rem;
-      max-width: 24rem;
-    }
-  }
-
-  // Buttons keep their own width in the sections' grid.
-  .workflow-section > .btn {
-    justify-self: start;
-  }
-
-  // Sharing, as on a package's page, headed like the other sections here.
-  .package-side-section h2 {
-    font-size: 0.95rem;
-    text-transform: none;
-    letter-spacing: normal;
-    color: var(--text);
-  }
 }
 
-.package-error-form {
-  display: grid;
-  gap: 6px;
-}
-
-.package-settings-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+.package-share-input {
+  max-width: 24rem;
 }
 
 .workflows-item-title {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.package-error-row,
-.package-settings-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -428,4 +378,78 @@
   margin: 0;
   font-size: 0.85rem;
   color: var(--danger);
+}
+
+// A settings card: body, then a footer (hint left, action right).
+.settings-card {
+  display: grid;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.settings-card--danger {
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+}
+
+.settings-card-body {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.settings-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.settings-card-body {
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+  }
+
+  .package-select {
+    max-width: 24rem;
+  }
+}
+
+.settings-card-description {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.settings-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 40%, var(--surface));
+}
+
+.settings-card-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.settings-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }

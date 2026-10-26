@@ -69,13 +69,16 @@
     "danger": "Delete",
     "delete": "Delete this package",
     "delete_body": "Its workflows go with it, with their versions, schedules and storage; their webhooks stop answering. Its published versions go too; packages others installed from it stay theirs.",
+    "delete_hint": "Its workflows, versions and storage go with it.",
     "delete_title": "Delete this package?",
     "edit": "Edit",
-    "error_hint": "It needs an ErrorTrigger block; its input says which workflow failed and why. Runs started by hand do not count.",
-    "error_workflow": "Workflow to start when an automatic run of one of them fails",
+    "error_needs": "It needs an ErrorTrigger.",
     "errors": "When a run fails",
+    "errors_hint": "The workflow started when an automatic run fails.",
     "general": "General",
+    "general_hint": "Its name, summary and README, as others read them.",
     "has_readme": "Has a README.",
+    "more": "Read more",
     "no_error_workflow": "None",
     "no_readme": "No README yet.",
     "no_summary": "No summary yet.",
@@ -84,8 +87,9 @@
     "publishing": "Publishing",
     "save": "Save",
     "tags": "Tags",
-    "unpublished": "Not published: only you see it. A version is what others read and install.",
-    "visibility": "Visibility"
+    "unpublished": "Not published: only you see it.",
+    "visibility": "Visibility",
+    "visibility_hint": "Others see published versions only."
   },
   "status": {
     "cancelled": "cancelled",
@@ -102,7 +106,8 @@
     "versions": "Versions"
   },
   "tags": {
-    "label": "Tags (up to 10): Enter or a comma adds one",
+    "description": "What it is about: Explore filters by them.",
+    "hint": "Enter or a comma adds one; up to 10.",
     "remove": "Remove {tag}"
   },
   "title": "Workflows",

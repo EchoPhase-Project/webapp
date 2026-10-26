@@ -3389,6 +3389,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/v1/workflow-packages/explore/tags': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The tags of public packages, most used first, for a search's
+         *     suggestions (`tag:`); `q` keeps those starting with it.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['PackageTagResponse'][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/v1/workflow-packages/{id}': {
         parameters: {
             query?: never;
@@ -5225,6 +5267,15 @@ export interface components {
              * @description The version installed.
              */
             version?: number | null;
+        };
+        PackageTagResponse: {
+            /** @description The tag, as kept: lower case, dashes. */
+            tag: string;
+            /**
+             * Format: int32
+             * @description How many public packages carry it.
+             */
+            packages: number;
         };
         PackageUserResponse: {
             /**

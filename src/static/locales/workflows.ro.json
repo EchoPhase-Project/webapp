@@ -69,13 +69,16 @@
     "danger": "Ștergere",
     "delete": "Ștergeți acest pachet",
     "delete_body": "Workflow-urile sale pleacă odată cu el, cu versiunile, programările și stocarea lor; webhook-urile lor nu mai răspund. Pleacă și versiunile publicate; pachetele instalate de alții din el rămân ale lor.",
+    "delete_hint": "Workflow-urile, versiunile și stocarea lui pleacă odată cu el.",
     "delete_title": "Ștergeți acest pachet?",
     "edit": "Modificați",
-    "error_hint": "Are nevoie de un bloc ErrorTrigger; intrarea sa spune ce workflow a eșuat și de ce. Rulările pornite manual nu contează.",
-    "error_workflow": "Workflow-ul pornit când eșuează o rulare automată a unuia dintre ele",
+    "error_needs": "Are nevoie de un bloc ErrorTrigger.",
     "errors": "Când o rulare eșuează",
+    "errors_hint": "Workflow-ul pornit când eșuează o rulare automată.",
     "general": "General",
+    "general_hint": "Numele, rezumatul și README-ul, cum le citesc alții.",
     "has_readme": "Are un README.",
+    "more": "Citiți mai mult",
     "no_error_workflow": "Niciunul",
     "no_readme": "Încă nu are README.",
     "no_summary": "Încă nu are un rezumat.",
@@ -84,8 +87,9 @@
     "publishing": "Publicare",
     "save": "Salvați",
     "tags": "Etichete",
-    "unpublished": "Nepublicat: doar dvs. îl vedeți. Alții citesc și instalează versiuni.",
-    "visibility": "Vizibilitate"
+    "unpublished": "Nepublicat: doar dvs. îl vedeți.",
+    "visibility": "Vizibilitate",
+    "visibility_hint": "Alții văd doar versiunile publicate."
   },
   "status": {
     "cancelled": "anulată",
@@ -102,7 +106,8 @@
     "versions": "Versiuni"
   },
   "tags": {
-    "label": "Etichete (până la 10): Enter sau virgula adaugă una",
+    "description": "Despre ce este: Explorare filtrează după ele.",
+    "hint": "Enter sau virgula adaugă una; până la 10.",
     "remove": "Eliminați {tag}"
   },
   "title": "Workflow-uri",

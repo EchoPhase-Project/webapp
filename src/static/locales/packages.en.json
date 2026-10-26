@@ -57,10 +57,16 @@
   },
   "search": "Search packages",
   "search_clear": "Clear the search",
+  "search_hint": {
+    "packages": "{count} packages",
+    "tag": "packages with this tag",
+    "title": "Filters"
+  },
   "search_placeholder": "Search packages, or tag:name",
   "share": {
     "add": "Share",
-    "none": "Nobody yet. Shares matter while it is private.",
+    "description": "They read it and install it, while it is private.",
+    "none": "Nobody yet.",
     "remove": "Stop sharing with {name}",
     "title": "Shared with",
     "username": "Username"
