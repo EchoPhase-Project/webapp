@@ -66,13 +66,13 @@ export default function VisibilityEditor(props: {
                 errors={errors()}
                 inputId={() => 'package-visibility'}
             />
-            <fieldset id="package-visibility" class="package-visibility">
+            <fieldset id="package-visibility" class="choices">
                 <legend class="visually-hidden">
                     {t('editor.visibility', 'Who sees it')}
                 </legend>
                 <For each={VISIBILITIES}>
                     {(option) => (
-                        <label class="package-visibility-option">
+                        <label class="choice">
                             <input
                                 type="radio"
                                 name="visibility"
@@ -81,7 +81,7 @@ export default function VisibilityEditor(props: {
                                 disabled={busy()}
                                 onChange={() => setVisibility(option)}
                             />
-                            <span>
+                            <span class="choice-text">
                                 <strong>
                                     {t(`visibility.${option}`, option)}
                                 </strong>

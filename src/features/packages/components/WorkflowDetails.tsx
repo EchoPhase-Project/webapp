@@ -167,10 +167,26 @@ export default function WorkflowDetails(props: {
                             </span>
                         }
                         actions={
-                            <Button onClick={() => setRunning(true)}>
-                                <AiOutlineCaretRight />
-                                {t('run.open', 'Run now')}
-                            </Button>
+                            <>
+                                <a
+                                    class="btn btn-ghost"
+                                    href={workflowExportUrl(w().id)}
+                                    download=""
+                                >
+                                    {t('export', 'Export')}
+                                </a>
+                                <Button
+                                    variant="danger-outline"
+                                    disabled={busy()}
+                                    onClick={() => setDeleting(true)}
+                                >
+                                    {t('delete.open', 'Delete')}
+                                </Button>
+                                <Button onClick={() => setRunning(true)}>
+                                    <AiOutlineCaretRight />
+                                    {t('run.open', 'Run now')}
+                                </Button>
+                            </>
                         }
                     />
 
@@ -195,22 +211,6 @@ export default function WorkflowDetails(props: {
                             )}
                             onChange={(on) => void toggle(w(), on)}
                         />
-                        <span class="workflow-controls-actions">
-                            <a
-                                class="btn btn-ghost"
-                                href={workflowExportUrl(w().id)}
-                                download=""
-                            >
-                                {t('export', 'Export')}
-                            </a>
-                            <Button
-                                variant="danger-outline"
-                                disabled={busy()}
-                                onClick={() => setDeleting(true)}
-                            >
-                                {t('delete.open', 'Delete')}
-                            </Button>
-                        </span>
                     </div>
 
                     <div class="workflow-tabs" role="tablist">

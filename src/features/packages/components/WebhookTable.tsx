@@ -325,20 +325,20 @@ function WebhookForm(form: {
                 form.onSave(respond(), replace());
             }}
         >
-            <fieldset class="package-visibility">
+            <fieldset class="choices">
                 <legend class="field-label">
                     {t('webhook.respond_title', 'Answer')}
                 </legend>
                 <For each={RESPONDS}>
                     {(option) => (
-                        <label class="package-visibility-option">
+                        <label class="choice">
                             <input
                                 type="radio"
                                 name="respond"
                                 checked={respond() === option}
                                 onChange={() => setRespond(option)}
                             />
-                            <span>
+                            <span class="choice-text">
                                 <strong>{respondLabel(t, option)}</strong>
                                 <span class="muted">
                                     {t(`webhook.respond.${option}`, option)}
@@ -348,13 +348,13 @@ function WebhookForm(form: {
                     )}
                 </For>
             </fieldset>
-            <label class="package-visibility-option">
+            <label class="choice">
                 <input
                     type="checkbox"
                     checked={replace()}
                     onChange={(e) => setReplace(e.currentTarget.checked)}
                 />
-                <span>
+                <span class="choice-text">
                     <strong>{t('webhook.replace', 'New secret')}</strong>
                     <span class="muted">
                         {t(
