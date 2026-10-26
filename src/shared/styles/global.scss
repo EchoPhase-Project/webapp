@@ -209,9 +209,11 @@ main {
     background-color: var(--primary);
   }
 
+  // Inverted on hover; the amber edge would ring the navy, so it goes too.
   &:hover:not(:disabled) {
     color: var(--primary);
     background-color: var(--on-primary);
+    border-color: var(--on-primary);
   }
 
   // Pale, in its own colours: unavailable, not a state of its own.
@@ -380,7 +382,7 @@ html {
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
-    background-color: var(--accent);
+    background-color: var(--pattern-color);
     opacity: var(--pattern-opacity);
     // 300% suits a card about as tall as wide; a wide strip sets cover.
     -webkit-mask: url('../../static/assets/svg/pattern.svg') bottom center /

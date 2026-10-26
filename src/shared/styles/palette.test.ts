@@ -101,6 +101,44 @@ describe.each([
             ).toBeGreaterThanOrEqual(3);
     });
 
+    // AA over the decorative pattern (brand moments: short text, headings);
+    // AAA for body text stays the rule on plain surfaces.
+    it('text keeps its contrast over the brand pattern', () => {
+        const start = tokens.indexOf(header);
+        const block = tokens.slice(start, tokens.indexOf('\n}', start));
+        const opacity = Number(
+            block.match(/--pattern-opacity:\s*([0-9.]+);/)?.[1]
+        );
+        // The pattern's colour laid over a surface at its opacity.
+        const over = (surface: string) => {
+            const channel = (hex: string, i: number) =>
+                parseInt(hex.slice(i, i + 2), 16);
+            return `#${[1, 3, 5]
+                .map((i) =>
+                    Math.round(
+                        channel(t[surface], i) +
+                            (channel(t['pattern-color'], i) -
+                                channel(t[surface], i)) *
+                                opacity
+                    )
+                        .toString(16)
+                        .padStart(2, '0')
+                )
+                .join('')}`;
+        };
+        expect(opacity).toBeGreaterThan(0);
+        for (const surface of ['bg', 'surface'])
+            for (const [name, min] of [
+                ['text', 4.5],
+                ['text-muted', 4.5],
+                ['link', 4.5],
+            ] as const)
+                expect(
+                    contrast(t[name], over(surface)),
+                    `${name} over the pattern on ${surface}`
+                ).toBeGreaterThanOrEqual(min);
+    });
+
     it('button text reads on the button, and the button on the navy hover', () => {
         expect(contrast(t['on-primary'], t.primary)).toBeGreaterThanOrEqual(7);
         expect(contrast(t['on-danger'], t.danger)).toBeGreaterThanOrEqual(4.5);
