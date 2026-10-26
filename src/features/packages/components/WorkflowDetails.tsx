@@ -233,7 +233,7 @@ export default function WorkflowDetails(props: {
                                     {t('export', 'Export')}
                                 </a>
                                 <Button
-                                    variant="danger-outline"
+                                    variant="ghost-danger"
                                     disabled={busy()}
                                     onClick={() => setDeleting(true)}
                                 >

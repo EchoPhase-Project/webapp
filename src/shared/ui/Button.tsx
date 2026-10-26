@@ -5,6 +5,7 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
      * primary: the gold main action; ghost: a quiet secondary one; icon: a
      * secondary icon action (copy, show, close); icon-danger: one that
      * removes something and turns red on hover (delete, revoke);
+     * ghost-danger: a quiet button that leads to removing something;
      * danger: the confirmed destructive action itself; danger-outline: a
      * button that leads to one (it asks first), red but not loud.
      */
@@ -13,6 +14,7 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
         | 'ghost'
         | 'icon'
         | 'icon-danger'
+        | 'ghost-danger'
         | 'danger'
         | 'danger-outline';
     /** Working: disabled, and announced as busy. */
@@ -38,6 +40,7 @@ export default function Button(props: ButtonProps) {
                     `btn-${own.variant}`,
                 // The red one is an icon button too.
                 own.variant === 'icon-danger' && 'btn-icon',
+                own.variant === 'ghost-danger' && 'btn-ghost',
                 own.class,
             ]
                 .filter(Boolean)

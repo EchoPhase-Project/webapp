@@ -414,6 +414,21 @@ html {
   }
 }
 
+// A quiet one that leads to removing something (it asks first): as the
+// ghost, red when hovered.
+.btn.btn-ghost-danger {
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+  }
+}
+
+// A link dressed as a button (an export to download) reads as the button.
+a.btn {
+  text-decoration: none;
+}
+
 // What leads to a destructive action (it asks first): red, but outlined so
 // it does not outshout the page.
 .btn.btn-danger-outline {
