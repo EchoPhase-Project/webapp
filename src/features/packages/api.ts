@@ -1,5 +1,7 @@
 import { api, send, type ApiResult } from '@shared/api/client';
 import type {
+    BlockRunDetails,
+    BlockRunPage,
     ConnectionSummary,
     PackageContent,
     PackageInput,
@@ -7,9 +9,16 @@ import type {
     PackagePublish,
     PackageShare,
     PackageVersion,
+    RunStarted,
+    Workflow,
+    WorkflowImport,
     WorkflowPackage,
     WorkflowSummary,
+    WorkflowVersion,
 } from '@shared/api/types';
+
+// Packages: the caller's own (their workflows live in them), and the
+// published ones everyone reads in Explore.
 
 /** A page of public packages and the cursor of the next (null: the last). */
 export interface ExplorePage {
@@ -58,17 +67,14 @@ export function getPackage(id: string): Promise<ApiResult<WorkflowPackage>> {
     );
 }
 
+/** A new, empty package: workflows are made in it, versions published from it. */
 export function createPackage(
-    pkg: PackageInput,
-    publish: PackagePublish
+    body: PackageInput
 ): Promise<ApiResult<WorkflowPackage>> {
-    return send(
-        api.POST('/api/v1/workflow-packages', {
-            body: { package: pkg, publish },
-        })
-    );
+    return send(api.POST('/api/v1/workflow-packages', { body }));
 }
 
+/** Saves all of it (send its errorWorkflow back, or it is cleared). */
 export function updatePackage(
     id: string,
     body: PackageInput
@@ -81,6 +87,18 @@ export function updatePackage(
     );
 }
 
+/** The package as it is, as the body of an update. */
+export const inputOf = (pkg: WorkflowPackage): PackageInput => ({
+    name: pkg.name,
+    summary: pkg.summary,
+    readme: pkg.readme,
+    visibility: pkg.visibility,
+    tags: pkg.tags,
+    errorWorkflow: pkg.errorWorkflow ?? null,
+    expectedStamp: pkg.stamp,
+});
+
+/** Deletes it with its workflows; packages others installed from it stay. */
 export function deletePackage(id: string): Promise<ApiResult<unknown>> {
     return send(
         api.DELETE('/api/v1/workflow-packages/{id}', {
@@ -89,7 +107,9 @@ export function deletePackage(id: string): Promise<ApiResult<unknown>> {
     );
 }
 
-export async function listVersions(id: string): Promise<PackageVersion[]> {
+export async function listPackageVersions(
+    id: string
+): Promise<PackageVersion[]> {
     const result = await send(
         api.GET('/api/v1/workflow-packages/{id}/versions', {
             params: { path: { id } },
@@ -122,7 +142,7 @@ export function publishVersion(
     );
 }
 
-/** Copies a version's workflows into the caller's, connections mapped by name. */
+/** A new package of the caller's from a version, connections mapped by name. */
 export function installPackage(
     id: string,
     version: number | undefined,
@@ -132,6 +152,18 @@ export function installPackage(
         api.POST('/api/v1/workflow-packages/{id}/install', {
             params: { path: { id } },
             body: { version, connections },
+        })
+    );
+}
+
+/** The runs of all its workflows, newest first. */
+export function listPackageRuns(
+    id: string,
+    cursor?: string
+): Promise<ApiResult<BlockRunPage>> {
+    return send(
+        api.GET('/api/v1/workflow-packages/{id}/runs', {
+            params: { path: { id }, query: { limit: 20, cursor } },
         })
     );
 }
@@ -169,14 +201,127 @@ export function unsharePackage(
     );
 }
 
-/** The caller's workflows, to choose what to publish. */
-export async function myWorkflows(): Promise<WorkflowSummary[]> {
-    const result = await send(api.GET('/api/v1/workflows'));
-    return result.ok ? result.data : [];
-}
-
 /** The caller's connections, to map a package's onto. */
 export async function myConnections(): Promise<ConnectionSummary[]> {
     const result = await send(api.GET('/api/v1/connections'));
     return result.ok ? result.data : [];
+}
+
+// Workflows: always in one of the caller's packages.
+
+/** The workflows of one package, by name. */
+export async function listWorkflows(
+    packageId: string
+): Promise<WorkflowSummary[]> {
+    const result = await send(
+        api.GET('/api/v1/workflows', { params: { query: { packageId } } })
+    );
+    return result.ok ? result.data : [];
+}
+
+export function getWorkflow(id: string): Promise<ApiResult<Workflow>> {
+    return send(
+        api.GET('/api/v1/workflows/{id}', { params: { path: { id } } })
+    );
+}
+
+/** Saves the workflow as given (name, program, active), only over the version shown (409 otherwise). */
+export function saveWorkflow(
+    workflow: Workflow,
+    changes: Partial<Pick<Workflow, 'name' | 'program' | 'active'>>
+): Promise<ApiResult<Workflow>> {
+    return send(
+        api.PUT('/api/v1/workflows/{id}', {
+            params: { path: { id: workflow.id } },
+            body: {
+                name: changes.name ?? workflow.name,
+                program: changes.program ?? workflow.program,
+                active: changes.active ?? workflow.active,
+                version: workflow.version,
+            },
+        })
+    );
+}
+
+/** Turns its triggers on or off. */
+export const setActive = (workflow: Workflow, active: boolean) =>
+    saveWorkflow(workflow, { active });
+
+/** Deletes it; refused (409) while another of its package calls it or it is the error workflow. */
+export function deleteWorkflow(id: string): Promise<ApiResult<unknown>> {
+    return send(
+        api.DELETE('/api/v1/workflows/{id}', { params: { path: { id } } })
+    );
+}
+
+/** A run now, active or not, with this input (a JSON value). */
+export function runWorkflow(
+    id: string,
+    input?: unknown
+): Promise<ApiResult<RunStarted>> {
+    return send(
+        api.POST('/api/v1/workflows/{id}/runs', {
+            params: { path: { id } },
+            body: { input },
+        })
+    );
+}
+
+export function listWorkflowRuns(
+    id: string,
+    cursor?: string
+): Promise<ApiResult<BlockRunPage>> {
+    return send(
+        api.GET('/api/v1/workflows/{id}/runs', {
+            params: { path: { id }, query: { limit: 20, cursor } },
+        })
+    );
+}
+
+export function getRun(runId: string): Promise<ApiResult<BlockRunDetails>> {
+    return send(
+        api.GET('/api/v1/blocks/runs/{runId}', { params: { path: { runId } } })
+    );
+}
+
+export async function listWorkflowVersions(
+    id: string
+): Promise<WorkflowVersion[]> {
+    const result = await send(
+        api.GET('/api/v1/workflows/{id}/versions', { params: { path: { id } } })
+    );
+    return result.ok ? result.data : [];
+}
+
+/** Makes an old version current again, as a new one on top. */
+export function restoreWorkflowVersion(
+    id: string,
+    version: number,
+    currentVersion: number
+): Promise<ApiResult<Workflow>> {
+    return send(
+        api.POST('/api/v1/workflows/{id}/versions/{version}/restore', {
+            params: { path: { id, version } },
+            body: { currentVersion },
+        })
+    );
+}
+
+/** The export file's address: a plain link downloads it (the cookies sign it). */
+export const workflowExportUrl = (id: string, version?: number) =>
+    `/api/v1/workflows/${encodeURIComponent(id)}/export${version ? `?version=${version}` : ''}`;
+
+/** A new workflow from an export file, turned off: in the package given, or a new one of its own. */
+export function importWorkflow(
+    file: File,
+    packageId?: string
+): Promise<ApiResult<WorkflowImport>> {
+    const form = new FormData();
+    form.append('File', file);
+    if (packageId) form.append('PackageId', packageId);
+    return send(
+        api.POST('/api/v1/workflows/import/file', {
+            body: form as unknown as { File: string; Name?: string },
+        })
+    );
 }

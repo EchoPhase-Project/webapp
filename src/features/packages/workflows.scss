@@ -103,10 +103,132 @@
   color: var(--text-muted);
   cursor: pointer;
 
-  &[aria-selected='true'] {
+  text-decoration: none;
+
+  &[aria-selected='true'],
+  &[aria-current='page'] {
     color: var(--text);
     border-bottom-color: var(--accent);
   }
+}
+
+// The tabs with the section's own action at their end, on the same line.
+.workflow-tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+
+  .workflow-tabs {
+    border-bottom: none;
+  }
+}
+
+.workflow-tabs-actions {
+  margin-left: auto;
+  padding-bottom: 6px;
+}
+
+.workflow-webhooks {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflow-webhook {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.workflow-webhook-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.workflow-webhook-label {
+  min-width: 5em;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.workflow-code--hidden {
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.workflow-section p.workflow-webhook-respond {
+  font-size: 0.8rem;
+}
+
+.workflow-run-name {
+  font-weight: 600;
+}
+
+.package-settings {
+  display: grid;
+  gap: 16px;
+
+  // Each part its own box, as in a settings page; fields sit inset in it.
+  > .workflow-section,
+  > .package-side-section {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+
+  .package-share-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+
+    .field-wrap {
+      flex: 1 1 14rem;
+      max-width: 24rem;
+    }
+  }
+
+  // Buttons keep their own width in the sections' grid.
+  .workflow-section > .btn {
+    justify-self: start;
+  }
+
+  // Sharing, as on a package's page, headed like the other sections here.
+  .package-side-section h2 {
+    font-size: 0.95rem;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--text);
+  }
+}
+
+.package-error-form {
+  display: grid;
+  gap: 6px;
+}
+
+.package-error-row,
+.package-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.package-missing {
+  margin: 8px 0 0;
+  padding-left: 1.2em;
+  color: var(--danger);
+  font-size: 0.85rem;
 }
 
 .workflow-overview {

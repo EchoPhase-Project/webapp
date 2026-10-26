@@ -55,6 +55,12 @@
   }
 }
 
+// A shorter field, for a search line or a filter.
+.field--compact {
+  padding: 6px 10px;
+  gap: 8px;
+}
+
 .field-icon {
   width: 16px;
   height: 16px;

@@ -87,9 +87,10 @@ export default function NotesPage() {
             <PageHeader
                 eyebrow={t('eyebrow', 'Workspace')}
                 title={t('title', 'Notes')}
-                description={t(
-                    'lead',
-                    'Notes in Markdown: yours, those shared with you, and those your workflows write. Share one to read or to edit together.'
+                description={t('lead', 'Notes in Markdown.')}
+                more={t(
+                    'lead_more',
+                    'Yours, those shared with you, and those your workflows write. Share one to read or to edit together.'
                 )}
                 actions={
                     <Button onClick={() => setEditing(undefined)}>

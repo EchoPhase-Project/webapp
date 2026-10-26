@@ -47,9 +47,9 @@
     "skip": "Skip to content",
     "close": "Close the menu",
     "account": "Account",
-    "workflows": {
-      "label": "Workflows",
-      "description": "Yours: runs and versions"
+    "packages": {
+      "label": "Packages",
+      "description": "Your workflows, in packages"
     }
   },
   "footer": {
@@ -155,5 +155,9 @@
     "Conflict": "Someone changed this meanwhile. Open it again to see their change, then make yours.",
     "http_404": "Not found.",
     "http_405": "This action is not available here."
+  },
+  "ui": {
+    "more": "Read more",
+    "less": "Show less"
   }
 }

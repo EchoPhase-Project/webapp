@@ -1,7 +1,7 @@
 {
   "active": "Run on triggers",
   "active_hint": "Its webhooks, schedules and events start runs. Running it by hand works either way.",
-  "back": "Workflows",
+  "back": "Package",
   "delete": {
     "body": "Its versions and schedules go with it; its webhooks stop answering. Past runs stay until they expire.",
     "confirm": "Delete",
@@ -10,14 +10,10 @@
   },
   "description": "Your workflows: what they do, their runs and versions.",
   "edited": "Imported. The file was edited after it was exported: check the program before turning it on.",
-  "empty": "No workflows yet: install one from Explore or import a file.",
   "empty_explore": "Find one in Explore",
   "export": "Export",
   "eyebrow": "Workflows",
-  "import": "Import a file",
-  "installed": "installed",
-  "installed_from": "installed from a package, v{version}",
-  "lead": "Programs of blocks that run by hand, on a schedule, on a webhook or on an event. Turn one on to let its triggers start it.",
+  "import": "Import a workflow",
   "not_found": "This workflow does not exist, or it is not yours.",
   "overview": {
     "blocks": "Blocks ({count})",
@@ -27,7 +23,33 @@
     "next": "next {date}",
     "schedules": "Schedules",
     "webhooks": "Webhooks",
-    "webhooks_hint": "POST to the address with the X-Webhook-Secret header set to the block’s secret."
+    "webhooks_hint": "Send a POST to the address with the header X-Webhook-Secret set to its secret; the body (JSON) is the run’s input."
+  },
+  "package": {
+    "empty": "No workflows in it yet: import one from a file.",
+    "error_badge": "handles errors",
+    "eyebrow": "Package",
+    "not_found": "This package does not exist, or it is not yours.",
+    "runs": "Runs",
+    "runs_hint": "Of all its workflows",
+    "sections": "Package",
+    "settings": "Settings",
+    "settings_hint": "Errors, publishing, sharing",
+    "workflows": "Workflows",
+    "workflows_hint": "What it does, on or off"
+  },
+  "packages": {
+    "by": "by {name}",
+    "count": "{count} workflows",
+    "description": "Your packages: workflows that belong together.",
+    "empty": "No packages yet: install one from Explore, start a new one or import a workflow.",
+    "installed": "installed, v{version}",
+    "lead": "Workflows that belong together.",
+    "more": "They call each other, share their storage and are published together. Install one from Explore, or start your own.",
+    "new": "New package",
+    "published": "published, v{version}",
+    "shared": "Shared with you",
+    "title": "Packages"
   },
   "run": {
     "bad_json": "The input is not JSON: a value such as {\"user\": \"ann\"}, a number or \"text\".",
@@ -37,11 +59,30 @@
     "title": "Run now"
   },
   "runs": {
+    "deleted": "a deleted workflow",
     "empty": "No runs yet. Run it now, or turn it on for its triggers.",
     "errors": "{count} errors",
     "loading": "Loading…",
     "more": "Show older",
     "no_result": "Its result is no longer kept."
+  },
+  "settings": {
+    "about": "About",
+    "danger": "Delete",
+    "delete": "Delete this package",
+    "delete_body": "Its workflows go with it, with their versions, schedules and storage; their webhooks stop answering. Its published versions go too; packages others installed from it stay theirs.",
+    "delete_title": "Delete this package?",
+    "edit": "Edit name, README and visibility",
+    "error_hint": "It needs an ErrorTrigger block; its input says which workflow failed and why. Runs started by hand do not count.",
+    "error_workflow": "Workflow to start when an automatic run of one of them fails",
+    "errors": "When a run fails",
+    "no_error_workflow": "None",
+    "no_summary": "No summary yet.",
+    "open_explore": "See it as others do",
+    "published": "Published, latest v{version}.",
+    "publishing": "Publishing",
+    "save": "Save",
+    "unpublished": "Not published: only you see it. A version is what others read and install."
   },
   "status": {
     "cancelled": "cancelled",
@@ -74,5 +115,21 @@
     "restore_body": "Its program becomes the current one, as a new version on top; nothing is lost, the current one stays in the history.",
     "restore_title": "Restore version {version}?",
     "restored": "brought back v{version}"
+  },
+  "webhook": {
+    "address": "Address",
+    "copied": "Secret copied",
+    "copy": "Copy the secret",
+    "hide": "Hide the secret",
+    "replace": "New secret",
+    "replace_body": "The old secret stops working at once: whoever calls this webhook needs the new one. It is a change of the workflow, saved as a new version.",
+    "replace_title": "Give it a new secret?",
+    "respond": {
+      "ByBlock": "The caller waits for a RespondToWebhook block and gets what it sends.",
+      "Immediately": "The caller gets 202 at once, with the run’s id; the run goes on.",
+      "OnFinish": "The caller waits for the run and gets its last block’s output (500 if it fails)."
+    },
+    "secret": "Secret",
+    "show": "Show the secret"
   }
 }

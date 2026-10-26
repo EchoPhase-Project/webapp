@@ -9,29 +9,25 @@ import { A, useNavigate } from '@solidjs/router';
 import { AiOutlineArrowLeft, AiOutlineDownload } from 'solid-icons/ai';
 import { useAuth } from '@shared/api/auth-provider';
 import { useRootMeta } from '@shared/meta/page-meta';
-import type { WorkflowPackage } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import EmptyState from '@shared/ui/EmptyState';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
 import {
-    deletePackage,
     getContent,
     getPackage,
-    listVersions,
+    listPackageVersions,
     unsharePackage,
 } from '@features/packages/api';
+import { packagePath } from '@features/packages/package-nav';
+import { tagClass } from '@features/packages/tags';
 import InstallModal from './InstallModal';
-import PackageEditorModal from './PackageEditorModal';
-import PackageShares from './PackageShares';
-import PublishModal from './PublishModal';
 
 /**
- * One package: its README, what its latest version holds, its versions,
- * and installing it; its owner also edits, publishes, shares and deletes.
+ * One published package: its README, what its latest version holds, its
+ * versions, and installing it. Its owner manages it in Packages.
  */
 export default function PackageDetails(props: { id: string }) {
     const t = useLocalizer('packages');
@@ -46,22 +42,19 @@ export default function PackageDetails(props: { id: string }) {
             return result.ok ? result.data : null;
         }
     );
-    const [content, { refetch: refetchContent }] = createResource(
+    const [content] = createResource(
         () => (pkg() ? props.id : false),
         async (id) => {
             const result = await getContent(id);
             return result.ok ? result.data : null;
         }
     );
-    const [versions, { refetch: refetchVersions }] = createResource(
+    const [versions] = createResource(
         () => (pkg() ? props.id : false),
-        listVersions
+        listPackageVersions
     );
 
     const [installing, setInstalling] = createSignal(false);
-    const [editing, setEditing] = createSignal(false);
-    const [publishing, setPublishing] = createSignal(false);
-    const [confirming, setConfirming] = createSignal(false);
     const [busy, setBusy] = createSignal(false);
 
     const { setTitle, setDescription } = useRootMeta();
@@ -77,22 +70,11 @@ export default function PackageDetails(props: { id: string }) {
     const date = (iso: string) =>
         DateHelper.format(iso, user()?.timeZone, i18n.currentLocale());
 
-    async function remove() {
-        setBusy(true);
-        try {
-            const result = await deletePackage(props.id);
-            if (result.ok) navigate('/explore?tab=mine');
-        } finally {
-            setBusy(false);
-            setConfirming(false);
-        }
-    }
-
     async function leave() {
         setBusy(true);
         try {
             const result = await unsharePackage(props.id, user()?.id ?? '');
-            if (result.ok) navigate('/explore?tab=mine');
+            if (result.ok) navigate('/packages');
         } finally {
             setBusy(false);
         }
@@ -175,10 +157,10 @@ export default function PackageDetails(props: { id: string }) {
                                 {(tag) => (
                                     <li>
                                         <A
-                                            class="package-tag"
+                                            class={tagClass(tag)}
                                             href={`/explore?tag=${encodeURIComponent(tag)}`}
                                         >
-                                            #{tag}
+                                            {tag}
                                         </A>
                                     </li>
                                 )}
@@ -203,26 +185,15 @@ export default function PackageDetails(props: { id: string }) {
                         <aside class="package-side">
                             <Show when={isOwner()}>
                                 <section class="package-side-section package-owner-actions">
-                                    <Button
-                                        variant="ghost"
-                                        disabled={!content()}
-                                        onClick={() => setPublishing(true)}
+                                    <A
+                                        class="btn btn-ghost"
+                                        href={packagePath(p().id, 'settings')}
                                     >
-                                        {t('publish.open', 'New version')}
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => setEditing(true)}
-                                    >
-                                        {t('editor.open', 'Edit')}
-                                    </Button>
-                                    <Button
-                                        variant="danger-outline"
-                                        disabled={busy()}
-                                        onClick={() => setConfirming(true)}
-                                    >
-                                        {t('delete.open', 'Delete')}
-                                    </Button>
+                                        {t(
+                                            'manage',
+                                            'Manage it in your packages'
+                                        )}
+                                    </A>
                                 </section>
                             </Show>
 
@@ -339,9 +310,6 @@ export default function PackageDetails(props: { id: string }) {
                                 </ol>
                             </section>
 
-                            <Show when={isOwner()}>
-                                <PackageShares packageId={p().id} />
-                            </Show>
                             <Show
                                 when={
                                     !isOwner() && p().visibility === 'Private'
@@ -374,46 +342,6 @@ export default function PackageDetails(props: { id: string }) {
                             />
                         )}
                     </Show>
-                    <PackageEditorModal
-                        open={editing()}
-                        pkg={p()}
-                        onClose={() => setEditing(false)}
-                        onSaved={(saved: WorkflowPackage) => {
-                            mutate(saved);
-                            setEditing(false);
-                        }}
-                    />
-                    <PublishModal
-                        open={publishing()}
-                        packageId={p().id}
-                        current={[...(content()?.workflows ?? [])]
-                            .sort((a, b) => Number(b.main) - Number(a.main))
-                            .map((w) => w.key)}
-                        onClose={() => setPublishing(false)}
-                        onPublished={(v) => {
-                            setPublishing(false);
-                            mutate({
-                                ...p(),
-                                latestVersion: v.version,
-                                updatedAt: v.createdAt,
-                            });
-                            void refetchContent();
-                            void refetchVersions();
-                        }}
-                    />
-                    <ConfirmDialog
-                        open={confirming()}
-                        title={t('delete.title', 'Delete this package?')}
-                        confirm={t('delete.confirm', 'Delete')}
-                        busy={busy()}
-                        onConfirm={() => void remove()}
-                        onCancel={() => setConfirming(false)}
-                    >
-                        {t(
-                            'delete.body',
-                            'Its versions go with it and nobody can install it any more. Copies already installed stay with whoever installed them.'
-                        )}
-                    </ConfirmDialog>
                 </div>
             )}
         </Show>

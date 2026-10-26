@@ -88,7 +88,11 @@ export default function FilesPage() {
                 title={t('title', 'Files')}
                 description={t(
                     'lead',
-                    'Files you uploaded, and those made for you. Up to 100 MB each; pictures open in the browser, everything else downloads.'
+                    'Files you uploaded, and those made for you.'
+                )}
+                more={t(
+                    'lead_more',
+                    'Up to 100 MB each; pictures open in the browser, everything else downloads.'
                 )}
                 actions={
                     <FilePicker busy={busy()} onPick={(f) => void upload(f)}>

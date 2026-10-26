@@ -47,9 +47,9 @@
     "skip": "Sari la conținut",
     "close": "Închide meniul",
     "account": "Cont",
-    "workflows": {
-      "label": "Workflow-uri",
-      "description": "Ale tale: rulări și versiuni"
+    "packages": {
+      "label": "Pachete",
+      "description": "Workflow-urile dvs., în pachete"
     }
   },
   "footer": {
@@ -155,5 +155,9 @@
     "Conflict": "Între timp, altcineva a modificat acest lucru. Deschideți-l din nou pentru a vedea modificarea, apoi faceți-o pe a dvs.",
     "http_404": "Nu a fost găsit.",
     "http_405": "Această acțiune nu e disponibilă aici."
+  },
+  "ui": {
+    "more": "Citiți mai mult",
+    "less": "Mai puțin"
   }
 }

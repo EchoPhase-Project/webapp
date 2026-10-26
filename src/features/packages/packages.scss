@@ -6,16 +6,29 @@
   min-width: 0;
 }
 
-.packages-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  align-items: center;
+// The search line, as on GitHub: full width, compact, a cross to clear it.
+.packages-search {
+  width: 100%;
+
+  // On the page itself, not in a card: a step up from it in both themes.
+  &.field {
+    background-color: var(--surface);
+  }
 }
 
-.packages-search {
-  flex: 1 1 16rem;
-  max-width: 28rem;
+.packages-search-clear {
+  display: inline-flex;
+  padding: 2px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text);
+    background: var(--hover);
+  }
 }
 
 .packages-tabs {
@@ -118,30 +131,37 @@
   list-style: none;
 }
 
+// A tag as a capsule, as GitHub's labels: its colour (by its name) as the
+// text, faint behind it and around it.
 .package-tag {
+  --tag: var(--label-1);
+
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  border: 1px solid var(--border);
+  padding: 1px 9px;
+  border: 1px solid color-mix(in srgb, var(--tag) 40%, transparent);
   border-radius: 999px;
-  background: var(--surface-raised);
+  background: color-mix(in srgb, var(--tag) 14%, transparent);
   font: inherit;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--tag);
   text-decoration: none;
   cursor: pointer;
 
   &:hover,
   &:focus-visible {
-    color: var(--text);
-    border-color: var(--accent);
+    background: color-mix(in srgb, var(--tag) 24%, transparent);
+    border-color: var(--tag);
   }
-}
 
-.package-tag-active {
-  color: var(--text);
-  border-color: var(--accent);
+  @for $n from 2 through 6 {
+    &.package-tag--#{$n} {
+      --tag: var(--label-#{$n});
+    }
+  }
 }
 
 .package-back {

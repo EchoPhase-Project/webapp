@@ -7,7 +7,7 @@ function theme(header: string): Record<string, string> {
     const start = tokens.indexOf(header);
     const block = tokens.slice(start, tokens.indexOf('\n}', start));
     return Object.fromEntries(
-        [...block.matchAll(/--([a-z-]+):\s*(#[0-9a-f]{6});/gi)].map((m) => [
+        [...block.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-f]{6});/gi)].map((m) => [
             m[1],
             m[2],
         ])
@@ -63,6 +63,7 @@ const rules: [string, number][] = [
     ['warning', 4.5],
     ['accent', 3],
     ['focus', 3],
+    ...[1, 2, 3, 4, 5, 6].map((n): [string, number] => [`label-${n}`, 4.5]),
 ];
 
 describe.each([

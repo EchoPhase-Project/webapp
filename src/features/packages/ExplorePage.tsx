@@ -6,34 +6,26 @@ import {
     onCleanup,
     Show,
 } from 'solid-js';
-import { useNavigate, useSearchParams } from '@solidjs/router';
-import { AiOutlineClose, AiOutlinePlus, AiOutlineSearch } from 'solid-icons/ai';
+import { A, useSearchParams } from '@solidjs/router';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
-import Field from '@shared/ui/Field';
 import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
-import { explorePackages, myPackages } from './api';
+import { explorePackages } from './api';
 import PackageCard from './components/PackageCard';
-import PackageEditorModal from './components/PackageEditorModal';
+import PackageSearch, { parseQuery, queryOf } from './components/PackageSearch';
 import './packages.scss';
 
-type Tab = 'explore' | 'mine';
-
-/** Published workflow packages: everyone's public ones, and the caller's own and shared. */
+/** Published packages, everyone's public ones: to read and install. The caller's own are in Packages. */
 export default function ExplorePage() {
     const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('packages');
-    const navigate = useNavigate();
-    const [params, setParams] = useSearchParams<{
-        tab?: string;
-        tag?: string;
-    }>();
+    const [params, setParams] = useSearchParams<{ tag?: string }>();
 
     createRenderEffect(() => {
         setTitle(`${t('title', 'Explore')} · EchoPhase`);
@@ -42,18 +34,28 @@ export default function ExplorePage() {
         );
     });
 
-    const tab = (): Tab => (params.tab === 'mine' ? 'mine' : 'explore');
     const tag = () => params.tag ?? '';
 
-    const [query, setQuery] = createSignal('');
-    // The search waits for a pause in typing.
+    // The line as typed: words and `tag:name`; the tag lives in the address too.
+    const [query, setQuery] = createSignal(queryOf(params.tag ?? '', ''));
+    // The words, once typing pauses.
     const [search, setSearch] = createSignal('');
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const onSearch = (value: string) => {
+    const onSearch = (value: string, now = false) => {
         setQuery(value);
         clearTimeout(timer);
-        timer = setTimeout(() => setSearch(value.trim()), 250);
+        const apply = () => {
+            const parsed = parseQuery(value);
+            setSearch(parsed.words);
+            if (parsed.tag !== tag())
+                setParams({ tag: parsed.tag || undefined });
+        };
+        if (now) apply();
+        else timer = setTimeout(apply, 250);
     };
+    // A tag picked on a card goes into the line, with the words kept.
+    const pickTag = (picked: string) =>
+        onSearch(queryOf(picked, parseQuery(query()).words), true);
 
     const [packages, setPackages] = createSignal<WorkflowPackage[]>([]);
     // Where the next page of Explore starts; null: nothing more.
@@ -67,31 +69,16 @@ export default function ExplorePage() {
         const mine = generation;
         setLoading(true);
         try {
-            if (tab() === 'mine') {
-                // Their own list is short: whole, filtered here.
-                const needle = search().toLowerCase();
-                const list = (await myPackages()).filter(
-                    (p) =>
-                        (!tag() || p.tags.includes(tag())) &&
-                        (!needle ||
-                            p.name.toLowerCase().includes(needle) ||
-                            p.summary.toLowerCase().includes(needle))
-                );
-                if (mine !== generation) return;
-                setPackages(list);
-                setNext(null);
-            } else {
-                const result = await explorePackages(
-                    search(),
-                    tag(),
-                    more ? (next() ?? undefined) : undefined
-                );
-                if (mine !== generation || !result.ok) return;
-                setPackages((list) =>
-                    more ? [...list, ...result.data.items] : result.data.items
-                );
-                setNext(result.data.next);
-            }
+            const result = await explorePackages(
+                search(),
+                tag(),
+                more ? (next() ?? undefined) : undefined
+            );
+            if (mine !== generation || !result.ok) return;
+            setPackages((list) =>
+                more ? [...list, ...result.data.items] : result.data.items
+            );
+            setNext(result.data.next);
             setLoaded(true);
         } finally {
             if (mine === generation) setLoading(false);
@@ -100,7 +87,7 @@ export default function ExplorePage() {
 
     createEffect(
         on(
-            () => (isAuthenticated() ? [tab(), search(), tag()] : false),
+            () => (isAuthenticated() ? [search(), tag()] : false),
             (key) => {
                 if (!key) return;
                 generation++;
@@ -127,11 +114,6 @@ export default function ExplorePage() {
         onCleanup(() => observer.disconnect());
     };
 
-    const [creating, setCreating] = createSignal(false);
-
-    const selectTab = (target: Tab) =>
-        setParams({ tab: target === 'mine' ? 'mine' : undefined });
-
     return (
         <div class="packages-container">
             <PageHeader
@@ -139,99 +121,38 @@ export default function ExplorePage() {
                 title={t('title', 'Explore')}
                 description={t(
                     'lead',
-                    'Workflows published together with a README. Installing one copies its workflows into yours, linked to each other and to your connections; the author’s stay theirs.'
+                    'Packages others published, to install.'
+                )}
+                more={t(
+                    'more_about',
+                    'Installing one makes a package of yours with its workflows, pointed at your connections; the author’s stay theirs.'
                 )}
                 actions={
-                    <Button onClick={() => setCreating(true)}>
-                        <AiOutlinePlus />
-                        {t('new', 'Publish workflows')}
-                    </Button>
+                    <A class="btn btn-ghost" href="/packages">
+                        {t('yours', 'Your packages')}
+                    </A>
                 }
             />
 
-            <div class="packages-toolbar">
-                <div class="packages-tabs" role="tablist">
-                    <button
-                        type="button"
-                        role="tab"
-                        class="packages-tab"
-                        aria-selected={tab() === 'explore'}
-                        onClick={() => selectTab('explore')}
-                    >
-                        {t('tab.explore', 'Everyone’s')}
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        class="packages-tab"
-                        aria-selected={tab() === 'mine'}
-                        onClick={() => selectTab('mine')}
-                    >
-                        {t('tab.mine', 'Mine and shared')}
-                    </button>
-                </div>
-                <div class="packages-search">
-                    <Field
-                        id="packages-search"
-                        name="q"
-                        type="search"
-                        icon={AiOutlineSearch}
-                        label={t('search', 'Search packages')}
-                        value={query()}
-                        onInput={(e) => onSearch(e.currentTarget.value)}
-                    />
-                </div>
-                <Show when={tag()}>
-                    <button
-                        type="button"
-                        class="package-tag package-tag-active"
-                        aria-label={t(
-                            'tag_clear',
-                            'Stop filtering by #{tag}'
-                        ).replace('{tag}', tag())}
-                        onClick={() => setParams({ tag: undefined })}
-                    >
-                        #{tag()} <AiOutlineClose aria-hidden="true" />
-                    </button>
-                </Show>
-            </div>
+            <PackageSearch value={query()} onInput={onSearch} />
 
             <Show
                 when={packages().length > 0}
                 fallback={
                     <Show when={loaded()}>
-                        <EmptyState
-                            action={
-                                <Show
-                                    when={
-                                        tab() === 'mine' && !search() && !tag()
-                                    }
-                                >
-                                    <Button onClick={() => setCreating(true)}>
-                                        {t('first', 'Publish your first')}
-                                    </Button>
-                                </Show>
-                            }
-                        >
+                        <EmptyState>
                             {search() || tag()
                                 ? t('none_found', 'No packages match.')
-                                : tab() === 'mine'
-                                  ? t('empty_mine', 'You have no packages yet.')
-                                  : t(
-                                        'empty',
-                                        'Nobody has published a package yet.'
-                                    )}
+                                : t(
+                                      'empty',
+                                      'Nobody has published a package yet.'
+                                  )}
                         </EmptyState>
                     </Show>
                 }
             >
                 <Masonry each={packages()}>
-                    {(pkg) => (
-                        <PackageCard
-                            pkg={pkg}
-                            onTag={(picked) => setParams({ tag: picked })}
-                        />
-                    )}
+                    {(pkg) => <PackageCard pkg={pkg} onTag={pickTag} />}
                 </Masonry>
                 <Show when={next()}>
                     <div class="packages-more" ref={watchEnd}>
@@ -245,15 +166,6 @@ export default function ExplorePage() {
                     </div>
                 </Show>
             </Show>
-
-            <PackageEditorModal
-                open={creating()}
-                onClose={() => setCreating(false)}
-                onSaved={(pkg) => {
-                    setCreating(false);
-                    navigate(`/explore/${pkg.id}`);
-                }}
-            />
         </div>
     );
 }

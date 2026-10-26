@@ -9,17 +9,8 @@ import FieldError from '@shared/ui/FieldError';
 import Markdown from '@shared/ui/Markdown';
 import Modal from '@shared/ui/Modal';
 import { createPackage, updatePackage } from '@features/packages/api';
-import WorkflowPicker from './WorkflowPicker';
 
-const FIELDS = [
-    'name',
-    'summary',
-    'readme',
-    'visibility',
-    'tags',
-    'workflows',
-    'changelog',
-] as const;
+const FIELDS = ['name', 'summary', 'readme', 'visibility', 'tags'] as const;
 const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
 const inputId = (field: string) => `package-${field}`;
 
@@ -31,9 +22,9 @@ const parseTags = (text: string) =>
         .filter(Boolean);
 
 /**
- * A package's name, summary, README, tags and visibility: a new one with
- * the workflows of its first version, or an existing one (its versions are
- * published separately).
+ * A package's name, summary, README, tags and visibility: a new, empty one
+ * or an existing one (its workflows are made in it, its versions published
+ * separately).
  */
 export default function PackageEditorModal(props: {
     open: boolean;
@@ -50,7 +41,7 @@ export default function PackageEditorModal(props: {
             title={
                 props.pkg
                     ? t('editor.edit', 'Edit package')
-                    : t('editor.new', 'Publish workflows')
+                    : t('editor.new', 'New package')
             }
             onClose={() => props.onClose()}
             wide
@@ -80,7 +71,6 @@ function PackageForm(props: {
     );
     const [tags, setTags] = createSignal(props.pkg?.tags.join(', ') ?? '');
     /* eslint-enable solid/reactivity */
-    const [workflows, setWorkflows] = createSignal<string[]>([]);
     const [preview, setPreview] = createSignal(false);
     const [errors, setErrors] = createSignal<FormErrors>({});
     const [busy, setBusy] = createSignal(false);
@@ -96,11 +86,15 @@ function PackageForm(props: {
                 readme: readme(),
                 visibility: visibility(),
                 tags: parseTags(tags()),
-                expectedStamp: props.pkg?.stamp ?? null,
             };
             const result = props.pkg
-                ? await updatePackage(props.pkg.id, input)
-                : await createPackage(input, { workflows: workflows() });
+                ? await updatePackage(props.pkg.id, {
+                      ...input,
+                      // Kept as it is: chosen in the package's settings.
+                      errorWorkflow: props.pkg.errorWorkflow ?? null,
+                      expectedStamp: props.pkg.stamp,
+                  })
+                : await createPackage(input);
             if (!result.ok) {
                 setErrors(groupErrors(result.errors, FIELDS));
                 return;
@@ -272,21 +266,11 @@ function PackageForm(props: {
                 />
             </fieldset>
 
-            <Show when={!props.pkg}>
-                <WorkflowPicker
-                    id={inputId('workflows')}
-                    selected={workflows()}
-                    onChange={setWorkflows}
-                    disabled={busy()}
-                    errors={errors().workflows}
-                />
-            </Show>
-
             <div class="package-actions">
                 <Button type="submit" busy={busy()}>
                     {props.pkg
                         ? t('editor.save', 'Save')
-                        : t('editor.publish', 'Publish')}
+                        : t('editor.create', 'Create')}
                 </Button>
             </div>
         </form>

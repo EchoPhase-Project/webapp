@@ -8,7 +8,7 @@ import { useRealtime } from '@features/realtime/realtime-provider';
 import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { notesChanged } from '@features/notes/notes-changes';
-import { runsChanged } from '@features/workflows/run-changes';
+import { runsChanged } from '@features/packages/run-changes';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';

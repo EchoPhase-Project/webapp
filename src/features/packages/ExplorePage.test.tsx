@@ -4,6 +4,7 @@ import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import ExplorePage from './ExplorePage';
+import { parseQuery, queryOf } from './components/PackageSearch';
 
 export const pkg = (over: Record<string, unknown> = {}) => ({
     id: 'p1',
@@ -14,6 +15,9 @@ export const pkg = (over: Record<string, unknown> = {}) => ({
     tags: ['discord-bot'],
     latestVersion: 2,
     installs: 7,
+    workflows: 0,
+    errorWorkflow: null,
+    source: null,
     access: 'Read',
     owner: { id: 'u2', userName: 'ann', name: 'Ann' },
     stamp: 's1',
@@ -88,7 +92,7 @@ describe('ExplorePage', () => {
 
         renderPage(() => <ExplorePage />);
         fireEvent.click(
-            await screen.findByRole('button', { name: '#discord-bot' })
+            await screen.findByRole('button', { name: 'discord-bot' })
         );
 
         await waitFor(() =>
@@ -102,113 +106,17 @@ describe('ExplorePage', () => {
                     )
             ).toBe(true)
         );
+        // In the search line, as a qualifier.
         expect(
-            await screen.findByRole('button', {
-                name: 'Stop filtering by #discord-bot',
-            })
-        ).toBeTruthy();
+            screen.getByLabelText<HTMLInputElement>('Search packages').value
+        ).toBe('tag:discord-bot');
     });
 
-    it('lists the caller’s own and shared packages on the second tab', async () => {
-        fakeApi({
-            ...signedIn,
-            'GET /api/v1/workflow-packages/explore': () => page([]),
-            'GET /api/v1/workflow-packages': () =>
-                json(200, [
-                    pkg({
-                        id: 'p3',
-                        name: 'Mine',
-                        access: 'Owner',
-                        visibility: 'Private',
-                    }),
-                ]),
+    it('reads tag: out of the search line', () => {
+        expect(parseQuery('guild tag:Discord-Bot report')).toEqual({
+            tag: 'discord-bot',
+            words: 'guild report',
         });
-
-        renderPage(() => <ExplorePage />);
-        fireEvent.click(
-            await screen.findByRole('tab', { name: 'Mine and shared' })
-        );
-
-        expect(await screen.findByRole('link', { name: 'Mine' })).toBeTruthy();
-        expect(screen.getByText('Private')).toBeTruthy();
-    });
-
-    it('publishes the ticked workflows, the first as the main one', async () => {
-        const api = fakeApi({
-            ...signedIn,
-            'GET /api/v1/workflow-packages/explore': () => page([]),
-            'GET /api/v1/workflows': () =>
-                json(200, [
-                    {
-                        id: 'w1',
-                        name: 'main flow',
-                        active: false,
-                        version: 3,
-                        contentHash: null,
-                        source: null,
-                        createdAt: '',
-                        updatedAt: '',
-                    },
-                    {
-                        id: 'w2',
-                        name: 'on error',
-                        active: false,
-                        version: 1,
-                        contentHash: null,
-                        source: null,
-                        createdAt: '',
-                        updatedAt: '',
-                    },
-                    {
-                        id: 'w3',
-                        name: 'installed',
-                        active: false,
-                        version: 1,
-                        contentHash: null,
-                        source: { packageId: 'x', version: 1, key: 'k' },
-                        createdAt: '',
-                        updatedAt: '',
-                    },
-                ]),
-            'POST /api/v1/workflow-packages': () =>
-                json(201, pkg({ id: 'p9', access: 'Owner' })),
-            'GET /api/v1/workflow-packages/p9': () =>
-                json(200, pkg({ id: 'p9', access: 'Owner' })),
-        });
-
-        renderPage(() => <ExplorePage />);
-        fireEvent.click(
-            await screen.findByRole('button', { name: 'Publish workflows' })
-        );
-        fireEvent.input(screen.getByLabelText('Name'), {
-            target: { value: 'Guild tools' },
-        });
-        fireEvent.input(
-            screen.getByLabelText('Tags, separated by commas (up to 10)'),
-            {
-                target: { value: 'Discord bot, guilds' },
-            }
-        );
-        // Copies installed from others are not offered.
-        expect(screen.queryByText('installed')).toBeNull();
-        fireEvent.click(await screen.findByLabelText(/on error/));
-        fireEvent.click(screen.getByLabelText(/main flow/));
-        fireEvent.click(screen.getByRole('button', { name: 'Publish' }));
-
-        await waitFor(() =>
-            expect(api.calls('POST /api/v1/workflow-packages')).toHaveLength(1)
-        );
-        const body = (await api
-            .calls('POST /api/v1/workflow-packages')[0]
-            .json()) as {
-            package: { name: string; tags: string[]; visibility: string };
-            publish: { workflows: string[] };
-        };
-        expect(body.package).toMatchObject({
-            name: 'Guild tools',
-            tags: ['Discord bot', 'guilds'],
-            visibility: 'Private',
-        });
-        expect(body.publish.workflows).toEqual(['w2', 'w1']);
+        expect(queryOf('raid', 'pings')).toBe('tag:raid pings');
     });
 });

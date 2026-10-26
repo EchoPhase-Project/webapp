@@ -8,6 +8,7 @@ import {
 import type { WorkflowPackage } from '@shared/api/types';
 import { plainText } from '@shared/lib/markdown';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { tagClass } from '@features/packages/tags';
 
 /** How much of the README a card shows when the package has no summary. */
 const EXCERPT = 420;
@@ -49,10 +50,10 @@ export default function PackageCard(props: {
                             <li>
                                 <button
                                     type="button"
-                                    class="package-tag"
+                                    class={tagClass(tag)}
                                     onClick={() => props.onTag?.(tag)}
                                 >
-                                    #{tag}
+                                    {tag}
                                 </button>
                             </li>
                         )}

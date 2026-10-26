@@ -7,64 +7,59 @@
     "shared": "Partajat cu tine",
     "tags": "Etichete"
   },
-  "delete": {
-    "body": "Versiunile lui dispar odată cu el și nimeni nu-l mai poate instala. Copiile deja instalate rămân la cei care le-au instalat.",
-    "confirm": "Șterge",
-    "open": "Șterge",
-    "title": "Ștergi acest pachet?"
-  },
   "description": "Pachete de workflow de citit și instalat.",
   "editor": {
+    "create": "Creați",
     "edit": "Editează pachetul",
-    "loading": "Se încarcă…",
     "main": "principal",
     "name": "Nume",
-    "new": "Publică workflow-uri",
-    "no_workflows": "Nu ai workflow-uri proprii de publicat.",
+    "new": "Pachet nou",
     "nothing": "Nimic de previzualizat încă",
-    "open": "Editează",
     "preview": "Previzualizare",
-    "publish": "Publică",
     "readme": "README",
     "readme_placeholder": "Ce face, de ce are nevoie (conexiuni, setări), cum îl pornești. Merge Markdown.",
     "save": "Salvează",
     "summary": "Rezumat: una-două propoziții pentru card",
     "tags": "Etichete, separate prin virgulă (până la 10)",
     "visibility": "Cine îl vede",
-    "workflows": "Workflow-uri (primul bifat se deschide primul)",
-    "workflows_hint": "Include toate workflow-urile pe care le apelează sau le folosesc pentru erori. Secretele webhook sunt omise; orice altceva din blocuri (o cheie API într-un antet) se publică așa cum este.",
     "write": "Scrie"
   },
   "empty": "Nimeni n-a publicat încă un pachet.",
-  "empty_mine": "Nu ai încă pachete.",
   "eyebrow": "Workflow-uri",
-  "first": "Publică primul",
   "install": {
     "close": "Gata",
     "connections": "Conexiunile folosite",
-    "done": "Instalat. Noile tale workflow-uri, oprite:",
+    "done": "Instalat ca pachet al dvs. Workflow-urile sale, oprite:",
     "later": "Niciuna încă: o configurez mai târziu",
-    "lead": "Copiază workflow-urile ({count}) printre ale tale, oprite, legate între ele. Webhook-urile primesc secrete noi.",
+    "lead": "Creează un pachet al dvs. cu cele {count} workflow-uri ale sale, oprite. Webhook-urile primesc secrete noi.",
     "missing": "Înainte să le pornești, adaugă aceste conexiuni (sau alege altele în workflow-uri): {names}.",
     "open": "Instalează",
+    "open_package": "Deschideți-l",
     "submit": "Instalează",
     "title": "Instalează versiunea {version}"
   },
-  "lead": "Workflow-uri publicate împreună cu un README. Instalarea le copiază printre ale tale, legate între ele și de conexiunile tale; cele ale autorului rămân ale lui.",
+  "lead": "Pachete publicate de alții, de instalat.",
   "leave": "Părăsește pachetul",
+  "manage": "Gestionați-l în pachetele dvs.",
   "more": "Arată mai multe",
-  "new": "Publică workflow-uri",
+  "more_about": "Instalarea creează un pachet al dvs. cu workflow-urile lui, legate de conexiunile dvs.; ale autorului rămân ale lui.",
   "no_readme": "Fără README.",
   "none_found": "Niciun pachet nu se potrivește.",
   "not_found": "Acest pachet nu există sau nu este partajat cu tine.",
   "publish": {
     "changelog": "Ce s-a schimbat (Markdown, opțional)",
+    "hint": "Secretele webhook-urilor nu se publică; restul din blocuri (o cheie API într-un antet) se publică așa cum este.",
+    "missing": "„{by}” apelează „{needs}”: alegeți-l și pe acesta.",
+    "missing_error": "„{needs}” tratează erorile pachetului: alegeți-l și pe acesta.",
     "open": "Versiune nouă",
     "submit": "Publică",
     "title": "Publică o versiune nouă",
-    "unchanged": "Nimic nu s-a schimbat de la ultima versiune: editează mai întâi workflow-urile sau alege altele."
+    "unchanged": "Nimic nu s-a schimbat de la ultima versiune: editează mai întâi workflow-urile sau alege altele.",
+    "workflows": "Workflow-uri în această versiune (primul bifat se deschide primul)"
   },
   "search": "Caută pachete",
+  "search_clear": "Ștergeți căutarea",
+  "search_placeholder": "Căutați pachete sau tag:nume",
   "share": {
     "add": "Partajează",
     "none": "Nimeni încă. Partajarea contează cât timp e privat.",
@@ -72,11 +67,6 @@
     "title": "Partajat cu",
     "username": "Nume de utilizator"
   },
-  "tab": {
-    "explore": "Ale tuturor",
-    "mine": "Ale mele și partajate"
-  },
-  "tag_clear": "Elimină filtrul #{tag}",
   "title": "Explorare",
   "updated": "actualizat {date}",
   "versions": "Versiuni",
@@ -88,5 +78,6 @@
     "Unlisted": "Nelistat",
     "Unlisted_hint": "Oricine conectat care are linkul"
   },
-  "workflows": "Workflow-uri în versiunea {version}"
+  "workflows": "Workflow-uri în versiunea {version}",
+  "yours": "Pachetele dvs."
 }

@@ -3,7 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import { workflow } from '@features/workflows/WorkflowsPage.test';
+import { pkg } from '@features/packages/ExplorePage.test';
+import { workflow } from '@features/packages/PackagesPage.test';
 import WorkflowDetails from './WorkflowDetails';
 
 const run = (over: Record<string, unknown> = {}) => ({
@@ -27,6 +28,8 @@ const routes = (
     over: Record<string, (r: Request) => Response | Promise<Response>> = {}
 ) => ({
     ...signedIn,
+    'GET /api/v1/workflow-packages/p1': () =>
+        json(200, pkg({ access: 'Owner' })),
     'GET /api/v1/workflows/w1': () => json(200, workflow()),
     'GET /api/v1/workflows/w1/runs': () =>
         json(200, { data: [run()], nextCursor: null }),
@@ -62,7 +65,7 @@ describe('WorkflowDetails', () => {
 
     it('shows what it is: its blocks and where its webhook listens', async () => {
         fakeApi(routes());
-        renderPage(() => <WorkflowDetails id="w1" />);
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
 
         expect(
             await screen.findByRole('heading', {
@@ -73,6 +76,48 @@ describe('WorkflowDetails', () => {
         expect(screen.getByText('WebhookTrigger')).toBeTruthy();
         expect(screen.getByText('say hi')).toBeTruthy();
         expect(screen.getByText(/\/api\/v1\/hooks\/w1\/1$/)).toBeTruthy();
+        expect(screen.getByText(/gets 202 at once/)).toBeTruthy();
+        // Back to its package, by name.
+        expect(
+            (
+                await screen.findByRole('link', { name: /Guild tools/ })
+            ).getAttribute('href')
+        ).toBe('/packages/p1/workflows');
+    });
+
+    it('shows the webhook secret only when asked, and replaces it after asking', async () => {
+        const api = fakeApi(
+            routes({
+                'PUT /api/v1/workflows/w1': () =>
+                    json(200, workflow({ version: 4 })),
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+
+        expect(await screen.findByText('••••••••••••••••')).toBeTruthy();
+        expect(screen.queryByText('a-secret-of-sixteen')).toBeNull();
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Show the secret' })
+        );
+        expect(screen.getByText('a-secret-of-sixteen')).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
+        const dialog = await screen.findByRole('alertdialog');
+        fireEvent.click(dialog.querySelector('.btn-danger') as HTMLElement);
+
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflows/w1')).toHaveLength(1)
+        );
+        const body = (await api
+            .calls('PUT /api/v1/workflows/w1')[0]
+            .json()) as {
+            version: number;
+            program: { blocks: { params: { secret?: string } }[] };
+        };
+        expect(body.version).toBe(3);
+        const secret = body.program.blocks[0].params.secret ?? '';
+        expect(secret).not.toBe('a-secret-of-sixteen');
+        expect(secret.length).toBeGreaterThanOrEqual(16);
     });
 
     it('runs it with a JSON input, refusing what is not JSON', async () => {
@@ -82,7 +127,7 @@ describe('WorkflowDetails', () => {
                     json(202, { runId: 'r9', status: 'queued' }),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" />);
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
         fireEvent.click(await screen.findByRole('button', { name: 'Run now' }));
 
         const input = screen.getByLabelText(/Input \(JSON/);
@@ -111,7 +156,7 @@ describe('WorkflowDetails', () => {
                     }),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" />);
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
         fireEvent.click(await screen.findByRole('tab', { name: 'Runs' }));
 
         const row = await screen.findByRole('button', { name: /failed/ });
@@ -128,7 +173,7 @@ describe('WorkflowDetails', () => {
                     json(200, workflow({ version: 4 })),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" />);
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
         fireEvent.click(await screen.findByRole('tab', { name: 'Versions' }));
 
         fireEvent.click(await screen.findByRole('button', { name: 'Restore' }));

@@ -1,7 +1,7 @@
 {
   "active": "Rulare la declanșatoare",
   "active_hint": "Webhook-urile, programările și evenimentele lui pornesc rulări. Manual îl poți rula oricum.",
-  "back": "Workflow-uri",
+  "back": "Pachet",
   "delete": {
     "body": "Versiunile și programările lui dispar odată cu el; webhook-urile nu mai răspund. Rulările trecute rămân până expiră.",
     "confirm": "Șterge",
@@ -10,14 +10,10 @@
   },
   "description": "Workflow-urile tale: ce fac, rulările și versiunile lor.",
   "edited": "Importat. Fișierul a fost editat după export: verifică programul înainte să-l pornești.",
-  "empty": "Niciun workflow încă: instalează unul din Explorare sau importă un fișier.",
   "empty_explore": "Caută în Explorare",
   "export": "Exportă",
   "eyebrow": "Workflow-uri",
-  "import": "Importă un fișier",
-  "installed": "instalat",
-  "installed_from": "instalat dintr-un pachet, v{version}",
-  "lead": "Programe din blocuri care rulează manual, programat, la un webhook sau la un eveniment. Pornește unul ca declanșatoarele lui să-l ruleze.",
+  "import": "Importă un workflow",
   "not_found": "Acest workflow nu există sau nu e al tău.",
   "overview": {
     "blocks": "Blocuri ({count})",
@@ -27,7 +23,33 @@
     "next": "următoarea: {date}",
     "schedules": "Programări",
     "webhooks": "Webhook-uri",
-    "webhooks_hint": "Trimite POST la adresă cu antetul X-Webhook-Secret egal cu secretul blocului."
+    "webhooks_hint": "Trimiteți un POST la adresă cu antetul X-Webhook-Secret egal cu secretul său; corpul (JSON) devine intrarea rulării."
+  },
+  "package": {
+    "empty": "Încă nu are workflow-uri: importați unul dintr-un fișier.",
+    "error_badge": "tratează erorile",
+    "eyebrow": "Pachet",
+    "not_found": "Acest pachet nu există sau nu este al dvs.",
+    "runs": "Rulări",
+    "runs_hint": "Ale tuturor workflow-urilor sale",
+    "sections": "Pachet",
+    "settings": "Setări",
+    "settings_hint": "Erori, publicare, partajare",
+    "workflows": "Workflow-uri",
+    "workflows_hint": "Ce face, pornit sau oprit"
+  },
+  "packages": {
+    "by": "de {name}",
+    "count": "Workflow-uri: {count}",
+    "description": "Pachetele dvs.: workflow-uri care merg împreună.",
+    "empty": "Încă nu aveți pachete: instalați unul din Explorare, creați unul nou sau importați un workflow.",
+    "installed": "instalat, v{version}",
+    "lead": "Workflow-uri care merg împreună.",
+    "more": "Se apelează între ele, își împart stocarea și se publică împreună. Instalați unul din Explorare sau începeți-l pe al dvs.",
+    "new": "Pachet nou",
+    "published": "publicat, v{version}",
+    "shared": "Partajate cu dvs.",
+    "title": "Pachete"
   },
   "run": {
     "bad_json": "Nu e JSON: o valoare ca {\"user\": \"ann\"}, un număr sau \"text\".",
@@ -37,11 +59,30 @@
     "title": "Rulează acum"
   },
   "runs": {
+    "deleted": "un workflow șters",
     "empty": "Nicio rulare încă. Rulează-l acum sau pornește-l pentru declanșatoarele lui.",
     "errors": "Erori: {count}",
     "loading": "Se încarcă…",
     "more": "Arată mai vechi",
     "no_result": "Rezultatul nu mai e păstrat."
+  },
+  "settings": {
+    "about": "Despre",
+    "danger": "Ștergere",
+    "delete": "Ștergeți acest pachet",
+    "delete_body": "Workflow-urile sale pleacă odată cu el, cu versiunile, programările și stocarea lor; webhook-urile lor nu mai răspund. Pleacă și versiunile publicate; pachetele instalate de alții din el rămân ale lor.",
+    "delete_title": "Ștergeți acest pachet?",
+    "edit": "Modificați numele, README și vizibilitatea",
+    "error_hint": "Are nevoie de un bloc ErrorTrigger; intrarea sa spune ce workflow a eșuat și de ce. Rulările pornite manual nu contează.",
+    "error_workflow": "Workflow-ul pornit când eșuează o rulare automată a unuia dintre ele",
+    "errors": "Când o rulare eșuează",
+    "no_error_workflow": "Niciunul",
+    "no_summary": "Încă nu are un rezumat.",
+    "open_explore": "Vedeți-l ca alții",
+    "published": "Publicat, ultima v{version}.",
+    "publishing": "Publicare",
+    "save": "Salvați",
+    "unpublished": "Nepublicat: doar dvs. îl vedeți. Alții citesc și instalează versiuni."
   },
   "status": {
     "cancelled": "anulată",
@@ -74,5 +115,21 @@
     "restore_body": "Programul ei devine cel curent, ca o versiune nouă deasupra; nimic nu se pierde, cea curentă rămâne în istoric.",
     "restore_title": "Restaurezi versiunea {version}?",
     "restored": "a readus v{version}"
+  },
+  "webhook": {
+    "address": "Adresă",
+    "copied": "Secret copiat",
+    "copy": "Copiați secretul",
+    "hide": "Ascundeți secretul",
+    "replace": "Secret nou",
+    "replace_body": "Secretul vechi nu mai funcționează imediat: cine apelează acest webhook are nevoie de cel nou. Este o modificare a workflow-ului, salvată ca versiune nouă.",
+    "replace_title": "Îi dați un secret nou?",
+    "respond": {
+      "ByBlock": "Apelantul așteaptă un bloc RespondToWebhook și primește ce trimite acesta.",
+      "Immediately": "Apelantul primește imediat 202, cu id-ul rulării; rularea continuă.",
+      "OnFinish": "Apelantul așteaptă rularea și primește ieșirea ultimului bloc (500 dacă eșuează)."
+    },
+    "secret": "Secret",
+    "show": "Arătați secretul"
   }
 }

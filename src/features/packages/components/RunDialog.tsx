@@ -2,7 +2,7 @@ import { createSignal, Show } from 'solid-js';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import Modal from '@shared/ui/Modal';
-import { runWorkflow } from '@features/workflows/api';
+import { runWorkflow } from '@features/packages/api';
 
 const inputId = 'workflow-run-input';
 

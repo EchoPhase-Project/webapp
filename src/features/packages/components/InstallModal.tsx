@@ -1,4 +1,5 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
+import { A } from '@solidjs/router';
 import type {
     ConnectionSummary,
     PackageConnection,
@@ -11,6 +12,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { installPackage, myConnections } from '@features/packages/api';
+import { packagePath } from '@features/packages/package-nav';
 
 const inputId = (field: string) => `package-install-${field}`;
 
@@ -126,7 +128,7 @@ function InstallForm(props: {
             <p>
                 {t(
                     'install.lead',
-                    'Copies {count} workflows into yours, turned off, linked to each other. Webhooks get new secrets.'
+                    'Makes a package of yours with its {count} workflows, turned off. Webhooks get new secrets.'
                 ).replace('{count}', String(props.content.workflows.length))}
             </p>
             <Show when={props.content.connections.length > 0}>
@@ -198,7 +200,7 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
             <p>
                 {t(
                     'install.done',
-                    'Installed. Your new workflows, turned off:'
+                    'Installed as a package of yours. Its workflows, turned off:'
                 )}
             </p>
             <ul class="package-list">
@@ -220,9 +222,12 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
                 </p>
             </Show>
             <div class="package-actions">
-                <Button onClick={() => props.onClose()}>
+                <Button variant="ghost" onClick={() => props.onClose()}>
                     {t('install.close', 'Done')}
                 </Button>
+                <A class="btn" href={packagePath(props.install.package.id)}>
+                    {t('install.open_package', 'Open it')}
+                </A>
             </div>
         </div>
     );

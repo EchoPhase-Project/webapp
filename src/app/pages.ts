@@ -1,11 +1,11 @@
 import { lazy, type Component } from 'solid-js';
 import {
-    AiOutlineApartment,
     AiOutlineAppstore,
     AiOutlineCompass,
     AiOutlineFolder,
     AiOutlineUser,
 } from 'solid-icons/ai';
+import { FiPackage } from 'solid-icons/fi';
 import { VsNote, VsSettings } from 'solid-icons/vs';
 
 /** A sidebar group: its entry opens a sub-menu of the pages in it. */
@@ -88,22 +88,34 @@ export const PAGES: Page[] = [
         },
     },
     {
-        path: '/workflows',
-        component: lazy(() => import('@features/workflows/WorkflowsPage')),
+        path: '/packages',
+        component: lazy(() => import('@features/packages/PackagesPage')),
         auth: true,
         nav: {
-            icon: AiOutlineApartment,
-            key: 'nav.workflows.label',
-            text: 'Workflows',
+            icon: FiPackage,
+            key: 'nav.packages.label',
+            text: 'Packages',
             description: {
-                key: 'nav.workflows.description',
-                text: 'Yours: runs and versions',
+                key: 'nav.packages.description',
+                text: 'Your workflows, in packages',
             },
         },
     },
     {
-        path: '/workflows/:id',
-        component: lazy(() => import('@features/workflows/WorkflowPage')),
+        // :section: runs or settings; absent: its workflows.
+        path: '/packages/:id/:section?',
+        component: lazy(() => import('@features/packages/MyPackagePage')),
+        auth: true,
+    },
+    {
+        path: '/packages/:packageId/workflows/:id',
+        component: lazy(() => import('@features/packages/WorkflowPage')),
+        auth: true,
+    },
+    {
+        // Addresses from before packages: to the workflow in its package.
+        path: '/workflows/:id?',
+        component: lazy(() => import('@features/packages/WorkflowRedirect')),
         auth: true,
     },
     {

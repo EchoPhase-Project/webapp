@@ -2,7 +2,7 @@
   "title": "Fișiere",
   "description": "Fișierele încărcate de dvs. și cele create pentru dvs.",
   "eyebrow": "Stocare",
-  "lead": "Fișierele încărcate de dvs. și cele create pentru dvs. Până la 100 MB fiecare; imaginile se deschid în browser, restul se descarcă.",
+  "lead": "Fișierele încărcate de dvs. și cele create pentru dvs.",
   "upload": "Încarcă",
   "more": "Arată mai multe",
   "empty": "Încă nu aveți fișiere",
@@ -24,5 +24,6 @@
     "title": "Ștergeți acest fișier?",
     "action": "Șterge",
     "text": "{name} va fi șters definitiv; linkurile către el nu vor mai funcționa."
-  }
+  },
+  "lead_more": "Până la 100 MB fiecare; imaginile se deschid în browser, restul se descarcă."
 }

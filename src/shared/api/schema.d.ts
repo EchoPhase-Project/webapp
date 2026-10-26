@@ -2775,6 +2775,7 @@ export interface paths {
             parameters: {
                 query?: {
                     workflowId?: string;
+                    packageId?: string;
                     prefix?: string;
                     after?: string;
                     limit?: number;
@@ -2825,6 +2826,7 @@ export interface paths {
                 query: {
                     key: string;
                     workflowId?: string;
+                    packageId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -2858,6 +2860,7 @@ export interface paths {
                 query: {
                     key: string;
                     workflowId?: string;
+                    packageId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -2906,6 +2909,7 @@ export interface paths {
                 query: {
                     key: string;
                     workflowId?: string;
+                    packageId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3290,10 +3294,7 @@ export interface paths {
             };
         };
         put?: never;
-        /**
-         * A new package with its first version, from the caller's workflows.
-         *     A program that uses a workflow left out of the package fails it.
-         */
+        /** A new, empty package: make workflows in it, then publish versions of it. */
         post: {
             parameters: {
                 query?: never;
@@ -3303,9 +3304,9 @@ export interface paths {
             };
             requestBody?: {
                 content: {
-                    'application/json': components['schemas']['CreatePackageRequest'];
-                    'text/json': components['schemas']['CreatePackageRequest'];
-                    'application/*+json': components['schemas']['CreatePackageRequest'];
+                    'application/json': components['schemas']['PackageRequest'];
+                    'text/json': components['schemas']['PackageRequest'];
+                    'application/*+json': components['schemas']['PackageRequest'];
                 };
             };
             responses: {
@@ -3320,15 +3321,6 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        'application/json': components['schemas']['ErrorBody'];
-                    };
-                };
-                /** @description Not Found */
-                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3435,7 +3427,7 @@ export interface paths {
                 };
             };
         };
-        /** Changes name, summary, README, visibility and tags; versions stay as published. */
+        /** Changes name, summary, README, visibility, tags and error workflow; versions stay as published. */
         put: {
             parameters: {
                 query?: never;
@@ -3501,7 +3493,7 @@ export interface paths {
             };
         };
         post?: never;
-        /** Deletes the package; copies others installed stay theirs. */
+        /** Deletes the package with its workflows; packages others installed from it stay theirs. */
         delete: {
             parameters: {
                 query?: never;
@@ -3585,7 +3577,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** A new version from the caller's workflows as they are now; 409 when nothing changed. */
+        /** A new version from its workflows as they are now (all, or those chosen); 409 when nothing changed. */
         post: {
             parameters: {
                 query?: never;
@@ -3715,8 +3707,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Copies a version's workflows into the caller's, inactive, linked to
-         *     each other and to the caller's connections; webhooks get new secrets.
+         * A new package of the caller's from a version: its workflows,
+         *     inactive, pointed at the caller's connections; webhooks get new secrets.
          */
         post: {
             parameters: {
@@ -3764,6 +3756,74 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/v1/workflow-packages/{id}/runs': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The runs of its workflows, newest first, a page at a time (pass nextCursor as cursor); its owner's only. */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['BlockRunPageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3943,9 +4003,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** The caller's workflows, by name; those of one package with `packageId`. */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    packageId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -3964,6 +4027,7 @@ export interface paths {
             };
         };
         put?: never;
+        /** A new workflow in the package given, or in a new package of its own. */
         post: {
             parameters: {
                 query?: never;
@@ -3990,6 +4054,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4100,6 +4173,7 @@ export interface paths {
             };
         };
         post?: never;
+        /** Deletes it; 409 while another workflow of its package calls it or it is the package's error workflow. */
         delete: {
             parameters: {
                 query?: never;
@@ -4120,6 +4194,15 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4214,6 +4297,8 @@ export interface paths {
                 query?: {
                     /** @description Instead of the name in the file. */
                     name?: string;
+                    /** @description The package it goes in; absent: a new package of its own. */
+                    packageId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -4236,6 +4321,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4278,6 +4372,11 @@ export interface paths {
                         File: string;
                         /** @description Instead of the name in the file. */
                         Name?: string;
+                        /**
+                         * Format: uuid
+                         * @description The package it goes in; absent: a new package of its own.
+                         */
+                        PackageId?: string;
                     };
                 };
             };
@@ -4293,6 +4392,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4652,8 +4760,6 @@ export interface components {
             timeoutSeconds?: number | null;
             saveExecutionData: components['schemas']['ExecutionDataPolicy'];
             timeZone?: string | null;
-            /** Format: uuid */
-            errorWorkflowId?: string | null;
         };
         BlockRetry: {
             /** Format: int32 */
@@ -4778,10 +4884,6 @@ export interface components {
              */
             expiresAt?: string | null;
         };
-        CreatePackageRequest: {
-            package: components['schemas']['PackageRequest'];
-            publish: components['schemas']['PublishPackageRequest'];
-        };
         EnableMaintenanceRequest: {
             /** @description Shown to users; a default one when absent. */
             message?: string | null;
@@ -4867,20 +4969,6 @@ export interface components {
             connections?: {
                 [key: string]: string;
             } | null;
-        };
-        InstalledWorkflowResponse: {
-            /**
-             * Format: uuid
-             * @description The new workflow's id.
-             */
-            id: string;
-            /** @description Its name. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Which of the package's workflows it is a copy of.
-             */
-            key: string;
         };
         JsonNode: {
             options?: components['schemas']['JsonNodeOptions'];
@@ -5033,14 +5121,15 @@ export interface components {
             provider?: string | null;
         };
         PackageInstallResponse: {
-            /** @description The caller's new workflows, inactive. */
-            workflows: components['schemas']['InstalledWorkflowResponse'][];
+            package: components['schemas']['PackageResponse'];
+            /** @description Its workflows, inactive. */
+            workflows: components['schemas']['WorkflowSummaryResponse'][];
             /**
              * Format: int32
              * @description The version installed.
              */
             version: number;
-            /** @description Connections the caller has no match for: create them (or edit the copies) before turning them on. */
+            /** @description Connections the caller has no match for: create them (or edit the workflows) before turning them on. */
             missingConnections: components['schemas']['PackageConnection'][];
         };
         PackageRequest: {
@@ -5055,28 +5144,26 @@ export interface components {
             tags?: string[] | null;
             /**
              * Format: uuid
+             * @description On update: the key of one of its workflows with an ErrorTrigger, started when an automatic run fails; absent: none.
+             */
+            errorWorkflow?: string | null;
+            /**
+             * Format: uuid
              * @description On update: the stamp it was read with; 409 when someone saved since.
              */
             expectedStamp?: string | null;
         };
         PackageResponse: {
-            /**
-             * Format: uuid
-             * @description The package's id.
-             */
+            /** Format: uuid */
             id: string;
-            /** @description Its name. */
             name: string;
-            /** @description One or two sentences for its card. */
             summary: string;
-            /** @description Markdown; render it without raw HTML. */
             readme: string;
             visibility: components['schemas']['PackageVisibility'];
-            /** @description The author's tags. */
             tags: string[];
             /**
              * Format: int32
-             * @description The newest version's number.
+             * @description The newest version's number; 0: never published.
              */
             latestVersion: number;
             /**
@@ -5084,6 +5171,17 @@ export interface components {
              * @description How many users (its owner aside) installed it.
              */
             installs: number;
+            /**
+             * Format: int32
+             * @description How many workflows it has now; 0 for others' packages (they see versions).
+             */
+            workflows: number;
+            /**
+             * Format: uuid
+             * @description The key of its workflow started when an automatic run fails; null: none.
+             */
+            errorWorkflow?: string | null;
+            source?: components['schemas']['PackageSourceResponse'];
             access: components['schemas']['PackageAccess'];
             owner: components['schemas']['PackageUserResponse'];
             /**
@@ -5116,6 +5214,18 @@ export interface components {
              */
             createdAt: string;
         };
+        PackageSourceResponse: {
+            /**
+             * Format: uuid
+             * @description The package it was installed from (it may be gone since).
+             */
+            packageId: string;
+            /**
+             * Format: int32
+             * @description The version installed.
+             */
+            version?: number | null;
+        };
         PackageUserResponse: {
             /**
              * Format: uuid
@@ -5142,10 +5252,15 @@ export interface components {
              * @description When it was published.
              */
             createdAt: string;
-            /** @description Its workflows; their programs name each other by key, and webhook secrets are empty. */
+            /** @description Its workflows; their programs call each other by key, and webhook secrets are empty. */
             workflows: components['schemas']['PackageWorkflow'][];
             /** @description The connections they use: an install names one of the installer's for each. */
             connections: components['schemas']['PackageConnection'][];
+            /**
+             * Format: uuid
+             * @description The key of the workflow started when an automatic run fails; null: none.
+             */
+            errorWorkflow?: string | null;
         };
         PackageVersionResponse: {
             /**
@@ -5184,8 +5299,12 @@ export interface components {
             [key: string]: unknown;
         };
         PublishPackageRequest: {
-            /** @description The caller's workflows to publish, the main one first unless `main` says. */
-            workflows: string[];
+            /**
+             * @description Which of its workflows the version holds (ids), the main one first
+             *     unless `main` says; absent or empty: all. What a chosen one calls, and
+             *     the error workflow, must be chosen too.
+             */
+            workflows?: string[] | null;
             /**
              * Format: uuid
              * @description The one to open first.
@@ -5279,6 +5398,11 @@ export interface components {
              * @description On update: the version you edited; a newer one on the server is a 409.
              */
             version?: number | null;
+            /**
+             * Format: uuid
+             * @description On create: the package it goes in; absent: a new package of its own, of the same name. Ignored on update.
+             */
+            packageId?: string | null;
         };
         /** @description A signed-in device. Secrets (the refresh token hash) never leave the server. */
         SessionResponse: {
@@ -5342,6 +5466,8 @@ export interface components {
             /** @description A new username, checked as at registration; the old one becomes free. */
             username?: string | null;
         };
+        /** @enum {string} */
+        WebhookRespondMode: 'Immediately' | 'OnFinish' | 'ByBlock';
         WorkflowImportResponse: {
             workflow: components['schemas']['WorkflowResponse'];
             /** @description The program matches the hash the file states (false: edited after export). */
@@ -5353,6 +5479,16 @@ export interface components {
              * @description The workflow's id.
              */
             id: string;
+            /**
+             * Format: uuid
+             * @description The package it lives in.
+             */
+            packageId: string;
+            /**
+             * Format: uuid
+             * @description Its name for the package's other workflows (ExecuteWorkflow, the error workflow).
+             */
+            key: string;
             /** @description Its name. */
             name: string;
             /** @description Its triggers start runs. */
@@ -5364,7 +5500,6 @@ export interface components {
             version: number;
             /** @description SHA-256 of its program. */
             contentHash: string;
-            source?: components['schemas']['WorkflowSourceResponse'];
             /**
              * Format: date-time
              * @description When it was created.
@@ -5397,29 +5532,22 @@ export interface components {
              */
             nextRunAt: string;
         };
-        WorkflowSourceResponse: {
-            /**
-             * Format: uuid
-             * @description The package it was installed from (it may be gone since).
-             */
-            packageId: string;
-            /**
-             * Format: int32
-             * @description That package's version.
-             */
-            version?: number | null;
-            /**
-             * Format: uuid
-             * @description Which of the package's workflows it is a copy of.
-             */
-            key?: string | null;
-        };
         WorkflowSummaryResponse: {
             /**
              * Format: uuid
              * @description The workflow's id.
              */
             id: string;
+            /**
+             * Format: uuid
+             * @description The package it lives in.
+             */
+            packageId: string;
+            /**
+             * Format: uuid
+             * @description Its name for the package's other workflows (ExecuteWorkflow, the error workflow).
+             */
+            key: string;
             /** @description Its name. */
             name: string;
             /** @description Its triggers start runs. */
@@ -5431,7 +5559,6 @@ export interface components {
             version: number;
             /** @description SHA-256 of its program; null until a workflow saved before hashes is saved again. */
             contentHash?: string | null;
-            source?: components['schemas']['WorkflowSourceResponse'];
             /**
              * Format: date-time
              * @description When it was created.
@@ -5514,6 +5641,7 @@ export interface components {
             blockId: number;
             /** @description Where it listens: POST here with the X-Webhook-Secret header. */
             path: string;
+            respond: components['schemas']['WebhookRespondMode'];
         };
     };
     responses: never;

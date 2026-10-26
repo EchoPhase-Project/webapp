@@ -1,30 +1,21 @@
-import { createSignal, For, Show } from 'solid-js';
-import { AiOutlineCopy } from 'solid-icons/ai';
+import { For, Show } from 'solid-js';
 import { useAuth } from '@shared/api/auth-provider';
 import type { Workflow } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
-import Button from '@shared/ui/Button';
+import WebhookCard from './WebhookCard';
 
 /**
- * What a workflow is, read-only: its blocks in order, where its webhooks
- * listen (copyable) and when its schedules fire next.
+ * What a workflow is: its blocks in order, how to call its webhooks
+ * (address, secret, answer) and when its schedules fire next.
  */
-export default function ProgramOverview(props: { workflow: Workflow }) {
+export default function ProgramOverview(props: {
+    workflow: Workflow;
+    onChange: (workflow: Workflow) => void;
+}) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
     const { user } = useAuth();
-    const [copied, setCopied] = createSignal<number | null>(null);
-
-    const url = (path: string) => `${location.origin}${path}`;
-    async function copy(blockId: number, path: string) {
-        try {
-            await navigator.clipboard.writeText(url(path));
-            setCopied(blockId);
-        } catch {
-            // No clipboard (insecure context): the address is shown to select.
-        }
-    }
 
     return (
         <div class="workflow-overview">
@@ -34,38 +25,17 @@ export default function ProgramOverview(props: { workflow: Workflow }) {
                     <p class="muted">
                         {t(
                             'overview.webhooks_hint',
-                            'POST to the address with the X-Webhook-Secret header set to the block’s secret.'
+                            'Send a POST to the address with the header X-Webhook-Secret set to its secret; the body (JSON) is the run’s input.'
                         )}
                     </p>
-                    <ul class="workflow-list">
+                    <ul class="workflow-webhooks">
                         <For each={props.workflow.webhooks}>
                             {(hook) => (
-                                <li>
-                                    <code class="workflow-code">
-                                        {url(hook.path)}
-                                    </code>
-                                    <Button
-                                        variant="icon"
-                                        aria-label={t(
-                                            'overview.copy',
-                                            'Copy the address'
-                                        )}
-                                        title={t(
-                                            'overview.copy',
-                                            'Copy the address'
-                                        )}
-                                        onClick={() =>
-                                            void copy(hook.blockId, hook.path)
-                                        }
-                                    >
-                                        <AiOutlineCopy />
-                                    </Button>
-                                    <Show when={copied() === hook.blockId}>
-                                        <span class="muted" role="status">
-                                            {t('overview.copied', 'Copied')}
-                                        </span>
-                                    </Show>
-                                </li>
+                                <WebhookCard
+                                    workflow={props.workflow}
+                                    hook={hook}
+                                    onChange={(w) => props.onChange(w)}
+                                />
                             )}
                         </For>
                     </ul>

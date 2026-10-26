@@ -7,9 +7,10 @@ import { AuthProvider } from '@shared/api/auth-provider';
 
 /**
  * A page with the providers every page has, as the route of `path` in a
- * memory router (so useNavigate and useSearchParams work).
+ * memory router (so useNavigate and useSearchParams work); with `pattern`
+ * (e.g. "/packages/:id"), useParams reads it too.
  */
-export function renderPage(page: () => JSX.Element, path = '/') {
+export function renderPage(page: () => JSX.Element, path = '/', pattern = '*') {
     const history = createMemoryHistory();
     history.set({ value: path });
     return render(() => (
@@ -19,7 +20,7 @@ export function renderPage(page: () => JSX.Element, path = '/') {
             <I18nProvider>
                 <AuthProvider>
                     <MemoryRouter history={history}>
-                        <Route path="*" component={() => page()} />
+                        <Route path={pattern} component={() => page()} />
                     </MemoryRouter>
                 </AuthProvider>
             </I18nProvider>

@@ -65,7 +65,7 @@ export type RunStarted = Schemas['RunStartedResponse'];
 /** One of the caller's connections (provider, name, status). */
 export type ConnectionSummary = Schemas['ConnectionSummary'];
 
-/** Workflows published together, as the caller sees the package. */
+/** A package as the caller sees it: their own (its workflows live in it) or someone else's published one. */
 export type WorkflowPackage = Schemas['PackageResponse'];
 
 /** Private, Unlisted or Public. */

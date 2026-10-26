@@ -23,10 +23,11 @@ import PageHeader from '@shared/ui/PageHeader';
 import Switch from '@shared/ui/Switch';
 import {
     deleteWorkflow,
-    exportUrl,
     getWorkflow,
     setActive,
-} from '@features/workflows/api';
+    workflowExportUrl,
+} from '@features/packages/api';
+import { packagePath, usePackage } from '@features/packages/package-nav';
 import ProgramOverview from './ProgramOverview';
 import RunDialog from './RunDialog';
 import RunList from './RunList';
@@ -35,8 +36,11 @@ import VersionList from './VersionList';
 type Tab = 'overview' | 'runs' | 'versions';
 const TABS: Tab[] = ['overview', 'runs', 'versions'];
 
-/** One workflow: on or off, run it, what it is, its runs and versions; export and delete. */
-export default function WorkflowDetails(props: { id: string }) {
+/** One workflow of a package: on or off, run it, what it is, its runs and versions; export and delete. */
+export default function WorkflowDetails(props: {
+    id: string;
+    packageId: string;
+}) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
     const { user } = useAuth();
@@ -46,6 +50,7 @@ export default function WorkflowDetails(props: { id: string }) {
         edited?: string;
     }>();
     const { setTitle, setDescription } = useRootMeta();
+    const [pkg] = usePackage(() => props.packageId);
 
     const [workflow, { mutate }] = createResource(
         () => props.id,
@@ -98,7 +103,12 @@ export default function WorkflowDetails(props: { id: string }) {
         setBusy(true);
         try {
             const result = await deleteWorkflow(props.id);
-            if (result.ok) navigate('/workflows');
+            if (result.ok) {
+                navigate(packagePath(props.packageId));
+                return;
+            }
+            // Called by another workflow, or the package's error workflow.
+            setErrors(groupErrors(result.errors, []));
         } finally {
             setBusy(false);
             setDeleting(false);
@@ -106,8 +116,9 @@ export default function WorkflowDetails(props: { id: string }) {
     }
 
     const back = (
-        <A href="/workflows" class="workflow-back">
-            <AiOutlineArrowLeft aria-hidden="true" /> {t('back', 'Workflows')}
+        <A href={packagePath(props.packageId)} class="workflow-back">
+            <AiOutlineArrowLeft aria-hidden="true" />{' '}
+            {pkg()?.name ?? t('back', 'Package')}
         </A>
     );
 
@@ -135,20 +146,6 @@ export default function WorkflowDetails(props: { id: string }) {
                         meta={
                             <span class="workflow-meta">
                                 <span>v{w().version}</span>
-                                <Show when={w().source}>
-                                    <A
-                                        class="workflow-badge"
-                                        href={`/explore/${w().source?.packageId ?? ''}`}
-                                    >
-                                        {t(
-                                            'installed_from',
-                                            'installed from a package, v{version}'
-                                        ).replace(
-                                            '{version}',
-                                            String(w().source?.version ?? '')
-                                        )}
-                                    </A>
-                                </Show>
                                 <span>
                                     {t('updated', 'changed {date}').replace(
                                         '{date}',
@@ -193,7 +190,7 @@ export default function WorkflowDetails(props: { id: string }) {
                         <span class="workflow-controls-actions">
                             <a
                                 class="btn btn-ghost"
-                                href={exportUrl(w().id)}
+                                href={workflowExportUrl(w().id)}
                                 download=""
                             >
                                 {t('export', 'Export')}
@@ -233,7 +230,10 @@ export default function WorkflowDetails(props: { id: string }) {
 
                     <div role="tabpanel">
                         <Show when={tab() === 'overview'}>
-                            <ProgramOverview workflow={w()} />
+                            <ProgramOverview
+                                workflow={w()}
+                                onChange={(changed) => mutate(changed)}
+                            />
                         </Show>
                         <Show when={tab() === 'runs'}>
                             <RunList workflowId={w().id} />

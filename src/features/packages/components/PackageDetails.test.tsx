@@ -99,6 +99,7 @@ describe('PackageDetails', () => {
                     ]),
                 'POST /api/v1/workflow-packages/p1/install': () =>
                     json(201, {
+                        package: pkg({ id: 'n0', access: 'Owner' }),
                         workflows: [{ id: 'n1', name: 'main', key: 'k1' }],
                         version: 2,
                         missingConnections: [],
@@ -117,6 +118,9 @@ describe('PackageDetails', () => {
         fireEvent.click(screen.getAllByRole('button', { name: 'Install' })[1]);
 
         expect(await screen.findByText(/Installed/)).toBeTruthy();
+        expect(
+            screen.getByRole('link', { name: 'Open it' }).getAttribute('href')
+        ).toBe('/packages/n0/workflows');
         const body = (await api
             .calls('POST /api/v1/workflow-packages/p1/install')[0]
             .json()) as {
@@ -126,60 +130,26 @@ describe('PackageDetails', () => {
         expect(body).toEqual({ version: 2, connections: { bot: 'bot' } });
     });
 
-    it('lets its owner publish a new version from the current workflows', async () => {
-        const api = fakeApi(
+    it('sends its owner to manage it in their packages', async () => {
+        fakeApi(
             routes({
                 'GET /api/v1/workflow-packages/p1': () =>
                     json(200, pkg({ access: 'Owner' })),
-                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
-                'GET /api/v1/workflows': () =>
-                    json(200, [
-                        {
-                            id: 'k1',
-                            name: 'main',
-                            active: false,
-                            version: 4,
-                            contentHash: null,
-                            source: null,
-                            createdAt: '',
-                            updatedAt: '',
-                        },
-                        {
-                            id: 'k2',
-                            name: 'on error',
-                            active: false,
-                            version: 2,
-                            contentHash: null,
-                            source: null,
-                            createdAt: '',
-                            updatedAt: '',
-                        },
-                    ]),
-                'POST /api/v1/workflow-packages/p1/versions': () =>
-                    json(409, {
-                        code: 'Conflict',
-                        message: 'Nothing changed since version 2.',
-                    }),
             })
         );
 
         renderPage(() => <PackageDetails id="p1" />);
-        const publish = await screen.findByRole('button', {
-            name: 'New version',
-        });
-        await waitFor(() => expect(publish).toHaveProperty('disabled', false));
-        fireEvent.click(publish);
-        fireEvent.click(await screen.findByRole('button', { name: 'Publish' }));
 
         expect(
-            await screen.findByText(/Nothing changed since the latest version/)
-        ).toBeTruthy();
-        const body = (await api
-            .calls('POST /api/v1/workflow-packages/p1/versions')[0]
-            .json()) as {
-            workflows: string[];
-        };
-        expect(body.workflows).toEqual(['k1', 'k2']);
+            (
+                await screen.findByRole('link', {
+                    name: 'Manage it in your packages',
+                })
+            ).getAttribute('href')
+        ).toBe('/packages/p1/settings');
+        expect(
+            screen.queryByRole('button', { name: 'New version' })
+        ).toBeNull();
     });
 
     it('picks nothing for a connection the caller lacks', () => {

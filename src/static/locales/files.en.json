@@ -2,7 +2,7 @@
   "title": "Files",
   "description": "Files you uploaded, and those made for you.",
   "eyebrow": "Storage",
-  "lead": "Files you uploaded, and those made for you. Up to 100 MB each; pictures open in the browser, everything else downloads.",
+  "lead": "Files you uploaded, and those made for you.",
   "upload": "Upload",
   "more": "Show more",
   "empty": "No files yet",
@@ -24,5 +24,6 @@
     "title": "Delete this file?",
     "action": "Delete",
     "text": "{name} is deleted for good; links to it stop working."
-  }
+  },
+  "lead_more": "Up to 100 MB each; pictures open in the browser, everything else downloads."
 }

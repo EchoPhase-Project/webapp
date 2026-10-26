@@ -2,6 +2,7 @@ import { AiOutlineLogin, AiOutlineLogout } from 'solid-icons/ai';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
+import { pageSection } from '@shared/nav/page-section';
 import BrandTile from '@shared/ui/BrandTile';
 import { NAV_GROUPS, PAGES, type NavGroup, type Page } from './pages';
 
@@ -9,11 +10,12 @@ import { NAV_GROUPS, PAGES, type NavGroup, type Page } from './pages';
 const ACCOUNT_GROUP: NavGroup = 'settings';
 
 /**
- * The app's navigation, the same on every page: home on top; the pages of
- * the registry that have a `nav` in the middle (those needing a session
- * only once there is one), a group as one section with its pages; at the
- * bottom the account (its settings pages and signing out) or signing in.
- * About and the policies are in the footer.
+ * The app's navigation: home on top; the pages of the registry that have
+ * a `nav` in the middle (those needing a session only once there is one),
+ * a group as one section with its pages, and the shown page's own group
+ * (a package's) after the section it belongs to; at the bottom the account
+ * (its settings pages and signing out) or signing in. About and the
+ * policies are in the footer.
  */
 export function useNav(): () => NavModel {
     const { logout, isAuthenticated, user } = useAuth();
@@ -63,6 +65,17 @@ export function useNav(): () => NavModel {
                 sections.push(group);
             }
             group.items!.push(item(page));
+        }
+
+        // The page's own group (a package's), after the section it belongs to.
+        const extra = pageSection();
+        if (extra) {
+            const at = sections.findIndex((s) => s.href === extra.after);
+            sections.splice(
+                at < 0 ? sections.length : at + 1,
+                0,
+                extra.section
+            );
         }
 
         const me = user();

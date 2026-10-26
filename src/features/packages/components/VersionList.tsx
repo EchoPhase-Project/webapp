@@ -6,10 +6,10 @@ import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import {
-    exportUrl,
-    listVersions,
-    restoreVersion,
-} from '@features/workflows/api';
+    listWorkflowVersions,
+    restoreWorkflowVersion,
+    workflowExportUrl,
+} from '@features/packages/api';
 
 /**
  * Its saved versions, newest first: one per change of the program. An old
@@ -24,7 +24,7 @@ export default function VersionList(props: {
     const { user } = useAuth();
     const [versions, { refetch }] = createResource(
         () => [props.workflow.id, props.workflow.version] as const,
-        ([id]) => listVersions(id)
+        ([id]) => listWorkflowVersions(id)
     );
     const [restoring, setRestoring] = createSignal<WorkflowVersion | null>(
         null
@@ -36,7 +36,7 @@ export default function VersionList(props: {
         if (!version) return;
         setBusy(true);
         try {
-            const result = await restoreVersion(
+            const result = await restoreWorkflowVersion(
                 props.workflow.id,
                 version.version,
                 props.workflow.version
@@ -90,7 +90,7 @@ export default function VersionList(props: {
                             <span class="workflow-version-actions">
                                 <a
                                     class="btn btn-ghost"
-                                    href={exportUrl(
+                                    href={workflowExportUrl(
                                         props.workflow.id,
                                         v.version
                                     )}

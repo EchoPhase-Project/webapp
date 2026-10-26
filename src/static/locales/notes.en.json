@@ -2,7 +2,7 @@
   "title": "Notes",
   "description": "Your notes, and those shared with you.",
   "eyebrow": "Workspace",
-  "lead": "Notes in Markdown: yours, those shared with you, and those your workflows write. Share one to read or to edit together.",
+  "lead": "Notes in Markdown.",
   "new": "New note",
   "quick": "New note",
   "search": "Search notes",
@@ -45,5 +45,6 @@
     "title": "Delete this note?",
     "action": "Delete",
     "text": "{title} is deleted for good, for everyone it is shared with too."
-  }
+  },
+  "lead_more": "Yours, those shared with you, and those your workflows write. Share one to read or to edit together."
 }

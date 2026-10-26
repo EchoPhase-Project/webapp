@@ -18,5 +18,6 @@
     "title": "Revoci toate sesiunile?",
     "text": "Vei fi deconectat de pe toate dispozitivele, inclusiv de pe acesta: va trebui să te autentifici din nou."
   },
-  "lead": "Dispozitivele autentificate în contul tău. Încheie o sesiune pe care nu o recunoști și schimbă-ți parola dacă crezi că o mai știe cineva."
+  "lead": "Dispozitivele autentificate în contul tău.",
+  "lead_more": "Încheie o sesiune pe care nu o recunoști și schimbă-ți parola dacă crezi că o mai știe cineva."
 }

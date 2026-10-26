@@ -5,17 +5,27 @@ import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
-import { getRun, listRuns } from '@features/workflows/api';
-import { formatDuration } from '@features/workflows/format';
-import { runsVersion } from '@features/workflows/run-changes';
+import {
+    getRun,
+    listPackageRuns,
+    listWorkflowRuns,
+} from '@features/packages/api';
+import { formatDuration } from '@features/packages/format';
+import { runsVersion } from '@features/packages/run-changes';
 import RunStatus from './RunStatus';
 
 /**
- * A workflow's runs, newest first, a page at a time; opening one shows its
- * result (output, variables, errors) while the server keeps it. Fetched
- * again when a run starts or ends.
+ * A workflow's runs, or those of all a package's workflows (each named),
+ * newest first, a page at a time; opening one shows its result (output,
+ * variables, errors) while the server keeps it. Fetched again when a run
+ * starts or ends.
  */
-export default function RunList(props: { workflowId: string }) {
+export default function RunList(props: {
+    workflowId?: string;
+    packageId?: string;
+    /** For a package's runs: its workflows' names by id. */
+    names?: Record<string, string>;
+}) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
     const { user } = useAuth();
@@ -29,10 +39,10 @@ export default function RunList(props: { workflowId: string }) {
     async function load(more: boolean) {
         setBusy(true);
         try {
-            const result = await listRuns(
-                props.workflowId,
-                more ? (next() ?? undefined) : undefined
-            );
+            const cursor = more ? (next() ?? undefined) : undefined;
+            const result = props.packageId
+                ? await listPackageRuns(props.packageId, cursor)
+                : await listWorkflowRuns(props.workflowId ?? '', cursor);
             if (!result.ok) return;
             setRuns((list) =>
                 more ? [...list, ...result.data.data] : result.data.data
@@ -46,7 +56,7 @@ export default function RunList(props: { workflowId: string }) {
 
     createEffect(
         on(
-            () => [props.workflowId, runsVersion()],
+            () => [props.workflowId, props.packageId, runsVersion()],
             () => void load(false)
         )
     );
@@ -90,6 +100,17 @@ export default function RunList(props: { workflowId: string }) {
                                 onClick={() => void toggle(run)}
                             >
                                 <RunStatus status={run.status} />
+                                <Show when={props.names}>
+                                    {(names) => (
+                                        <span class="workflow-run-name">
+                                            {names()[run.workflowId ?? ''] ??
+                                                t(
+                                                    'runs.deleted',
+                                                    'a deleted workflow'
+                                                )}
+                                        </span>
+                                    )}
+                                </Show>
                                 <span class="workflow-run-trigger">
                                     {t(`trigger.${run.trigger}`, run.trigger)}
                                 </span>

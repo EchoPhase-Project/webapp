@@ -2,7 +2,7 @@
   "title": "Notițe",
   "description": "Notițele dvs. și cele partajate cu dvs.",
   "eyebrow": "Spațiu de lucru",
-  "lead": "Notițe în Markdown: ale dvs., cele partajate cu dvs. și cele scrise de fluxurile dvs. Partajați una pentru citire sau editare împreună.",
+  "lead": "Notițe în Markdown.",
   "new": "Notiță nouă",
   "quick": "Notiță nouă",
   "search": "Căutați în notițe",
@@ -45,5 +45,6 @@
     "title": "Ștergeți această notiță?",
     "action": "Șterge",
     "text": "{title} va fi ștearsă definitiv, inclusiv pentru toți cei cu care este partajată."
-  }
+  },
+  "lead_more": "Ale dvs., cele partajate cu dvs. și cele scrise de fluxurile dvs. Partajați una pentru citire sau editare împreună."
 }
