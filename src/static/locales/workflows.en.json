@@ -1,0 +1,78 @@
+{
+  "active": "Run on triggers",
+  "active_hint": "Its webhooks, schedules and events start runs. Running it by hand works either way.",
+  "back": "Workflows",
+  "delete": {
+    "body": "Its versions and schedules go with it; its webhooks stop answering. Past runs stay until they expire.",
+    "confirm": "Delete",
+    "open": "Delete",
+    "title": "Delete this workflow?"
+  },
+  "description": "Your workflows: what they do, their runs and versions.",
+  "edited": "Imported. The file was edited after it was exported: check the program before turning it on.",
+  "empty": "No workflows yet: install one from Explore or import a file.",
+  "empty_explore": "Find one in Explore",
+  "export": "Export",
+  "eyebrow": "Workflows",
+  "import": "Import a file",
+  "installed": "installed",
+  "installed_from": "installed from a package, v{version}",
+  "lead": "Programs of blocks that run by hand, on a schedule, on a webhook or on an event. Turn one on to let its triggers start it.",
+  "not_found": "This workflow does not exist, or it is not yours.",
+  "overview": {
+    "blocks": "Blocks ({count})",
+    "copied": "Copied",
+    "copy": "Copy the address",
+    "disabled": "skipped",
+    "next": "next {date}",
+    "schedules": "Schedules",
+    "webhooks": "Webhooks",
+    "webhooks_hint": "POST to the address with the X-Webhook-Secret header set to the block’s secret."
+  },
+  "run": {
+    "bad_json": "The input is not JSON: a value such as {\"user\": \"ann\"}, a number or \"text\".",
+    "input": "Input (JSON, optional): what its first blocks get as input",
+    "open": "Run now",
+    "start": "Run",
+    "title": "Run now"
+  },
+  "runs": {
+    "empty": "No runs yet. Run it now, or turn it on for its triggers.",
+    "errors": "{count} errors",
+    "loading": "Loading…",
+    "more": "Show older",
+    "no_result": "Its result is no longer kept."
+  },
+  "status": {
+    "cancelled": "cancelled",
+    "failed": "failed",
+    "interrupted": "interrupted",
+    "queued": "queued",
+    "running": "running",
+    "succeeded": "succeeded",
+    "timedOut": "timed out"
+  },
+  "tab": {
+    "overview": "Overview",
+    "runs": "Runs",
+    "versions": "Versions"
+  },
+  "title": "Workflows",
+  "trigger": {
+    "error": "After an error",
+    "event": "Event",
+    "manual": "By hand",
+    "retry": "Retry",
+    "schedule": "Schedule",
+    "webhook": "Webhook"
+  },
+  "updated": "changed {date}",
+  "versions": {
+    "current": "current",
+    "export": "Export",
+    "restore": "Restore",
+    "restore_body": "Its program becomes the current one, as a new version on top; nothing is lost, the current one stays in the history.",
+    "restore_title": "Restore version {version}?",
+    "restored": "brought back v{version}"
+  }
+}

@@ -8,6 +8,7 @@ import { useRealtime } from '@features/realtime/realtime-provider';
 import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { notesChanged } from '@features/notes/notes-changes';
+import { runsChanged } from '@features/workflows/run-changes';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
@@ -30,6 +31,9 @@ const Layout: Component<ParentProps> = (props) => {
             if (kind === 'note_shared') notesChanged();
         })
     );
+    // A run started or ended: an open run list fetches again.
+    onCleanup(realtime.subscribe('block_run.started', () => runsChanged()));
+    onCleanup(realtime.subscribe('block_run.completed', () => runsChanged()));
     const location = useLocation();
     // The sign-in page stands alone: nowhere to go before signing in.
     const showNav = () => location.pathname !== '/auth';

@@ -45,6 +45,23 @@ export type NoteShare = Schemas['NoteShareResponse'];
 /** A workflow as listed (no program). */
 export type WorkflowSummary = Schemas['WorkflowSummaryResponse'];
 
+/** A workflow with its program, webhooks and schedules. */
+export type Workflow = Schemas['WorkflowResponse'];
+
+export type WorkflowVersion = Schemas['WorkflowVersionResponse'];
+
+export type WorkflowImport = Schemas['WorkflowImportResponse'];
+
+/** A run of a block program (a workflow's or not), without its result. */
+export type BlockRun = Schemas['BlockRunResponse'];
+
+export type BlockRunPage = Schemas['BlockRunPageResponse'];
+
+/** A run and, until it expires, its result (output, variables, errors). */
+export type BlockRunDetails = Schemas['BlockRunDetailsResponse'];
+
+export type RunStarted = Schemas['RunStartedResponse'];
+
 /** One of the caller's connections (provider, name, status). */
 export type ConnectionSummary = Schemas['ConnectionSummary'];
 

@@ -46,7 +46,11 @@
     },
     "skip": "Skip to content",
     "close": "Close the menu",
-    "account": "Account"
+    "account": "Account",
+    "workflows": {
+      "label": "Workflows",
+      "description": "Yours: runs and versions"
+    }
   },
   "footer": {
     "label": "Site",

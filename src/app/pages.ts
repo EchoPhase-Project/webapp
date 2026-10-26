@@ -1,5 +1,6 @@
 import { lazy, type Component } from 'solid-js';
 import {
+    AiOutlineApartment,
     AiOutlineAppstore,
     AiOutlineCompass,
     AiOutlineFolder,
@@ -85,6 +86,25 @@ export const PAGES: Page[] = [
                 text: 'Workflow packages to install',
             },
         },
+    },
+    {
+        path: '/workflows',
+        component: lazy(() => import('@features/workflows/WorkflowsPage')),
+        auth: true,
+        nav: {
+            icon: AiOutlineApartment,
+            key: 'nav.workflows.label',
+            text: 'Workflows',
+            description: {
+                key: 'nav.workflows.description',
+                text: 'Yours: runs and versions',
+            },
+        },
+    },
+    {
+        path: '/workflows/:id',
+        component: lazy(() => import('@features/workflows/WorkflowPage')),
+        auth: true,
     },
     {
         path: '/explore/:id',

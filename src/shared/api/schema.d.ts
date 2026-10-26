@@ -551,7 +551,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['BlockRunPageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -576,12 +587,41 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RunStartedResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -618,7 +658,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['BlockRunDetailsResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -655,12 +706,30 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -697,12 +766,41 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RunStartedResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3881,12 +3979,23 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3919,7 +4028,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3946,7 +4066,36 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3962,12 +4111,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -4072,7 +4230,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowImportResponse'];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4127,7 +4287,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowImportResponse'];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -4153,7 +4315,50 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Its runs, newest first, a page at a time (pass nextCursor as cursor). */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['BlockRunPageResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Runs it now (active or not). 202 with the run id, as api/v1/blocks/runs. */
         post: {
@@ -4173,12 +4378,41 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RunStartedResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -4212,7 +4446,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowVersionResponse'][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -4248,7 +4493,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowVersionDetailsResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -4296,7 +4552,36 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['WorkflowResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -4375,6 +4660,75 @@ export interface components {
             maxTries: number;
             /** Format: int32 */
             delayMs: number;
+        };
+        BlockRunDetailsResponse: {
+            run: components['schemas']['BlockRunResponse'];
+            /** @description Until it expires: its output, variables and errors, as the runner wrote them. */
+            result?: unknown;
+        };
+        BlockRunPageResponse: {
+            /** @description The runs, newest first. */
+            data: components['schemas']['BlockRunResponse'][];
+            /** @description Where the next page starts; null: this is the last. */
+            nextCursor?: string | null;
+        };
+        BlockRunResponse: {
+            /**
+             * Format: uuid
+             * @description The run's id.
+             */
+            runId: string;
+            /** @description queued, running, succeeded, failed, cancelled, timedOut or interrupted. */
+            status: string;
+            /**
+             * Format: uuid
+             * @description Who started it when it was someone acting for the owner.
+             */
+            actorId?: string | null;
+            /**
+             * Format: uuid
+             * @description The workflow it ran, if any.
+             */
+            workflowId?: string | null;
+            /** @description SHA-256 of the program it ran. */
+            programHash?: string | null;
+            /** @description What started it: manual, webhook, schedule, event, error, retry. */
+            trigger: string;
+            /**
+             * Format: int32
+             * @description Blocks in its program.
+             */
+            blockCount: number;
+            /**
+             * Format: date-time
+             * @description When it was queued.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it started running.
+             */
+            startedAt?: string | null;
+            /**
+             * Format: date-time
+             * @description When it ended.
+             */
+            finishedAt?: string | null;
+            /**
+             * Format: int64
+             * @description How long it ran.
+             */
+            durationMs?: number | null;
+            /**
+             * Format: int32
+             * @description Blocks it executed (a loop counts each time).
+             */
+            steps?: number | null;
+            /**
+             * Format: int32
+             * @description Block errors it had.
+             */
+            errorCount?: number | null;
         };
         BlockTypeInfo: {
             type: components['schemas']['BlockTypes'];
@@ -4877,6 +5231,20 @@ export interface components {
             /** @description The first blocks' input (a ManualTrigger's output). */
             input?: unknown;
         };
+        RunStartedResponse: {
+            /**
+             * Format: uuid
+             * @description The new run's id.
+             */
+            runId: string;
+            /** @description queued: it reports its progress as events. */
+            status: string;
+            /**
+             * Format: uuid
+             * @description The run it repeats, for a retry.
+             */
+            retryOf?: string | null;
+        };
         RunWorkflowRequest: {
             /** @description The first blocks' input (a ManualTrigger's output). */
             input?: unknown;
@@ -4974,6 +5342,61 @@ export interface components {
             /** @description A new username, checked as at registration; the old one becomes free. */
             username?: string | null;
         };
+        WorkflowImportResponse: {
+            workflow: components['schemas']['WorkflowResponse'];
+            /** @description The program matches the hash the file states (false: edited after export). */
+            intact: boolean;
+        };
+        WorkflowResponse: {
+            /**
+             * Format: uuid
+             * @description The workflow's id.
+             */
+            id: string;
+            /** @description Its name. */
+            name: string;
+            /** @description Its triggers start runs. */
+            active: boolean;
+            /**
+             * Format: int32
+             * @description Bumped on every change of its program.
+             */
+            version: number;
+            /** @description SHA-256 of its program. */
+            contentHash: string;
+            source?: components['schemas']['WorkflowSourceResponse'];
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it last changed.
+             */
+            updatedAt: string;
+            program: components['schemas']['BlockProgram'];
+            /** @description Where its WebhookTriggers listen. */
+            webhooks: components['schemas']['WorkflowWebhookResponse'][];
+            /** @description Its ScheduleTriggers and when each fires next. */
+            schedules: components['schemas']['WorkflowScheduleResponse'][];
+        };
+        WorkflowScheduleResponse: {
+            /**
+             * Format: int32
+             * @description The ScheduleTrigger block.
+             */
+            blockId: number;
+            /** @description Its schedule (five fields). */
+            cron: string;
+            /** @description The zone the schedule is read in. */
+            timeZone: string;
+            /**
+             * Format: date-time
+             * @description When it fires next (UTC), whether the workflow is active or not.
+             */
+            nextRunAt: string;
+        };
         WorkflowSourceResponse: {
             /**
              * Format: uuid
@@ -5019,6 +5442,78 @@ export interface components {
              * @description When it last changed.
              */
             updatedAt: string;
+        };
+        WorkflowVersionDetailsResponse: {
+            /**
+             * Format: int32
+             * @description Its number.
+             */
+            version: number;
+            /** @description The workflow's name then. */
+            name: string;
+            /** @description SHA-256 of its program. */
+            contentHash: string;
+            /**
+             * Format: int32
+             * @description The version it was made from; null for the first.
+             */
+            parentVersion?: number | null;
+            /**
+             * Format: int32
+             * @description The earlier version it brought back, if it did.
+             */
+            restoredFrom?: number | null;
+            /**
+             * Format: uuid
+             * @description Who saved it.
+             */
+            savedBy?: string | null;
+            /**
+             * Format: date-time
+             * @description When.
+             */
+            createdAt: string;
+            program: components['schemas']['BlockProgram'];
+        };
+        WorkflowVersionResponse: {
+            /**
+             * Format: int32
+             * @description Its number.
+             */
+            version: number;
+            /** @description The workflow's name then. */
+            name: string;
+            /** @description SHA-256 of its program; null for versions saved before hashes. */
+            contentHash?: string | null;
+            /**
+             * Format: int32
+             * @description The version it was made from; null for the first.
+             */
+            parentVersion?: number | null;
+            /**
+             * Format: int32
+             * @description The earlier version it brought back, if it did.
+             */
+            restoredFrom?: number | null;
+            /**
+             * Format: uuid
+             * @description Who saved it.
+             */
+            savedBy?: string | null;
+            /**
+             * Format: date-time
+             * @description When.
+             */
+            createdAt: string;
+        };
+        WorkflowWebhookResponse: {
+            /**
+             * Format: int32
+             * @description The WebhookTrigger block.
+             */
+            blockId: number;
+            /** @description Where it listens: POST here with the X-Webhook-Secret header. */
+            path: string;
         };
     };
     responses: never;

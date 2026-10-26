@@ -46,7 +46,11 @@
     },
     "skip": "Sari la conținut",
     "close": "Închide meniul",
-    "account": "Cont"
+    "account": "Cont",
+    "workflows": {
+      "label": "Workflow-uri",
+      "description": "Ale tale: rulări și versiuni"
+    }
   },
   "footer": {
     "label": "Site",

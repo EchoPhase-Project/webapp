@@ -7,6 +7,8 @@ type SwitchProps = {
     label: string;
     /** What turning it on means, under the label. */
     description?: JSX.Element;
+    /** Shown but not changeable for now (saving). */
+    disabled?: boolean;
 };
 
 /**
@@ -29,7 +31,14 @@ export default function Switch(props: SwitchProps) {
                 type="checkbox"
                 role="switch"
                 checked={props.checked}
-                onChange={(e) => props.onChange(e.currentTarget.checked)}
+                disabled={props.disabled}
+                onChange={(e) => {
+                    // Controlled: it shows `checked`, not the click. The
+                    // owner's new value moves it (a save that fails leaves it).
+                    const wanted = e.currentTarget.checked;
+                    e.currentTarget.checked = props.checked;
+                    props.onChange(wanted);
+                }}
             />
         </label>
     );

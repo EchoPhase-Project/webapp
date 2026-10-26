@@ -46,7 +46,11 @@
     },
     "skip": "Перейти к содержимому",
     "close": "Закрыть меню",
-    "account": "Аккаунт"
+    "account": "Аккаунт",
+    "workflows": {
+      "label": "Workflow",
+      "description": "Ваши: прогоны и версии"
+    }
   },
   "footer": {
     "label": "Сайт",

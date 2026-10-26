@@ -1,0 +1,78 @@
+{
+  "active": "Rulare la declanșatoare",
+  "active_hint": "Webhook-urile, programările și evenimentele lui pornesc rulări. Manual îl poți rula oricum.",
+  "back": "Workflow-uri",
+  "delete": {
+    "body": "Versiunile și programările lui dispar odată cu el; webhook-urile nu mai răspund. Rulările trecute rămân până expiră.",
+    "confirm": "Șterge",
+    "open": "Șterge",
+    "title": "Ștergi acest workflow?"
+  },
+  "description": "Workflow-urile tale: ce fac, rulările și versiunile lor.",
+  "edited": "Importat. Fișierul a fost editat după export: verifică programul înainte să-l pornești.",
+  "empty": "Niciun workflow încă: instalează unul din Explorare sau importă un fișier.",
+  "empty_explore": "Caută în Explorare",
+  "export": "Exportă",
+  "eyebrow": "Workflow-uri",
+  "import": "Importă un fișier",
+  "installed": "instalat",
+  "installed_from": "instalat dintr-un pachet, v{version}",
+  "lead": "Programe din blocuri care rulează manual, programat, la un webhook sau la un eveniment. Pornește unul ca declanșatoarele lui să-l ruleze.",
+  "not_found": "Acest workflow nu există sau nu e al tău.",
+  "overview": {
+    "blocks": "Blocuri ({count})",
+    "copied": "Copiat",
+    "copy": "Copiază adresa",
+    "disabled": "sărit",
+    "next": "următoarea: {date}",
+    "schedules": "Programări",
+    "webhooks": "Webhook-uri",
+    "webhooks_hint": "Trimite POST la adresă cu antetul X-Webhook-Secret egal cu secretul blocului."
+  },
+  "run": {
+    "bad_json": "Nu e JSON: o valoare ca {\"user\": \"ann\"}, un număr sau \"text\".",
+    "input": "Intrare (JSON, opțional): ce primesc primele blocuri",
+    "open": "Rulează acum",
+    "start": "Rulează",
+    "title": "Rulează acum"
+  },
+  "runs": {
+    "empty": "Nicio rulare încă. Rulează-l acum sau pornește-l pentru declanșatoarele lui.",
+    "errors": "Erori: {count}",
+    "loading": "Se încarcă…",
+    "more": "Arată mai vechi",
+    "no_result": "Rezultatul nu mai e păstrat."
+  },
+  "status": {
+    "cancelled": "anulată",
+    "failed": "eșuată",
+    "interrupted": "întreruptă",
+    "queued": "în așteptare",
+    "running": "rulează",
+    "succeeded": "reușită",
+    "timedOut": "timp depășit"
+  },
+  "tab": {
+    "overview": "Prezentare",
+    "runs": "Rulări",
+    "versions": "Versiuni"
+  },
+  "title": "Workflow-uri",
+  "trigger": {
+    "error": "După o eroare",
+    "event": "Eveniment",
+    "manual": "Manual",
+    "retry": "Reîncercare",
+    "schedule": "Programare",
+    "webhook": "Webhook"
+  },
+  "updated": "modificat {date}",
+  "versions": {
+    "current": "curentă",
+    "export": "Exportă",
+    "restore": "Restaurează",
+    "restore_body": "Programul ei devine cel curent, ca o versiune nouă deasupra; nimic nu se pierde, cea curentă rămâne în istoric.",
+    "restore_title": "Restaurezi versiunea {version}?",
+    "restored": "a readus v{version}"
+  }
+}
