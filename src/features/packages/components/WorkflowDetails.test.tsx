@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
+import { pageSection } from '@shared/nav/page-section';
 import { renderPage } from '@shared/testing/render-page';
 import { pkg } from '@features/packages/ExplorePage.test';
 import { workflow } from '@features/packages/PackagesPage.test';
@@ -77,9 +78,9 @@ describe('WorkflowDetails', () => {
         expect(screen.getByText('say hi')).toBeTruthy();
         expect(screen.queryByText(/\/api\/v1\/hooks\/w1\/1$/)).toBeNull();
         expect(
-            await screen.findByRole('tab', { name: 'Webhooks' })
+            await screen.findByRole('link', { name: 'Webhooks' })
         ).toBeTruthy();
-        expect(screen.getByRole('tab', { name: 'Schedules' })).toBeTruthy();
+        expect(screen.getByRole('link', { name: 'Schedules' })).toBeTruthy();
         // Back to its package, by name.
         expect(
             (
@@ -98,9 +99,9 @@ describe('WorkflowDetails', () => {
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
 
         expect(
-            await screen.findByRole('tab', { name: 'Schedules' })
+            await screen.findByRole('link', { name: 'Schedules' })
         ).toBeTruthy();
-        expect(screen.queryByRole('tab', { name: 'Webhooks' })).toBeNull();
+        expect(screen.queryByRole('link', { name: 'Webhooks' })).toBeNull();
     });
 
     it('lists the webhooks: the secret only when asked; a new one from the edit dialog', async () => {
@@ -110,8 +111,9 @@ describe('WorkflowDetails', () => {
                     json(200, workflow({ version: 4 })),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
-        fireEvent.click(await screen.findByRole('tab', { name: 'Webhooks' }));
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="webhooks" />
+        ));
 
         expect(
             await screen.findByText(/\/api\/v1\/hooks\/w1\/1$/)
@@ -155,8 +157,9 @@ describe('WorkflowDetails', () => {
                     json(200, workflow({ version: 4 })),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
-        fireEvent.click(await screen.findByRole('tab', { name: 'Schedules' }));
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="schedules" />
+        ));
         expect(await screen.findByText('No schedules.')).toBeTruthy();
 
         fireEvent.click(screen.getByRole('button', { name: 'Add a schedule' }));
@@ -232,8 +235,7 @@ describe('WorkflowDetails', () => {
                     }),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
-        fireEvent.click(await screen.findByRole('tab', { name: 'Runs' }));
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" tab="runs" />);
 
         const row = await screen.findByRole('button', { name: /failed/ });
         expect(row.textContent).toContain('Webhook');
@@ -249,8 +251,9 @@ describe('WorkflowDetails', () => {
                     json(200, workflow({ version: 4 })),
             })
         );
-        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
-        fireEvent.click(await screen.findByRole('tab', { name: 'Versions' }));
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="versions" />
+        ));
 
         fireEvent.click(await screen.findByRole('button', { name: 'Restore' }));
         const dialog = await screen.findByRole('alertdialog');
@@ -266,5 +269,27 @@ describe('WorkflowDetails', () => {
                 .calls('POST /api/v1/workflows/w1/versions/2/restore')[0]
                 .json()
         ).toEqual({ currentVersion: 3 });
+    });
+
+    it('gives the navigation its package’s group, then its own parts', async () => {
+        fakeApi(routes());
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+
+        await waitFor(() =>
+            expect(pageSection()?.sections.map((s) => s.label)).toEqual([
+                'Guild tools',
+                'Guild report',
+            ])
+        );
+        const own = pageSection()?.sections[1].items ?? [];
+        expect(own.map((i) => i.href)).toEqual([
+            '/packages/p1/workflows/w1',
+            '/packages/p1/workflows/w1/webhooks',
+            '/packages/p1/workflows/w1/schedules',
+            '/packages/p1/workflows/w1/runs',
+            '/packages/p1/workflows/w1/versions',
+        ]);
+        // The overview is current only on itself.
+        expect(own[0].end).toBe(true);
     });
 });

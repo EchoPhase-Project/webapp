@@ -7,6 +7,8 @@ export interface NavItem {
     /** The line under the label in a group's list. */
     description?: string;
     href?: string;
+    /** Current only at exactly `href`, not below it (an overview among its parts). */
+    end?: boolean;
     onSelect?: () => void;
 }
 

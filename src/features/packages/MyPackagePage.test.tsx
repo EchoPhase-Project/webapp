@@ -75,10 +75,10 @@ describe('MyPackagePage', () => {
             )
         ).toBe('/packages/p1/workflows/w1');
         await waitFor(() =>
-            expect(pageSection()?.section.label).toBe('Guild tools')
+            expect(pageSection()?.sections[0].label).toBe('Guild tools')
         );
         expect(pageSection()?.after).toBe('/packages');
-        expect(pageSection()?.section.items?.map((i) => i.href)).toEqual([
+        expect(pageSection()?.sections[0].items?.map((i) => i.href)).toEqual([
             '/packages/p1/workflows',
             '/packages/p1/runs',
             '/packages/p1/settings',

@@ -113,7 +113,8 @@ export const PAGES: Page[] = [
         auth: true,
     },
     {
-        path: '/packages/:packageId/workflows/:id',
+        // :tab: webhooks, schedules, runs or versions; absent: its overview.
+        path: '/packages/:packageId/workflows/:id/:tab?',
         component: lazy(() => import('@features/packages/WorkflowPage')),
         auth: true,
     },

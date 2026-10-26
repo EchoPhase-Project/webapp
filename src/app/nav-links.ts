@@ -67,14 +67,14 @@ export function useNav(): () => NavModel {
             group.items!.push(item(page));
         }
 
-        // The page's own group (a package's), after the section it belongs to.
+        // The page's own groups (a package's, a workflow's), after the section they belong to.
         const extra = pageSection();
         if (extra) {
             const at = sections.findIndex((s) => s.href === extra.after);
             sections.splice(
                 at < 0 ? sections.length : at + 1,
                 0,
-                extra.section
+                ...extra.sections
             );
         }
 

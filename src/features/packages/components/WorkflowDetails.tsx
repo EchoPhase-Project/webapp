@@ -6,9 +6,18 @@ import {
     For,
     on,
     Show,
+    type Component,
 } from 'solid-js';
 import { A, useNavigate, useSearchParams } from '@solidjs/router';
-import { AiOutlineArrowLeft, AiOutlineCaretRight } from 'solid-icons/ai';
+import {
+    AiOutlineApartment,
+    AiOutlineApi,
+    AiOutlineArrowLeft,
+    AiOutlineBranches,
+    AiOutlineCaretRight,
+    AiOutlineClockCircle,
+    AiOutlineHistory,
+} from 'solid-icons/ai';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -27,7 +36,12 @@ import {
     setActive,
     workflowExportUrl,
 } from '@features/packages/api';
-import { packagePath, usePackage } from '@features/packages/package-nav';
+import {
+    packagePath,
+    usePackage,
+    workflowPath,
+    type WorkflowTab,
+} from '@features/packages/package-nav';
 import ProgramOverview from './ProgramOverview';
 import RunDialog from './RunDialog';
 import RunList from './RunList';
@@ -35,24 +49,27 @@ import ScheduleTable from './ScheduleTable';
 import VersionList from './VersionList';
 import WebhookTable from './WebhookTable';
 
-type Tab = 'overview' | 'webhooks' | 'schedules' | 'runs' | 'versions';
-const TABS: Tab[] = ['overview', 'webhooks', 'schedules', 'runs', 'versions'];
+const TABS: WorkflowTab[] = [
+    'overview',
+    'webhooks',
+    'schedules',
+    'runs',
+    'versions',
+];
 
 /** One workflow of a package: on or off, run it, what it is, its runs and versions; export and delete. */
 export default function WorkflowDetails(props: {
     id: string;
     packageId: string;
+    /** Which part is shown (from the address); absent: the overview. */
+    tab?: string;
 }) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [params, setParams] = useSearchParams<{
-        tab?: string;
-        edited?: string;
-    }>();
+    const [params] = useSearchParams<{ edited?: string }>();
     const { setTitle, setDescription } = useRootMeta();
-    const [pkg] = usePackage(() => props.packageId);
 
     const [workflow, { mutate }] = createResource(
         () => props.id,
@@ -67,8 +84,41 @@ export default function WorkflowDetails(props: {
             (name) =>
                 name !== 'webhooks' || (workflow()?.webhooks.length ?? 0) > 0
         );
-    const tab = (): Tab =>
-        tabs().includes(params.tab as Tab) ? (params.tab as Tab) : 'overview';
+    const tab = (): WorkflowTab =>
+        tabs().includes(props.tab as WorkflowTab)
+            ? (props.tab as WorkflowTab)
+            : 'overview';
+    const path = (name: WorkflowTab) =>
+        workflowPath(props.packageId, props.id, name);
+    const icons: Record<WorkflowTab, Component> = {
+        overview: AiOutlineApartment,
+        webhooks: AiOutlineApi,
+        schedules: AiOutlineClockCircle,
+        runs: AiOutlineHistory,
+        versions: AiOutlineBranches,
+    };
+
+    // In the navigation: its package's group, then its own parts.
+    const [pkg] = usePackage(
+        () => props.packageId,
+        () => {
+            const w = workflow();
+            return w
+                ? [
+                      {
+                          icon: AiOutlineApartment,
+                          label: w.name,
+                          items: tabs().map((name) => ({
+                              icon: icons[name],
+                              label: t(`tab.${name}`, name),
+                              href: path(name),
+                              end: name === 'overview',
+                          })),
+                      },
+                  ]
+                : [];
+        }
+    );
     const [running, setRunning] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
     const [busy, setBusy] = createSignal(false);
@@ -213,28 +263,24 @@ export default function WorkflowDetails(props: {
                         />
                     </div>
 
-                    <div class="workflow-tabs" role="tablist">
+                    <nav
+                        class="workflow-tabs"
+                        aria-label={t('tab.label', 'Workflow')}
+                    >
                         <For each={tabs()}>
                             {(name) => (
-                                <button
-                                    type="button"
-                                    role="tab"
+                                <A
                                     class="workflow-tab"
-                                    aria-selected={tab() === name}
-                                    onClick={() =>
-                                        setParams({
-                                            tab:
-                                                name === 'overview'
-                                                    ? undefined
-                                                    : name,
-                                        })
+                                    href={path(name)}
+                                    aria-current={
+                                        tab() === name ? 'page' : undefined
                                     }
                                 >
                                     {t(`tab.${name}`, name)}
-                                </button>
+                                </A>
                             )}
                         </For>
-                    </div>
+                    </nav>
 
                     <div role="tabpanel">
                         <Show when={tab() === 'overview'}>
@@ -269,7 +315,7 @@ export default function WorkflowDetails(props: {
                         onClose={() => setRunning(false)}
                         onStarted={() => {
                             setRunning(false);
-                            setParams({ tab: 'runs' });
+                            navigate(path('runs'));
                         }}
                     />
                     <ConfirmDialog

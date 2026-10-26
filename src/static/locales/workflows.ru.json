@@ -113,6 +113,7 @@
     "timedOut": "превышено время"
   },
   "tab": {
+    "label": "Workflow",
     "overview": "Обзор",
     "runs": "Прогоны",
     "schedules": "Расписания",

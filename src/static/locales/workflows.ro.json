@@ -113,6 +113,7 @@
     "timedOut": "timp depășit"
   },
   "tab": {
+    "label": "Workflow",
     "overview": "Prezentare",
     "runs": "Rulări",
     "schedules": "Programări",

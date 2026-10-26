@@ -4,9 +4,13 @@ import { Dynamic } from 'solid-js/web';
 import type { NavItem } from './nav-link';
 
 /** Whether a page's link points where we are (or above it: /explore for /explore/42). */
-export function isCurrent(href: string | undefined, pathname: string): boolean {
+export function isCurrent(
+    href: string | undefined,
+    pathname: string,
+    end = false
+): boolean {
     if (!href) return false;
-    if (href === '/') return pathname === '/';
+    if (href === '/' || end) return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -15,7 +19,7 @@ export function holdsCurrent(
     items: NavItem[] | undefined,
     pathname: string
 ): boolean {
-    return !!items?.some((item) => isCurrent(item.href, pathname));
+    return !!items?.some((item) => isCurrent(item.href, pathname, item.end));
 }
 
 /**
@@ -48,7 +52,7 @@ export function NavEntry(props: {
             {(href) => (
                 <A
                     href={href()}
-                    end={href() === '/'}
+                    end={href() === '/' || props.item.end}
                     class={props.class}
                     activeClass="nav-current"
                     onClick={() => props.onDone?.()}
