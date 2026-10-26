@@ -45,15 +45,53 @@
   background-color: var(--primary);
 }
 
-// The language picker, as tall as the buttons beside it.
+// The language picker, as tall as the buttons beside it, with their shadow
+// and hover. Block layout (not flex): its list sits under the button.
 .header .dropdown {
-  display: inline-flex;
-  align-items: center;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 4px;
   box-sizing: border-box;
   border-radius: 8px;
   box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
+
+  &:hover {
+    box-shadow: color-mix(in srgb, var(--shadow) 24%, transparent) 0 2px 8px 0;
+  }
+
+  .select {
+    padding: 0 6px;
+    line-height: 32px;
+
+    > i {
+      line-height: 32px;
+    }
+  }
+
+  .dropdown-menu {
+    top: 100%;
+  }
+
+  // The list is as wide as the button: two letters need little padding.
+  .dropdown-item {
+    padding: 6px 4px;
+  }
+
+  &[data-open='true'][data-drop-up='false'] {
+    border-radius: 8px 8px 0 0;
+
+    .dropdown-menu {
+      border-radius: 0 0 8px 8px;
+    }
+  }
+
+  &[data-open='true'][data-drop-up='true'] {
+    border-radius: 0 0 8px 8px;
+
+    .dropdown-menu {
+      top: auto;
+      border-radius: 8px 8px 0 0;
+    }
+  }
 }
 
 // Signing in from the header: only on phones, where the sidebar's is not.
