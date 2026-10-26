@@ -1,4 +1,5 @@
-import { createSignal, Show, type JSX } from 'solid-js';
+import { Show, type JSX } from 'solid-js';
+import { A } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
 import './page-header.scss';
 
@@ -8,8 +9,8 @@ type PageHeaderProps = {
     title: JSX.Element;
     /** What the page is for: one short sentence. */
     description?: JSX.Element;
-    /** The longer story, behind "Read more" after the description. */
-    more?: JSX.Element;
+    /** The docs article that tells the rest (/docs/<slug>), linked as "Read more". */
+    docs?: string;
     /** A line of small print under it (a date, a count). */
     meta?: JSX.Element;
     /** The page's main action, beside the title. */
@@ -22,7 +23,6 @@ type PageHeaderProps = {
  */
 export default function PageHeader(props: PageHeaderProps) {
     const { t } = useI18n();
-    const [open, setOpen] = createSignal(false);
     return (
         <div class="page-header">
             <div class="page-header-text">
@@ -33,23 +33,20 @@ export default function PageHeader(props: PageHeaderProps) {
                 <Show when={props.description}>
                     <p class="page-description">
                         {props.description}
-                        <Show when={props.more}>
-                            {' '}
-                            <button
-                                type="button"
-                                class="page-more"
-                                aria-expanded={open()}
-                                onClick={() => setOpen((o) => !o)}
-                            >
-                                {open()
-                                    ? t('ui.less', 'Show less')
-                                    : t('ui.more', 'Read more')}
-                            </button>
+                        <Show when={props.docs}>
+                            {(slug) => (
+                                <>
+                                    {' '}
+                                    <A
+                                        class="page-more"
+                                        href={`/docs/${slug()}`}
+                                    >
+                                        {t('ui.more', 'Read more')}
+                                    </A>
+                                </>
+                            )}
                         </Show>
                     </p>
-                </Show>
-                <Show when={props.more && open()}>
-                    <p class="page-description">{props.more}</p>
                 </Show>
                 <Show when={props.meta}>
                     <p class="page-meta">{props.meta}</p>

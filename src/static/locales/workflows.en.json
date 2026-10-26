@@ -45,7 +45,6 @@
     "empty": "No packages yet: install one from Explore, start a new one or import a workflow.",
     "installed": "installed, v{version}",
     "lead": "Workflows that belong together.",
-    "more": "They call each other, share their storage and are published together. Install one from Explore, or start your own.",
     "new": "New package",
     "published": "published, v{version}",
     "shared": "Shared with you",
@@ -67,22 +66,26 @@
     "no_result": "Its result is no longer kept."
   },
   "settings": {
-    "about": "About",
     "danger": "Delete",
     "delete": "Delete this package",
     "delete_body": "Its workflows go with it, with their versions, schedules and storage; their webhooks stop answering. Its published versions go too; packages others installed from it stay theirs.",
     "delete_title": "Delete this package?",
-    "edit": "Edit name, README and visibility",
+    "edit": "Edit",
     "error_hint": "It needs an ErrorTrigger block; its input says which workflow failed and why. Runs started by hand do not count.",
     "error_workflow": "Workflow to start when an automatic run of one of them fails",
     "errors": "When a run fails",
+    "general": "General",
+    "has_readme": "Has a README.",
     "no_error_workflow": "None",
+    "no_readme": "No README yet.",
     "no_summary": "No summary yet.",
     "open_explore": "See it as others do",
     "published": "Published, latest v{version}.",
     "publishing": "Publishing",
     "save": "Save",
-    "unpublished": "Not published: only you see it. A version is what others read and install."
+    "tags": "Tags",
+    "unpublished": "Not published: only you see it. A version is what others read and install.",
+    "visibility": "Visibility"
   },
   "status": {
     "cancelled": "cancelled",
@@ -97,6 +100,10 @@
     "overview": "Overview",
     "runs": "Runs",
     "versions": "Versions"
+  },
+  "tags": {
+    "label": "Tags (up to 10): Enter or a comma adds one",
+    "remove": "Remove {tag}"
   },
   "title": "Workflows",
   "trigger": {

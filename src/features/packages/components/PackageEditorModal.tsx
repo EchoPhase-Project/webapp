@@ -1,6 +1,6 @@
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
-import type { PackageVisibility, WorkflowPackage } from '@shared/api/types';
+import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -8,23 +8,14 @@ import Field from '@shared/ui/Field';
 import FieldError from '@shared/ui/FieldError';
 import Markdown from '@shared/ui/Markdown';
 import Modal from '@shared/ui/Modal';
-import { createPackage, updatePackage } from '@features/packages/api';
+import { createPackage, inputOf, updatePackage } from '@features/packages/api';
 
-const FIELDS = ['name', 'summary', 'readme', 'visibility', 'tags'] as const;
-const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
+const FIELDS = ['name', 'summary', 'readme'] as const;
 const inputId = (field: string) => `package-${field}`;
 
-/** "Discord bot, guilds" → the tags as typed; the server normalises them. */
-const parseTags = (text: string) =>
-    text
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean);
-
 /**
- * A package's name, summary, README, tags and visibility: a new, empty one
- * or an existing one (its workflows are made in it, its versions published
- * separately).
+ * A package's name, summary and README: a new, empty (private) one, or an
+ * existing one. Tags and who sees it have editors of their own.
  */
 export default function PackageEditorModal(props: {
     open: boolean;
@@ -40,7 +31,7 @@ export default function PackageEditorModal(props: {
             open={props.open}
             title={
                 props.pkg
-                    ? t('editor.edit', 'Edit package')
+                    ? t('editor.edit', 'Name, summary and README')
                     : t('editor.new', 'New package')
             }
             onClose={() => props.onClose()}
@@ -66,10 +57,6 @@ function PackageForm(props: {
     const [name, setName] = createSignal(props.pkg?.name ?? '');
     const [summary, setSummary] = createSignal(props.pkg?.summary ?? '');
     const [readme, setReadme] = createSignal(props.pkg?.readme ?? '');
-    const [visibility, setVisibility] = createSignal<PackageVisibility>(
-        props.pkg?.visibility ?? 'Private'
-    );
-    const [tags, setTags] = createSignal(props.pkg?.tags.join(', ') ?? '');
     /* eslint-enable solid/reactivity */
     const [preview, setPreview] = createSignal(false);
     const [errors, setErrors] = createSignal<FormErrors>({});
@@ -80,21 +67,18 @@ function PackageForm(props: {
         if (busy()) return;
         setBusy(true);
         try {
-            const input = {
+            const about = {
                 name: name(),
                 summary: summary(),
                 readme: readme(),
-                visibility: visibility(),
-                tags: parseTags(tags()),
             };
+            // The rest (tags, visibility, error workflow) as it is.
             const result = props.pkg
                 ? await updatePackage(props.pkg.id, {
-                      ...input,
-                      // Kept as it is: chosen in the package's settings.
-                      errorWorkflow: props.pkg.errorWorkflow ?? null,
-                      expectedStamp: props.pkg.stamp,
+                      ...inputOf(props.pkg),
+                      ...about,
                   })
-                : await createPackage(input);
+                : await createPackage({ ...about, visibility: 'Private' });
             if (!result.ok) {
                 setErrors(groupErrors(result.errors, FIELDS));
                 return;
@@ -206,65 +190,6 @@ function PackageForm(props: {
                 </Show>
                 <FieldError for={inputId('readme')} errors={errors().readme} />
             </div>
-
-            <Field
-                id={inputId('tags')}
-                name="tags"
-                label={t('editor.tags', 'Tags, separated by commas (up to 10)')}
-                showLabel
-                errors={errors().tags}
-                type="text"
-                disabled={busy()}
-                value={tags()}
-                onInput={(e) => setTags(e.currentTarget.value)}
-            />
-
-            <fieldset id={inputId('visibility')} class="package-visibility">
-                <legend class="field-label">
-                    {t('editor.visibility', 'Who sees it')}
-                </legend>
-                <For each={VISIBILITIES}>
-                    {(option) => (
-                        <label class="package-visibility-option">
-                            <input
-                                type="radio"
-                                name="visibility"
-                                value={option}
-                                checked={visibility() === option}
-                                disabled={busy()}
-                                onChange={() => setVisibility(option)}
-                            />
-                            <span>
-                                <strong>
-                                    {t(`visibility.${option}`, option)}
-                                </strong>
-                                <span class="muted">
-                                    {
-                                        {
-                                            Private: t(
-                                                'visibility.Private_hint',
-                                                'You and the people you share it with'
-                                            ),
-                                            Unlisted: t(
-                                                'visibility.Unlisted_hint',
-                                                'Anyone signed in who has the link'
-                                            ),
-                                            Public: t(
-                                                'visibility.Public_hint',
-                                                'Everyone, listed in Explore'
-                                            ),
-                                        }[option]
-                                    }
-                                </span>
-                            </span>
-                        </label>
-                    )}
-                </For>
-                <FieldError
-                    for={inputId('visibility')}
-                    errors={errors().visibility}
-                />
-            </fieldset>
 
             <div class="package-actions">
                 <Button type="submit" busy={busy()}>

@@ -83,6 +83,7 @@ export default function Footer() {
         {
             title: t('footer.resources', 'Resources'),
             items: [
+                { text: t('footer.docs', 'Documentation'), href: '/docs' },
                 {
                     text: t('footer.source', 'Source code'),
                     href: Org,

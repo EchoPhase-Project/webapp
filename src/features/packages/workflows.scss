@@ -188,7 +188,7 @@
   .package-share-form {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
 
     .field-wrap {
@@ -214,6 +214,20 @@
 .package-error-form {
   display: grid;
   gap: 6px;
+}
+
+.package-settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.workflows-item-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
 .package-error-row,

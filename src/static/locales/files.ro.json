@@ -24,6 +24,5 @@
     "title": "Ștergeți acest fișier?",
     "action": "Șterge",
     "text": "{name} va fi șters definitiv; linkurile către el nu vor mai funcționa."
-  },
-  "lead_more": "Până la 100 MB fiecare; imaginile se deschid în browser, restul se descarcă."
+  }
 }

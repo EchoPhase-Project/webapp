@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import {
+    cleanup,
+    fireEvent,
+    screen,
+    waitFor,
+    within,
+} from '@solidjs/testing-library';
 import { pageSection } from '@shared/nav/page-section';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
@@ -113,7 +119,11 @@ describe('MyPackagePage', () => {
         );
         await waitFor(() => expect(select.options).toHaveLength(3));
         fireEvent.change(select, { target: { value: 'k2' } });
-        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        fireEvent.click(
+            within(select.closest('form') as HTMLElement).getByRole('button', {
+                name: 'Save',
+            })
+        );
 
         await waitFor(() =>
             expect(api.calls('PUT /api/v1/workflow-packages/p1')).toHaveLength(
@@ -169,5 +179,53 @@ describe('MyPackagePage', () => {
                 .calls('POST /api/v1/workflow-packages/p1/versions')[0]
                 .json()
         ).toMatchObject({ workflows: ['w1', 'w2'] });
+    });
+
+    it('adds tags as capsules and changes who sees it, each saved on its own', async () => {
+        const api = fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'PUT /api/v1/workflow-packages/p1': () =>
+                    json(200, pkg({ access: 'Owner' })),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+
+        const input = await screen.findByLabelText(/Tags \(up to 10\)/);
+        fireEvent.input(input, { target: { value: 'Raid Bot' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+        expect(screen.getByText('raid-bot')).toBeTruthy();
+        fireEvent.click(
+            within(input.closest('form') as HTMLElement).getByRole('button', {
+                name: 'Save',
+            })
+        );
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflow-packages/p1')).toHaveLength(
+                1
+            )
+        );
+        expect(
+            await api.calls('PUT /api/v1/workflow-packages/p1')[0].json()
+        ).toMatchObject({
+            tags: ['discord-bot', 'raid-bot'],
+            visibility: 'Public',
+        });
+
+        fireEvent.click(screen.getByLabelText(/^Private/));
+        const visibility = screen
+            .getByLabelText(/^Private/)
+            .closest('form') as HTMLElement;
+        fireEvent.click(
+            within(visibility).getByRole('button', { name: 'Save' })
+        );
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflow-packages/p1')).toHaveLength(
+                2
+            )
+        );
+        expect(
+            await api.calls('PUT /api/v1/workflow-packages/p1')[1].json()
+        ).toMatchObject({ tags: ['discord-bot'], visibility: 'Private' });
     });
 });

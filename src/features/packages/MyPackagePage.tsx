@@ -19,6 +19,7 @@ import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageSettings from './components/PackageSettings';
 import PackageWorkflowList from './components/PackageWorkflowList';
 import RunList from './components/RunList';
+import VisibilityBadge from './components/VisibilityBadge';
 import { packagePath, usePackage } from './package-nav';
 import './packages.scss';
 import './workflows.scss';
@@ -96,7 +97,12 @@ export default function MyPackagePage() {
                     {back}
                     <PageHeader
                         eyebrow={t('package.eyebrow', 'Package')}
-                        title={p().name}
+                        title={
+                            <>
+                                {p().name}{' '}
+                                <VisibilityBadge visibility={p().visibility} />
+                            </>
+                        }
                         description={p().summary || undefined}
                         meta={
                             <span class="workflow-meta">

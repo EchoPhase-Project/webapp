@@ -19,6 +19,7 @@ import PageHeader from '@shared/ui/PageHeader';
 import { myPackages } from './api';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageEditorModal from './components/PackageEditorModal';
+import VisibilityBadge from './components/VisibilityBadge';
 import { packagePath } from './package-nav';
 import './packages.scss';
 import './workflows.scss';
@@ -66,10 +67,7 @@ export default function PackagesPage() {
                     'packages.lead',
                     'Workflows that belong together.'
                 )}
-                more={t(
-                    'packages.more',
-                    'They call each other, share their storage and are published together. Install one from Explore, or start your own.'
-                )}
+                docs="packages"
                 actions={
                     <>
                         <ImportWorkflowButton
@@ -108,12 +106,17 @@ export default function PackagesPage() {
                         {(p) => (
                             <li class="workflows-item card">
                                 <span class="workflows-item-main">
-                                    <A
-                                        href={packagePath(p.id)}
-                                        class="workflows-item-name"
-                                    >
-                                        {p.name}
-                                    </A>
+                                    <span class="workflows-item-title">
+                                        <A
+                                            href={packagePath(p.id)}
+                                            class="workflows-item-name"
+                                        >
+                                            {p.name}
+                                        </A>
+                                        <VisibilityBadge
+                                            visibility={p.visibility}
+                                        />
+                                    </span>
                                     <Show when={p.summary}>
                                         <span class="muted">{p.summary}</span>
                                     </Show>

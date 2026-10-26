@@ -35,7 +35,10 @@ function destinations(nav: NavModel): NavItem[] {
     ];
 }
 
-/** A row of the drawer that expands downward into its pages (an accordion). */
+/**
+ * A row of the drawer that expands into its pages (an accordion): downward,
+ * or upward for the account at the bottom, so its menu opens above it.
+ */
 function DrawerGroup(props: {
     /** What the row shows: its icon and label. */
     content: JSX.Element;
@@ -43,12 +46,16 @@ function DrawerGroup(props: {
     open: boolean;
     onToggle: () => void;
     onDone: () => void;
+    upward?: boolean;
     class?: string;
 }) {
     const id = createUniqueId();
     const location = useLocation();
     return (
-        <li class={['drawer-group', props.class].filter(Boolean).join(' ')}>
+        <li
+            class={['drawer-group', props.class].filter(Boolean).join(' ')}
+            classList={{ 'drawer-group--up': props.upward }}
+        >
             <button
                 type="button"
                 class="drawer-row"
@@ -261,6 +268,7 @@ function Drawer(props: { nav: NavModel; open: boolean; onClose: () => void }) {
                             <ul class="drawer-list">
                                 <DrawerGroup
                                     class="drawer-account"
+                                    upward
                                     content={
                                         <>
                                             <Avatar

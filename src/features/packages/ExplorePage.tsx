@@ -123,10 +123,7 @@ export default function ExplorePage() {
                     'lead',
                     'Packages others published, to install.'
                 )}
-                more={t(
-                    'more_about',
-                    'Installing one makes a package of yours with its workflows, pointed at your connections; the author’s stay theirs.'
-                )}
+                docs="explore"
                 actions={
                     <A class="btn btn-ghost" href="/packages">
                         {t('yours', 'Your packages')}

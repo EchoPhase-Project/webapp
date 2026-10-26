@@ -10,7 +10,7 @@
   "description": "Workflow packages to read and install.",
   "editor": {
     "create": "Create",
-    "edit": "Edit package",
+    "edit": "Name, summary and README",
     "main": "main",
     "name": "Name",
     "new": "New package",
@@ -20,7 +20,6 @@
     "readme_placeholder": "What it does, what it needs (connections, settings), how to start it. Markdown works.",
     "save": "Save",
     "summary": "Summary: a sentence or two for its card",
-    "tags": "Tags, separated by commas (up to 10)",
     "visibility": "Who sees it",
     "write": "Write"
   },
@@ -42,7 +41,6 @@
   "leave": "Leave this package",
   "manage": "Manage it in your packages",
   "more": "Show more",
-  "more_about": "Installing one makes a package of yours with its workflows, pointed at your connections; the author’s stay theirs.",
   "no_readme": "No README.",
   "none_found": "No packages match.",
   "not_found": "This package does not exist, or it is not shared with you.",

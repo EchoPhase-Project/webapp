@@ -67,12 +67,14 @@ describe('PackageDetails', () => {
 
         // The page's title, and the README's own.
         expect(
-            await screen.findAllByRole('heading', { name: 'Guild tools' })
+            await screen.findAllByRole('heading', { name: /^Guild tools/ })
         ).toHaveLength(2);
         expect(await screen.findByText('3 blocks')).toBeTruthy();
         expect(screen.getByText('on error')).toBeTruthy();
         expect(screen.getByText('v2')).toBeTruthy();
         expect(screen.getByText('Louder.')).toBeTruthy();
+        // Who sees it, beside the title.
+        expect(screen.getByText('Public')).toBeTruthy();
         // A reader neither edits nor deletes.
         expect(screen.queryByRole('button', { name: 'Edit' })).toBeNull();
     });

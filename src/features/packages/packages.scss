@@ -401,3 +401,53 @@
   gap: 8px;
   justify-content: flex-end;
 }
+
+// Who sees a package, beside its name: an outlined capsule, as GitHub's
+// "Private" next to a repository.
+.visibility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: normal;
+  color: var(--text-muted);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+// A tag that can be removed (the tags editor): the cross inside its capsule.
+.package-tag-remove {
+  display: inline-flex;
+  margin-right: -4px;
+  padding: 1px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 20%, transparent);
+  }
+}
+
+.package-tags-editor,
+.package-visibility-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.package-tags-field {
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px;
+
+  .field-input {
+    min-width: 8rem;
+  }
+}

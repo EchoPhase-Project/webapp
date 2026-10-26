@@ -6,6 +6,8 @@ Allow: /$
 Allow: /about$
 Allow: /terms$
 Allow: /privacy$
+Allow: /docs$
+Allow: /docs/
 Allow: /js/
 Allow: /assets/
 Disallow: /

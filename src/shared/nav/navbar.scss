@@ -692,6 +692,21 @@
   transform: rotate(180deg);
 }
 
+// Opening upward: the list shows above its row (still after it for screen
+// readers and the keyboard), the chevron points up until it is open.
+.drawer-group--up {
+  display: flex;
+  flex-direction: column-reverse;
+
+  .drawer-chevron {
+    transform: rotate(180deg);
+  }
+
+  [aria-expanded='true'] > .drawer-chevron {
+    transform: none;
+  }
+}
+
 .drawer-close {
   display: grid;
   place-items: center;

@@ -45,6 +45,5 @@
     "title": "Delete this note?",
     "action": "Delete",
     "text": "{title} is deleted for good, for everyone it is shared with too."
-  },
-  "lead_more": "Yours, those shared with you, and those your workflows write. Share one to read or to edit together."
+  }
 }

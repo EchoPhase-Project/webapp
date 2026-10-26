@@ -45,7 +45,6 @@
     "empty": "Încă nu aveți pachete: instalați unul din Explorare, creați unul nou sau importați un workflow.",
     "installed": "instalat, v{version}",
     "lead": "Workflow-uri care merg împreună.",
-    "more": "Se apelează între ele, își împart stocarea și se publică împreună. Instalați unul din Explorare sau începeți-l pe al dvs.",
     "new": "Pachet nou",
     "published": "publicat, v{version}",
     "shared": "Partajate cu dvs.",
@@ -67,22 +66,26 @@
     "no_result": "Rezultatul nu mai e păstrat."
   },
   "settings": {
-    "about": "Despre",
     "danger": "Ștergere",
     "delete": "Ștergeți acest pachet",
     "delete_body": "Workflow-urile sale pleacă odată cu el, cu versiunile, programările și stocarea lor; webhook-urile lor nu mai răspund. Pleacă și versiunile publicate; pachetele instalate de alții din el rămân ale lor.",
     "delete_title": "Ștergeți acest pachet?",
-    "edit": "Modificați numele, README și vizibilitatea",
+    "edit": "Modificați",
     "error_hint": "Are nevoie de un bloc ErrorTrigger; intrarea sa spune ce workflow a eșuat și de ce. Rulările pornite manual nu contează.",
     "error_workflow": "Workflow-ul pornit când eșuează o rulare automată a unuia dintre ele",
     "errors": "Când o rulare eșuează",
+    "general": "General",
+    "has_readme": "Are un README.",
     "no_error_workflow": "Niciunul",
+    "no_readme": "Încă nu are README.",
     "no_summary": "Încă nu are un rezumat.",
     "open_explore": "Vedeți-l ca alții",
     "published": "Publicat, ultima v{version}.",
     "publishing": "Publicare",
     "save": "Salvați",
-    "unpublished": "Nepublicat: doar dvs. îl vedeți. Alții citesc și instalează versiuni."
+    "tags": "Etichete",
+    "unpublished": "Nepublicat: doar dvs. îl vedeți. Alții citesc și instalează versiuni.",
+    "visibility": "Vizibilitate"
   },
   "status": {
     "cancelled": "anulată",
@@ -97,6 +100,10 @@
     "overview": "Prezentare",
     "runs": "Rulări",
     "versions": "Versiuni"
+  },
+  "tags": {
+    "label": "Etichete (până la 10): Enter sau virgula adaugă una",
+    "remove": "Eliminați {tag}"
   },
   "title": "Workflow-uri",
   "trigger": {

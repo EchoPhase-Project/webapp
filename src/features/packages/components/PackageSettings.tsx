@@ -8,17 +8,19 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FieldError from '@shared/ui/FieldError';
 import { deletePackage, inputOf, updatePackage } from '@features/packages/api';
-import { tagClass } from '@features/packages/tags';
 import PackageEditorModal from './PackageEditorModal';
 import PackageShares from './PackageShares';
 import PublishModal from './PublishModal';
+import TagsEditor from './TagsEditor';
+import VisibilityBadge from './VisibilityBadge';
+import VisibilityEditor from './VisibilityEditor';
 
 const ERROR_FIELD = 'package-error-workflow';
 
 /**
- * What a package is and does as a whole: its description, which of its
- * workflows handles failed runs, its published versions, who it is shared
- * with; and deleting it.
+ * What a package is and does as a whole, each part with its own editor:
+ * name and README, tags, who sees it, which workflow handles failed runs,
+ * its published versions, who it is shared with; and deleting it.
  */
 export default function PackageSettings(props: {
     pkg: WorkflowPackage;
@@ -70,31 +72,40 @@ export default function PackageSettings(props: {
     return (
         <div class="package-settings">
             <section class="workflow-section">
-                <h2>{t('settings.about', 'About')}</h2>
+                <span class="package-settings-head">
+                    <h2>{t('settings.general', 'General')}</h2>
+                    <Button variant="ghost" onClick={() => setEditing(true)}>
+                        {t('settings.edit', 'Edit')}
+                    </Button>
+                </span>
                 <p>
+                    <strong>{props.pkg.name}</strong>
+                </p>
+                <p class="muted">
                     {props.pkg.summary ||
                         t('settings.no_summary', 'No summary yet.')}
                 </p>
                 <p class="muted">
-                    {tp(
-                        `visibility.${props.pkg.visibility}`,
-                        props.pkg.visibility
-                    )}
+                    {props.pkg.readme.trim()
+                        ? t('settings.has_readme', 'Has a README.')
+                        : t('settings.no_readme', 'No README yet.')}
                 </p>
-                <Show when={props.pkg.tags.length > 0}>
-                    <ul class="package-tags">
-                        <For each={props.pkg.tags}>
-                            {(tag) => (
-                                <li>
-                                    <span class={tagClass(tag)}>{tag}</span>
-                                </li>
-                            )}
-                        </For>
-                    </ul>
-                </Show>
-                <Button variant="ghost" onClick={() => setEditing(true)}>
-                    {t('settings.edit', 'Edit name, README and visibility')}
-                </Button>
+            </section>
+
+            <section class="workflow-section">
+                <h2>{t('settings.tags', 'Tags')}</h2>
+                <TagsEditor pkg={props.pkg} onSaved={(p) => props.onSaved(p)} />
+            </section>
+
+            <section class="workflow-section">
+                <span class="package-settings-head">
+                    <h2>{t('settings.visibility', 'Visibility')}</h2>
+                    <VisibilityBadge visibility={props.pkg.visibility} />
+                </span>
+                <VisibilityEditor
+                    pkg={props.pkg}
+                    onSaved={(p) => props.onSaved(p)}
+                />
             </section>
 
             <section class="workflow-section">

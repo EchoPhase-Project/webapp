@@ -24,6 +24,7 @@ import {
 import { packagePath } from '@features/packages/package-nav';
 import { tagClass } from '@features/packages/tags';
 import InstallModal from './InstallModal';
+import VisibilityBadge from './VisibilityBadge';
 
 /**
  * One published package: its README, what its latest version holds, its
@@ -106,7 +107,12 @@ export default function PackageDetails(props: { id: string }) {
                     {back}
                     <PageHeader
                         eyebrow={t('eyebrow', 'Workflows')}
-                        title={p().name}
+                        title={
+                            <>
+                                {p().name}{' '}
+                                <VisibilityBadge visibility={p().visibility} />
+                            </>
+                        }
                         description={p().summary || undefined}
                         meta={
                             <span class="package-meta">
@@ -115,12 +121,6 @@ export default function PackageDetails(props: { id: string }) {
                                         '{name}',
                                         p().owner.name ||
                                             `@${p().owner.userName ?? ''}`
-                                    )}
-                                </span>
-                                <span>
-                                    {t(
-                                        `visibility.${p().visibility}`,
-                                        p().visibility
                                     )}
                                 </span>
                                 <span>

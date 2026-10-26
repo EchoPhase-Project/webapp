@@ -58,6 +58,7 @@
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
     "cookies": "Cookie settings",
+    "docs": "Documentation",
     "source": "Source code",
     "product": "Product",
     "features": "Features",
@@ -157,7 +158,6 @@
     "http_405": "This action is not available here."
   },
   "ui": {
-    "more": "Read more",
-    "less": "Show less"
+    "more": "Read more"
   }
 }

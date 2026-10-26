@@ -24,6 +24,5 @@
     "title": "Delete this file?",
     "action": "Delete",
     "text": "{name} is deleted for good; links to it stop working."
-  },
-  "lead_more": "Up to 100 MB each; pictures open in the browser, everything else downloads."
+  }
 }

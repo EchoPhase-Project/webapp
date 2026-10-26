@@ -10,7 +10,7 @@
   "description": "Pachete de workflow de citit și instalat.",
   "editor": {
     "create": "Creați",
-    "edit": "Editează pachetul",
+    "edit": "Nume, rezumat și README",
     "main": "principal",
     "name": "Nume",
     "new": "Pachet nou",
@@ -20,7 +20,6 @@
     "readme_placeholder": "Ce face, de ce are nevoie (conexiuni, setări), cum îl pornești. Merge Markdown.",
     "save": "Salvează",
     "summary": "Rezumat: una-două propoziții pentru card",
-    "tags": "Etichete, separate prin virgulă (până la 10)",
     "visibility": "Cine îl vede",
     "write": "Scrie"
   },
@@ -42,7 +41,6 @@
   "leave": "Părăsește pachetul",
   "manage": "Gestionați-l în pachetele dvs.",
   "more": "Arată mai multe",
-  "more_about": "Instalarea creează un pachet al dvs. cu workflow-urile lui, legate de conexiunile dvs.; ale autorului rămân ale lui.",
   "no_readme": "Fără README.",
   "none_found": "Niciun pachet nu se potrivește.",
   "not_found": "Acest pachet nu există sau nu este partajat cu tine.",

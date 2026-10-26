@@ -58,6 +58,7 @@
     "terms": "Termeni de utilizare",
     "privacy": "Politica de confidențialitate",
     "cookies": "Setări cookie",
+    "docs": "Documentație",
     "source": "Cod sursă",
     "product": "Produs",
     "features": "Funcționalități",
@@ -157,7 +158,6 @@
     "http_405": "Această acțiune nu e disponibilă aici."
   },
   "ui": {
-    "more": "Citiți mai mult",
-    "less": "Mai puțin"
+    "more": "Citiți mai mult"
   }
 }

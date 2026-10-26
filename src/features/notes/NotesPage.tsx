@@ -88,10 +88,7 @@ export default function NotesPage() {
                 eyebrow={t('eyebrow', 'Workspace')}
                 title={t('title', 'Notes')}
                 description={t('lead', 'Notes in Markdown.')}
-                more={t(
-                    'lead_more',
-                    'Yours, those shared with you, and those your workflows write. Share one to read or to edit together.'
-                )}
+                docs="notes"
                 actions={
                     <Button onClick={() => setEditing(undefined)}>
                         <AiOutlinePlus />

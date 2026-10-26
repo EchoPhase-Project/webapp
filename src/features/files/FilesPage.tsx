@@ -90,10 +90,7 @@ export default function FilesPage() {
                     'lead',
                     'Files you uploaded, and those made for you.'
                 )}
-                more={t(
-                    'lead_more',
-                    'Up to 100 MB each; pictures open in the browser, everything else downloads.'
-                )}
+                docs="files"
                 actions={
                     <FilePicker busy={busy()} onPick={(f) => void upload(f)}>
                         <AiOutlineUpload />

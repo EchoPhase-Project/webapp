@@ -70,6 +70,11 @@ export const PAGES: Page[] = [
         public: true,
     },
     {
+        path: '/docs/:slug?',
+        component: lazy(() => import('@features/docs/DocsPage')),
+        public: true,
+    },
+    {
         path: '/auth',
         component: lazy(() => import('@features/auth/AuthPage')),
     },

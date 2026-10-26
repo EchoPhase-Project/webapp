@@ -47,10 +47,7 @@ export default function SessionsPage() {
                     'lead',
                     'The devices signed in to your account.'
                 )}
-                more={t(
-                    'lead_more',
-                    'End a session you do not recognise, and change your password if you think someone else has it.'
-                )}
+                docs="sessions"
                 actions={
                     <Button
                         variant="danger-outline"
