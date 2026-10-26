@@ -98,25 +98,32 @@ export default function WorkflowDetails(props: {
         versions: AiOutlineBranches,
     };
 
-    // In the navigation: its package's group, then its own parts.
+    const hints: Record<WorkflowTab, () => string> = {
+        overview: () => t('tab_hint.overview', 'Its blocks'),
+        webhooks: () => t('tab_hint.webhooks', 'Addresses that start it'),
+        schedules: () => t('tab_hint.schedules', 'When it runs on its own'),
+        runs: () => t('tab_hint.runs', 'What it did'),
+        versions: () => t('tab_hint.versions', 'Its changes; restore one'),
+    };
+
+    // In the navigation: its own parts, then back to its package.
     const [pkg] = usePackage(
         () => props.packageId,
         () => {
             const w = workflow();
             return w
-                ? [
-                      {
-                          icon: AiOutlineApartment,
-                          label: w.name,
-                          items: tabs().map((name) => ({
-                              icon: icons[name],
-                              label: t(`tab.${name}`, name),
-                              href: path(name),
-                              end: name === 'overview',
-                          })),
-                      },
-                  ]
-                : [];
+                ? {
+                      icon: AiOutlineApartment,
+                      label: w.name,
+                      items: tabs().map((name) => ({
+                          icon: icons[name],
+                          label: t(`tab.${name}`, name),
+                          description: hints[name](),
+                          href: path(name),
+                          end: name === 'overview',
+                      })),
+                  }
+                : null;
         }
     );
     const [running, setRunning] = createSignal(false);

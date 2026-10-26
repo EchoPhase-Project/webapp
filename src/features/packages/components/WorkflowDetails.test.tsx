@@ -271,25 +271,27 @@ describe('WorkflowDetails', () => {
         ).toEqual({ currentVersion: 3 });
     });
 
-    it('gives the navigation its package’s group, then its own parts', async () => {
+    it('gives the navigation one group: its parts, then back to its package', async () => {
         fakeApi(routes());
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
 
         await waitFor(() =>
             expect(pageSection()?.sections.map((s) => s.label)).toEqual([
-                'Guild tools',
                 'Guild report',
             ])
         );
-        const own = pageSection()?.sections[1].items ?? [];
-        expect(own.map((i) => i.href)).toEqual([
+        const items = pageSection()?.sections[0].items ?? [];
+        expect(items.map((i) => i.href)).toEqual([
             '/packages/p1/workflows/w1',
             '/packages/p1/workflows/w1/webhooks',
             '/packages/p1/workflows/w1/schedules',
             '/packages/p1/workflows/w1/runs',
             '/packages/p1/workflows/w1/versions',
+            '/packages/p1/workflows',
         ]);
+        expect(items.every((i) => i.description)).toBe(true);
+        expect(items.at(-1)?.label).toBe('Guild tools');
         // The overview is current only on itself.
-        expect(own[0].end).toBe(true);
+        expect(items[0].end).toBe(true);
     });
 });

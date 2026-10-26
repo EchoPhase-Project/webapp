@@ -22,6 +22,7 @@
     "disabled": "skipped"
   },
   "package": {
+    "back_hint": "Its package: workflows, runs, settings",
     "empty": "No workflows in it yet: import one from a file.",
     "error_badge": "handles errors",
     "eyebrow": "Package",
@@ -119,6 +120,13 @@
     "schedules": "Schedules",
     "versions": "Versions",
     "webhooks": "Webhooks"
+  },
+  "tab_hint": {
+    "overview": "Its blocks",
+    "runs": "What it did",
+    "schedules": "When it runs on its own",
+    "versions": "Its changes; restore one",
+    "webhooks": "Addresses that start it"
   },
   "table": {
     "actions": "Actions"

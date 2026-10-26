@@ -22,6 +22,7 @@
     "disabled": "sărit"
   },
   "package": {
+    "back_hint": "Pachetul lui: workflow-uri, rulări, setări",
     "empty": "Încă nu are workflow-uri: importați unul dintr-un fișier.",
     "error_badge": "tratează erorile",
     "eyebrow": "Pachet",
@@ -119,6 +120,13 @@
     "schedules": "Programări",
     "versions": "Versiuni",
     "webhooks": "Webhook-uri"
+  },
+  "tab_hint": {
+    "overview": "Blocurile lui",
+    "runs": "Ce a făcut",
+    "schedules": "Când rulează singur",
+    "versions": "Modificările lui; restaurați una",
+    "webhooks": "Adresele care îl pornesc"
   },
   "table": {
     "actions": "Acțiuni"
