@@ -16,7 +16,7 @@ import { useI18n } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import type { NavItem, NavModel, NavSection } from './nav-link';
 import NavScroll from './nav-scroll';
-import { NavEntry, NavItemContent } from './nav-parts';
+import { holdsCurrent, isCurrent, NavEntry, NavItemContent } from './nav-parts';
 import './navbar.scss';
 
 /** Destinations on the bar itself; everything is in the drawer behind "More". */
@@ -46,11 +46,15 @@ function DrawerGroup(props: {
     class?: string;
 }) {
     const id = createUniqueId();
+    const location = useLocation();
     return (
         <li class={['drawer-group', props.class].filter(Boolean).join(' ')}>
             <button
                 type="button"
                 class="drawer-row"
+                classList={{
+                    'nav-current': holdsCurrent(props.items, location.pathname),
+                }}
                 aria-expanded={props.open}
                 aria-controls={id}
                 onClick={() => props.onToggle()}
@@ -296,9 +300,13 @@ function Drawer(props: { nav: NavModel; open: boolean; onClose: () => void }) {
  */
 export function MobileNav(props: { nav: NavModel }) {
     const { t } = useI18n();
+    const location = useLocation();
     const [open, setOpen] = createSignal(false);
     let more: HTMLButtonElement | undefined;
     const bar = createMemo(() => destinations(props.nav).slice(0, ON_BAR));
+    // Somewhere only the drawer leads to: "More" shows as current.
+    const elsewhere = () =>
+        !bar().some((item) => isCurrent(item.href, location.pathname));
 
     const close = () => {
         setOpen(false);
@@ -329,6 +337,7 @@ export function MobileNav(props: { nav: NavModel }) {
                             ref={more}
                             type="button"
                             class="mobile-nav-btn"
+                            classList={{ 'nav-current': elsewhere() }}
                             aria-expanded={open()}
                             aria-haspopup="dialog"
                             onClick={() => setOpen(true)}

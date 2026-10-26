@@ -90,6 +90,34 @@ describe('DesktopNav', () => {
         expect(logout).toHaveBeenCalledOnce();
     });
 
+    it('marks a group as current while one of its pages is open, and the account for its pages', () => {
+        renderPage(() => <DesktopNav nav={model()} />, '/files');
+
+        expect(
+            screen
+                .getByRole('button', { name: 'Workspace' })
+                .classList.contains('nav-current')
+        ).toBe(true);
+        expect(
+            screen
+                .getByRole('button', { name: /Dusty/ })
+                .classList.contains('nav-current')
+        ).toBe(false);
+        cleanup();
+
+        renderPage(() => <DesktopNav nav={model()} />, '/profile');
+        expect(
+            screen
+                .getByRole('button', { name: /Dusty/ })
+                .classList.contains('nav-current')
+        ).toBe(true);
+        expect(
+            screen
+                .getByRole('button', { name: 'Workspace' })
+                .classList.contains('nav-current')
+        ).toBe(false);
+    });
+
     it('offers signing in when nobody is', () => {
         renderPage(() => (
             <DesktopNav
@@ -140,6 +168,32 @@ describe('MobileNav', () => {
         expect(
             screen.getByRole('button', { name: /Dusty/ }).textContent
         ).toContain('@dusty');
+    });
+
+    it('marks More and the page’s group as current for a page only the drawer leads to', () => {
+        renderPage(() => <MobileNav nav={model()} />, '/files');
+
+        expect(
+            screen
+                .getByRole('button', { name: 'More' })
+                .classList.contains('nav-current')
+        ).toBe(true);
+        fireEvent.click(screen.getByRole('button', { name: 'More' }));
+        expect(
+            screen
+                .getByRole('button', { name: 'Workspace' })
+                .classList.contains('nav-current')
+        ).toBe(true);
+    });
+
+    it('leaves More alone for a page on the bar', () => {
+        renderPage(() => <MobileNav nav={model()} />, '/notes');
+
+        expect(
+            screen
+                .getByRole('button', { name: 'More' })
+                .classList.contains('nav-current')
+        ).toBe(false);
     });
 
     it('has no bar while signed out', () => {

@@ -3,6 +3,21 @@ import { A } from '@solidjs/router';
 import { Dynamic } from 'solid-js/web';
 import type { NavItem } from './nav-link';
 
+/** Whether a page's link points where we are (or above it: /explore for /explore/42). */
+export function isCurrent(href: string | undefined, pathname: string): boolean {
+    if (!href) return false;
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+/** Whether one of these items is the current page: its group shows as current too. */
+export function holdsCurrent(
+    items: NavItem[] | undefined,
+    pathname: string
+): boolean {
+    return !!items?.some((item) => isCurrent(item.href, pathname));
+}
+
 /**
  * One destination of the navigation: a page as a real link (middle-click,
  * "open in new tab", the current one marked by the router) or an action as

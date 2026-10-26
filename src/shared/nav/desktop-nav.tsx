@@ -9,11 +9,17 @@ import {
     type JSX,
 } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import { useLocation } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import type { NavItem, NavModel, NavSection } from './nav-link';
 import NavScroll from './nav-scroll';
-import { BurgerLines, NavEntry, NavItemContent } from './nav-parts';
+import {
+    BurgerLines,
+    holdsCurrent,
+    NavEntry,
+    NavItemContent,
+} from './nav-parts';
 import './navbar.scss';
 
 /** The space between the sidebar and a flyout, and from the window's edge. */
@@ -77,6 +83,8 @@ function Flyout(props: {
 function GroupButton(props: {
     section: NavSection;
     open: boolean;
+    /** One of its pages is the current one: marked like a current link. */
+    current?: boolean;
     onToggle: () => void;
     onDone: () => void;
     class?: string;
@@ -90,7 +98,9 @@ function GroupButton(props: {
             <button
                 ref={button}
                 type="button"
-                class={['nav-link', props.class].filter(Boolean).join(' ')}
+                class={['nav-link', props.class, props.current && 'nav-current']
+                    .filter(Boolean)
+                    .join(' ')}
                 aria-expanded={props.open}
                 aria-controls={props.open ? id : undefined}
                 onClick={() => props.onToggle()}
@@ -135,6 +145,7 @@ function SectionContent(props: { section: NavSection }) {
  */
 export function DesktopNav(props: { nav: NavModel }) {
     const { t } = useI18n();
+    const location = useLocation();
     // The open list: its section's label ("account" for the account's).
     const [open, setOpen] = createSignal<string | null>(null);
     let nav: HTMLElement | undefined;
@@ -213,6 +224,10 @@ export function DesktopNav(props: { nav: NavModel }) {
                                     <GroupButton
                                         section={section}
                                         open={open() === section.label}
+                                        current={holdsCurrent(
+                                            section.items,
+                                            location.pathname
+                                        )}
                                         onToggle={() => toggle(section.label)}
                                         onDone={close}
                                         content={
@@ -265,6 +280,10 @@ export function DesktopNav(props: { nav: NavModel }) {
                                 }}
                                 class="nav-account"
                                 open={open() === ACCOUNT}
+                                current={holdsCurrent(
+                                    account().items,
+                                    location.pathname
+                                )}
                                 onToggle={() => toggle(ACCOUNT)}
                                 onDone={close}
                                 content={
