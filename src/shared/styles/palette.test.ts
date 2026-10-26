@@ -77,6 +77,7 @@ describe.each([
             ...rules.map(([n]) => n),
             'primary',
             'on-primary',
+            'hover',
             'border',
             'shadow',
         ])
@@ -137,6 +138,18 @@ describe.each([
                     contrast(t[name], over(surface)),
                     `${name} over the pattern on ${surface}`
                 ).toBeGreaterThanOrEqual(min);
+    });
+
+    it('a hovered menu item stays readable', () => {
+        for (const [name, min] of [
+            ['text', 7],
+            ['text-muted', 4.5],
+            ['accent', 3],
+        ] as const)
+            expect(
+                contrast(t[name], t.hover),
+                `${name} on hover`
+            ).toBeGreaterThanOrEqual(min);
     });
 
     it('button text reads on the button, and the button on the navy hover', () => {

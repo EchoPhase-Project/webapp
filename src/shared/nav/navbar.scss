@@ -72,8 +72,8 @@
   --nav-pad: 10px;
   --nav-link-h: 40px;
   --nav-icon: 20px;
-  // Hover, the open item and the current page: a tint of the text.
-  --nav-hover: color-mix(in srgb, var(--text) 7%, transparent);
+  // Hover, the open item and the current page.
+  --nav-hover: var(--hover);
   --nav-inset: calc(
     (var(--nav-collapsed) - 2 * var(--nav-pad) - var(--nav-icon)) / 2
   );
@@ -378,10 +378,10 @@
   &:hover,
   &:focus-visible,
   &.nav-current {
-    background-color: color-mix(in srgb, var(--text) 7%, transparent);
+    background-color: var(--hover);
 
-    .submenu-label {
-      color: var(--text-hover);
+    .submenu-icon {
+      color: var(--accent);
     }
   }
 }
@@ -647,7 +647,7 @@
   &:hover,
   &:focus-visible,
   &.nav-current {
-    background-color: color-mix(in srgb, var(--text) 7%, transparent);
+    background-color: var(--hover);
 
     .nav-icon {
       color: var(--accent);
@@ -708,7 +708,7 @@
   &:hover,
   &:focus-visible {
     color: var(--text);
-    background-color: color-mix(in srgb, var(--text) 7%, transparent);
+    background-color: var(--hover);
   }
 }
 
