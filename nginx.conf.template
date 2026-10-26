@@ -248,7 +248,12 @@ http {
             try_files $uri =404;
         }
         
+        # The app's shell (index.html, for every route): asked again each
+        # time (a 304 while unchanged), so a deploy is seen at once. Without
+        # it browsers guess a lifetime from Last-Modified and keep showing
+        # the old build, whose hashed files may be gone.
         location / {
+            add_header Cache-Control "no-cache" always;
             try_files $uri $uri/ /index.html;
         }
     }
