@@ -130,42 +130,9 @@
   padding-bottom: 6px;
 }
 
-.workflow-webhooks {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.workflow-webhook {
-  display: grid;
-  gap: 6px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--surface);
-}
-
-.workflow-webhook-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-}
-
-.workflow-webhook-label {
-  min-width: 5em;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
 .workflow-code--hidden {
   letter-spacing: 0.1em;
   color: var(--text-muted);
-}
-
-.workflow-section p.workflow-webhook-respond {
-  font-size: 0.8rem;
 }
 
 .workflow-run-name {
@@ -452,4 +419,56 @@
   align-items: center;
   gap: 8px;
   margin-left: auto;
+}
+
+// A tab of a workflow's triggers: what it is and its action, then a table.
+.workflow-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.workflow-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+  }
+}
+
+.workflow-table {
+  // The address takes the room; the actions only what they need.
+  th:first-child {
+    width: 45%;
+  }
+
+  th:last-child {
+    width: 7rem;
+  }
+}
+
+.workflow-cell-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  min-width: 0;
+
+  .workflow-code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .btn {
+    flex: none;
+  }
+}
+
+.workflow-actions-cell {
+  display: inline-flex;
+  gap: 2px;
 }

@@ -63,7 +63,7 @@ describe('WorkflowDetails', () => {
         vi.unstubAllGlobals();
     });
 
-    it('shows what it is: its blocks and where its webhook listens', async () => {
+    it('shows what it is: its blocks only; its webhooks and schedules have tabs', async () => {
         fakeApi(routes());
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
 
@@ -75,8 +75,11 @@ describe('WorkflowDetails', () => {
         ).toBeTruthy();
         expect(screen.getByText('WebhookTrigger')).toBeTruthy();
         expect(screen.getByText('say hi')).toBeTruthy();
-        expect(screen.getByText(/\/api\/v1\/hooks\/w1\/1$/)).toBeTruthy();
-        expect(screen.getByText(/gets 202 at once/)).toBeTruthy();
+        expect(screen.queryByText(/\/api\/v1\/hooks\/w1\/1$/)).toBeNull();
+        expect(
+            await screen.findByRole('tab', { name: 'Webhooks' })
+        ).toBeTruthy();
+        expect(screen.getByRole('tab', { name: 'Schedules' })).toBeTruthy();
         // Back to its package, by name.
         expect(
             (
@@ -85,7 +88,22 @@ describe('WorkflowDetails', () => {
         ).toBe('/packages/p1/workflows');
     });
 
-    it('shows the webhook secret only when asked, and replaces it after asking', async () => {
+    it('has no webhooks tab without a WebhookTrigger', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflows/w1': () =>
+                    json(200, workflow({ webhooks: [] })),
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+
+        expect(
+            await screen.findByRole('tab', { name: 'Schedules' })
+        ).toBeTruthy();
+        expect(screen.queryByRole('tab', { name: 'Webhooks' })).toBeNull();
+    });
+
+    it('lists the webhooks: the secret only when asked; a new one from the edit dialog', async () => {
         const api = fakeApi(
             routes({
                 'PUT /api/v1/workflows/w1': () =>
@@ -93,17 +111,24 @@ describe('WorkflowDetails', () => {
             })
         );
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+        fireEvent.click(await screen.findByRole('tab', { name: 'Webhooks' }));
 
-        expect(await screen.findByText('••••••••••••••••')).toBeTruthy();
+        expect(
+            await screen.findByText(/\/api\/v1\/hooks\/w1\/1$/)
+        ).toBeTruthy();
+        expect(screen.getByText('202 at once')).toBeTruthy();
         expect(screen.queryByText('a-secret-of-sixteen')).toBeNull();
         fireEvent.click(
             screen.getByRole('button', { name: 'Show the secret' })
         );
         expect(screen.getByText('a-secret-of-sixteen')).toBeTruthy();
 
-        fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
-        const dialog = await screen.findByRole('alertdialog');
-        fireEvent.click(dialog.querySelector('.btn-danger') as HTMLElement);
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Edit the webhook' })
+        );
+        fireEvent.click(await screen.findByLabelText(/New secret/));
+        fireEvent.click(screen.getByLabelText(/The run’s output/));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
         await waitFor(() =>
             expect(api.calls('PUT /api/v1/workflows/w1')).toHaveLength(1)
@@ -112,12 +137,63 @@ describe('WorkflowDetails', () => {
             .calls('PUT /api/v1/workflows/w1')[0]
             .json()) as {
             version: number;
-            program: { blocks: { params: { secret?: string } }[] };
+            program: {
+                blocks: { params: { secret?: string; respond?: string } }[];
+            };
         };
         expect(body.version).toBe(3);
-        const secret = body.program.blocks[0].params.secret ?? '';
-        expect(secret).not.toBe('a-secret-of-sixteen');
-        expect(secret.length).toBeGreaterThanOrEqual(16);
+        const params = body.program.blocks[0].params;
+        expect(params.respond).toBe('OnFinish');
+        expect(params.secret).not.toBe('a-secret-of-sixteen');
+        expect((params.secret ?? '').length).toBeGreaterThanOrEqual(16);
+    });
+
+    it('adds a schedule that starts where the other triggers do', async () => {
+        const api = fakeApi(
+            routes({
+                'PUT /api/v1/workflows/w1': () =>
+                    json(200, workflow({ version: 4 })),
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+        fireEvent.click(await screen.findByRole('tab', { name: 'Schedules' }));
+        expect(await screen.findByText('No schedules.')).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add a schedule' }));
+        fireEvent.input(await screen.findByLabelText(/^Cron/), {
+            target: { value: '0 9 * * 1-5' },
+        });
+        fireEvent.input(screen.getByLabelText(/^Time zone/), {
+            target: { value: 'Europe/Chisinau' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflows/w1')).toHaveLength(1)
+        );
+        const body = (await api
+            .calls('PUT /api/v1/workflows/w1')[0]
+            .json()) as {
+            program: {
+                blocks: {
+                    id: number;
+                    type: string;
+                    params: { cron?: string };
+                }[];
+                connections: { from: number; to: number }[];
+                settings: { timeZone?: string };
+            };
+        };
+        const added = body.program.blocks.find(
+            (b) => b.type === 'ScheduleTrigger'
+        );
+        expect(added).toMatchObject({ id: 3, params: { cron: '0 9 * * 1-5' } });
+        expect(body.program.connections).toContainEqual({
+            from: 3,
+            to: 2,
+            output: 'main',
+        });
+        expect(body.program.settings.timeZone).toBe('Europe/Chisinau');
     });
 
     it('runs it with a JSON input, refusing what is not JSON', async () => {

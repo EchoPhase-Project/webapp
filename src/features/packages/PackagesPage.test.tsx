@@ -25,7 +25,9 @@ export const workflow = (over: Record<string, unknown> = {}) => ({
             },
             { id: 2, type: 'Print', name: 'say hi', params: {} },
         ],
-        connections: [{ from: 1, to: 2 }],
+        connections: [{ from: 1, to: 2, output: 'main' }],
+        startIds: [],
+        settings: {},
     },
     webhooks: [
         { blockId: 1, path: '/api/v1/hooks/w1/1', respond: 'Immediately' },

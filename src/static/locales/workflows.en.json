@@ -19,11 +19,7 @@
     "blocks": "Blocks ({count})",
     "copied": "Copied",
     "copy": "Copy the address",
-    "disabled": "skipped",
-    "next": "next {date}",
-    "schedules": "Schedules",
-    "webhooks": "Webhooks",
-    "webhooks_hint": "Send a POST to the address with the header X-Webhook-Secret set to its secret; the body (JSON) is the run’s input."
+    "disabled": "skipped"
   },
   "package": {
     "empty": "No workflows in it yet: import one from a file.",
@@ -65,6 +61,22 @@
     "more": "Show older",
     "no_result": "Its result is no longer kept."
   },
+  "schedule": {
+    "add": "Add a schedule",
+    "cron": "Schedule",
+    "cron_hint": "“0 9 * * 1-5”: weekdays at 9:00; “*/15 * * * *”: every 15 minutes.",
+    "cron_label": "Cron (minute hour day month weekday)",
+    "delete": "Delete the schedule",
+    "delete_body": "It stops running the workflow. It is a change of the workflow, saved as a new version.",
+    "delete_title": "Delete this schedule?",
+    "edit": "Edit the schedule",
+    "lead": "When it runs on its own, while it is on.",
+    "next": "Next run",
+    "none": "No schedules.",
+    "zone": "Time zone",
+    "zone_label": "Time zone (all its schedules)",
+    "zone_yours": "Yours"
+  },
   "settings": {
     "danger": "Delete",
     "delete": "Delete this package",
@@ -103,7 +115,12 @@
   "tab": {
     "overview": "Overview",
     "runs": "Runs",
-    "versions": "Versions"
+    "schedules": "Schedules",
+    "versions": "Versions",
+    "webhooks": "Webhooks"
+  },
+  "table": {
+    "actions": "Actions"
   },
   "tags": {
     "description": "What it is about: Explore filters by them.",
@@ -130,17 +147,27 @@
   },
   "webhook": {
     "address": "Address",
-    "copied": "Secret copied",
     "copy": "Copy the secret",
+    "delete": "Delete the webhook",
+    "delete_body": "Its address stops answering at once. It is a change of the workflow, saved as a new version.",
+    "delete_title": "Delete this webhook?",
+    "edit": "Edit the webhook",
     "hide": "Hide the secret",
+    "lead": "POST to the address with the header X-Webhook-Secret; the JSON body is the run’s input.",
+    "none": "No webhooks.",
     "replace": "New secret",
-    "replace_body": "The old secret stops working at once: whoever calls this webhook needs the new one. It is a change of the workflow, saved as a new version.",
-    "replace_title": "Give it a new secret?",
+    "replace_short": "The old one stops working at once.",
     "respond": {
       "ByBlock": "The caller waits for a RespondToWebhook block and gets what it sends.",
       "Immediately": "The caller gets 202 at once, with the run’s id; the run goes on.",
       "OnFinish": "The caller waits for the run and gets its last block’s output (500 if it fails)."
     },
+    "respond_short": {
+      "ByBlock": "RespondToWebhook",
+      "Immediately": "202 at once",
+      "OnFinish": "The run’s output"
+    },
+    "respond_title": "Answer",
     "secret": "Secret",
     "show": "Show the secret"
   }

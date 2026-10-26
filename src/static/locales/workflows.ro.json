@@ -19,11 +19,7 @@
     "blocks": "Blocuri ({count})",
     "copied": "Copiat",
     "copy": "Copiază adresa",
-    "disabled": "sărit",
-    "next": "următoarea: {date}",
-    "schedules": "Programări",
-    "webhooks": "Webhook-uri",
-    "webhooks_hint": "Trimiteți un POST la adresă cu antetul X-Webhook-Secret egal cu secretul său; corpul (JSON) devine intrarea rulării."
+    "disabled": "sărit"
   },
   "package": {
     "empty": "Încă nu are workflow-uri: importați unul dintr-un fișier.",
@@ -65,6 +61,22 @@
     "more": "Arată mai vechi",
     "no_result": "Rezultatul nu mai e păstrat."
   },
+  "schedule": {
+    "add": "Adăugați o programare",
+    "cron": "Programare",
+    "cron_hint": "„0 9 * * 1-5”: în zilele lucrătoare la 9:00; „*/15 * * * *”: la fiecare 15 minute.",
+    "cron_label": "Cron (minut oră zi lună zi a săptămânii)",
+    "delete": "Ștergeți programarea",
+    "delete_body": "Nu mai pornește workflow-ul. Este o modificare a workflow-ului, salvată ca versiune nouă.",
+    "delete_title": "Ștergeți această programare?",
+    "edit": "Modificați programarea",
+    "lead": "Când rulează singur, cât timp este pornit.",
+    "next": "Următoarea rulare",
+    "none": "Nicio programare.",
+    "zone": "Fus orar",
+    "zone_label": "Fus orar (pentru toate programările lui)",
+    "zone_yours": "Al dvs."
+  },
   "settings": {
     "danger": "Ștergere",
     "delete": "Ștergeți acest pachet",
@@ -103,7 +115,12 @@
   "tab": {
     "overview": "Prezentare",
     "runs": "Rulări",
-    "versions": "Versiuni"
+    "schedules": "Programări",
+    "versions": "Versiuni",
+    "webhooks": "Webhook-uri"
+  },
+  "table": {
+    "actions": "Acțiuni"
   },
   "tags": {
     "description": "Despre ce este: Explorare filtrează după ele.",
@@ -130,17 +147,27 @@
   },
   "webhook": {
     "address": "Adresă",
-    "copied": "Secret copiat",
     "copy": "Copiați secretul",
+    "delete": "Ștergeți webhook-ul",
+    "delete_body": "Adresa lui nu mai răspunde imediat. Este o modificare a workflow-ului, salvată ca versiune nouă.",
+    "delete_title": "Ștergeți acest webhook?",
+    "edit": "Modificați webhook-ul",
     "hide": "Ascundeți secretul",
+    "lead": "POST la adresă cu antetul X-Webhook-Secret; corpul JSON devine intrarea rulării.",
+    "none": "Niciun webhook.",
     "replace": "Secret nou",
-    "replace_body": "Secretul vechi nu mai funcționează imediat: cine apelează acest webhook are nevoie de cel nou. Este o modificare a workflow-ului, salvată ca versiune nouă.",
-    "replace_title": "Îi dați un secret nou?",
+    "replace_short": "Cel vechi nu mai funcționează imediat.",
     "respond": {
       "ByBlock": "Apelantul așteaptă un bloc RespondToWebhook și primește ce trimite acesta.",
       "Immediately": "Apelantul primește imediat 202, cu id-ul rulării; rularea continuă.",
       "OnFinish": "Apelantul așteaptă rularea și primește ieșirea ultimului bloc (500 dacă eșuează)."
     },
+    "respond_short": {
+      "ByBlock": "RespondToWebhook",
+      "Immediately": "Imediat 202",
+      "OnFinish": "Ieșirea rulării"
+    },
+    "respond_title": "Răspuns",
     "secret": "Secret",
     "show": "Arătați secretul"
   }

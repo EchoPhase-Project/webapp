@@ -31,10 +31,12 @@ import { packagePath, usePackage } from '@features/packages/package-nav';
 import ProgramOverview from './ProgramOverview';
 import RunDialog from './RunDialog';
 import RunList from './RunList';
+import ScheduleTable from './ScheduleTable';
 import VersionList from './VersionList';
+import WebhookTable from './WebhookTable';
 
-type Tab = 'overview' | 'runs' | 'versions';
-const TABS: Tab[] = ['overview', 'runs', 'versions'];
+type Tab = 'overview' | 'webhooks' | 'schedules' | 'runs' | 'versions';
+const TABS: Tab[] = ['overview', 'webhooks', 'schedules', 'runs', 'versions'];
 
 /** One workflow of a package: on or off, run it, what it is, its runs and versions; export and delete. */
 export default function WorkflowDetails(props: {
@@ -59,8 +61,14 @@ export default function WorkflowDetails(props: {
             return result.ok ? result.data : null;
         }
     );
+    // Webhooks only while it has a WebhookTrigger.
+    const tabs = () =>
+        TABS.filter(
+            (name) =>
+                name !== 'webhooks' || (workflow()?.webhooks.length ?? 0) > 0
+        );
     const tab = (): Tab =>
-        TABS.includes(params.tab as Tab) ? (params.tab as Tab) : 'overview';
+        tabs().includes(params.tab as Tab) ? (params.tab as Tab) : 'overview';
     const [running, setRunning] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
     const [busy, setBusy] = createSignal(false);
@@ -206,7 +214,7 @@ export default function WorkflowDetails(props: {
                     </div>
 
                     <div class="workflow-tabs" role="tablist">
-                        <For each={TABS}>
+                        <For each={tabs()}>
                             {(name) => (
                                 <button
                                     type="button"
@@ -230,7 +238,16 @@ export default function WorkflowDetails(props: {
 
                     <div role="tabpanel">
                         <Show when={tab() === 'overview'}>
-                            <ProgramOverview
+                            <ProgramOverview workflow={w()} />
+                        </Show>
+                        <Show when={tab() === 'webhooks'}>
+                            <WebhookTable
+                                workflow={w()}
+                                onChange={(changed) => mutate(changed)}
+                            />
+                        </Show>
+                        <Show when={tab() === 'schedules'}>
+                            <ScheduleTable
                                 workflow={w()}
                                 onChange={(changed) => mutate(changed)}
                             />
