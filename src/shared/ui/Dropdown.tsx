@@ -222,19 +222,22 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                 }}
                 style={{
                     'min-width': `${selectedOption()?.label.length ?? 5}ch`,
-                    direction: `${searchTerm().trim() !== '' ? 'rtl' : 'ltr'}`,
                 }}
             >
                 <span class="noselect" aria-label={selectedOption()?.ariaLabel}>
-                    {searchTerm().trim() !== ''
-                        ? searchTerm()
-                        : (selectedOption()?.label ?? 'Select')}
+                    {selectedOption()?.label ?? 'Select'}
                 </span>
                 <i class="uil uil-arrow-down" />
             </div>
 
             {isOpen() && (
                 <div class="dropdown-menu" role="listbox" ref={menuRef}>
+                    {/* What is typed filters the list; shown above it, not in the button. */}
+                    {searchTerm().trim() !== '' && (
+                        <div class="dropdown-search" aria-hidden="true">
+                            {searchTerm()}
+                        </div>
+                    )}
                     <For each={filteredOptions()}>
                         {(option) => (
                             <div
@@ -257,7 +260,14 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                                     }
                                 }}
                             >
-                                <span class="noselect">{option.label}</span>
+                                <span class="noselect dropdown-label">
+                                    {option.label}
+                                </span>
+                                {option.ariaLabel && (
+                                    <span class="noselect dropdown-name">
+                                        {option.ariaLabel}
+                                    </span>
+                                )}
                             </div>
                         )}
                     </For>

@@ -65,30 +65,74 @@
     }
   }
 
+  // The list is a panel of its own under the button, right-aligned and
+  // wide enough for the languages' names and for "nothing found".
   .dropdown-menu {
-    top: 100%;
+    top: calc(100% + 4px);
+    right: 0;
+    left: auto;
+    width: max-content;
+    min-width: 11rem;
+    max-height: 16rem;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface);
   }
 
-  // The list is as wide as the button: two letters need little padding.
-  .dropdown-item {
-    padding: 6px 4px;
-  }
+  .dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-align: left;
+    background-color: transparent;
 
-  &[data-open='true'][data-drop-up='false'] {
-    border-radius: 8px 8px 0 0;
-
-    .dropdown-menu {
-      border-radius: 0 0 8px 8px;
+    &:hover,
+    &:focus-visible {
+      background-color: var(--hover);
     }
   }
 
+  .dropdown-label {
+    min-width: 2ch;
+    font-weight: 600;
+  }
+
+  .dropdown-name {
+    color: var(--text-muted);
+  }
+
+  .dropdown-search,
+  .dropdown-no-results {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .dropdown-search {
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  // Open, the button keeps its corners: the panel floats apart from it.
+  &[data-open='true'],
+  &[data-open='true'][data-drop-up='false'],
   &[data-open='true'][data-drop-up='true'] {
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px;
+    background-color: var(--surface);
 
     .dropdown-menu {
-      top: auto;
-      border-radius: 8px 8px 0 0;
+      border-radius: 8px;
     }
+  }
+
+  &[data-open='true'][data-drop-up='true'] .dropdown-menu {
+    top: auto;
+    bottom: calc(100% + 4px);
   }
 }
 
