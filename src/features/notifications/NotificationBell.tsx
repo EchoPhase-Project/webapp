@@ -6,6 +6,7 @@ import type { AppNotification } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import HeaderButton from '@shared/ui/HeaderButton';
 import { deleteNotification, fetchInbox, markAllRead, markRead } from './api';
 import { wordingOf } from './wording';
 import './notifications.scss';
@@ -119,11 +120,8 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
     return (
         <Show when={isAuthenticated()}>
             <div class="notifications" ref={root}>
-                <button
-                    type="button"
-                    class="header-button"
-                    aria-label={label()}
-                    title={label()}
+                <HeaderButton
+                    label={label()}
                     aria-expanded={open()}
                     aria-haspopup="true"
                     onClick={() => setOpen((v) => !v)}
@@ -132,7 +130,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                     <Show when={unread() > 0}>
                         <span class="header-dot" aria-hidden="true" />
                     </Show>
-                </button>
+                </HeaderButton>
 
                 <span class="visually-hidden" aria-live="polite">
                     {announcement()}

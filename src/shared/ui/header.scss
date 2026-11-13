@@ -1,7 +1,7 @@
-// An action of the top bar, like the theme toggle: a compact 32px square,
-// an icon on the surface, a dot in the corner when there is news.
-.header-button,
-.header .theme-toggle {
+// An action of the top bar (HeaderButton: new note, notifications, theme): a
+// compact 32px square, an icon on the surface, a dot in the corner when
+// there is news.
+.header-button {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -148,7 +148,7 @@
   }
 }
 
-.header .theme-toggle .theme {
+.header-button .theme-toggle-icon {
   width: 16px;
   height: 16px;
 }
