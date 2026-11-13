@@ -2,6 +2,7 @@ import { createEffect, createSignal, For, on, Show } from 'solid-js';
 import type { BlockRun, BlockRunDetails } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import {
@@ -27,35 +28,22 @@ export default function RunList(props: {
 }) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
-    const [runs, setRuns] = createSignal<BlockRun[]>([]);
-    const [next, setNext] = createSignal<string | null>(null);
-    const [loaded, setLoaded] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
+    const runs = createPagedList(async (cursor) => {
+        const result = props.packageId
+            ? await listPackageRuns(props.packageId, cursor)
+            : await listWorkflowRuns(props.workflowId ?? '', cursor);
+        return result.ok
+            ? { items: result.data.data, next: result.data.nextCursor ?? null }
+            : null;
+    });
     const [open, setOpen] = createSignal<string | null>(null);
     const [details, setDetails] = createSignal<BlockRunDetails | null>(null);
 
-    async function load(more: boolean) {
-        setBusy(true);
-        try {
-            const cursor = more ? (next() ?? undefined) : undefined;
-            const result = props.packageId
-                ? await listPackageRuns(props.packageId, cursor)
-                : await listWorkflowRuns(props.workflowId ?? '', cursor);
-            if (!result.ok) return;
-            setRuns((list) =>
-                more ? [...list, ...result.data.data] : result.data.data
-            );
-            setNext(result.data.nextCursor ?? null);
-            setLoaded(true);
-        } finally {
-            setBusy(false);
-        }
-    }
-
+    // The runs shown stay until the new first page is there.
     createEffect(
         on(
             () => [props.workflowId, props.packageId, runsVersion()],
-            () => void load(false)
+            () => void runs.reset({ keep: true })
         )
     );
 
@@ -74,9 +62,9 @@ export default function RunList(props: {
 
     return (
         <Show
-            when={runs().length > 0}
+            when={runs.items().length > 0}
             fallback={
-                <Show when={loaded()}>
+                <Show when={runs.loaded()}>
                     <EmptyState>
                         {t(
                             'runs.empty',
@@ -87,7 +75,7 @@ export default function RunList(props: {
             }
         >
             <ul class="workflow-runs">
-                <For each={runs()}>
+                <For each={runs.items()}>
                     {(run) => (
                         <li class="workflow-run">
                             {/* eslint-disable-next-line no-restricted-syntax -- a whole row that opens the run's details, not an action button */}
@@ -167,12 +155,12 @@ export default function RunList(props: {
                     )}
                 </For>
             </ul>
-            <Show when={next()}>
+            <Show when={runs.more()}>
                 <div class="workflow-more">
                     <Button
                         variant="ghost"
-                        busy={busy()}
-                        onClick={() => void load(true)}
+                        busy={runs.loading()}
+                        onClick={() => runs.loadMore()}
                     >
                         {t('runs.more', 'Show older')}
                     </Button>

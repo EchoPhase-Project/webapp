@@ -5,6 +5,7 @@ import { useAuth } from '@shared/api/auth-provider';
 import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -27,28 +28,21 @@ export default function FilesPage() {
         ),
     }));
 
-    const [files, setFiles] = createSignal<StoredFile[]>([]);
-    // A full last page: there may be more after it.
-    const [more, setMore] = createSignal(false);
-    const [loading, setLoading] = createSignal(false);
+    const files = createPagedList(async (after) => {
+        const page = await listFiles(after);
+        // A full last page: there may be more after it, after its last file.
+        return {
+            items: page,
+            next: page.length === PAGE_SIZE ? (page.at(-1)?.id ?? null) : null,
+        };
+    });
     const { busy, errors, pending, run } = createSubmit();
     // The file whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<StoredFile | null>(null);
 
-    async function load(after?: string) {
-        setLoading(true);
-        try {
-            const page = await listFiles(after);
-            setFiles((current) => (after ? [...current, ...page] : page));
-            setMore(page.length === PAGE_SIZE);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     createRenderEffect(
         on(isAuthenticated, (signedIn) => {
-            if (signedIn) void load();
+            if (signedIn) void files.reset({ keep: true });
         })
     );
 
@@ -57,7 +51,8 @@ export default function FilesPage() {
             () => uploadFile(file),
             (stored) => {
                 // Oldest first: a new file is the last one, once all are shown.
-                if (!more()) setFiles((current) => [...current, stored]);
+                if (!files.more())
+                    files.setItems((current) => [...current, stored]);
             }
         );
     }
@@ -68,7 +63,7 @@ export default function FilesPage() {
             await pending(async () => {
                 const result = await deleteFile(file.id);
                 if (result.ok)
-                    setFiles((current) =>
+                    files.setItems((current) =>
                         current.filter((f) => f.id !== file.id)
                     );
             });
@@ -97,14 +92,18 @@ export default function FilesPage() {
 
             <ErrorSummary errors={errors()} />
 
-            <FilesTable files={files()} busy={busy()} onDelete={setDeleting} />
+            <FilesTable
+                files={files.items()}
+                busy={busy()}
+                onDelete={setDeleting}
+            />
 
-            <Show when={more()}>
+            <Show when={files.more()}>
                 <div class="files-more">
                     <Button
                         variant="ghost"
-                        busy={loading()}
-                        onClick={() => void load(files().at(-1)?.id)}
+                        busy={files.loading()}
+                        onClick={() => files.loadMore()}
                     >
                         {t('ui.show_more', 'Show more')}
                     </Button>

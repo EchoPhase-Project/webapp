@@ -1,9 +1,9 @@
-import { createEffect, createSignal, on, onCleanup, Show } from 'solid-js';
+import { createEffect, createSignal, on, Show } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
-import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Masonry from '@shared/ui/Masonry';
@@ -47,62 +47,20 @@ export default function ExplorePage() {
     const pickTag = (picked: string) =>
         onSearch(queryOf(picked, parseQuery(query()).words), true);
 
-    const [packages, setPackages] = createSignal<WorkflowPackage[]>([]);
-    // Where the next page of Explore starts; null: nothing more.
-    const [next, setNext] = createSignal<string | null>(null);
-    const [loading, setLoading] = createSignal(false);
-    const [loaded, setLoaded] = createSignal(false);
+    const packages = createPagedList(async (cursor) => {
+        const result = await explorePackages(search(), tag(), cursor);
+        return result.ok ? result.data : null;
+    });
+
     // A newer list (another tab, search or tag) makes older answers stale.
-    let generation = 0;
-
-    async function load(more: boolean) {
-        const mine = generation;
-        setLoading(true);
-        try {
-            const result = await explorePackages(
-                search(),
-                tag(),
-                more ? (next() ?? undefined) : undefined
-            );
-            if (mine !== generation || !result.ok) return;
-            setPackages((list) =>
-                more ? [...list, ...result.data.items] : result.data.items
-            );
-            setNext(result.data.next);
-            setLoaded(true);
-        } finally {
-            if (mine === generation) setLoading(false);
-        }
-    }
-
     createEffect(
         on(
             () => (isAuthenticated() ? [search(), tag()] : false),
             (key) => {
-                if (!key) return;
-                generation++;
-                setLoaded(false);
-                setPackages([]);
-                setNext(null);
-                void load(false);
+                if (key) void packages.reset();
             }
         )
     );
-
-    const loadMore = () => {
-        if (next() && !loading()) void load(true);
-    };
-
-    // The next page comes as the end of the list scrolls into view.
-    const watchEnd = (el: HTMLElement) => {
-        if (typeof IntersectionObserver === 'undefined') return;
-        const observer = new IntersectionObserver(
-            (entries) => entries.some((e) => e.isIntersecting) && loadMore(),
-            { rootMargin: '400px' }
-        );
-        observer.observe(el);
-        onCleanup(() => observer.disconnect());
-    };
 
     return (
         <div class="page-stack packages-container">
@@ -124,9 +82,9 @@ export default function ExplorePage() {
             <PackageSearch value={query()} onInput={onSearch} />
 
             <Show
-                when={packages().length > 0}
+                when={packages.items().length > 0}
                 fallback={
-                    <Show when={loaded()}>
+                    <Show when={packages.loaded()}>
                         <EmptyState>
                             {search() || tag()
                                 ? t('none_found', 'No packages match.')
@@ -138,15 +96,15 @@ export default function ExplorePage() {
                     </Show>
                 }
             >
-                <Masonry each={packages()}>
+                <Masonry each={packages.items()}>
                     {(pkg) => <PackageCard pkg={pkg} onTag={pickTag} />}
                 </Masonry>
-                <Show when={next()}>
-                    <div class="packages-more" ref={watchEnd}>
+                <Show when={packages.more()}>
+                    <div class="packages-more" ref={packages.watchEnd}>
                         <Button
                             variant="ghost"
-                            busy={loading()}
-                            onClick={loadMore}
+                            busy={packages.loading()}
+                            onClick={() => packages.loadMore()}
                         >
                             {t('ui.show_more', 'Show more')}
                         </Button>

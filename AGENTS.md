@@ -65,6 +65,8 @@ and the tests are successful.
 - If a call can fail and the page needs a value, use
   `dataOr(result, fallback)`. To send a file, use `multipart(fields)`. Do not
   write `as unknown as` for a body.
+- If a list comes one page at a time, use `createPagedList(fetchPage)` from
+  `shared/lib/paged-list.ts`.
 - To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`:
   `run(call, onOk)` sets `busy` and shows the errors. Do not write the
   `setBusy` and `groupErrors` steps again.

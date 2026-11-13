@@ -195,6 +195,11 @@ contract. Do not write a response type manually in `types.ts`.
 - To send a file, make the body with `multipart({ File: file })`. The
   contract types a multipart body as an object of strings. Thus, `multipart`
   keeps the only cast in one location.
+- If a list comes one page at a time, use `createPagedList(fetchPage)` from
+  `@shared/lib/paged-list`. It adds the pages to the list. It ignores the
+  answers to calls from before a `reset()`. The ref `watchEnd` gets the next
+  page when the end of the list comes into view. Thus, a page does not keep a
+  cursor or a stale-answer guard of its own.
 - To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
   `run(call, onOk)` sets `busy`, sends the call, and groups the errors. If
   the call is successful, `run` clears the errors and gives the data to
