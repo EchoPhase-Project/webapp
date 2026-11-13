@@ -6,8 +6,7 @@
   "revoke": "Revocă sesiunea",
   "empty": "Nicio sesiune activă",
   "columns": {
-    "device": "Dispozitiv",
-    "actions": "Acțiuni"
+    "device": "Dispozitiv"
   },
   "device": {
     "unknown_os": "SO necunoscut",

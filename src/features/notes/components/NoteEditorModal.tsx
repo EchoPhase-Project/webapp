@@ -75,14 +75,14 @@ export default function NoteEditorModal(props: {
                         aria-expanded={sharing()}
                         onClick={() => setSharing((v) => !v)}
                     >
-                        {t('editor.share', 'Share')}
+                        {t('ui.share', 'Share')}
                     </Button>
                     <Button
                         variant="danger-outline"
                         disabled={busy()}
                         onClick={() => setConfirming(true)}
                     >
-                        {t('editor.delete', 'Delete')}
+                        {t('ui.delete', 'Delete')}
                     </Button>
                 </Show>
             )}
@@ -119,7 +119,7 @@ export default function NoteEditorModal(props: {
             <ConfirmDialog
                 open={confirming()}
                 title={t('confirm_delete.title', 'Delete this note?')}
-                confirm={t('confirm_delete.action', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => {
                     const id = props.note!.id;

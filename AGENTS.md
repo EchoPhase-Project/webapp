@@ -99,6 +99,8 @@ and the tests are successful.
   `t('key', 'English fallback')`.
 - If a string contains a value, give the value to `t()`:
   `t('key', 'Delete {name}', { name })`. Do not use `.replace()` on the result.
+- Words that many pages show are `ui.*` keys in `<lang>.json`:
+  `t('ui.delete', 'Delete')`. Do not copy them to a page file.
 - Add new keys only to the English files: `<lang>.json` or
   `<page>.en.json`. Weblate supplies the other languages.
 - If you remove a key or change its name, do this in all language files.

@@ -4,26 +4,20 @@
   "empty": "No API clients",
   "form": {
     "title": "New client",
-    "name": "Name",
     "expires": "Expires (optional, your local time)",
     "create": "Create"
   },
   "secret": "Secret (shown once, copy it now):",
   "delete": "Delete {name}",
   "columns": {
-    "name": "Name",
     "expires": "Expires",
     "last_used": "Last used",
-    "created": "Created",
-    "actions": "Actions"
+    "created": "Created"
   },
   "new": "New client",
   "copy": "Copy",
-  "copied": "Copied",
-  "dismiss": "Done",
   "confirm_delete": {
     "title": "Delete this API client?",
-    "text": "{name} stops working at once: bots and scripts using it can no longer sign in.",
-    "action": "Delete"
+    "text": "{name} stops working at once: bots and scripts using it can no longer sign in."
   }
 }

@@ -33,7 +33,7 @@ export default function PackageEditorModal(props: {
             title={
                 props.pkg
                     ? t('editor.edit', 'Name, summary and README')
-                    : t('editor.new', 'New package')
+                    : t('ui.new_package', 'New package')
             }
             onClose={() => props.onClose()}
             wide
@@ -101,7 +101,7 @@ function PackageForm(props: {
             <Field
                 id={inputId('name')}
                 name="name"
-                label={t('editor.name', 'Name')}
+                label={t('ui.name', 'Name')}
                 showLabel
                 errors={errors().name}
                 type="text"
@@ -134,10 +134,10 @@ function PackageForm(props: {
                     value={preview() ? 'preview' : 'write'}
                     onChange={(tab) => setPreview(tab === 'preview')}
                     tabs={[
-                        { value: 'write', label: t('editor.write', 'Write') },
+                        { value: 'write', label: t('ui.write', 'Write') },
                         {
                             value: 'preview',
-                            label: t('editor.preview', 'Preview'),
+                            label: t('ui.preview', 'Preview'),
                         },
                     ]}
                 />
@@ -156,7 +156,7 @@ function PackageForm(props: {
                                     fallback={
                                         <p class="muted">
                                             {t(
-                                                'editor.nothing',
+                                                'ui.nothing_to_preview',
                                                 'Nothing to preview yet'
                                             )}
                                         </p>
@@ -193,7 +193,7 @@ function PackageForm(props: {
             <div class="package-actions">
                 <Button type="submit" busy={busy()}>
                     {props.pkg
-                        ? t('editor.save', 'Save')
+                        ? t('ui.save', 'Save')
                         : t('editor.create', 'Create')}
                 </Button>
             </div>

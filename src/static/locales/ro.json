@@ -1,5 +1,4 @@
 {
-  "loading": "Se încarcă…",
   "select_language": "Selectează limba",
   "no_matches": "Niciun rezultat",
   "close": "Închide",
@@ -154,6 +153,23 @@
     "http_405": "Această acțiune nu e disponibilă aici."
   },
   "ui": {
-    "more": "Citiți mai mult"
+    "more": "Citiți mai mult",
+    "delete": "Șterge",
+    "save": "Salvează",
+    "name": "Nume",
+    "actions": "Acțiuni",
+    "username": "Nume de utilizator",
+    "share": "Partajează",
+    "show_more": "Arată mai multe",
+    "copied": "Copiat",
+    "done": "Gata",
+    "upload": "Încarcă",
+    "loading": "Se încarcă…",
+    "write": "Scrie",
+    "preview": "Previzualizare",
+    "nothing_to_preview": "Nimic de previzualizat încă",
+    "new_package": "Pachet nou",
+    "tags": "Etichete",
+    "time_zone": "Fus orar"
   }
 }

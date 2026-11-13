@@ -4,8 +4,6 @@
   "back": "Pachet",
   "delete": {
     "body": "Versiunile și programările lui dispar odată cu el; webhook-urile nu mai răspund. Rulările trecute rămân până expiră.",
-    "confirm": "Șterge",
-    "open": "Șterge",
     "title": "Ștergi acest workflow?"
   },
   "description": "Workflow-urile tale: ce fac, rulările și versiunile lor.",
@@ -17,7 +15,6 @@
   "not_found": "Acest workflow nu există sau nu e al tău.",
   "overview": {
     "blocks": "Blocuri ({count})",
-    "copied": "Copiat",
     "copy": "Copiază adresa",
     "disabled": "sărit"
   },
@@ -42,7 +39,6 @@
     "empty": "Încă nu aveți pachete: instalați unul din Explorare, creați unul nou sau importați un workflow.",
     "installed": "instalat, v{version}",
     "lead": "Workflow-uri care merg împreună.",
-    "new": "Pachet nou",
     "published": "publicat, v{version}",
     "shared": "Partajate cu dvs.",
     "title": "Pachete"
@@ -58,7 +54,6 @@
     "deleted": "un workflow șters",
     "empty": "Nicio rulare încă. Rulează-l acum sau pornește-l pentru declanșatoarele lui.",
     "errors": "Erori: {count}",
-    "loading": "Se încarcă…",
     "more": "Arată mai vechi",
     "no_result": "Rezultatul nu mai e păstrat."
   },
@@ -74,7 +69,6 @@
     "lead": "Când rulează singur, cât timp este pornit.",
     "next": "Următoarea rulare",
     "none": "Nicio programare.",
-    "zone": "Fus orar",
     "zone_label": "Fus orar (pentru toate programările lui)",
     "zone_yours": "Al dvs."
   },
@@ -99,7 +93,6 @@
     "published": "Publicat, ultima v{version}.",
     "publishing": "Publicare",
     "save": "Salvați",
-    "tags": "Etichete",
     "unpublished": "Nepublicat: doar dvs. îl vedeți.",
     "visibility": "Vizibilitate",
     "visibility_hint": "Alții văd doar versiunile publicate."
@@ -127,9 +120,6 @@
     "schedules": "Când rulează singur",
     "versions": "Modificările lui; restaurați una",
     "webhooks": "Adresele care îl pornesc"
-  },
-  "table": {
-    "actions": "Acțiuni"
   },
   "tags": {
     "description": "Despre ce este: Explorare filtrează după ele.",

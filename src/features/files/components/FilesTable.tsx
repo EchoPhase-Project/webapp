@@ -9,12 +9,13 @@ import { Table, Cell, Row } from '@shared/ui/Table';
 import { contentUrl } from '@features/files/api';
 
 const COLUMNS = ['name', 'purpose', 'size', 'uploaded', 'actions'] as const;
-const COLUMN_TEXT: Record<(typeof COLUMNS)[number], string> = {
-    name: 'Name',
-    purpose: 'Purpose',
-    size: 'Size',
-    uploaded: 'Uploaded',
-    actions: 'Actions',
+// Each column's key and English text; the shared words are site-wide.
+const COLUMN_TEXT: Record<(typeof COLUMNS)[number], [string, string]> = {
+    name: ['columns.name', 'Name'],
+    purpose: ['columns.purpose', 'Purpose'],
+    size: ['columns.size', 'Size'],
+    uploaded: ['columns.uploaded', 'Uploaded'],
+    actions: ['ui.actions', 'Actions'],
 };
 
 const PURPOSE_TEXT: Record<FilePurpose, string> = {
@@ -33,8 +34,7 @@ export default function FilesTable(props: {
     const i18n = useI18n();
     const t = useLocalizer('files');
 
-    const column = (c: (typeof COLUMNS)[number]) =>
-        t(`columns.${c}`, COLUMN_TEXT[c]);
+    const column = (c: (typeof COLUMNS)[number]) => t(...COLUMN_TEXT[c]);
     const purpose = (p: FilePurpose) =>
         t(`purposes.${p}`, PURPOSE_TEXT[p] ?? p);
 

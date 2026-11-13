@@ -4,29 +4,21 @@
   "by": "by {name}",
   "card": {
     "installs": "{count} installs",
-    "shared": "Shared with you",
-    "tags": "Tags"
+    "shared": "Shared with you"
   },
   "description": "Workflow packages to read and install.",
   "editor": {
     "create": "Create",
     "edit": "Name, summary and README",
     "main": "main",
-    "name": "Name",
-    "new": "New package",
-    "nothing": "Nothing to preview yet",
-    "preview": "Preview",
     "readme": "README",
     "readme_placeholder": "What it does, what it needs (connections, settings), how to start it. Markdown works.",
-    "save": "Save",
     "summary": "Summary: a sentence or two for its card",
-    "visibility": "Who sees it",
-    "write": "Write"
+    "visibility": "Who sees it"
   },
   "empty": "Nobody has published a package yet.",
   "eyebrow": "Workflows",
   "install": {
-    "close": "Done",
     "connections": "Connections they use",
     "done": "Installed as a package of yours. Its workflows, turned off:",
     "later": "None yet: set it up later",
@@ -40,7 +32,6 @@
   "lead": "Packages others published, to install.",
   "leave": "Leave this package",
   "manage": "Manage it in your packages",
-  "more": "Show more",
   "no_readme": "No README.",
   "none_found": "No packages match.",
   "not_found": "This package does not exist, or it is not shared with you.",
@@ -64,12 +55,10 @@
   },
   "search_placeholder": "Search packages, or tag:name",
   "share": {
-    "add": "Share",
     "description": "They read it and install it, while it is private.",
     "none": "Nobody yet.",
     "remove": "Stop sharing with {name}",
-    "title": "Shared with",
-    "username": "Username"
+    "title": "Shared with"
   },
   "title": "Explore",
   "updated": "updated {date}",

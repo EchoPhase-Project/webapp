@@ -222,7 +222,7 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
             </Show>
             <div class="package-actions">
                 <Button variant="ghost" onClick={() => props.onClose()}>
-                    {t('install.close', 'Done')}
+                    {t('ui.done', 'Done')}
                 </Button>
                 <A class="btn" href={packagePath(props.install.package.id)}>
                     {t('install.open_package', 'Open it')}

@@ -4,29 +4,21 @@
   "by": "de {name}",
   "card": {
     "installs": "Instalări: {count}",
-    "shared": "Partajat cu tine",
-    "tags": "Etichete"
+    "shared": "Partajat cu tine"
   },
   "description": "Pachete de workflow de citit și instalat.",
   "editor": {
     "create": "Creați",
     "edit": "Nume, rezumat și README",
     "main": "principal",
-    "name": "Nume",
-    "new": "Pachet nou",
-    "nothing": "Nimic de previzualizat încă",
-    "preview": "Previzualizare",
     "readme": "README",
     "readme_placeholder": "Ce face, de ce are nevoie (conexiuni, setări), cum îl pornești. Merge Markdown.",
-    "save": "Salvează",
     "summary": "Rezumat: una-două propoziții pentru card",
-    "visibility": "Cine îl vede",
-    "write": "Scrie"
+    "visibility": "Cine îl vede"
   },
   "empty": "Nimeni n-a publicat încă un pachet.",
   "eyebrow": "Workflow-uri",
   "install": {
-    "close": "Gata",
     "connections": "Conexiunile folosite",
     "done": "Instalat ca pachet al dvs. Workflow-urile sale, oprite:",
     "later": "Niciuna încă: o configurez mai târziu",
@@ -40,7 +32,6 @@
   "lead": "Pachete publicate de alții, de instalat.",
   "leave": "Părăsește pachetul",
   "manage": "Gestionați-l în pachetele dvs.",
-  "more": "Arată mai multe",
   "no_readme": "Fără README.",
   "none_found": "Niciun pachet nu se potrivește.",
   "not_found": "Acest pachet nu există sau nu este partajat cu tine.",
@@ -64,12 +55,10 @@
   },
   "search_placeholder": "Căutați pachete sau tag:nume",
   "share": {
-    "add": "Partajează",
     "description": "Ei îl citesc și îl instalează cât timp este privat.",
     "none": "Încă nimănui.",
     "remove": "Oprește partajarea cu {name}",
-    "title": "Partajat cu",
-    "username": "Nume de utilizator"
+    "title": "Partajat cu"
   },
   "title": "Explorare",
   "updated": "actualizat {date}",

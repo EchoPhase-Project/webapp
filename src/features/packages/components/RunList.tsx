@@ -138,7 +138,7 @@ export default function RunList(props: {
                                         when={details()}
                                         fallback={
                                             <p class="muted">
-                                                {t('runs.loading', 'Loading…')}
+                                                {t('ui.loading', 'Loading…')}
                                             </p>
                                         }
                                     >

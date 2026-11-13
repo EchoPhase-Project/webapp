@@ -49,7 +49,7 @@ export default function ApiClientForm(props: {
             <Field
                 id={inputId('name')}
                 name="name"
-                label={t('form.name', 'Name')}
+                label={t('ui.name', 'Name')}
                 showLabel
                 errors={errors().name}
                 type="text"

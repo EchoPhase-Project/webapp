@@ -1,6 +1,5 @@
 {
   "form": {
-    "username": "Username",
     "password": "Password",
     "fullname": "Full name"
   },

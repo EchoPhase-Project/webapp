@@ -4,15 +4,12 @@
   "picture": {
     "title": "Picture",
     "hint": "PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.",
-    "upload": "Upload",
     "change": "Change",
     "remove": "Remove"
   },
   "details": {
     "title": "Details",
     "name": "Display name",
-    "time_zone": "Time zone",
-    "save": "Save",
     "saved": "Saved",
     "username": "Username (letters and digits; you sign in with it)"
   },

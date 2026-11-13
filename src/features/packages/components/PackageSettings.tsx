@@ -235,7 +235,7 @@ export default function PackageSettings(props: {
             <ConfirmDialog
                 open={deleting()}
                 title={t('settings.delete_title', 'Delete this package?')}
-                confirm={t('delete.confirm', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => void remove()}
                 onCancel={() => setDeleting(false)}

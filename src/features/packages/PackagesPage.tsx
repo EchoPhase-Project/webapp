@@ -75,7 +75,7 @@ export default function PackagesPage() {
                         />
                         <Button onClick={() => setCreating(true)}>
                             <IconPlus />
-                            {t('packages.new', 'New package')}
+                            {t('ui.new_package', 'New package')}
                         </Button>
                     </>
                 }

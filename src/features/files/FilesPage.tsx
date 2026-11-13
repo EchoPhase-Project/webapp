@@ -87,14 +87,14 @@ export default function FilesPage() {
                 eyebrow={t('eyebrow', 'Storage')}
                 title={t('title', 'Files')}
                 description={t(
-                    'lead',
+                    'description',
                     'Files you uploaded, and those made for you.'
                 )}
                 docs="files"
                 actions={
                     <FilePicker busy={busy()} onPick={(f) => void upload(f)}>
                         <IconUpload />
-                        {t('upload', 'Upload')}
+                        {t('ui.upload', 'Upload')}
                     </FilePicker>
                 }
             />
@@ -110,7 +110,7 @@ export default function FilesPage() {
                         busy={loading()}
                         onClick={() => void load(files().at(-1)?.id)}
                     >
-                        {t('more', 'Show more')}
+                        {t('ui.show_more', 'Show more')}
                     </Button>
                 </div>
             </Show>
@@ -118,7 +118,7 @@ export default function FilesPage() {
             <ConfirmDialog
                 open={!!deleting()}
                 title={t('confirm_delete.title', 'Delete this file?')}
-                confirm={t('confirm_delete.action', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => void remove(deleting()!)}
                 onCancel={() => setDeleting(null)}

@@ -149,7 +149,7 @@ export default function PackageDetails(props: { id: string }) {
                     <Show when={p().tags.length > 0}>
                         <ul
                             class="package-tags"
-                            aria-label={t('card.tags', 'Tags')}
+                            aria-label={t('ui.tags', 'Tags')}
                         >
                             <For each={p().tags}>
                                 {(tag) => (

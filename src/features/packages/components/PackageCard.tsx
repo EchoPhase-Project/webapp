@@ -40,7 +40,7 @@ export default function PackageCard(props: {
                 <p class="package-card-text">{text()}</p>
             </Show>
             <Show when={props.pkg.tags.length > 0}>
-                <ul class="package-tags" aria-label={t('card.tags', 'Tags')}>
+                <ul class="package-tags" aria-label={t('ui.tags', 'Tags')}>
                     <For each={props.pkg.tags}>
                         {(tag) => (
                             <li>

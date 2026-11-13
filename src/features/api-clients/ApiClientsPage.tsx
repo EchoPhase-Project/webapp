@@ -105,7 +105,7 @@ export default function ApiClientsPage() {
             <ConfirmDialog
                 open={!!deleting()}
                 title={t('confirm_delete.title', 'Delete this API client?')}
-                confirm={t('confirm_delete.action', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => void remove(deleting()!)}
                 onCancel={() => setDeleting(null)}

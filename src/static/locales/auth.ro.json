@@ -1,6 +1,5 @@
 {
   "form": {
-    "username": "Nume de utilizator",
     "password": "Parola",
     "fullname": "Numele complet"
   },

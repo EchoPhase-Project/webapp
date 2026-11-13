@@ -31,10 +31,10 @@ export default function SecretNotice(props: {
             <code ref={code}>{props.secret}</code>
             <div class="secret-actions">
                 <Button onClick={() => void copy()}>
-                    {copied() ? t('copied', 'Copied') : t('copy', 'Copy')}
+                    {copied() ? t('ui.copied', 'Copied') : t('copy', 'Copy')}
                 </Button>
                 <Button variant="ghost" onClick={() => props.onDismiss()}>
-                    {t('dismiss', 'Done')}
+                    {t('ui.done', 'Done')}
                 </Button>
             </div>
         </Card>

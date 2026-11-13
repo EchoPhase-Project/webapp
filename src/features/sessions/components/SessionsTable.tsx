@@ -28,7 +28,7 @@ export default function SessionsTable(props: {
             data={props.sessions}
             headers={[
                 t('columns.device', 'Device'),
-                t('columns.actions', 'Actions'),
+                t('ui.actions', 'Actions'),
             ]}
             placeholder={() => <>{t('empty', 'No active sessions')}</>}
             tableProps={{ class: 'sessions' }}
@@ -40,7 +40,7 @@ export default function SessionsTable(props: {
                         props={{ class: 'device' }}
                     />
                     <Cell
-                        label={t('columns.actions', 'Actions')}
+                        label={t('ui.actions', 'Actions')}
                         props={{ class: 'actions' }}
                     >
                         <Button

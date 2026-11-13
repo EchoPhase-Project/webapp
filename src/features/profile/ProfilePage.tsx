@@ -96,7 +96,7 @@ export default function ProfilePage() {
                                     >
                                         {me().avatarFileId
                                             ? t('picture.change', 'Change')
-                                            : t('picture.upload', 'Upload')}
+                                            : t('ui.upload', 'Upload')}
                                     </FilePicker>
                                     <Show when={me().avatarFileId}>
                                         <Button

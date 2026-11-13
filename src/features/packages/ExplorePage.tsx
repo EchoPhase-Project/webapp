@@ -158,7 +158,7 @@ export default function ExplorePage() {
                             busy={loading()}
                             onClick={loadMore}
                         >
-                            {t('more', 'Show more')}
+                            {t('ui.show_more', 'Show more')}
                         </Button>
                     </div>
                 </Show>

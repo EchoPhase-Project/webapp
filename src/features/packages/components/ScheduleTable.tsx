@@ -80,9 +80,9 @@ export default function ScheduleTable(props: {
     // Read in render: the namespace may arrive after the first one.
     const column = () => ({
         cron: t('schedule.cron', 'Schedule'),
-        zone: t('schedule.zone', 'Time zone'),
+        zone: t('ui.time_zone', 'Time zone'),
         next: t('schedule.next', 'Next run'),
-        actions: t('table.actions', 'Actions'),
+        actions: t('ui.actions', 'Actions'),
     });
 
     return (
@@ -191,7 +191,7 @@ export default function ScheduleTable(props: {
             <ConfirmDialog
                 open={!!deleting()}
                 title={t('schedule.delete_title', 'Delete this schedule?')}
-                confirm={t('delete.confirm', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => {
                     const schedule = deleting();

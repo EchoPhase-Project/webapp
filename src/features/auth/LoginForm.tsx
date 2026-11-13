@@ -52,7 +52,7 @@ export default function LoginForm(props: { onSwitch: () => void }) {
             <Field
                 id={inputId('username')}
                 name="username"
-                label={t('form.username', 'Username')}
+                label={t('ui.username', 'Username')}
                 icon={IconUser}
                 errors={errors().username}
                 type="text"
@@ -87,7 +87,7 @@ export default function LoginForm(props: { onSwitch: () => void }) {
 
             <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
-                    ? i18n.t('loading', 'Loading…')
+                    ? i18n.t('ui.loading', 'Loading…')
                     : t('login.submit', 'Log in')}
             </Button>
 

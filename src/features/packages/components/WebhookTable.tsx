@@ -104,7 +104,7 @@ export default function WebhookTable(props: {
         address: t('webhook.address', 'Address'),
         secret: t('webhook.secret', 'Secret'),
         respond: t('webhook.respond_title', 'Answer'),
-        actions: t('table.actions', 'Actions'),
+        actions: t('ui.actions', 'Actions'),
     });
 
     return (
@@ -265,7 +265,7 @@ export default function WebhookTable(props: {
             />
             <Show when={copied()}>
                 <span class="muted" role="status">
-                    {t('overview.copied', 'Copied')}
+                    {t('ui.copied', 'Copied')}
                 </span>
             </Show>
 
@@ -289,7 +289,7 @@ export default function WebhookTable(props: {
             <ConfirmDialog
                 open={!!deleting()}
                 title={t('webhook.delete_title', 'Delete this webhook?')}
-                confirm={t('delete.confirm', 'Delete')}
+                confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
                 onConfirm={() => {
                     const hook = deleting();

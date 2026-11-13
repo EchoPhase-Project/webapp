@@ -71,7 +71,7 @@ export default function PackageShares(props: { packageId: string }) {
                     busy={busy()}
                     disabled={!userName().trim()}
                 >
-                    {t('share.add', 'Share')}
+                    {t('ui.share', 'Share')}
                 </Button>
             }
         >
@@ -111,7 +111,7 @@ export default function PackageShares(props: { packageId: string }) {
                 <Field
                     id={inputId('userName')}
                     name="userName"
-                    label={t('share.username', 'Username')}
+                    label={t('ui.username', 'Username')}
                     type="text"
                     autocomplete="off"
                     errors={errors().userName}

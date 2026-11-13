@@ -116,10 +116,10 @@ export default function NoteEditor(props: {
                     value={preview() ? 'preview' : 'write'}
                     onChange={(tab) => setPreview(tab === 'preview')}
                     tabs={[
-                        { value: 'write', label: t('editor.write', 'Write') },
+                        { value: 'write', label: t('ui.write', 'Write') },
                         {
                             value: 'preview',
-                            label: t('editor.preview', 'Preview'),
+                            label: t('ui.preview', 'Preview'),
                         },
                     ]}
                     aside={t('editor.markdown', 'Markdown works')}
@@ -140,7 +140,7 @@ export default function NoteEditor(props: {
                                     fallback={
                                         <p class="muted">
                                             {t(
-                                                'editor.nothing',
+                                                'ui.nothing_to_preview',
                                                 'Nothing to preview yet'
                                             )}
                                         </p>
@@ -195,7 +195,7 @@ export default function NoteEditor(props: {
 
                 <div class="note-actions">
                     <Button type="submit" busy={busy()}>
-                        {t('editor.save', 'Save')}
+                        {t('ui.save', 'Save')}
                     </Button>
                     {props.footer}
                 </div>

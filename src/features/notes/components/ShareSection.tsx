@@ -107,7 +107,7 @@ export default function ShareSection(props: { noteId: string }) {
                 <Field
                     id={inputId('userName')}
                     name="userName"
-                    label={t('share.username', 'Username')}
+                    label={t('ui.username', 'Username')}
                     type="text"
                     autocomplete="off"
                     disabled={busy()}
@@ -120,7 +120,7 @@ export default function ShareSection(props: { noteId: string }) {
                     label={t('share.edit', 'May edit')}
                 />
                 <Button type="submit" variant="ghost" busy={busy()}>
-                    {t('share.add', 'Share')}
+                    {t('ui.share', 'Share')}
                 </Button>
             </form>
         </section>

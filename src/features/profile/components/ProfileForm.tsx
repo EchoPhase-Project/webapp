@@ -112,7 +112,7 @@ export default function ProfileForm(props: { user: User }) {
             <Field
                 id={inputId('timeZone')}
                 name="timeZone"
-                label={t('details.time_zone', 'Time zone')}
+                label={t('ui.time_zone', 'Time zone')}
                 showLabel
                 errors={errors().timeZone}
                 type="text"
@@ -131,7 +131,7 @@ export default function ProfileForm(props: { user: User }) {
 
             <div class="profile-form-actions">
                 <Button type="submit" busy={busy()} disabled={!changed()}>
-                    {t('details.save', 'Save')}
+                    {t('ui.save', 'Save')}
                 </Button>
                 <span class="muted" role="status">
                     {saved() ? t('details.saved', 'Saved') : ''}

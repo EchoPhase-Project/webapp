@@ -79,6 +79,19 @@ describe('useLocalizer(ns)', () => {
         }
     });
 
+    it('reads a site-wide ui.* string', async () => {
+        localStorage.setItem('app_locale', 'ro');
+        try {
+            await shown(
+                () => useLocalizer('files'),
+                (t) => t('ui.delete', 'Delete')
+            );
+            expect(await screen.findByText('Șterge')).toBeTruthy();
+        } finally {
+            localStorage.removeItem('app_locale');
+        }
+    });
+
     it('fills the fallback of a missing key', async () => {
         expect(
             await shown(

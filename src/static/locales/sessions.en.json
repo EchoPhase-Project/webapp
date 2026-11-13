@@ -6,8 +6,7 @@
   "revoke": "Revoke session",
   "empty": "No active sessions",
   "columns": {
-    "device": "Device",
-    "actions": "Actions"
+    "device": "Device"
   },
   "device": {
     "unknown_os": "Unknown OS",

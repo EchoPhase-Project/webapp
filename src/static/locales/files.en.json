@@ -2,17 +2,13 @@
   "title": "Files",
   "description": "Files you uploaded, and those made for you.",
   "eyebrow": "Storage",
-  "lead": "Files you uploaded, and those made for you.",
-  "upload": "Upload",
-  "more": "Show more",
   "empty": "No files yet",
   "delete": "Delete {name}",
   "columns": {
     "name": "Name",
     "purpose": "Purpose",
     "size": "Size",
-    "uploaded": "Uploaded",
-    "actions": "Actions"
+    "uploaded": "Uploaded"
   },
   "purposes": {
     "Avatar": "Profile picture",
@@ -22,7 +18,6 @@
   },
   "confirm_delete": {
     "title": "Delete this file?",
-    "action": "Delete",
     "text": "{name} is deleted for good; links to it stop working."
   }
 }

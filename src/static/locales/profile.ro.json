@@ -4,15 +4,12 @@
   "picture": {
     "title": "Imagine",
     "hint": "PNG, JPEG sau WebP, până la 5 MB. Ceilalți o văd lângă numele dvs.",
-    "upload": "Încarcă",
     "change": "Schimbă",
     "remove": "Elimină"
   },
   "details": {
     "title": "Detalii",
     "name": "Nume afișat",
-    "time_zone": "Fus orar",
-    "save": "Salvează",
     "saved": "Salvat",
     "username": "Nume de utilizator (litere și cifre; te conectezi cu el)"
   },

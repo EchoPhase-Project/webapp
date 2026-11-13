@@ -236,7 +236,7 @@ export default function WorkflowDetails(props: {
                                     disabled={busy()}
                                     onClick={() => setDeleting(true)}
                                 >
-                                    {t('delete.open', 'Delete')}
+                                    {t('ui.delete', 'Delete')}
                                 </Button>
                                 <Button onClick={() => setRunning(true)}>
                                     <IconCaretRightFilled />
@@ -327,7 +327,7 @@ export default function WorkflowDetails(props: {
                     <ConfirmDialog
                         open={deleting()}
                         title={t('delete.title', 'Delete this workflow?')}
-                        confirm={t('delete.confirm', 'Delete')}
+                        confirm={t('ui.delete', 'Delete')}
                         busy={busy()}
                         onConfirm={() => void remove()}
                         onCancel={() => setDeleting(false)}

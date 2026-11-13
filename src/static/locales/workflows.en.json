@@ -4,8 +4,6 @@
   "back": "Package",
   "delete": {
     "body": "Its versions and schedules go with it; its webhooks stop answering. Past runs stay until they expire.",
-    "confirm": "Delete",
-    "open": "Delete",
     "title": "Delete this workflow?"
   },
   "description": "Your workflows: what they do, their runs and versions.",
@@ -17,7 +15,6 @@
   "not_found": "This workflow does not exist, or it is not yours.",
   "overview": {
     "blocks": "Blocks ({count})",
-    "copied": "Copied",
     "copy": "Copy the address",
     "disabled": "skipped"
   },
@@ -42,7 +39,6 @@
     "empty": "No packages yet: install one from Explore, start a new one or import a workflow.",
     "installed": "installed, v{version}",
     "lead": "Workflows that belong together.",
-    "new": "New package",
     "published": "published, v{version}",
     "shared": "Shared with you",
     "title": "Packages"
@@ -58,7 +54,6 @@
     "deleted": "a deleted workflow",
     "empty": "No runs yet. Run it now, or turn it on for its triggers.",
     "errors": "{count} errors",
-    "loading": "Loading…",
     "more": "Show older",
     "no_result": "Its result is no longer kept."
   },
@@ -74,7 +69,6 @@
     "lead": "When it runs on its own, while it is on.",
     "next": "Next run",
     "none": "No schedules.",
-    "zone": "Time zone",
     "zone_label": "Time zone (all its schedules)",
     "zone_yours": "Yours"
   },
@@ -99,7 +93,6 @@
     "published": "Published, latest v{version}.",
     "publishing": "Publishing",
     "save": "Save",
-    "tags": "Tags",
     "unpublished": "Not published: only you see it.",
     "visibility": "Visibility",
     "visibility_hint": "Others see published versions only."
@@ -127,9 +120,6 @@
     "schedules": "When it runs on its own",
     "versions": "Its changes; restore one",
     "webhooks": "Addresses that start it"
-  },
-  "table": {
-    "actions": "Actions"
   },
   "tags": {
     "description": "What it is about: Explore filters by them.",

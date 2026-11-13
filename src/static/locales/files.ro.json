@@ -2,17 +2,13 @@
   "title": "Fișiere",
   "description": "Fișierele încărcate de dvs. și cele create pentru dvs.",
   "eyebrow": "Stocare",
-  "lead": "Fișierele încărcate de dvs. și cele create pentru dvs.",
-  "upload": "Încarcă",
-  "more": "Arată mai multe",
   "empty": "Încă nu aveți fișiere",
   "delete": "Șterge {name}",
   "columns": {
     "name": "Nume",
     "purpose": "Scop",
     "size": "Mărime",
-    "uploaded": "Încărcat",
-    "actions": "Acțiuni"
+    "uploaded": "Încărcat"
   },
   "purposes": {
     "Avatar": "Imagine de profil",
@@ -22,7 +18,6 @@
   },
   "confirm_delete": {
     "title": "Ștergeți acest fișier?",
-    "action": "Șterge",
     "text": "{name} va fi șters definitiv; linkurile către el nu vor mai funcționa."
   }
 }

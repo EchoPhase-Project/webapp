@@ -76,7 +76,7 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
             <Field
                 id={inputId('username')}
                 name="username"
-                label={t('form.username', 'Username')}
+                label={t('ui.username', 'Username')}
                 icon={IconTags}
                 errors={errors().username}
                 type="text"
@@ -111,7 +111,7 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
 
             <Button type="submit" busy={isDisabled()}>
                 {isDisabled()
-                    ? i18n.t('loading', 'Loading…')
+                    ? i18n.t('ui.loading', 'Loading…')
                     : t('signup.submit', 'Create account')}
             </Button>
 

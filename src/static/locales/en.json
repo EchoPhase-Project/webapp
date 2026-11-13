@@ -1,5 +1,4 @@
 {
-  "loading": "Loading…",
   "select_language": "Select language",
   "no_matches": "No matches",
   "close": "Close",
@@ -154,6 +153,23 @@
     "http_405": "This action is not available here."
   },
   "ui": {
-    "more": "Read more"
+    "more": "Read more",
+    "delete": "Delete",
+    "save": "Save",
+    "name": "Name",
+    "actions": "Actions",
+    "username": "Username",
+    "share": "Share",
+    "show_more": "Show more",
+    "copied": "Copied",
+    "done": "Done",
+    "upload": "Upload",
+    "loading": "Loading…",
+    "write": "Write",
+    "preview": "Preview",
+    "nothing_to_preview": "Nothing to preview yet",
+    "new_package": "New package",
+    "tags": "Tags",
+    "time_zone": "Time zone"
   }
 }

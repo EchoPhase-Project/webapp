@@ -7,12 +7,13 @@ import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
 
 const COLUMNS = ['name', 'expires', 'last_used', 'created', 'actions'] as const;
-const COLUMN_TEXT: Record<(typeof COLUMNS)[number], string> = {
-    name: 'Name',
-    expires: 'Expires',
-    last_used: 'Last used',
-    created: 'Created',
-    actions: 'Actions',
+// Each column's key and English text; the shared words are site-wide.
+const COLUMN_TEXT: Record<(typeof COLUMNS)[number], [string, string]> = {
+    name: ['ui.name', 'Name'],
+    expires: ['columns.expires', 'Expires'],
+    last_used: ['columns.last_used', 'Last used'],
+    created: ['columns.created', 'Created'],
+    actions: ['ui.actions', 'Actions'],
 };
 
 export default function ApiClientsTable(props: {
@@ -24,8 +25,7 @@ export default function ApiClientsTable(props: {
     const i18n = useI18n();
     const t = useLocalizer('api-clients');
 
-    const column = (c: (typeof COLUMNS)[number]) =>
-        t(`columns.${c}`, COLUMN_TEXT[c]);
+    const column = (c: (typeof COLUMNS)[number]) => t(...COLUMN_TEXT[c]);
     // Times in the profile's zone, so they read the same on any device.
     const show = (iso: string | null) =>
         DateHelper.format(iso, user()?.timeZone, i18n.currentLocale()) || '—';

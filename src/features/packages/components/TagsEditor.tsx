@@ -67,7 +67,7 @@ export default function TagsEditor(props: {
 
     return (
         <SettingsCard
-            title={t('settings.tags', 'Tags')}
+            title={t('ui.tags', 'Tags')}
             description={t(
                 'tags.description',
                 'What it is about: Explore filters by them.'
@@ -86,7 +86,7 @@ export default function TagsEditor(props: {
             }
         >
             <label class="visually-hidden" for={FIELD}>
-                {t('settings.tags', 'Tags')}
+                {t('ui.tags', 'Tags')}
             </label>
             <div class="field package-tags-field">
                 <ul class="package-tags">

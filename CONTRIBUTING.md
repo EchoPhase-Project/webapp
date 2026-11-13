@@ -195,6 +195,12 @@ source language. Translators write the other languages in Weblate.
 - If a string contains a value, write a `{name}` placeholder. Give the value
   to `t()`: `t('key', 'Delete {name}', { name })`. Do not use `.replace()` on
   the result. The translator puts the value in each placeholder.
+- Words that many pages show (Delete, Save, Name, Loading…) are in the
+  `ui.*` keys of `<lang>.json`. Use these keys from all pages:
+  `t('ui.delete', 'Delete')`. Do not add a copy of a `ui.*` word to a page
+  file. A page translator (`useLocalizer('<page>')`) also finds the
+  site-wide keys. If a language needs a different word in one location, use
+  a page key there.
 - If you remove a key or change its name, do the same in all languages.
   `locales.test.ts` fails if a language has keys that English does not have.
 - The policy pages (`terms`, `privacy`) use a small markup, so that
