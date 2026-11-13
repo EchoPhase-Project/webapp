@@ -1,4 +1,4 @@
-import { api, send, untyped, type ApiResult } from '@shared/api/client';
+import { api, dataOr, send, untyped, type ApiResult } from '@shared/api/client';
 import type { ApiClient, CreatedApiClient } from '@shared/api/types';
 
 /** The signed-in user's API clients (the contract leaves the shape out). */
@@ -6,7 +6,7 @@ export async function listApiClients(): Promise<ApiClient[]> {
     const result = untyped<ApiClient[]>(
         await send(api.GET('/api/v1/api-clients'))
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 /** expiresAt: a moment with Z or an offset (the API takes no local times). */

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CsrfService } from './csrf';
-import { api, errorsOf, NetworkError, send } from './client';
+import { api, dataOr, errorsOf, multipart, NetworkError, send } from './client';
 
 const json = (
     status: number,
@@ -93,5 +93,28 @@ describe('errorsOf', () => {
         expect(errorsOf('<html>proxy page</html>', res)).toEqual([
             { code: 'http_502', message: 'Bad Gateway' },
         ]);
+    });
+});
+
+describe('dataOr', () => {
+    it('is the data of a success, else the fallback', () => {
+        expect(dataOr({ ok: true, data: [1, 2] }, [])).toEqual([1, 2]);
+        expect(dataOr({ ok: false, errors: [NetworkError] }, null)).toBeNull();
+    });
+});
+
+describe('multipart', () => {
+    it('makes form data of its fields, without the undefined ones', () => {
+        const file = new File(['hi'], 'hi.txt');
+        const form = multipart<FormData>({
+            File: file,
+            Purpose: 'Attachment',
+            PackageId: undefined,
+        });
+
+        expect(form).toBeInstanceOf(FormData);
+        expect((form.get('File') as File).name).toBe('hi.txt');
+        expect(form.get('Purpose')).toBe('Attachment');
+        expect(form.has('PackageId')).toBe(false);
     });
 });

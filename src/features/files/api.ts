@@ -1,4 +1,10 @@
-import { api, send, type ApiResult } from '@shared/api/client';
+import {
+    api,
+    dataOr,
+    multipart,
+    send,
+    type ApiResult,
+} from '@shared/api/client';
 import type { FilePurpose, StoredFile } from '@shared/api/types';
 
 export { contentUrl } from '@shared/api/files';
@@ -13,7 +19,7 @@ export async function listFiles(after?: string): Promise<StoredFile[]> {
             params: { query: { after, limit: PAGE_SIZE } },
         })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 /** Uploads a file; the server checks its size and what it really is. */
@@ -21,13 +27,9 @@ export function uploadFile(
     file: File,
     purpose: FilePurpose = 'Attachment'
 ): Promise<ApiResult<StoredFile>> {
-    const form = new FormData();
-    form.append('File', file);
-    form.append('Purpose', purpose);
     return send(
-        // openapi-fetch sends FormData as is, with its multipart boundary.
         api.POST('/api/v1/files', {
-            body: form as unknown as { File: string },
+            body: multipart({ File: file, Purpose: purpose }),
         })
     );
 }

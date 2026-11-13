@@ -18,6 +18,7 @@ import {
     IconHistory,
 } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
+import { dataOr } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -71,7 +72,7 @@ export default function WorkflowDetails(props: {
         () => props.id,
         async (id) => {
             const result = await getWorkflow(id);
-            return result.ok ? result.data : null;
+            return dataOr(result, null);
         }
     );
     // Webhooks only while it has a WebhookTrigger.

@@ -1,4 +1,4 @@
-import { api, send, type ApiResult } from '@shared/api/client';
+import { api, dataOr, send, type ApiResult } from '@shared/api/client';
 import type { Note, NoteInput, NoteShare } from '@shared/api/types';
 
 /** The caller's notes and those shared with them; `q` searches title and text. */
@@ -8,7 +8,7 @@ export async function listNotes(q?: string): Promise<Note[]> {
             params: { query: { q: q || undefined, limit: 500 } },
         })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 export function getNote(id: string): Promise<ApiResult<Note>> {
@@ -36,7 +36,7 @@ export async function listShares(id: string): Promise<NoteShare[]> {
     const result = await send(
         api.GET('/api/v1/notes/{id}/shares', { params: { path: { id } } })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 export function shareNote(

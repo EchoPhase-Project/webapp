@@ -2,6 +2,7 @@ import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { IconArrowLeft, IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
+import { dataOr } from '@shared/api/client';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -33,14 +34,14 @@ export default function PackageDetails(props: { id: string }) {
         () => props.id,
         async (id) => {
             const result = await getPackage(id);
-            return result.ok ? result.data : null;
+            return dataOr(result, null);
         }
     );
     const [content] = createResource(
         () => (pkg() ? props.id : false),
         async (id) => {
             const result = await getContent(id);
-            return result.ok ? result.data : null;
+            return dataOr(result, null);
         }
     );
     const [versions] = createResource(

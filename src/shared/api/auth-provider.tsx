@@ -15,7 +15,7 @@ import type {
     ErrorItem,
 } from './types';
 import { CsrfService } from './csrf';
-import { api, onUnauthorized, send, type ApiResult } from './client';
+import { api, dataOr, onUnauthorized, send, type ApiResult } from './client';
 
 type Outcome = { success: boolean; error?: ErrorItem[] };
 
@@ -44,7 +44,7 @@ export const AuthProvider: ParentComponent = (props) => {
     const [user, { refetch: refetchUser, mutate: setUser }] =
         createResource<User | null>(async () => {
             const result = await send(api.GET('/api/v1/auth/me'));
-            return result.ok ? result.data : null;
+            return dataOr(result, null);
         });
 
     const isAuthenticated = () => !!user();
@@ -61,7 +61,7 @@ export const AuthProvider: ParentComponent = (props) => {
         isAuthenticated,
         async (): Promise<string[] | null> => {
             const result = await send(api.GET('/api/v1/roles/me'));
-            return result.ok ? result.data : null;
+            return dataOr(result, null);
         }
     );
 

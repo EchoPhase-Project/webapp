@@ -1,4 +1,5 @@
 import { createResource } from 'solid-js';
+import { dataOr } from '@shared/api/client';
 import type { WorkflowPackage } from '@shared/api/types';
 import type { NavSection } from '@shared/nav/nav-link';
 import {
@@ -41,7 +42,7 @@ export function usePackage(
     const t = useLocalizer('workflows');
     const [pkg, actions] = createResource(id, async (packageId) => {
         const result = await getPackage(packageId);
-        return result.ok ? result.data : null;
+        return dataOr(result, null);
     });
 
     usePageSection(() => {

@@ -1,4 +1,10 @@
-import { api, send, type ApiResult } from '@shared/api/client';
+import {
+    api,
+    dataOr,
+    multipart,
+    send,
+    type ApiResult,
+} from '@shared/api/client';
 import type {
     BlockRunDetails,
     BlockRunPage,
@@ -63,13 +69,13 @@ export async function exploreTags(q: string): Promise<PackageTag[]> {
             params: { query: { q: q || undefined, limit: 8 } },
         })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 /** The caller's packages, then those shared with them. */
 export async function myPackages(): Promise<WorkflowPackage[]> {
     const result = await send(api.GET('/api/v1/workflow-packages'));
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 export function getPackage(id: string): Promise<ApiResult<WorkflowPackage>> {
@@ -126,7 +132,7 @@ export async function listPackageVersions(
             params: { path: { id } },
         })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 /** A version with its workflows; the latest without `version`. */
@@ -185,7 +191,7 @@ export async function listShares(id: string): Promise<PackageShare[]> {
             params: { path: { id } },
         })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 export function sharePackage(
@@ -215,7 +221,7 @@ export function unsharePackage(
 /** The caller's connections, to map a package's onto. */
 export async function myConnections(): Promise<ConnectionSummary[]> {
     const result = await send(api.GET('/api/v1/connections'));
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 // Workflows: always in one of the caller's packages.
@@ -227,7 +233,7 @@ export async function listWorkflows(
     const result = await send(
         api.GET('/api/v1/workflows', { params: { query: { packageId } } })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 export function getWorkflow(id: string): Promise<ApiResult<Workflow>> {
@@ -301,7 +307,7 @@ export async function listWorkflowVersions(
     const result = await send(
         api.GET('/api/v1/workflows/{id}/versions', { params: { path: { id } } })
     );
-    return result.ok ? result.data : [];
+    return dataOr(result, []);
 }
 
 /** Makes an old version current again, as a new one on top. */
@@ -327,12 +333,9 @@ export function importWorkflow(
     file: File,
     packageId?: string
 ): Promise<ApiResult<WorkflowImport>> {
-    const form = new FormData();
-    form.append('File', file);
-    if (packageId) form.append('PackageId', packageId);
     return send(
         api.POST('/api/v1/workflows/import/file', {
-            body: form as unknown as { File: string; Name?: string },
+            body: multipart({ File: file, PackageId: packageId || undefined }),
         })
     );
 }

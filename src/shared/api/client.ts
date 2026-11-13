@@ -109,3 +109,23 @@ export async function send<T>(
  */
 export const untyped = <T>(result: ApiResult<unknown>) =>
     result as ApiResult<T>;
+
+/** The data of a successful answer, or `fallback` when the call failed. */
+export function dataOr<T, F>(result: ApiResult<T>, fallback: F): T | F {
+    return result.ok ? result.data : fallback;
+}
+
+/**
+ * A multipart body (an upload) from its fields; undefined ones are left out.
+ * openapi-fetch sends FormData as is, with its boundary, but the contract
+ * types a multipart body as an object of strings: `T` is that type, taken
+ * from where the body goes.
+ */
+export function multipart<T>(
+    fields: Record<string, string | Blob | undefined>
+): T {
+    const form = new FormData();
+    for (const [name, value] of Object.entries(fields))
+        if (value !== undefined) form.append(name, value);
+    return form as unknown as T;
+}

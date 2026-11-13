@@ -190,6 +190,11 @@ contract. Do not write a response type manually in `types.ts`.
   other errors at the top of the form. The text of an error comes from its
   code: `errors.<code>` in the locale files. The message from the server is
   the fallback.
+- If a list call can fail, return `dataOr(result, [])` from
+  `@shared/api/client`. Do not write `result.ok ? result.data : []`.
+- To send a file, make the body with `multipart({ File: file })`. The
+  contract types a multipart body as an object of strings. Thus, `multipart`
+  keeps the only cast in one location.
 - To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
   `run(call, onOk)` sets `busy`, sends the call, and groups the errors. If
   the call is successful, `run` clears the errors and gives the data to
