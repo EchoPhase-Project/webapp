@@ -231,7 +231,7 @@ export default function WorkflowDetails(props: {
                             )}
                         </p>
                     </Show>
-                    <ErrorSummary errors={errors()} inputId={() => ''} />
+                    <ErrorSummary errors={errors()} />
 
                     <div class="workflow-controls">
                         <Switch

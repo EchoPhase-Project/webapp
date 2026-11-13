@@ -69,7 +69,7 @@ export default function PackagesPage() {
                     </>
                 }
             />
-            <ErrorSummary errors={errors()} inputId={() => ''} />
+            <ErrorSummary errors={errors()} />
 
             <Show
                 when={mine().length > 0}

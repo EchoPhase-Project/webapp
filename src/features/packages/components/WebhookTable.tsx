@@ -107,7 +107,7 @@ export default function WebhookTable(props: {
                     )}
                 </p>
             </div>
-            <ErrorSummary errors={errors()} inputId={() => ''} />
+            <ErrorSummary errors={errors()} />
             <Table
                 data={props.workflow.webhooks}
                 headers={Object.values(column())}

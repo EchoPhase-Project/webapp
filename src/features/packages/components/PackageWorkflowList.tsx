@@ -43,7 +43,7 @@ export default function PackageWorkflowList(props: {
 
     return (
         <>
-            <ErrorSummary errors={errors()} inputId={() => ''} />
+            <ErrorSummary errors={errors()} />
             <Show
                 when={props.workflows.length > 0}
                 fallback={

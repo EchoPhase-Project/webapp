@@ -95,7 +95,7 @@ export default function FilesPage() {
                 }
             />
 
-            <ErrorSummary errors={errors()} inputId={() => ''} />
+            <ErrorSummary errors={errors()} />
 
             <FilesTable files={files()} busy={busy()} onDelete={setDeleting} />
 

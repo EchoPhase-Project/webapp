@@ -10,8 +10,11 @@ import { useI18n } from '@shared/i18n/i18n-context';
  */
 export default function ErrorSummary(props: {
     errors: FormErrors;
-    /** Input id for a field name, e.g. "login-username". */
-    inputId: (field: string) => string;
+    /**
+     * Input id for a field name, e.g. "login-username". Absent: all errors
+     * are the form's (it has no fields of its own).
+     */
+    inputId?: (field: string) => string;
 }) {
     const i18n = useI18n();
     let ref: HTMLDivElement | undefined;
@@ -24,7 +27,8 @@ export default function ErrorSummary(props: {
             return;
         }
         const first = Object.keys(props.errors)[0];
-        if (first) document.getElementById(props.inputId(first))?.focus();
+        const id = first && props.inputId?.(first);
+        if (id) document.getElementById(id)?.focus();
     });
 
     return (

@@ -66,10 +66,7 @@ export default function ProfilePage() {
                                         'PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.'
                                     )}
                                 </p>
-                                <ErrorSummary
-                                    errors={errors()}
-                                    inputId={() => ''}
-                                />
+                                <ErrorSummary errors={errors()} />
                                 <div class="profile-picture-actions">
                                     <FilePicker
                                         accept={PICTURES}

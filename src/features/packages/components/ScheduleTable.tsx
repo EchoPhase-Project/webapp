@@ -89,7 +89,7 @@ export default function ScheduleTable(props: {
                 </Button>
             </div>
             <Show when={!editing()}>
-                <ErrorSummary errors={errors()} inputId={() => ''} />
+                <ErrorSummary errors={errors()} />
             </Show>
             <Table
                 data={props.workflow.schedules}

@@ -171,7 +171,7 @@ export default function MyPackagePage() {
                             </span>
                         </Show>
                     </div>
-                    <ErrorSummary errors={errors()} inputId={() => ''} />
+                    <ErrorSummary errors={errors()} />
 
                     <Show when={section() === 'workflows'}>
                         <PackageWorkflowList
