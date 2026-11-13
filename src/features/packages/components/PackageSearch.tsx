@@ -7,6 +7,7 @@ import {
 } from 'solid-js';
 import { IconSearch, IconX } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import Button from '@shared/ui/Button';
 import { exploreTags } from '@features/packages/api';
 
 /** What a search line asks for: a tag (`tag:name`, the last one wins) and words. */
@@ -161,8 +162,8 @@ export default function PackageSearch(props: {
                     onKeyDown={onKeyDown}
                 />
                 <Show when={props.value}>
-                    <button
-                        type="button"
+                    <Button
+                        variant="icon"
                         class="packages-search-clear"
                         aria-label={t('search_clear', 'Clear the search')}
                         title={t('search_clear', 'Clear the search')}
@@ -172,7 +173,7 @@ export default function PackageSearch(props: {
                         }}
                     >
                         <IconX aria-hidden="true" />
-                    </button>
+                    </Button>
                 </Show>
             </div>
             <ul

@@ -95,8 +95,8 @@ export default function TagsEditor(props: {
                             <li>
                                 <span class={tagClass(tag)}>
                                     {tag}
-                                    <button
-                                        type="button"
+                                    <Button
+                                        variant="icon-danger"
                                         class="package-tag-remove"
                                         aria-label={t(
                                             'tags.remove',
@@ -109,7 +109,7 @@ export default function TagsEditor(props: {
                                         }
                                     >
                                         <IconX aria-hidden="true" />
-                                    </button>
+                                    </Button>
                                 </span>
                             </li>
                         )}

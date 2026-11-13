@@ -16,19 +16,13 @@
   }
 }
 
-.packages-search-clear {
-  display: inline-flex;
+// The cross that clears it: Button variant icon, smaller (its colours and
+// hover are the variant's). .btn. to win over .btn-icon's padding.
+.btn.packages-search-clear {
   padding: 2px;
   border: none;
   border-radius: 4px;
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--text);
-    background: var(--hover);
-  }
+  font-size: inherit;
 }
 
 .packages-tabs {
@@ -414,18 +408,19 @@
 }
 
 // A tag that can be removed (the tags editor): the cross inside its capsule.
-.package-tag-remove {
-  display: inline-flex;
+// The cross on a tag: Button variant icon-danger, as small as the tag's
+// text and in its colour until hovered.
+.btn.package-tag-remove {
   margin-right: -4px;
   padding: 1px;
   border: none;
   border-radius: 999px;
-  background: none;
-  color: inherit;
-  cursor: pointer;
+  font-size: inherit;
 
-  &:hover {
-    background: color-mix(in srgb, currentColor 20%, transparent);
+  &,
+  &:active,
+  &:focus {
+    color: inherit;
   }
 }
 
