@@ -62,6 +62,9 @@ and the tests are successful.
 - Do not write response types manually in `shared/api/types.ts`.
 - Send API calls through `api` and `send()` from `shared/api/client.ts`. Put
   these calls in the `api.ts` file of the feature.
+- To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`:
+  `run(call, onOk)` sets `busy` and shows the errors. Do not write the
+  `setBusy` and `groupErrors` steps again.
 
 ### UI and styles
 

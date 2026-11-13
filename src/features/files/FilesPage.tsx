@@ -2,7 +2,7 @@ import { createRenderEffect, createSignal, on, Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -31,8 +31,7 @@ export default function FilesPage() {
     // A full last page: there may be more after it.
     const [more, setMore] = createSignal(false);
     const [loading, setLoading] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, pending, run } = createSubmit();
     // The file whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<StoredFile | null>(null);
 
@@ -54,29 +53,26 @@ export default function FilesPage() {
     );
 
     async function upload(file: File) {
-        setBusy(true);
-        try {
-            const result = await uploadFile(file);
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
+        await run(
+            () => uploadFile(file),
+            (stored) => {
+                // Oldest first: a new file is the last one, once all are shown.
+                if (!more()) setFiles((current) => [...current, stored]);
             }
-            setErrors({});
-            // Oldest first: a new file is the last one, once all are shown.
-            if (!more()) setFiles((current) => [...current, result.data]);
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
+    // A failed delete shows nothing: the dialog closes, the file stays.
     async function remove(file: StoredFile) {
-        setBusy(true);
         try {
-            const result = await deleteFile(file.id);
-            if (result.ok)
-                setFiles((current) => current.filter((f) => f.id !== file.id));
+            await pending(async () => {
+                const result = await deleteFile(file.id);
+                if (result.ok)
+                    setFiles((current) =>
+                        current.filter((f) => f.id !== file.id)
+                    );
+            });
         } finally {
-            setBusy(false);
             setDeleting(null);
         }
     }

@@ -1,5 +1,5 @@
 import { createEffect, createSignal } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { PackageVisibility, WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -21,26 +21,18 @@ export default function VisibilityEditor(props: {
     const [visibility, setVisibility] =
         createSignal<PackageVisibility>('Private');
     createEffect(() => setVisibility(props.pkg.visibility));
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(['visibility']);
 
     async function save(e: Event) {
         e.preventDefault();
-        setBusy(true);
-        try {
-            const result = await updatePackage(props.pkg.id, {
-                ...inputOf(props.pkg),
-                visibility: visibility(),
-            });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, ['visibility']));
-                return;
-            }
-            setErrors({});
-            props.onSaved(result.data);
-        } finally {
-            setBusy(false);
-        }
+        await run(
+            () =>
+                updatePackage(props.pkg.id, {
+                    ...inputOf(props.pkg),
+                    visibility: visibility(),
+                }),
+            (pkg) => props.onSaved(pkg)
+        );
     }
 
     return (

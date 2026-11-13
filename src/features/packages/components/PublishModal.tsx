@@ -1,5 +1,5 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type {
     PackageVersion,
     Workflow,
@@ -97,9 +97,8 @@ function PublishForm(props: {
     // eslint-disable-next-line solid/reactivity
     const [chosen, setChosen] = createSignal(props.workflows.map((w) => w.id));
     const [changelog, setChangelog] = createSignal('');
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit(FIELDS);
     const [unchanged, setUnchanged] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
 
     // Their programs: what each calls.
     const [programs] = createResource(
@@ -120,24 +119,24 @@ function PublishForm(props: {
     async function publish(e: Event) {
         e.preventDefault();
         if (busy() || missing().length > 0 || chosen().length === 0) return;
-        setBusy(true);
-        try {
-            const result = await publishVersion(props.pkg.id, {
-                workflows: chosen(),
-                changelog: changelog(),
-            });
-            const conflict =
-                !result.ok && result.errors.some((e) => e.code === 'Conflict');
-            setUnchanged(conflict);
-            if (!result.ok) {
-                setErrors(conflict ? {} : groupErrors(result.errors, FIELDS));
-                return;
+        await run(
+            () =>
+                publishVersion(props.pkg.id, {
+                    workflows: chosen(),
+                    changelog: changelog(),
+                }),
+            (version) => {
+                setUnchanged(false);
+                props.onPublished(version);
+            },
+            // A conflict: nothing changed since the latest version. It has
+            // its own notice instead of an error.
+            (items) => {
+                const conflict = items.some((e) => e.code === 'Conflict');
+                setUnchanged(conflict);
+                return conflict ? {} : undefined;
             }
-            setErrors({});
-            props.onPublished(result.data);
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     return (

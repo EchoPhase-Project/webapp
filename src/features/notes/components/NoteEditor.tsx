@@ -1,5 +1,5 @@
 import { createSignal, Show, type JSX } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { Note } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -46,34 +46,24 @@ export default function NoteEditor(props: {
             : ''
     );
     const [preview, setPreview] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(FIELDS);
 
     async function save(e?: Event) {
         e?.preventDefault();
         if (busy()) return;
-        setBusy(true);
-        try {
-            const input = {
-                title: title(),
-                body: body(),
-                pinned: pinned(),
-                remindAt: DateHelper.fromLocalInput(remindAt()),
-                // Saved only over the version opened: someone else's save meanwhile is a conflict.
-                expectedStamp: props.note?.stamp ?? null,
-            };
-            const result = props.note
-                ? await updateNote(props.note.id, input)
-                : await createNote(input);
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, FIELDS));
-                return;
-            }
-            setErrors({});
-            props.onSaved(result.data);
-        } finally {
-            setBusy(false);
-        }
+        const input = {
+            title: title(),
+            body: body(),
+            pinned: pinned(),
+            remindAt: DateHelper.fromLocalInput(remindAt()),
+            // Saved only over the version opened: someone else's save meanwhile is a conflict.
+            expectedStamp: props.note?.stamp ?? null,
+        };
+        const note = props.note;
+        await run(
+            () => (note ? updateNote(note.id, input) : createNote(input)),
+            (saved) => props.onSaved(saved)
+        );
     }
 
     const onKeyDown = (e: KeyboardEvent) => {

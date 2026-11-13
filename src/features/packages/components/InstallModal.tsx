@@ -11,7 +11,7 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Select from '@shared/ui/Select';
 import Modal from '@shared/ui/Modal';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import { installPackage, myConnections } from '@features/packages/api';
 import { packagePath } from '@features/packages/package-nav';
 
@@ -90,8 +90,7 @@ function InstallForm(props: {
     const t = useLocalizer('packages');
     const [mine] = createResource(myConnections);
     const [chosen, setChosen] = createSignal<Record<string, string>>({});
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit();
 
     // Until the user picks, the same-named connection (or none).
     const choiceOf = (needed: PackageConnection) =>
@@ -100,26 +99,20 @@ function InstallForm(props: {
     async function install(e: Event) {
         e.preventDefault();
         if (busy()) return;
-        setBusy(true);
-        try {
-            const connections: Record<string, string> = {};
-            for (const needed of props.content.connections) {
-                const choice = choiceOf(needed);
-                if (choice) connections[needed.name] = choice;
-            }
-            const result = await installPackage(
-                props.packageId,
-                props.content.version,
-                connections
-            );
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
-            }
-            props.onInstalled(result.data);
-        } finally {
-            setBusy(false);
+        const connections: Record<string, string> = {};
+        for (const needed of props.content.connections) {
+            const choice = choiceOf(needed);
+            if (choice) connections[needed.name] = choice;
         }
+        await run(
+            () =>
+                installPackage(
+                    props.packageId,
+                    props.content.version,
+                    connections
+                ),
+            (installed) => props.onInstalled(installed)
+        );
     }
 
     return (

@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, Show } from 'solid-js';
 import { IconX } from '@shared/ui/icons';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -33,8 +33,7 @@ export default function TagsEditor(props: {
     const [tags, setTags] = createSignal<string[]>([]);
     createEffect(() => setTags([...props.pkg.tags]));
     const [draft, setDraft] = createSignal('');
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(['tags']);
 
     const changed = () => tags().join(',') !== props.pkg.tags.join(',');
 
@@ -48,21 +47,14 @@ export default function TagsEditor(props: {
     async function save(e: Event) {
         e.preventDefault();
         add();
-        setBusy(true);
-        try {
-            const result = await updatePackage(props.pkg.id, {
-                ...inputOf(props.pkg),
-                tags: tags(),
-            });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, ['tags']));
-                return;
-            }
-            setErrors({});
-            props.onSaved(result.data);
-        } finally {
-            setBusy(false);
-        }
+        await run(
+            () =>
+                updatePackage(props.pkg.id, {
+                    ...inputOf(props.pkg),
+                    tags: tags(),
+                }),
+            (pkg) => props.onSaved(pkg)
+        );
     }
 
     return (

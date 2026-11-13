@@ -1,6 +1,6 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
 import { IconX } from '@shared/ui/icons';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -19,39 +19,25 @@ export default function ShareSection(props: { noteId: string }) {
     );
     const [userName, setUserName] = createSignal('');
     const [canEdit, setCanEdit] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, pending, run } = createSubmit();
 
     async function add(e: Event) {
         e.preventDefault();
         if (!userName().trim()) return;
-        setBusy(true);
-        try {
-            const result = await shareNote(
-                props.noteId,
-                userName().trim(),
-                canEdit()
-            );
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
+        await run(
+            () => shareNote(props.noteId, userName().trim(), canEdit()),
+            async () => {
+                setUserName('');
+                await refetch();
             }
-            setErrors({});
-            setUserName('');
-            await refetch();
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     async function remove(userId: string) {
-        setBusy(true);
-        try {
+        await pending(async () => {
             await unshareNote(props.noteId, userId);
             await refetch();
-        } finally {
-            setBusy(false);
-        }
+        });
     }
 
     return (

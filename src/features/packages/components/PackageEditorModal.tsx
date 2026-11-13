@@ -1,5 +1,5 @@
 import { createSignal, Show } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -60,35 +60,25 @@ function PackageForm(props: {
     const [readme, setReadme] = createSignal(props.pkg?.readme ?? '');
     /* eslint-enable solid/reactivity */
     const [preview, setPreview] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(FIELDS);
 
     async function save(e: Event) {
         e.preventDefault();
         if (busy()) return;
-        setBusy(true);
-        try {
-            const about = {
-                name: name(),
-                summary: summary(),
-                readme: readme(),
-            };
-            // The rest (tags, visibility, error workflow) as it is.
-            const result = props.pkg
-                ? await updatePackage(props.pkg.id, {
-                      ...inputOf(props.pkg),
-                      ...about,
-                  })
-                : await createPackage({ ...about, visibility: 'Private' });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, FIELDS));
-                return;
-            }
-            setErrors({});
-            props.onSaved(result.data);
-        } finally {
-            setBusy(false);
-        }
+        const about = {
+            name: name(),
+            summary: summary(),
+            readme: readme(),
+        };
+        const pkg = props.pkg;
+        await run(
+            () =>
+                // The rest (tags, visibility, error workflow) as it is.
+                pkg
+                    ? updatePackage(pkg.id, { ...inputOf(pkg), ...about })
+                    : createPackage({ ...about, visibility: 'Private' }),
+            (saved) => props.onSaved(saved)
+        );
     }
 
     return (

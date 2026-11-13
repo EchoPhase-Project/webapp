@@ -1,6 +1,6 @@
 import { createEffect, createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -33,38 +33,31 @@ export default function PackageSettings(props: {
     const [editing, setEditing] = createSignal(false);
     const [publishing, setPublishing] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, pending, run } = createSubmit(['errorWorkflow']);
     // The choice starts from the package's, and follows it once saved.
     const [errorWorkflow, setErrorWorkflow] = createSignal('');
     createEffect(() => setErrorWorkflow(props.pkg.errorWorkflow ?? ''));
 
     async function saveErrorWorkflow(e: Event) {
         e.preventDefault();
-        setBusy(true);
-        try {
-            const result = await updatePackage(props.pkg.id, {
-                ...inputOf(props.pkg),
-                errorWorkflow: errorWorkflow() || null,
-            });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, ['errorWorkflow']));
-                return;
-            }
-            setErrors({});
-            props.onSaved(result.data);
-        } finally {
-            setBusy(false);
-        }
+        await run(
+            () =>
+                updatePackage(props.pkg.id, {
+                    ...inputOf(props.pkg),
+                    errorWorkflow: errorWorkflow() || null,
+                }),
+            (pkg) => props.onSaved(pkg)
+        );
     }
 
+    // A failed delete shows nothing: the dialog closes, the package stays.
     async function remove() {
-        setBusy(true);
         try {
-            const result = await deletePackage(props.pkg.id);
-            if (result.ok) navigate('/packages');
+            await pending(async () => {
+                const result = await deletePackage(props.pkg.id);
+                if (result.ok) navigate('/packages');
+            });
         } finally {
-            setBusy(false);
             setDeleting(false);
         }
     }

@@ -1,8 +1,8 @@
-import { createSignal, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { ApiResult } from '@shared/api/client';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import Button from '@shared/ui/Button';
@@ -31,23 +31,10 @@ export default function ProfilePage() {
         ),
     }));
 
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit();
 
-    async function changing(call: () => Promise<ApiResult<unknown>>) {
-        setBusy(true);
-        try {
-            const result = await call();
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
-            }
-            setErrors({});
-            await refetchUser();
-        } finally {
-            setBusy(false);
-        }
-    }
+    const changing = (call: () => Promise<ApiResult<unknown>>) =>
+        run(call, () => refetchUser());
 
     return (
         <div class="page-stack profile-container">

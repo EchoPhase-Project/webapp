@@ -18,7 +18,7 @@ import {
     IconHistory,
 } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -124,8 +124,7 @@ export default function WorkflowDetails(props: {
     );
     const [running, setRunning] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, setErrors, run } = createSubmit();
 
     usePageMeta(() => ({
         title: workflow()?.name ?? t('title', 'Workflows'),
@@ -144,32 +143,20 @@ export default function WorkflowDetails(props: {
     );
 
     async function toggle(w: Workflow, active: boolean) {
-        setBusy(true);
-        try {
-            const result = await setActive(w, active);
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
-            }
-            setErrors({});
-            mutate(result.data);
-        } finally {
-            setBusy(false);
-        }
+        await run(
+            () => setActive(w, active),
+            (saved) => mutate(saved)
+        );
     }
 
+    // A failure: called by another workflow, or the package's error workflow.
     async function remove() {
-        setBusy(true);
         try {
-            const result = await deleteWorkflow(props.id);
-            if (result.ok) {
-                navigate(packagePath(props.packageId));
-                return;
-            }
-            // Called by another workflow, or the package's error workflow.
-            setErrors(groupErrors(result.errors, []));
+            await run(
+                () => deleteWorkflow(props.id),
+                () => navigate(packagePath(props.packageId))
+            );
         } finally {
-            setBusy(false);
             setDeleting(false);
         }
     }

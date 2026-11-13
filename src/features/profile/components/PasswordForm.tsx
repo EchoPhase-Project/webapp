@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -18,8 +18,7 @@ export default function PasswordForm() {
     const [current, setCurrent] = createSignal('');
     const [next, setNext] = createSignal('');
     const [confirm, setConfirm] = createSignal('');
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, setErrors, run } = createSubmit(FIELDS);
     const [done, setDone] = createSignal(false);
 
     const edited =
@@ -46,24 +45,19 @@ export default function PasswordForm() {
             });
             return;
         }
-        setBusy(true);
-        try {
-            const result = await changePassword({
-                currentPassword: current(),
-                newPassword: next(),
-            });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, FIELDS));
-                return;
+        await run(
+            () =>
+                changePassword({
+                    currentPassword: current(),
+                    newPassword: next(),
+                }),
+            () => {
+                setCurrent('');
+                setNext('');
+                setConfirm('');
+                setDone(true);
             }
-            setErrors({});
-            setCurrent('');
-            setNext('');
-            setConfirm('');
-            setDone(true);
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     return (

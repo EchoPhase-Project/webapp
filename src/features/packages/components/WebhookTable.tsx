@@ -6,7 +6,7 @@ import {
     IconPencil,
     IconTrash,
 } from '@shared/ui/icons';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -54,8 +54,7 @@ export default function WebhookTable(props: {
     const [copied, setCopied] = createSignal<string | null>(null);
     const [editing, setEditing] = createSignal<Webhook | null>(null);
     const [deleting, setDeleting] = createSignal<Webhook | null>(null);
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit();
 
     const url = (hook: Webhook) => `${location.origin}${hook.path}`;
     const secret = (hook: Webhook) => {
@@ -73,20 +72,11 @@ export default function WebhookTable(props: {
         }
     }
 
-    async function save(program: Workflow['program']) {
-        setBusy(true);
-        try {
-            const result = await saveWorkflow(props.workflow, { program });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return false;
-            }
-            setErrors({});
-            props.onChange(result.data);
-            return true;
-        } finally {
-            setBusy(false);
-        }
+    function save(program: Workflow['program']) {
+        return run(
+            () => saveWorkflow(props.workflow, { program }),
+            (saved) => props.onChange(saved)
+        );
     }
 
     async function update(blockId: number, respond: Respond, replace: boolean) {

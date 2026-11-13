@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from 'solid-js';
 import { IconPencil, IconPlus, IconTrash } from '@shared/ui/icons';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import type { FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -44,23 +45,13 @@ export default function ScheduleTable(props: {
     // null: closed; 'new': adding; a schedule: editing it.
     const [editing, setEditing] = createSignal<Schedule | 'new' | null>(null);
     const [deleting, setDeleting] = createSignal<Schedule | null>(null);
-    const [busy, setBusy] = createSignal(false);
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit();
 
-    async function save(program: Program) {
-        setBusy(true);
-        try {
-            const result = await saveWorkflow(props.workflow, { program });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return false;
-            }
-            setErrors({});
-            props.onChange(result.data);
-            return true;
-        } finally {
-            setBusy(false);
-        }
+    function save(program: Program) {
+        return run(
+            () => saveWorkflow(props.workflow, { program }),
+            (saved) => props.onChange(saved)
+        );
     }
 
     async function submit(cron: string, zone: string) {

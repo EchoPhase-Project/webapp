@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -18,28 +18,22 @@ export default function ApiClientForm(props: {
     const [name, setName] = createSignal('');
     // datetime-local value: the browser's local time, converted on submit.
     const [expiresAt, setExpiresAt] = createSignal('');
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(FIELDS);
 
     async function create(e: Event) {
         e.preventDefault();
-        setBusy(true);
-        try {
-            const result = await createApiClient({
-                name: name(),
-                expiresAt: DateHelper.fromLocalInput(expiresAt()),
-            });
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, FIELDS));
-                return;
+        await run(
+            () =>
+                createApiClient({
+                    name: name(),
+                    expiresAt: DateHelper.fromLocalInput(expiresAt()),
+                }),
+            (client) => {
+                setName('');
+                setExpiresAt('');
+                props.onCreated(client.clientSecret);
             }
-            setErrors({});
-            setName('');
-            setExpiresAt('');
-            props.onCreated(result.data.clientSecret);
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     return (

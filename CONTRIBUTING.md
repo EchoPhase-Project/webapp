@@ -186,6 +186,16 @@ contract. Do not write a response type manually in `types.ts`.
   other errors at the top of the form. The text of an error comes from its
   code: `errors.<code>` in the locale files. The message from the server is
   the fallback.
+- To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
+  `run(call, onOk)` sets `busy`, sends the call, and groups the errors. If
+  the call is successful, `run` clears the errors and gives the data to
+  `onOk`. The save code is then the same in all forms.
+- If one error needs a special display, give `run` an `onFail` function. If
+  `onFail` returns a value, the form shows that value. Refer to the "unchanged"
+  conflict in `PublishModal.tsx`. This keeps the special case adjacent to the
+  call.
+- If an action must not show errors, use `pending(work)`. It only sets
+  `busy`.
 - A page that needs a session has `auth: true` in `src/app/pages.ts`.
   `Router.tsx` then adds `requireAuth`. Parts of a page use `SignedIn` and
   `SignedOut`.
