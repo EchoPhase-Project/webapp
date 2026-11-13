@@ -1,6 +1,5 @@
 import {
     createEffect,
-    createRenderEffect,
     createResource,
     createSignal,
     For,
@@ -8,7 +7,7 @@ import {
 } from 'solid-js';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { IconArrowLeft } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import EmptyState from '@shared/ui/EmptyState';
@@ -35,7 +34,6 @@ export default function MyPackagePage() {
     const params = useParams<{ id: string; section?: string }>();
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
-    const { setTitle, setDescription } = useRootMeta();
 
     const section = (): Section =>
         SECTIONS.includes(params.section as Section)
@@ -52,18 +50,15 @@ export default function MyPackagePage() {
         if (p && p.access !== 'Owner')
             navigate(`/explore/${p.id}`, { replace: true });
     });
-    createRenderEffect(() => {
-        setTitle(
-            `${pkg()?.name ?? t('packages.title', 'Packages')} · EchoPhase`
-        );
-        setDescription(
+    usePageMeta(() => ({
+        title: pkg()?.name ?? t('packages.title', 'Packages'),
+        description:
             pkg()?.summary ||
-                t(
-                    'packages.description',
-                    'Your packages: workflows that belong together.'
-                )
-        );
-    });
+            t(
+                'packages.description',
+                'Your packages: workflows that belong together.'
+            ),
+    }));
 
     const [errors, setErrors] = createSignal<FormErrors>({});
 
@@ -93,7 +88,7 @@ export default function MyPackagePage() {
             }
         >
             {(p) => (
-                <div class="workflow-page">
+                <div class="page-stack workflow-page">
                     {back}
                     <PageHeader
                         eyebrow={t('package.eyebrow', 'Package')}

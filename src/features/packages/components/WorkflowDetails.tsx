@@ -1,6 +1,5 @@
 import {
     createEffect,
-    createRenderEffect,
     createResource,
     createSignal,
     For,
@@ -18,7 +17,7 @@ import {
     IconHierarchy,
     IconHistory,
 } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -67,7 +66,6 @@ export default function WorkflowDetails(props: {
     const date = useDateFormat();
     const navigate = useNavigate();
     const [params] = useSearchParams<{ edited?: string }>();
-    const { setTitle, setDescription } = useRootMeta();
 
     const [workflow, { mutate }] = createResource(
         () => props.id,
@@ -129,15 +127,13 @@ export default function WorkflowDetails(props: {
     const [busy, setBusy] = createSignal(false);
     const [errors, setErrors] = createSignal<FormErrors>({});
 
-    createRenderEffect(() => {
-        setTitle(`${workflow()?.name ?? t('title', 'Workflows')} · EchoPhase`);
-        setDescription(
-            t(
-                'description',
-                'Your workflows: what they do, their runs and versions.'
-            )
-        );
-    });
+    usePageMeta(() => ({
+        title: workflow()?.name ?? t('title', 'Workflows'),
+        description: t(
+            'description',
+            'Your workflows: what they do, their runs and versions.'
+        ),
+    }));
 
     createEffect(
         on(
@@ -201,7 +197,7 @@ export default function WorkflowDetails(props: {
             }
         >
             {(w) => (
-                <div class="workflow-page">
+                <div class="page-stack workflow-page">
                     {back}
                     <PageHeader
                         eyebrow={t('eyebrow', 'Workflows')}

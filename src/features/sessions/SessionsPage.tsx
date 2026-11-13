@@ -1,5 +1,5 @@
-import { createRenderEffect, createResource, createSignal } from 'solid-js';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { createResource, createSignal } from 'solid-js';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -7,18 +7,16 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import PageHeader from '@shared/ui/PageHeader';
 import { listSessions, revokeAllSessions, revokeSession } from './api';
 import SessionsTable from './components/SessionsTable';
-import './sessions.scss';
 
 /** The signed-in user's sessions, fetched by this page only. */
 export default function SessionsPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('sessions');
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'Sessions')} · EchoPhase`);
-        setDescription(t('description', 'List of current active sessions.'));
-    });
+    usePageMeta(() => ({
+        title: t('title', 'Sessions'),
+        description: t('description', 'List of current active sessions.'),
+    }));
 
     const [sessions, { refetch }] = createResource(
         isAuthenticated,
@@ -39,7 +37,7 @@ export default function SessionsPage() {
     }
 
     return (
-        <div class="sessions-container">
+        <div class="page-stack">
             <PageHeader
                 eyebrow={t('nav.settings', 'Settings')}
                 title={t('heading', 'Active sessions')}

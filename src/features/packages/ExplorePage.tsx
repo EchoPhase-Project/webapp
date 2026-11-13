@@ -1,13 +1,6 @@
-import {
-    createEffect,
-    createRenderEffect,
-    createSignal,
-    on,
-    onCleanup,
-    Show,
-} from 'solid-js';
+import { createEffect, createSignal, on, onCleanup, Show } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -22,17 +15,14 @@ import './packages.scss';
 
 /** Published packages, everyone's public ones: to read and install. The caller's own are in Packages. */
 export default function ExplorePage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('packages');
     const [params, setParams] = useSearchParams<{ tag?: string }>();
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'Explore')} · EchoPhase`);
-        setDescription(
-            t('description', 'Workflow packages to read and install.')
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'Explore'),
+        description: t('description', 'Workflow packages to read and install.'),
+    }));
 
     const tag = () => params.tag ?? '';
 
@@ -115,7 +105,7 @@ export default function ExplorePage() {
     };
 
     return (
-        <div class="packages-container">
+        <div class="page-stack packages-container">
             <PageHeader
                 eyebrow={t('eyebrow', 'Workflows')}
                 title={t('title', 'Explore')}

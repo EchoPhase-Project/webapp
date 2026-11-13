@@ -1,6 +1,5 @@
 import {
     createEffect,
-    createRenderEffect,
     createResource,
     createSignal,
     For,
@@ -9,7 +8,7 @@ import {
 } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
 import { IconPlus, IconSearch } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -25,17 +24,14 @@ import './notes.scss';
 
 /** The user's notes and those shared with them: search, open, write. */
 export default function NotesPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('notes');
     const [params, setParams] = useSearchParams<{ open?: string }>();
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'Notes')} · EchoPhase`);
-        setDescription(
-            t('description', 'Your notes, and those shared with you.')
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'Notes'),
+        description: t('description', 'Your notes, and those shared with you.'),
+    }));
 
     const [query, setQuery] = createSignal('');
     // The search waits for a pause in typing.
@@ -83,7 +79,7 @@ export default function NotesPage() {
     };
 
     return (
-        <div class="notes-container">
+        <div class="page-stack">
             <PageHeader
                 eyebrow={t('eyebrow', 'Workspace')}
                 title={t('title', 'Notes')}

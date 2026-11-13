@@ -75,8 +75,10 @@ and the tests are successful.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
-- Each page starts with `PageHeader`. Each page sets its title with
-  `useRootMeta()`.
+- Each page starts with `PageHeader`.
+- Each page sets its title and description with
+  `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".
+- Put the content of a page in an element with the `page-stack` class.
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens
   include the two themes. `palette.test.ts` examines the contrast.
 - Do not use hex colours in components.

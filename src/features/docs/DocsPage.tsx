@@ -1,6 +1,6 @@
-import { createRenderEffect, createResource, For, Show } from 'solid-js';
+import { createResource, For, Show } from 'solid-js';
 import { A, useNavigate, useParams } from '@solidjs/router';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
 import Markdown from '@shared/ui/Markdown';
@@ -16,7 +16,6 @@ export default function DocsPage() {
     const params = useParams<{ slug?: string }>();
     const i18n = useI18n();
     const t = useLocalizer('docs');
-    const { setTitle, setDescription } = useRootMeta();
     const navigate = useNavigate();
 
     // Links between articles (plain <a> in the Markdown) stay in the app.
@@ -58,12 +57,12 @@ export default function DocsPage() {
         ([slug, locale]) => (isArticle(slug) ? loadArticle(slug, locale) : null)
     );
 
-    createRenderEffect(() => {
+    usePageMeta(() => {
         const text = article();
-        setTitle(
-            `${(text && titleOf(text)) || t('title', 'Documentation')} · EchoPhase`
-        );
-        setDescription(t('description', 'How EchoPhase works.'));
+        return {
+            title: (text && titleOf(text)) || t('title', 'Documentation'),
+            description: t('description', 'How EchoPhase works.'),
+        };
     });
 
     return (

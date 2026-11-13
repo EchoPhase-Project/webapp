@@ -1,13 +1,7 @@
-import {
-    createRenderEffect,
-    createResource,
-    createSignal,
-    For,
-    Show,
-} from 'solid-js';
+import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { IconPlus } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -29,20 +23,17 @@ import './workflows.scss';
  * from Explore), and the packages others shared with them.
  */
 export default function PackagesPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
 
-    createRenderEffect(() => {
-        setTitle(`${t('packages.title', 'Packages')} · EchoPhase`);
-        setDescription(
-            t(
-                'packages.description',
-                'Your packages: workflows that belong together.'
-            )
-        );
-    });
+    usePageMeta(() => ({
+        title: t('packages.title', 'Packages'),
+        description: t(
+            'packages.description',
+            'Your packages: workflows that belong together.'
+        ),
+    }));
 
     const [packages] = createResource(
         () => isAuthenticated() || false,
@@ -57,7 +48,7 @@ export default function PackagesPage() {
     const date = useDateFormat();
 
     return (
-        <div class="workflows-container">
+        <div class="page-stack workflows-container">
             <PageHeader
                 eyebrow={t('eyebrow', 'Workflows')}
                 title={t('packages.title', 'Packages')}

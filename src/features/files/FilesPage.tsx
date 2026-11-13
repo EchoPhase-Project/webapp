@@ -1,6 +1,6 @@
 import { createRenderEffect, createSignal, on, Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { StoredFile } from '@shared/api/types';
@@ -16,16 +16,16 @@ import './files.scss';
 
 /** The signed-in user's files: upload, download, delete. */
 export default function FilesPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('files');
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'Files')} · EchoPhase`);
-        setDescription(
-            t('description', 'Files you uploaded, and those made for you.')
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'Files'),
+        description: t(
+            'description',
+            'Files you uploaded, and those made for you.'
+        ),
+    }));
 
     const [files, setFiles] = createSignal<StoredFile[]>([]);
     // A full last page: there may be more after it.
@@ -82,7 +82,7 @@ export default function FilesPage() {
     }
 
     return (
-        <div class="files-container">
+        <div class="page-stack">
             <PageHeader
                 eyebrow={t('eyebrow', 'Storage')}
                 title={t('title', 'Files')}

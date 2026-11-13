@@ -1,5 +1,5 @@
-import { createRenderEffect, createSignal, Show } from 'solid-js';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { createSignal, Show } from 'solid-js';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { ApiResult } from '@shared/api/client';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -20,19 +20,16 @@ const PICTURES = 'image/png,image/jpeg,image/webp';
 
 /** The signed-in user's profile: picture, name, username, time zone and password. */
 export default function ProfilePage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { user, refetchUser } = useAuth();
     const t = useLocalizer('profile');
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'Profile')} · EchoPhase`);
-        setDescription(
-            t(
-                'description',
-                'Your picture, name, username, time zone and password.'
-            )
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'Profile'),
+        description: t(
+            'description',
+            'Your picture, name, username, time zone and password.'
+        ),
+    }));
 
     const [busy, setBusy] = createSignal(false);
     const [errors, setErrors] = createSignal<FormErrors>({});
@@ -53,7 +50,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div class="profile-container">
+        <div class="page-stack profile-container">
             <PageHeader
                 eyebrow={t('nav.settings', 'Settings')}
                 title={t('title', 'Profile')}

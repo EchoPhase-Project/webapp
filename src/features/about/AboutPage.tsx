@@ -1,6 +1,6 @@
-import { createRenderEffect, For, type Component } from 'solid-js';
+import { For, type Component } from 'solid-js';
 import { A } from '@solidjs/router';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth-provider';
 import Card from '@shared/ui/Card';
@@ -66,19 +66,16 @@ const EN: Record<string, { title: string; text: string }> = {
 };
 
 export default function AboutPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const t = useLocalizer('about');
     const { isAuthenticated } = useAuth();
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'About')} · EchoPhase`);
-        setDescription(
-            t(
-                'description',
-                'EchoPhase is an open-source platform for managing bots and connecting services.'
-            )
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'About'),
+        description: t(
+            'description',
+            'EchoPhase is an open-source platform for managing bots and connecting services.'
+        ),
+    }));
 
     const text = (key: string, part: 'title' | 'text') =>
         t(`items.${key}.${part}`, EN[key][part]);

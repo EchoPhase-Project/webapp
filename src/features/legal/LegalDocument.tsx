@@ -1,7 +1,7 @@
-import { createRenderEffect, createResource, For, Show } from 'solid-js';
+import { createResource, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useI18n, type Translations } from '@shared/i18n/i18n-context';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import Card from '@shared/ui/Card';
 import PageHeader from '@shared/ui/PageHeader';
 import { blocksOf, inlinesOf, type Inline } from './markup';
@@ -78,7 +78,6 @@ function Body(props: { text: string }) {
  */
 export default function LegalDocument(props: { namespace: string }) {
     const i18n = useI18n();
-    const { setTitle, setDescription } = useRootMeta();
 
     const [current] = createResource(i18n.currentLocale, (locale) =>
         i18n.loadNamespace(props.namespace, locale)
@@ -88,11 +87,9 @@ export default function LegalDocument(props: { namespace: string }) {
     );
     const doc = () => text(current()) ?? text(english());
 
-    createRenderEffect(() => {
+    usePageMeta(() => {
         const d = doc();
-        if (!d) return;
-        setTitle(`${d.title} · EchoPhase`);
-        setDescription(d.description);
+        return d && { title: d.title, description: d.description };
     });
 
     const sections = () => Object.entries(doc()?.sections ?? {});

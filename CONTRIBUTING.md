@@ -77,8 +77,13 @@ stylesheet, `<feature>.scss`.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
   It shows the time in the time zone of the user and in the current language.
   Do not call `DateHelper.format` in a component.
-- A page sets its title and description with `useRootMeta()` in a
-  `createRenderEffect`. A page starts with `PageHeader`.
+- A page sets its title and description with `usePageMeta()` from
+  `@shared/meta/page-meta`: `usePageMeta(() => ({ title, description }))`.
+  Do not add " · EchoPhase" to the title. `usePageMeta` adds it.
+- A page starts with `PageHeader`.
+- Put the content of a page in an element with the `page-stack` class
+  (`global.scss`). If a page needs more styles, add a feature class next to
+  it. Do not write the same grid again in a feature stylesheet.
 
 ## UI
 

@@ -1,9 +1,3 @@
-.files-container {
-  display: grid;
-  gap: 20px;
-  align-content: start;
-}
-
 // The name takes what the others leave: they are as wide as their content.
 table.files {
   @include comp.media('min-width: 768px') {

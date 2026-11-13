@@ -1,14 +1,8 @@
-import {
-    createRenderEffect,
-    createResource,
-    createSignal,
-    For,
-    Show,
-} from 'solid-js';
+import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { IconArrowLeft, IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -56,15 +50,12 @@ export default function PackageDetails(props: { id: string }) {
 
     const [installing, setInstalling] = createSignal(false);
     const [busy, setBusy] = createSignal(false);
-
-    const { setTitle, setDescription } = useRootMeta();
-    createRenderEffect(() => {
-        setTitle(`${pkg()?.name ?? t('title', 'Explore')} · EchoPhase`);
-        setDescription(
+    usePageMeta(() => ({
+        title: pkg()?.name ?? t('title', 'Explore'),
+        description:
             pkg()?.summary ||
-                t('description', 'Workflow packages to read and install.')
-        );
-    });
+            t('description', 'Workflow packages to read and install.'),
+    }));
 
     const isOwner = () => pkg()?.access === 'Owner';
     const date = useDateFormat();
@@ -101,7 +92,7 @@ export default function PackageDetails(props: { id: string }) {
             }
         >
             {(p) => (
-                <div class="package-page">
+                <div class="page-stack package-page">
                     {back}
                     <PageHeader
                         eyebrow={t('eyebrow', 'Workflows')}

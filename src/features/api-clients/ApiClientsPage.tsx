@@ -1,11 +1,6 @@
-import {
-    createRenderEffect,
-    createResource,
-    createSignal,
-    Show,
-} from 'solid-js';
+import { createResource, createSignal, Show } from 'solid-js';
 import { IconPlus } from '@shared/ui/icons';
-import { useRootMeta } from '@shared/meta/page-meta';
+import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -21,19 +16,16 @@ import './api-clients.scss';
 
 /** The signed-in user's API clients: the list, a new one in a dialog. */
 export default function ApiClientsPage() {
-    const { setTitle, setDescription } = useRootMeta();
     const { isAuthenticated } = useAuth();
     const t = useLocalizer('api-clients');
 
-    createRenderEffect(() => {
-        setTitle(`${t('title', 'API clients')} · EchoPhase`);
-        setDescription(
-            t(
-                'description',
-                'Credentials for bots and scripts that call the API.'
-            )
-        );
-    });
+    usePageMeta(() => ({
+        title: t('title', 'API clients'),
+        description: t(
+            'description',
+            'Credentials for bots and scripts that call the API.'
+        ),
+    }));
 
     const [clients, { refetch }] = createResource(
         isAuthenticated,
@@ -63,7 +55,7 @@ export default function ApiClientsPage() {
     }
 
     return (
-        <div class="api-clients-container">
+        <div class="page-stack">
             <PageHeader
                 eyebrow={t('nav.settings', 'Settings')}
                 title={t('title', 'API clients')}
