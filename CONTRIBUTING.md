@@ -81,6 +81,9 @@ stylesheet, `<feature>.scss`.
   `@shared/meta/page-meta`: `usePageMeta(() => ({ title, description }))`.
   Do not add " · EchoPhase" to the title. `usePageMeta` adds it.
 - A page starts with `PageHeader`.
+- Put the content of a page in an element with the `page-stack` class
+  (`global.scss`). If a page needs more styles, add a feature class next to
+  it. Do not write the same grid again in a feature stylesheet.
 - Use the helpers in `src/shared/lib` before you write the same logic again:
     - `createDebounced(ms)`: a search that waits for a pause in typing.
     - `createDismiss(ref, isOpen, close)`: a popup that closes on a click
@@ -89,9 +92,6 @@ stylesheet, `<feature>.scss`.
       (`ui.copied`).
     - `createChangeSignal()`: a count that makes open lists fetch again
       after a change in a different part of the app.
-- Put the content of a page in an element with the `page-stack` class
-  (`global.scss`). If a page needs more styles, add a feature class next to
-  it. Do not write the same grid again in a feature stylesheet.
 
 ## UI
 
@@ -105,6 +105,7 @@ Before you write new markup, make pages from the components in
 | `Tabs`                                                | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern                                                                                           |
 | `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                      |
 | `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                            |
+| `TimeZoneField`                                       | A field for an IANA time zone, with the zones of the browser as suggestions                                                                                                                 |
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                             |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
 

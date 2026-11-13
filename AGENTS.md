@@ -74,8 +74,9 @@ and the tests are successful.
 ### UI and styles
 
 - Before you write new markup, use the components in `src/shared/ui`:
-  Button, HeaderButton, Tabs, Field, Select, Checkbox, RadioGroup, Modal,
-  ConfirmDialog, Card, Table, EmptyState, PageHeader, Switch.
+  Button, HeaderButton, Tabs, Field, TimeZoneField, Select, Checkbox,
+  RadioGroup, Modal, ConfirmDialog, Card, Table, EmptyState, PageHeader,
+  Switch.
 - Do not write `<button>`, `<select>`, or a checkbox or radio `<input>`
   outside `src/shared/ui` and `src/shared/nav`. ESLint enforces this rule.
 - If a full card or row opens an item, it can be a `<button>`. Then disable

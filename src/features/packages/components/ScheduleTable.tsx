@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { IconPencil, IconPlus, IconTrash } from '@shared/ui/icons';
 import type { FormErrors } from '@shared/api/errors';
 import { createSubmit } from '@shared/api/submit';
@@ -11,6 +11,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import Modal from '@shared/ui/Modal';
 import { Cell, Row, Table } from '@shared/ui/Table';
+import TimeZoneField from '@shared/ui/TimeZoneField';
 import { saveWorkflow } from '@features/packages/api';
 import {
     addTrigger,
@@ -21,15 +22,6 @@ import {
 } from '@features/packages/program-edit';
 
 type Schedule = Workflow['schedules'][number];
-
-// The browser's IANA zones, offered as suggestions (the server checks).
-const zones = (): string[] => {
-    try {
-        return Intl.supportedValuesOf('timeZone');
-    } catch {
-        return [];
-    }
-};
 
 /**
  * A workflow's schedules (its ScheduleTriggers) as a table: the cron, the
@@ -241,7 +233,7 @@ function ScheduleForm(props: {
                     '“0 9 * * 1-5”: weekdays at 9:00; “*/15 * * * *”: every 15 minutes.'
                 )}
             </p>
-            <Field
+            <TimeZoneField
                 id="schedule-zone"
                 name="timeZone"
                 label={t(
@@ -249,17 +241,11 @@ function ScheduleForm(props: {
                     'Time zone (all its schedules)'
                 )}
                 showLabel
-                type="text"
-                list="schedule-time-zones"
-                spellcheck={false}
                 placeholder={t('schedule.zone_yours', 'Yours')}
                 disabled={props.busy}
                 value={zone()}
                 onInput={(e) => setZone(e.currentTarget.value)}
             />
-            <datalist id="schedule-time-zones">
-                <For each={zones()}>{(z) => <option value={z} />}</For>
-            </datalist>
             <Button type="submit" busy={props.busy} disabled={!cron().trim()}>
                 {t('settings.save', 'Save')}
             </Button>

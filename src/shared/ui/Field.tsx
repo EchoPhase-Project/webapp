@@ -4,7 +4,7 @@ import type { ErrorItem } from '@shared/api/types';
 import FieldError, { errorId } from './FieldError';
 import './forms.scss';
 
-type FieldProps = Omit<
+export type FieldProps = Omit<
     JSX.InputHTMLAttributes<HTMLInputElement>,
     'id' | 'name' | 'class'
 > & {

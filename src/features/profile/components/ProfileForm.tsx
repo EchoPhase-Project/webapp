@@ -1,4 +1,4 @@
-import { createSignal, For } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { User } from '@shared/api/types';
@@ -6,18 +6,10 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
+import TimeZoneField from '@shared/ui/TimeZoneField';
 
 const FIELDS = ['name', 'username', 'timeZone'] as const;
 const inputId = (field: string) => `profile-${field}`;
-
-// The browser's IANA zones, offered as suggestions (the server checks).
-const zones = (): string[] => {
-    try {
-        return Intl.supportedValuesOf('timeZone');
-    } catch {
-        return [];
-    }
-};
 
 /** The name, username and time zone; sends only what changed. */
 export default function ProfileForm(props: { user: User }) {
@@ -109,15 +101,12 @@ export default function ProfileForm(props: { user: User }) {
                 }}
             />
 
-            <Field
+            <TimeZoneField
                 id={inputId('timeZone')}
                 name="timeZone"
                 label={t('ui.time_zone', 'Time zone')}
                 showLabel
                 errors={errors().timeZone}
-                type="text"
-                list="profile-time-zones"
-                spellcheck={false}
                 disabled={busy()}
                 value={timeZone()}
                 onInput={(e) => {
@@ -125,9 +114,6 @@ export default function ProfileForm(props: { user: User }) {
                     setSaved(false);
                 }}
             />
-            <datalist id="profile-time-zones">
-                <For each={zones()}>{(zone) => <option value={zone} />}</For>
-            </datalist>
 
             <div class="profile-form-actions">
                 <Button type="submit" busy={busy()} disabled={!changed()}>
