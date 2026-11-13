@@ -3,8 +3,8 @@ import { useNavigate } from '@solidjs/router';
 import { IconBell, IconX } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import type { AppNotification } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import HeaderButton from '@shared/ui/HeaderButton';
 import { deleteNotification, fetchInbox, markAllRead, markRead } from './api';
@@ -30,8 +30,8 @@ const MAX = 50;
  */
 export default function NotificationBell(props: { feed: NotificationFeed }) {
     const t = useLocalizer('notifications');
-    const i18n = useI18n();
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
+    const date = useDateFormat();
     const navigate = useNavigate();
     const [items, setItems] = createSignal<AppNotification[]>([]);
     const [unread, setUnread] = createSignal(0);
@@ -192,11 +192,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                                         </span>
                                                     </Show>
                                                     <span class="notification-time muted">
-                                                        {DateHelper.format(
-                                                            n.createdAt,
-                                                            user()?.timeZone,
-                                                            i18n.currentLocale()
-                                                        )}
+                                                        {date(n.createdAt)}
                                                     </span>
                                                 </button>
                                                 <Button

@@ -19,11 +19,10 @@ import {
     IconHistory,
 } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import EmptyState from '@shared/ui/EmptyState';
@@ -65,8 +64,7 @@ export default function WorkflowDetails(props: {
     tab?: string;
 }) {
     const t = useLocalizer('workflows');
-    const i18n = useI18n();
-    const { user } = useAuth();
+    const date = useDateFormat();
     const navigate = useNavigate();
     const [params] = useSearchParams<{ edited?: string }>();
     const { setTitle, setDescription } = useRootMeta();
@@ -213,11 +211,7 @@ export default function WorkflowDetails(props: {
                                 <span>v{w().version}</span>
                                 <span>
                                     {t('updated', 'changed {date}', {
-                                        date: DateHelper.format(
-                                            w().updatedAt,
-                                            user()?.timeZone,
-                                            i18n.currentLocale()
-                                        ),
+                                        date: date(w().updatedAt),
                                     })}
                                 </span>
                             </span>

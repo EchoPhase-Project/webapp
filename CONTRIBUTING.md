@@ -74,6 +74,9 @@ stylesheet, `<feature>.scss`.
 - Comments are full sentences. They tell why or for which purpose. They do
   not tell what the next line does. Exported functions and components have a
   `/** … */` comment.
+- To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
+  It shows the time in the time zone of the user and in the current language.
+  Do not call `DateHelper.format` in a component.
 - A page sets its title and description with `useRootMeta()` in a
   `createRenderEffect`. A page starts with `PageHeader`.
 

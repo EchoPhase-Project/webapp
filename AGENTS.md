@@ -74,6 +74,7 @@ and the tests are successful.
   the rule on that line and write the reason.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
+- To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
 - Each page starts with `PageHeader`. Each page sets its title with
   `useRootMeta()`.
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens

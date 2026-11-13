@@ -1,7 +1,6 @@
 import { createEffect, createSignal, For, on, Show } from 'solid-js';
-import { useAuth } from '@shared/api/auth-provider';
 import type { BlockRun, BlockRunDetails } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
+import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
@@ -28,7 +27,6 @@ export default function RunList(props: {
 }) {
     const t = useLocalizer('workflows');
     const i18n = useI18n();
-    const { user } = useAuth();
     const [runs, setRuns] = createSignal<BlockRun[]>([]);
     const [next, setNext] = createSignal<string | null>(null);
     const [loaded, setLoaded] = createSignal(false);
@@ -72,8 +70,7 @@ export default function RunList(props: {
         if (result.ok && open() === run.runId) setDetails(result.data);
     }
 
-    const date = (iso: string | null | undefined) =>
-        DateHelper.format(iso, user()?.timeZone, i18n.currentLocale());
+    const date = useDateFormat();
 
     return (
         <Show

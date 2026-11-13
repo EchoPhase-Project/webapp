@@ -10,8 +10,8 @@ import { IconPlus } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -30,9 +30,8 @@ import './workflows.scss';
  */
 export default function PackagesPage() {
     const { setTitle, setDescription } = useRootMeta();
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
     const t = useLocalizer('workflows');
-    const i18n = useI18n();
     const navigate = useNavigate();
 
     createRenderEffect(() => {
@@ -55,8 +54,7 @@ export default function PackagesPage() {
     const [creating, setCreating] = createSignal(false);
     const [errors, setErrors] = createSignal<FormErrors>({});
 
-    const date = (iso: string) =>
-        DateHelper.format(iso, user()?.timeZone, i18n.currentLocale());
+    const date = useDateFormat();
 
     return (
         <div class="workflows-container">

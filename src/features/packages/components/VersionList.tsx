@@ -1,8 +1,7 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
-import { useAuth } from '@shared/api/auth-provider';
 import type { Workflow, WorkflowVersion } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import {
@@ -20,8 +19,7 @@ export default function VersionList(props: {
     onRestored: (workflow: Workflow) => void;
 }) {
     const t = useLocalizer('workflows');
-    const i18n = useI18n();
-    const { user } = useAuth();
+    const date = useDateFormat();
     const [versions, { refetch }] = createResource(
         () => [props.workflow.id, props.workflow.version] as const,
         ([id]) => listWorkflowVersions(id)
@@ -66,13 +64,7 @@ export default function VersionList(props: {
                                         {t('versions.current', 'current')}
                                     </span>
                                 </Show>
-                                <span class="muted">
-                                    {DateHelper.format(
-                                        v.createdAt,
-                                        user()?.timeZone,
-                                        i18n.currentLocale()
-                                    )}
-                                </span>
+                                <span class="muted">{date(v.createdAt)}</span>
                                 <Show when={v.restoredFrom}>
                                     {(from) => (
                                         <span class="muted">

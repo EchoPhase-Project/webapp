@@ -1,10 +1,9 @@
 import { createSignal, For, Show } from 'solid-js';
 import { IconPencil, IconPlus, IconTrash } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -41,8 +40,7 @@ export default function ScheduleTable(props: {
     onChange: (workflow: Workflow) => void;
 }) {
     const t = useLocalizer('workflows');
-    const i18n = useI18n();
-    const { user } = useAuth();
+    const date = useDateFormat();
     // null: closed; 'new': adding; a schedule: editing it.
     const [editing, setEditing] = createSignal<Schedule | 'new' | null>(null);
     const [deleting, setDeleting] = createSignal<Schedule | null>(null);
@@ -114,11 +112,7 @@ export default function ScheduleTable(props: {
                         </Cell>
                         <Cell label={column().zone} text={schedule.timeZone} />
                         <Cell label={column().next}>
-                            {DateHelper.format(
-                                schedule.nextRunAt,
-                                user()?.timeZone,
-                                i18n.currentLocale()
-                            )}
+                            {date(schedule.nextRunAt)}
                         </Cell>
                         <Cell
                             label={column().actions}

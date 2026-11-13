@@ -1,18 +1,16 @@
 import { Show } from 'solid-js';
 import { IconClock, IconPinnedFilled, IconUsers } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
 import type { Note } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
+import { useDateFormat } from '@shared/lib/date-format';
 import { plainText } from '@shared/lib/markdown';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 
 const EXCERPT = 180;
 
 /** A note in the list: its title, the start of its text, who shared it, when it changed. */
 export default function NoteCard(props: { note: Note; onOpen: () => void }) {
     const t = useLocalizer('notes');
-    const i18n = useI18n();
-    const { user } = useAuth();
+    const date = useDateFormat();
 
     const excerpt = () => {
         const text = plainText(props.note.body);
@@ -50,22 +48,11 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
                 <Show when={props.note.remindAt}>
                     {(at) => (
                         <span>
-                            <IconClock aria-hidden="true" />{' '}
-                            {DateHelper.format(
-                                at(),
-                                user()?.timeZone,
-                                i18n.currentLocale()
-                            )}
+                            <IconClock aria-hidden="true" /> {date(at())}
                         </span>
                     )}
                 </Show>
-                <span>
-                    {DateHelper.format(
-                        props.note.updatedAt,
-                        user()?.timeZone,
-                        i18n.currentLocale()
-                    )}
-                </span>
+                <span>{date(props.note.updatedAt)}</span>
             </span>
         </button>
     );

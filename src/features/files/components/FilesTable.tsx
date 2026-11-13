@@ -1,8 +1,7 @@
 import { IconX } from '@shared/ui/icons';
 import type { FilePurpose, StoredFile } from '@shared/api/types';
-import { useAuth } from '@shared/api/auth-provider';
 import { formatBytes } from '@shared/lib/bytes';
-import { DateHelper } from '@shared/lib/date-helper';
+import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
@@ -30,7 +29,7 @@ export default function FilesTable(props: {
     busy: boolean;
     onDelete: (file: StoredFile) => void;
 }) {
-    const { user } = useAuth();
+    const date = useDateFormat();
     const i18n = useI18n();
     const t = useLocalizer('files');
 
@@ -61,11 +60,7 @@ export default function FilesTable(props: {
                     />
                     <Cell
                         label={column('uploaded')}
-                        text={DateHelper.format(
-                            file.createdAt,
-                            user()?.timeZone,
-                            i18n.currentLocale()
-                        )}
+                        text={date(file.createdAt)}
                     />
                     <Cell
                         label={column('actions')}

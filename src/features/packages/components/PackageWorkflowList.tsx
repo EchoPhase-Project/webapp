@@ -1,10 +1,9 @@
 import { createSignal, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
-import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Switch from '@shared/ui/Switch';
@@ -19,8 +18,7 @@ export default function PackageWorkflowList(props: {
     onChange: (workflow: WorkflowSummary) => void;
 }) {
     const t = useLocalizer('workflows');
-    const i18n = useI18n();
-    const { user } = useAuth();
+    const date = useDateFormat();
     const [errors, setErrors] = createSignal<FormErrors>({});
     const [busy, setBusy] = createSignal<string | null>(null);
 
@@ -85,13 +83,7 @@ export default function PackageWorkflowList(props: {
                                                 )}
                                             </span>
                                         </Show>
-                                        <span>
-                                            {DateHelper.format(
-                                                item.updatedAt,
-                                                user()?.timeZone,
-                                                i18n.currentLocale()
-                                            )}
-                                        </span>
+                                        <span>{date(item.updatedAt)}</span>
                                     </span>
                                 </span>
                                 <Switch

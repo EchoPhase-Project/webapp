@@ -1,8 +1,7 @@
 import { IconX } from '@shared/ui/icons';
 import type { ApiClient } from '@shared/api/types';
-import { useAuth } from '@shared/api/auth-provider';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
 
@@ -21,14 +20,12 @@ export default function ApiClientsTable(props: {
     busy: boolean;
     onDelete: (client: ApiClient) => void;
 }) {
-    const { user } = useAuth();
-    const i18n = useI18n();
+    const date = useDateFormat();
     const t = useLocalizer('api-clients');
 
     const column = (c: (typeof COLUMNS)[number]) => t(...COLUMN_TEXT[c]);
     // Times in the profile's zone, so they read the same on any device.
-    const show = (iso: string | null) =>
-        DateHelper.format(iso, user()?.timeZone, i18n.currentLocale()) || '—';
+    const show = (iso: string | null) => date(iso) || '—';
 
     return (
         <Table

@@ -9,8 +9,8 @@ import { A, useNavigate } from '@solidjs/router';
 import { IconArrowLeft, IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { useRootMeta } from '@shared/meta/page-meta';
-import { DateHelper } from '@shared/lib/date-helper';
-import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
+import { useDateFormat } from '@shared/lib/date-format';
+import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Markdown from '@shared/ui/Markdown';
@@ -32,7 +32,6 @@ import VisibilityBadge from './VisibilityBadge';
  */
 export default function PackageDetails(props: { id: string }) {
     const t = useLocalizer('packages');
-    const i18n = useI18n();
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -68,8 +67,7 @@ export default function PackageDetails(props: { id: string }) {
     });
 
     const isOwner = () => pkg()?.access === 'Owner';
-    const date = (iso: string) =>
-        DateHelper.format(iso, user()?.timeZone, i18n.currentLocale());
+    const date = useDateFormat();
 
     async function leave() {
         setBusy(true);
