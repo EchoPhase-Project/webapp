@@ -1,6 +1,5 @@
 {
   "loading": "Загрузка…",
-  "unauthorized": "Требуется вход",
   "select_language": "Выберите язык",
   "no_matches": "Ничего не найдено",
   "close": "Закрыть",
@@ -16,9 +15,6 @@
     "logout": "Выйти",
     "settings": "Настройки",
     "more": "Ещё",
-    "more_items": "Другие разделы",
-    "more_count": "Другие разделы навигации ({count})",
-    "submenu": "Подменю",
     "sessions": {
       "label": "Сеансы",
       "description": "Просмотр активных сеансов"

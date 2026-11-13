@@ -1,6 +1,6 @@
 // Shapes of the server's API, generated from its OpenAPI document into
 // schema.d.ts (`npm run gen:api`); do not hand-write response types here.
-import type { components, paths } from './schema';
+import type { components } from './schema';
 
 type Schemas = components['schemas'];
 
@@ -17,14 +17,7 @@ export type PasswordChange = Schemas['ChangePasswordRequest'];
 /** The API's error body. `field` names the input it is about. */
 export type ErrorItem = Schemas['ErrorBody'];
 
-/** Query of GET /api/v1/sessions (cursor pagination). */
-export type CursorOptions = NonNullable<
-    paths['/api/v1/sessions']['get']['parameters']['query']
->;
-
 export type Session = Schemas['SessionResponse'];
-
-export type SessionsResponse = Schemas['SessionResponseCursorPageResponse'];
 
 /** A stored file as the API describes it (no content). */
 export type StoredFile = Schemas['FileResponse'];
@@ -93,8 +86,6 @@ export type PackageTag = Schemas['PackageTagResponse'];
 export type AppNotification = Schemas['NotificationResponse'];
 
 export type NotificationInbox = Schemas['NotificationInboxResponse'];
-
-export type CreateApiClientData = Schemas['CreateApiClientRequest'];
 
 /**
  * An API client as listed. Not in the OpenAPI document: the controller

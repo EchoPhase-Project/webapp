@@ -98,17 +98,11 @@
 
 .workflow-tab {
   padding: 6px 10px;
-  border: none;
   border-bottom: 2px solid transparent;
-  background: none;
-  font: inherit;
   font-size: 0.9rem;
   color: var(--text-muted);
-  cursor: pointer;
-
   text-decoration: none;
 
-  &[aria-selected='true'],
   &[aria-current='page'] {
     color: var(--text);
     border-bottom-color: var(--accent);
@@ -185,7 +179,6 @@
   }
 }
 
-.workflow-list,
 .workflow-blocks,
 .workflow-versions,
 .workflow-runs {
@@ -196,7 +189,6 @@
   list-style: none;
 }
 
-.workflow-list li,
 .workflow-blocks li,
 .workflow-versions li {
   display: flex;

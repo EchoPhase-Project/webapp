@@ -123,13 +123,6 @@ main h1:focus {
   transition: none !important;
 }
 
-.ligatures {
-  font-family: 'Fira Code', 'Inter', monospace;
-  font-feature-settings:
-    'liga', 'calt', 'clig', 'dlig', 'zero', 'cv11', 'cv14', 'cv17', 'cv18',
-    'cv27', 'cv28', 'cv29', 'cv30', 'cv31', 'ss06', 'ss07', 'ss09';
-}
-
 a {
   color: var(--link);
   text-decoration: underline;
@@ -145,18 +138,6 @@ a {
   &:hover {
     color: var(--link-hover);
     text-decoration-color: currentColor;
-  }
-}
-
-.left {
-  @include comp.media('min-width: 768px') {
-    padding: 0 1em 0 5em;
-  }
-}
-
-.right {
-  @include comp.media('min-width: 768px') {
-    padding: 0 5em 0 1em;
   }
 }
 
@@ -234,7 +215,7 @@ main {
     opacity: 0.5;
   }
 
-  &:not(:disabled):not(.disabled) {
+  &:not(:disabled) {
     cursor: pointer;
   }
 }
@@ -248,21 +229,9 @@ header {
   gap: 8px;
 }
 
-.full-height {
-  min-height: 100vh;
-}
-
 .noselect {
   @include prefixes.prefix(touch-callout, none, webkit);
   @include prefixes.any-prefix(user-select, none);
-}
-
-.hidden {
-  display: none;
-}
-
-.disabled {
-  pointer-events: none;
 }
 
 // A thin scrollbar in a muted tone, darker under the pointer. The standard

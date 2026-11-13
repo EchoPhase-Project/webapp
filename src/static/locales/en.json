@@ -1,6 +1,5 @@
 {
   "loading": "Loading…",
-  "unauthorized": "Unauthorized",
   "select_language": "Select language",
   "no_matches": "No matches",
   "close": "Close",
@@ -16,9 +15,6 @@
     "logout": "Log out",
     "settings": "Settings",
     "more": "More",
-    "more_items": "More items",
-    "more_count": "More navigation items ({count})",
-    "submenu": "Submenu",
     "sessions": {
       "label": "Sessions",
       "description": "View active sessions"

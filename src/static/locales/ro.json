@@ -1,6 +1,5 @@
 {
   "loading": "Se încarcă…",
-  "unauthorized": "Autentificare necesară",
   "select_language": "Selectează limba",
   "no_matches": "Niciun rezultat",
   "close": "Închide",
@@ -16,9 +15,6 @@
     "logout": "Deconectare",
     "settings": "Setări",
     "more": "Mai mult",
-    "more_items": "Alte secțiuni",
-    "more_count": "Alte secțiuni de navigare ({count})",
-    "submenu": "Submeniu",
     "sessions": {
       "label": "Sesiuni",
       "description": "Vezi sesiunile active"

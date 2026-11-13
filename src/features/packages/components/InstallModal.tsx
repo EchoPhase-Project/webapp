@@ -18,7 +18,7 @@ import { packagePath } from '@features/packages/package-nav';
 const inputId = (field: string) => `package-install-${field}`;
 
 /** The caller's connections that can stand in for one the package uses. */
-export function candidates(
+function candidates(
     needed: PackageConnection,
     mine: ConnectionSummary[]
 ): ConnectionSummary[] {

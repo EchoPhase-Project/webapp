@@ -69,16 +69,6 @@ export function setConsent(choice: Consent): void {
     setConsentSignal({ analytics: choice.analytics, errors: choice.errors });
 }
 
-/** Forgets the choice, so the banner asks again (tests, a policy change). */
-export function resetConsent(): void {
-    try {
-        localStorage.removeItem(STORAGE_KEY);
-    } catch {
-        // Nothing stored to forget.
-    }
-    setConsentSignal(null);
-}
-
 /** The cookie settings dialog: opened from the banner or the footer. */
 const [settingsOpen, setSettingsOpen] = createSignal(false);
 export { settingsOpen, setSettingsOpen };

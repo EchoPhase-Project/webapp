@@ -2,7 +2,7 @@ import { Match, Show, Switch, type Component, type JSX } from 'solid-js';
 import { Navigate, useLocation, type RouteSectionProps } from '@solidjs/router';
 import { useAuth } from './auth-provider';
 
-export const SignInPath = '/auth';
+const SignInPath = '/auth';
 
 /**
  * Where to go after signing in: `next` when it is a path of this site,
@@ -21,11 +21,7 @@ export function safeNext(next: string | null | undefined): string {
 }
 
 /** /auth with the way back to where the user is now. */
-export function signInHref(here: {
-    pathname: string;
-    search: string;
-    hash: string;
-}) {
+function signInHref(here: { pathname: string; search: string; hash: string }) {
     const next = here.pathname + here.search + here.hash;
     return next === '/'
         ? SignInPath

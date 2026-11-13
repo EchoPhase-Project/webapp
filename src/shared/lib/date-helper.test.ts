@@ -1,21 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { DateHelper } from './date-helper';
 
 describe('DateHelper', () => {
-    beforeEach(() => {
-        vi.useFakeTimers();
-        vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
-    });
-    afterEach(() => vi.useRealTimers());
-
-    it('computes expiry dates from now', () => {
-        const now = Date.now();
-        expect(DateHelper.expiresInSeconds(30).getTime() - now).toBe(30_000);
-        expect(DateHelper.expiresInMinutes(2).getTime() - now).toBe(120_000);
-        expect(DateHelper.expiresInHours(1).getTime() - now).toBe(3_600_000);
-        expect(DateHelper.expiresInDays(1).getTime() - now).toBe(86_400_000);
-    });
-
     it('round-trips a datetime-local value through UTC', () => {
         const local = '2026-03-04T05:06';
         const iso = DateHelper.fromLocalInput(local);

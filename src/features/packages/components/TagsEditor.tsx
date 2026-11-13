@@ -13,7 +13,7 @@ const FIELD = 'package-tags-input';
 const MAX_TAGS = 10;
 
 /** A tag as the server keeps it: lower case, spaces as dashes. */
-export const normalizeTag = (text: string) =>
+const normalizeTag = (text: string) =>
     text
         .trim()
         .toLowerCase()

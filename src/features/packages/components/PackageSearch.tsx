@@ -27,7 +27,7 @@ export const queryOf = (tag: string, words: string) =>
     [tag ? `tag:${tag}` : '', words].filter(Boolean).join(' ');
 
 /** The word being typed: the last one, unless the line ends with a space. */
-export const lastToken = (text: string) =>
+const lastToken = (text: string) =>
     /\s$/.test(text) ? '' : (text.split(/\s+/).pop() ?? '');
 
 /** The qualifiers a search line takes, offered while nothing else is typed. */

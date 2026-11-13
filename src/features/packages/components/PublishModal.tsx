@@ -18,7 +18,7 @@ const FIELDS = ['workflows', 'changelog'] as const;
 const inputId = (field: string) => `package-publish-${field}`;
 
 /** The keys of the workflows a program calls (ExecuteWorkflow). */
-export function callsOf(workflow: Workflow): string[] {
+function callsOf(workflow: Workflow): string[] {
     return workflow.program.blocks
         .filter((b) => b.type === 'ExecuteWorkflow')
         .map((b) => (b.params as { workflow?: unknown } | null)?.workflow)
@@ -32,7 +32,7 @@ export interface Missing {
     needs: string;
 }
 
-export function missingOf(
+function missingOf(
     chosen: string[],
     workflows: Workflow[],
     errorWorkflow: string | null | undefined
