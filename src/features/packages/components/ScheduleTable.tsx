@@ -174,20 +174,15 @@ export default function ScheduleTable(props: {
                 </Show>
             </Modal>
             <ConfirmDialog
-                open={!!deleting()}
+                item={deleting()}
                 title={t('schedule.delete_title', 'Delete this schedule?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={() => {
-                    const schedule = deleting();
-                    if (schedule)
-                        void save(
-                            removeBlock(
-                                props.workflow.program,
-                                schedule.blockId
-                            )
-                        ).then(() => setDeleting(null));
-                }}
+                onConfirm={(schedule) =>
+                    void save(
+                        removeBlock(props.workflow.program, schedule.blockId)
+                    ).then(() => setDeleting(null))
+                }
                 onCancel={() => setDeleting(null)}
             >
                 {t(

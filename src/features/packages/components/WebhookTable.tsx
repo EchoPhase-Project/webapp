@@ -277,17 +277,15 @@ export default function WebhookTable(props: {
                 </Show>
             </Modal>
             <ConfirmDialog
-                open={!!deleting()}
+                item={deleting()}
                 title={t('webhook.delete_title', 'Delete this webhook?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={() => {
-                    const hook = deleting();
-                    if (hook)
-                        void save(
-                            removeBlock(props.workflow.program, hook.blockId)
-                        ).then(() => setDeleting(null));
-                }}
+                onConfirm={(hook) =>
+                    void save(
+                        removeBlock(props.workflow.program, hook.blockId)
+                    ).then(() => setDeleting(null))
+                }
                 onCancel={() => setDeleting(null)}
             >
                 {t(

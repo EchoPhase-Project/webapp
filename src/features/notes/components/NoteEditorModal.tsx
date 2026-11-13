@@ -117,23 +117,22 @@ export default function NoteEditorModal(props: {
             </Modal>
 
             <ConfirmDialog
-                open={confirming()}
+                item={confirming() ? props.note : null}
                 title={t('confirm_delete.title', 'Delete this note?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={() => {
-                    const id = props.note!.id;
-                    void gone(() => deleteNote(id));
-                }}
+                onConfirm={(note) => void gone(() => deleteNote(note.id))}
                 onCancel={() => setConfirming(false)}
             >
-                <p>
-                    {t(
-                        'confirm_delete.text',
-                        '{title} is deleted for good, for everyone it is shared with too.',
-                        { title: props.note?.title ?? '' }
-                    )}
-                </p>
+                {(note) => (
+                    <p>
+                        {t(
+                            'confirm_delete.text',
+                            '{title} is deleted for good, for everyone it is shared with too.',
+                            { title: note.title }
+                        )}
+                    </p>
+                )}
             </ConfirmDialog>
         </>
     );

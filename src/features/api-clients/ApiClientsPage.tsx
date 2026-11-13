@@ -95,20 +95,22 @@ export default function ApiClientsPage() {
             </Modal>
 
             <ConfirmDialog
-                open={!!deleting()}
+                item={deleting()}
                 title={t('confirm_delete.title', 'Delete this API client?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={() => void remove(deleting()!)}
+                onConfirm={(client) => void remove(client)}
                 onCancel={() => setDeleting(null)}
             >
-                <p>
-                    {t(
-                        'confirm_delete.text',
-                        '{name} stops working at once: bots and scripts using it can no longer sign in.',
-                        { name: deleting()?.Name ?? '' }
-                    )}
-                </p>
+                {(client) => (
+                    <p>
+                        {t(
+                            'confirm_delete.text',
+                            '{name} stops working at once: bots and scripts using it can no longer sign in.',
+                            { name: client.Name }
+                        )}
+                    </p>
+                )}
             </ConfirmDialog>
         </div>
     );

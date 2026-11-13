@@ -29,9 +29,7 @@ export default function VersionList(props: {
     );
     const [busy, setBusy] = createSignal(false);
 
-    async function restore() {
-        const version = restoring();
-        if (!version) return;
+    async function restore(version: WorkflowVersion) {
         setBusy(true);
         try {
             const result = await restoreWorkflowVersion(
@@ -104,7 +102,7 @@ export default function VersionList(props: {
                 </For>
             </ol>
             <ConfirmDialog
-                open={restoring() !== null}
+                item={restoring()}
                 title={t(
                     'versions.restore_title',
                     'Restore version {version}?',
@@ -112,7 +110,7 @@ export default function VersionList(props: {
                 )}
                 confirm={t('versions.restore', 'Restore')}
                 busy={busy()}
-                onConfirm={() => void restore()}
+                onConfirm={(version) => void restore(version)}
                 onCancel={() => setRestoring(null)}
             >
                 {t(

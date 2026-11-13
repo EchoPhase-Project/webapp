@@ -112,20 +112,22 @@ export default function FilesPage() {
             </Show>
 
             <ConfirmDialog
-                open={!!deleting()}
+                item={deleting()}
                 title={t('confirm_delete.title', 'Delete this file?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={() => void remove(deleting()!)}
+                onConfirm={(file) => void remove(file)}
                 onCancel={() => setDeleting(null)}
             >
-                <p>
-                    {t(
-                        'confirm_delete.text',
-                        '{name} is deleted for good; links to it stop working.',
-                        { name: deleting()?.name ?? '' }
-                    )}
-                </p>
+                {(file) => (
+                    <p>
+                        {t(
+                            'confirm_delete.text',
+                            '{name} is deleted for good; links to it stop working.',
+                            { name: file.name }
+                        )}
+                    </p>
+                )}
             </ConfirmDialog>
         </div>
     );

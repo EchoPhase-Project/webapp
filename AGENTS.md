@@ -75,6 +75,8 @@ and the tests are successful.
   outside `src/shared/ui` and `src/shared/nav`. ESLint enforces this rule.
 - If a full card or row opens an item, it can be a `<button>`. Then disable
   the rule on that line and write the reason.
+- If a `ConfirmDialog` asks about one item, give it `item` and
+  `onConfirm(item)`. Do not use `open={!!x()}` and `x()!`.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.

@@ -117,6 +117,10 @@ Before you write new markup, make pages from the components in
   behaviour.
 - If an action goes to a different page, use a link (`<A>`). Do not use
   `Button variant="link"` for it.
+- If a `ConfirmDialog` asks about one item, give the item to `item`. The
+  dialog is open while `item` has a value. It gives the item to `onConfirm`
+  and to the children function. Thus, the page does not need `open` or a `!`
+  assertion.
 
 ### Icons
 
