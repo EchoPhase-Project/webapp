@@ -113,8 +113,9 @@ export default function ApiClientsPage() {
                 <p>
                     {t(
                         'confirm_delete.text',
-                        '{name} stops working at once: bots and scripts using it can no longer sign in.'
-                    ).replace('{name}', deleting()?.Name ?? '')}
+                        '{name} stops working at once: bots and scripts using it can no longer sign in.',
+                        { name: deleting()?.Name ?? '' }
+                    )}
                 </p>
             </ConfirmDialog>
         </div>

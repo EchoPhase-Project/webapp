@@ -1,10 +1,6 @@
 import type { AppNotification } from '@shared/api/types';
+import type { Translate } from '@shared/i18n/i18n-context';
 import { parseUserAgent } from '@shared/lib/user-agent';
-
-type Translate = (key: string, fallback?: string) => string;
-
-const fill = (text: string, values: Record<string, string>) =>
-    text.replace(/\{(\w+)\}/g, (whole, name: string) => values[name] ?? whole);
 
 /**
  * A notification in the user's language: known kinds are worded here from
@@ -21,7 +17,7 @@ export function wordingOf(
             return {
                 title: t('kinds.sign_in.title', 'New sign-in to your account'),
                 body: device
-                    ? fill(t('kinds.sign_in.device', '{browser} on {os}'), {
+                    ? t('kinds.sign_in.device', '{browser} on {os}', {
                           browser: device.browser ?? '?',
                           os: device.os ?? '?',
                       })
@@ -30,11 +26,9 @@ export function wordingOf(
         }
         case 'storage_quota':
             return {
-                title: fill(
-                    t(
-                        'kinds.storage_quota.title',
-                        'Your files take {percent}% of your storage'
-                    ),
+                title: t(
+                    'kinds.storage_quota.title',
+                    'Your files take {percent}% of your storage',
                     p
                 ),
                 body: t(
@@ -44,26 +38,23 @@ export function wordingOf(
             };
         case 'note_shared':
             return {
-                title: fill(
+                title:
                     p.access === 'edit'
                         ? t(
                               'kinds.note_shared.edit',
-                              '{by} shared a note with you to edit'
+                              '{by} shared a note with you to edit',
+                              p
                           )
                         : t(
                               'kinds.note_shared.read',
-                              '{by} shared a note with you'
+                              '{by} shared a note with you',
+                              p
                           ),
-                    p
-                ),
                 body: p.note ?? n.body,
             };
         case 'note_reminder':
             return {
-                title: fill(
-                    t('kinds.note_reminder.title', 'Reminder: {note}'),
-                    p
-                ),
+                title: t('kinds.note_reminder.title', 'Reminder: {note}', p),
                 body: '',
             };
         default:

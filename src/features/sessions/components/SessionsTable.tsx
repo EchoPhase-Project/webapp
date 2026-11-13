@@ -15,12 +15,12 @@ export default function SessionsTable(props: {
     const device = (deviceId: string) => {
         const parsed = parseUserAgent(deviceId);
         if (!parsed) return deviceId;
-        return t('device.browser_on_os', '{browser} on {os}')
-            .replace(
-                '{browser}',
-                parsed.browser ?? t('device.unknown_browser', 'Unknown browser')
-            )
-            .replace('{os}', parsed.os ?? t('device.unknown_os', 'Unknown OS'));
+        return t('device.browser_on_os', '{browser} on {os}', {
+            browser:
+                parsed.browser ??
+                t('device.unknown_browser', 'Unknown browser'),
+            os: parsed.os ?? t('device.unknown_os', 'Unknown OS'),
+        });
     };
 
     return (

@@ -212,14 +212,13 @@ export default function WorkflowDetails(props: {
                             <span class="workflow-meta">
                                 <span>v{w().version}</span>
                                 <span>
-                                    {t('updated', 'changed {date}').replace(
-                                        '{date}',
-                                        DateHelper.format(
+                                    {t('updated', 'changed {date}', {
+                                        date: DateHelper.format(
                                             w().updatedAt,
                                             user()?.timeZone,
                                             i18n.currentLocale()
-                                        )
-                                    )}
+                                        ),
+                                    })}
                                 </span>
                             </span>
                         }

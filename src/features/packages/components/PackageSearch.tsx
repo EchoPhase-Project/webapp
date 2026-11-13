@@ -72,10 +72,9 @@ export default function PackageSearch(props: {
             return (tags() ?? []).map((tag) => ({
                 insert: `tag:${tag.tag}`,
                 label: tag.tag,
-                hint: t('search_hint.packages', '{count} packages').replace(
-                    '{count}',
-                    String(tag.packages)
-                ),
+                hint: t('search_hint.packages', '{count} packages', {
+                    count: tag.packages,
+                }),
                 final: true,
             }));
         const typed = token().toLowerCase();

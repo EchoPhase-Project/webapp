@@ -11,11 +11,24 @@ export interface Translations {
     [key: string]: string | Translations;
 }
 
+/** What `{name}` placeholders in a string stand for. */
+export type Values = Record<string, string | number>;
+
+/**
+ * A translator: `t('key', 'Hello, {name}', { name: 'Ann' })`. Every `{name}`
+ * takes its value; a placeholder without a value stays as it is.
+ */
+export type Translate = (
+    key: string,
+    fallback?: string,
+    values?: Values
+) => string;
+
 interface I18nContextType {
     currentLocale: () => string;
     translations: () => Translations | undefined;
     setLocale: (locale: string) => void;
-    t: (key: string, fallback?: string) => string;
+    t: Translate;
     availableLocales: () => { code: string; nativeName: string }[] | undefined;
     isLoading: () => boolean;
     loadNamespace: (
@@ -109,6 +122,15 @@ export function lookup(
     return typeof current === 'string' && current !== '' ? current : undefined;
 }
 
+/** A string with each `{name}` replaced by its value, where it has one. */
+export function fill(text: string, values?: Values): string {
+    if (!values) return text;
+    return text.replace(/\{(\w+)\}/g, (whole, name: string) => {
+        const value = Object.hasOwn(values, name) ? values[name] : undefined;
+        return value === undefined ? whole : String(value);
+    });
+}
+
 const I18nContext = createContext<I18nContextType>();
 
 export function useI18n() {
@@ -122,7 +144,7 @@ export function useI18n() {
  * <namespace>.<locale>.json, then <namespace>.en.json, then the site-wide
  * strings; without one it is the site-wide `t`.
  */
-export function useLocalizer(namespace?: string) {
+export function useLocalizer(namespace?: string): Translate {
     const { currentLocale, t, loadNamespace } = useI18n();
     if (!namespace) return t;
 
@@ -133,10 +155,12 @@ export function useLocalizer(namespace?: string) {
         loadNamespace(namespace, defaultLocale)
     );
 
-    return (key: string, fallbackText?: string): string =>
-        lookup(current(), key) ??
-        lookup(fallback(), key) ??
-        t(key, fallbackText);
+    return (key, fallbackText, values) => {
+        const own = lookup(current(), key) ?? lookup(fallback(), key);
+        return own === undefined
+            ? t(key, fallbackText, values)
+            : fill(own, values);
+    };
 }
 
 export function I18nProvider(props: { children: JSX.Element }) {
@@ -201,12 +225,13 @@ export function I18nProvider(props: { children: JSX.Element }) {
         }
     }
 
-    function t(key: string, fallback?: string): string {
-        return (
+    function t(key: string, fallback?: string, values?: Values): string {
+        return fill(
             lookup(translations(), key) ??
-            lookup(defaults(), key) ??
-            fallback ??
-            key
+                lookup(defaults(), key) ??
+                fallback ??
+                key,
+            values
         );
     }
 

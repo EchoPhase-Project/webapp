@@ -10,10 +10,9 @@ export default function ProgramOverview(props: { workflow: Workflow }) {
         <div class="workflow-overview">
             <section class="workflow-section">
                 <h2>
-                    {t('overview.blocks', 'Blocks ({count})').replace(
-                        '{count}',
-                        String(props.workflow.program.blocks.length)
-                    )}
+                    {t('overview.blocks', 'Blocks ({count})', {
+                        count: props.workflow.program.blocks.length,
+                    })}
                 </h2>
                 <ol class="workflow-blocks">
                     <For each={props.workflow.program.blocks}>

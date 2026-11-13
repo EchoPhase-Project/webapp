@@ -73,10 +73,9 @@ export default function FilesTable(props: {
                     >
                         <Button
                             variant="icon-danger"
-                            aria-label={t('delete', 'Delete {name}').replace(
-                                '{name}',
-                                file.name
-                            )}
+                            aria-label={t('delete', 'Delete {name}', {
+                                name: file.name,
+                            })}
                             disabled={props.busy}
                             onClick={() => props.onDelete(file)}
                         >

@@ -78,10 +78,8 @@ export default function VersionList(props: {
                                         <span class="muted">
                                             {t(
                                                 'versions.restored',
-                                                'brought back v{version}'
-                                            ).replace(
-                                                '{version}',
-                                                String(from())
+                                                'brought back v{version}',
+                                                { version: from() }
                                             )}
                                         </span>
                                     )}
@@ -117,8 +115,9 @@ export default function VersionList(props: {
                 open={restoring() !== null}
                 title={t(
                     'versions.restore_title',
-                    'Restore version {version}?'
-                ).replace('{version}', String(restoring()?.version ?? ''))}
+                    'Restore version {version}?',
+                    { version: restoring()?.version ?? '' }
+                )}
                 confirm={t('versions.restore', 'Restore')}
                 busy={busy()}
                 onConfirm={() => void restore()}

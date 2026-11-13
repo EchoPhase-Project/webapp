@@ -96,10 +96,9 @@ export default function NoteEditorModal(props: {
                     <Show when={props.note?.access !== 'Owner' && props.note}>
                         {(note) => (
                             <p class="muted note-owner">
-                                {t('editor.owner', 'Shared by {name}').replace(
-                                    '{name}',
-                                    note().owner.name
-                                )}
+                                {t('editor.owner', 'Shared by {name}', {
+                                    name: note().owner.name,
+                                })}
                             </p>
                         )}
                     </Show>
@@ -131,8 +130,9 @@ export default function NoteEditorModal(props: {
                 <p>
                     {t(
                         'confirm_delete.text',
-                        '{title} is deleted for good, for everyone it is shared with too.'
-                    ).replace('{title}', props.note?.title ?? '')}
+                        '{title} is deleted for good, for everyone it is shared with too.',
+                        { title: props.note?.title ?? '' }
+                    )}
                 </p>
             </ConfirmDialog>
         </>

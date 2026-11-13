@@ -42,10 +42,9 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
                 <Show when={props.note.access !== 'Owner'}>
                     <span>
                         <IconUsers aria-hidden="true" />{' '}
-                        {t('card.from', 'from {name}').replace(
-                            '{name}',
-                            props.note.owner.name
-                        )}
+                        {t('card.from', 'from {name}', {
+                            name: props.note.owner.name,
+                        })}
                     </span>
                 </Show>
                 <Show when={props.note.remindAt}>

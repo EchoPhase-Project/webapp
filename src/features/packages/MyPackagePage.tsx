@@ -114,10 +114,11 @@ export default function MyPackagePage() {
                                         >
                                             {t(
                                                 'packages.installed',
-                                                'installed, v{version}'
-                                            ).replace(
-                                                '{version}',
-                                                String(source().version ?? '')
+                                                'installed, v{version}',
+                                                {
+                                                    version:
+                                                        source().version ?? '',
+                                                }
                                             )}
                                         </A>
                                     )}
@@ -129,10 +130,8 @@ export default function MyPackagePage() {
                                     >
                                         {t(
                                             'packages.published',
-                                            'published, v{version}'
-                                        ).replace(
-                                            '{version}',
-                                            String(p().latestVersion)
+                                            'published, v{version}',
+                                            { version: p().latestVersion }
                                         )}
                                     </A>
                                 </Show>

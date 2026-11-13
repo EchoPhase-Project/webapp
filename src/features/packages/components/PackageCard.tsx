@@ -61,10 +61,9 @@ export default function PackageCard(props: {
                 <span>{props.pkg.owner.name}</span>
                 <span>
                     <IconDownload aria-hidden="true" />{' '}
-                    {t('card.installs', '{count} installs').replace(
-                        '{count}',
-                        String(props.pkg.installs)
-                    )}
+                    {t('card.installs', '{count} installs', {
+                        count: props.pkg.installs,
+                    })}
                 </span>
                 <Show when={props.pkg.visibility === 'Private'}>
                     <span>

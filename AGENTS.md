@@ -97,6 +97,8 @@ and the tests are successful.
 
 - Send each string that the user sees through i18n:
   `t('key', 'English fallback')`.
+- If a string contains a value, give the value to `t()`:
+  `t('key', 'Delete {name}', { name })`. Do not use `.replace()` on the result.
 - Add new keys only to the English files: `<lang>.json` or
   `<page>.en.json`. Weblate supplies the other languages.
 - If you remove a key or change its name, do this in all language files.

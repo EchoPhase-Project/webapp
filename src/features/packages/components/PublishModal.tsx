@@ -207,14 +207,14 @@ function PublishForm(props: {
                                     {m.by === null
                                         ? t(
                                               'publish.missing_error',
-                                              '“{needs}” handles the package’s errors: choose it too.'
-                                          ).replace('{needs}', m.needs)
+                                              '“{needs}” handles the package’s errors: choose it too.',
+                                              { needs: m.needs }
+                                          )
                                         : t(
                                               'publish.missing',
-                                              '“{by}” calls “{needs}”: choose it too.'
-                                          )
-                                              .replace('{by}', m.by)
-                                              .replace('{needs}', m.needs)}
+                                              '“{by}” calls “{needs}”: choose it too.',
+                                              { by: m.by, needs: m.needs }
+                                          )}
                                 </li>
                             )}
                         </For>

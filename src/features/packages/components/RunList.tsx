@@ -126,13 +126,9 @@ export default function RunList(props: {
                                 </span>
                                 <Show when={(run.errorCount ?? 0) > 0}>
                                     <span class="workflow-run-errors">
-                                        {t(
-                                            'runs.errors',
-                                            '{count} errors'
-                                        ).replace(
-                                            '{count}',
-                                            String(run.errorCount)
-                                        )}
+                                        {t('runs.errors', '{count} errors', {
+                                            count: run.errorCount ?? 0,
+                                        })}
                                     </span>
                                 </Show>
                             </button>

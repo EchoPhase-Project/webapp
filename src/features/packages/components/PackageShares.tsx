@@ -94,8 +94,9 @@ export default function PackageShares(props: { packageId: string }) {
                                     disabled={busy()}
                                     aria-label={t(
                                         'share.remove',
-                                        'Stop sharing with {name}'
-                                    ).replace('{name}', share.user.name)}
+                                        'Stop sharing with {name}',
+                                        { name: share.user.name }
+                                    )}
                                     onClick={() => void remove(share.user.id)}
                                 >
                                     <IconX />

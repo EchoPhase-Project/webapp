@@ -126,8 +126,9 @@ export default function FilesPage() {
                 <p>
                     {t(
                         'confirm_delete.text',
-                        '{name} is deleted for good; links to it stop working.'
-                    ).replace('{name}', deleting()?.name ?? '')}
+                        '{name} is deleted for good; links to it stop working.',
+                        { name: deleting()?.name ?? '' }
+                    )}
                 </p>
             </ConfirmDialog>
         </div>

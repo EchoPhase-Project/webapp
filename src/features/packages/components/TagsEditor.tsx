@@ -100,8 +100,9 @@ export default function TagsEditor(props: {
                                         class="package-tag-remove"
                                         aria-label={t(
                                             'tags.remove',
-                                            'Remove {tag}'
-                                        ).replace('{tag}', tag)}
+                                            'Remove {tag}',
+                                            { tag }
+                                        )}
                                         onClick={() =>
                                             setTags((list) =>
                                                 list.filter((x) => x !== tag)

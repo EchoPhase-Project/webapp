@@ -192,6 +192,9 @@ source language. Translators write the other languages in Weblate.
 - Add new strings only to the English files. In the code, give the English
   text as the fallback: `t('key', 'English text')`. A missing translation
   shows in English until a translator adds it.
+- If a string contains a value, write a `{name}` placeholder. Give the value
+  to `t()`: `t('key', 'Delete {name}', { name })`. Do not use `.replace()` on
+  the result. The translator puts the value in each placeholder.
 - If you remove a key or change its name, do the same in all languages.
   `locales.test.ts` fails if a language has keys that English does not have.
 - The policy pages (`terms`, `privacy`) use a small markup, so that

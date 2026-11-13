@@ -124,10 +124,8 @@ export default function PackagesPage() {
                                         <span>
                                             {t(
                                                 'packages.count',
-                                                '{count} workflows'
-                                            ).replace(
-                                                '{count}',
-                                                String(p.workflows)
+                                                '{count} workflows',
+                                                { count: p.workflows }
                                             )}
                                         </span>
                                         <Show when={p.source}>
@@ -138,13 +136,13 @@ export default function PackagesPage() {
                                                 >
                                                     {t(
                                                         'packages.installed',
-                                                        'installed, v{version}'
-                                                    ).replace(
-                                                        '{version}',
-                                                        String(
-                                                            source().version ??
-                                                                ''
-                                                        )
+                                                        'installed, v{version}',
+                                                        {
+                                                            version:
+                                                                source()
+                                                                    .version ??
+                                                                '',
+                                                        }
                                                     )}
                                                 </A>
                                             )}
@@ -156,10 +154,8 @@ export default function PackagesPage() {
                                             >
                                                 {t(
                                                     'packages.published',
-                                                    'published, v{version}'
-                                                ).replace(
-                                                    '{version}',
-                                                    String(p.latestVersion)
+                                                    'published, v{version}',
+                                                    { version: p.latestVersion }
                                                 )}
                                             </A>
                                         </Show>
@@ -188,14 +184,11 @@ export default function PackagesPage() {
                                         </A>
                                         <span class="muted workflows-item-meta">
                                             <span>
-                                                {t(
-                                                    'packages.by',
-                                                    'by {name}'
-                                                ).replace(
-                                                    '{name}',
-                                                    p.owner.name ||
-                                                        `@${p.owner.userName ?? ''}`
-                                                )}
+                                                {t('packages.by', 'by {name}', {
+                                                    name:
+                                                        p.owner.name ||
+                                                        `@${p.owner.userName ?? ''}`,
+                                                })}
                                             </span>
                                             <Show when={p.latestVersion > 0}>
                                                 <span>v{p.latestVersion}</span>

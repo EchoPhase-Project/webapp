@@ -111,10 +111,9 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
 
     const label = () =>
         unread() > 0
-            ? t('bell_unread', 'Notifications ({count} unread)').replace(
-                  '{count}',
-                  String(unread())
-              )
+            ? t('bell_unread', 'Notifications ({count} unread)', {
+                  count: unread(),
+              })
             : t('bell', 'Notifications');
 
     return (
@@ -147,10 +146,9 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                 {t('bell', 'Notifications')}
                                 <Show when={unread() > 0}>
                                     <span class="notifications-count">
-                                        {t(
-                                            'unread_count',
-                                            '{count} new'
-                                        ).replace('{count}', String(unread()))}
+                                        {t('unread_count', '{count} new', {
+                                            count: unread(),
+                                        })}
                                     </span>
                                 </Show>
                             </h2>

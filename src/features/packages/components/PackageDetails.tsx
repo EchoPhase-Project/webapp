@@ -117,23 +117,21 @@ export default function PackageDetails(props: { id: string }) {
                         meta={
                             <span class="package-meta">
                                 <span>
-                                    {t('by', 'by {name}').replace(
-                                        '{name}',
-                                        p().owner.name ||
-                                            `@${p().owner.userName ?? ''}`
-                                    )}
+                                    {t('by', 'by {name}', {
+                                        name:
+                                            p().owner.name ||
+                                            `@${p().owner.userName ?? ''}`,
+                                    })}
                                 </span>
                                 <span>
-                                    {t(
-                                        'card.installs',
-                                        '{count} installs'
-                                    ).replace('{count}', String(p().installs))}
+                                    {t('card.installs', '{count} installs', {
+                                        count: p().installs,
+                                    })}
                                 </span>
                                 <span>
-                                    {t('updated', 'updated {date}').replace(
-                                        '{date}',
-                                        date(p().updatedAt)
-                                    )}
+                                    {t('updated', 'updated {date}', {
+                                        date: date(p().updatedAt),
+                                    })}
                                 </span>
                             </span>
                         }
@@ -204,10 +202,8 @@ export default function PackageDetails(props: { id: string }) {
                                             <h2>
                                                 {t(
                                                     'workflows',
-                                                    'Workflows in version {version}'
-                                                ).replace(
-                                                    '{version}',
-                                                    String(c().version)
+                                                    'Workflows in version {version}',
+                                                    { version: c().version }
                                                 )}
                                             </h2>
                                             <ul class="package-list">
@@ -228,15 +224,13 @@ export default function PackageDetails(props: { id: string }) {
                                                             <span class="muted">
                                                                 {t(
                                                                     'blocks',
-                                                                    '{count} blocks'
-                                                                ).replace(
-                                                                    '{count}',
-                                                                    String(
-                                                                        w
+                                                                    '{count} blocks',
+                                                                    {
+                                                                        count: w
                                                                             .program
                                                                             .blocks
-                                                                            .length
-                                                                    )
+                                                                            .length,
+                                                                    }
                                                                 )}
                                                             </span>
                                                         </li>

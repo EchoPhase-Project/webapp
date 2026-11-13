@@ -57,10 +57,9 @@ export default function InstallModal(props: {
     return (
         <Modal
             open={props.open}
-            title={t('install.title', 'Install version {version}').replace(
-                '{version}',
-                String(props.content.version)
-            )}
+            title={t('install.title', 'Install version {version}', {
+                version: props.content.version,
+            })}
             onClose={close}
         >
             <Show when={props.open}>
@@ -129,8 +128,9 @@ function InstallForm(props: {
             <p>
                 {t(
                     'install.lead',
-                    'Makes a package of yours with its {count} workflows, turned off. Webhooks get new secrets.'
-                ).replace('{count}', String(props.content.workflows.length))}
+                    'Makes a package of yours with its {count} workflows, turned off. Webhooks get new secrets.',
+                    { count: props.content.workflows.length }
+                )}
             </p>
             <Show when={props.content.connections.length > 0}>
                 <fieldset class="package-connections">
@@ -211,12 +211,12 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
                 <p class="package-notice">
                     {t(
                         'install.missing',
-                        'Before turning them on, add these connections (or pick others in the workflows): {names}.'
-                    ).replace(
-                        '{names}',
-                        props.install.missingConnections
-                            .map((c) => c.name)
-                            .join(', ')
+                        'Before turning them on, add these connections (or pick others in the workflows): {names}.',
+                        {
+                            names: props.install.missingConnections
+                                .map((c) => c.name)
+                                .join(', '),
+                        }
                     )}
                 </p>
             </Show>

@@ -164,10 +164,8 @@ export default function PackageSettings(props: {
                     props.pkg.latestVersion > 0
                         ? t(
                               'settings.published',
-                              'Published, latest v{version}.'
-                          ).replace(
-                              '{version}',
-                              String(props.pkg.latestVersion)
+                              'Published, latest v{version}.',
+                              { version: props.pkg.latestVersion }
                           )
                         : t(
                               'settings.unpublished',
