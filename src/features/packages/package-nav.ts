@@ -2,11 +2,11 @@ import { createResource } from 'solid-js';
 import type { WorkflowPackage } from '@shared/api/types';
 import type { NavSection } from '@shared/nav/nav-link';
 import {
-    AiOutlineApartment,
-    AiOutlineHistory,
-    AiOutlineSetting,
-} from 'solid-icons/ai';
-import { FiBox } from 'solid-icons/fi';
+    IconBox,
+    IconHierarchy,
+    IconHistory,
+    IconSettings,
+} from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { usePageSection } from '@shared/nav/page-section';
 import { getPackage } from './api';
@@ -57,7 +57,7 @@ export function usePackage(
                         items: [
                             ...(own.items ?? []),
                             {
-                                icon: FiBox,
+                                icon: IconBox,
                                 label: p.name,
                                 description: t(
                                     'package.back_hint',
@@ -74,11 +74,11 @@ export function usePackage(
             after: '/packages',
             sections: [
                 {
-                    icon: FiBox,
+                    icon: IconBox,
                     label: p.name,
                     items: [
                         {
-                            icon: AiOutlineApartment,
+                            icon: IconHierarchy,
                             label: t('package.workflows', 'Workflows'),
                             description: t(
                                 'package.workflows_hint',
@@ -87,7 +87,7 @@ export function usePackage(
                             href: packagePath(p.id),
                         },
                         {
-                            icon: AiOutlineHistory,
+                            icon: IconHistory,
                             label: t('package.runs', 'Runs'),
                             description: t(
                                 'package.runs_hint',
@@ -96,7 +96,7 @@ export function usePackage(
                             href: packagePath(p.id, 'runs'),
                         },
                         {
-                            icon: AiOutlineSetting,
+                            icon: IconSettings,
                             label: t('package.settings', 'Settings'),
                             description: t(
                                 'package.settings_hint',

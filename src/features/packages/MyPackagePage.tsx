@@ -7,7 +7,7 @@ import {
     Show,
 } from 'solid-js';
 import { A, useNavigate, useParams } from '@solidjs/router';
-import { AiOutlineArrowLeft } from 'solid-icons/ai';
+import { IconArrowLeft } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -72,7 +72,7 @@ export default function MyPackagePage() {
 
     const back = (
         <A href="/packages" class="workflow-back">
-            <AiOutlineArrowLeft aria-hidden="true" />{' '}
+            <IconArrowLeft aria-hidden="true" />{' '}
             {t('packages.title', 'Packages')}
         </A>
     );

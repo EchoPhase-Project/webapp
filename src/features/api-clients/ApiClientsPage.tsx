@@ -4,7 +4,7 @@ import {
     createSignal,
     Show,
 } from 'solid-js';
-import { AiOutlinePlus } from 'solid-icons/ai';
+import { IconPlus } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -73,7 +73,7 @@ export default function ApiClientsPage() {
                 )}
                 actions={
                     <Button onClick={() => setCreating(true)}>
-                        <AiOutlinePlus />
+                        <IconPlus />
                         {t('new', 'New client')}
                     </Button>
                 }

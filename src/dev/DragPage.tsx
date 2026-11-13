@@ -1,5 +1,5 @@
 import { DragAndDrop } from './drag-and-drop';
-import { IoAlert } from 'solid-icons/io';
+import { IconExclamationMark } from '@shared/ui/icons';
 import { onMount } from 'solid-js';
 
 export default function DragDropExample() {
@@ -30,7 +30,7 @@ export default function DragDropExample() {
                 position: 'relative',
             }}
         >
-            <IoAlert />
+            <IconExclamationMark />
             Drag me!
         </div>
     );

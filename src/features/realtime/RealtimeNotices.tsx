@@ -1,5 +1,5 @@
 import { createSignal, For, Show } from 'solid-js';
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import { useRealtimeEvent } from './realtime-provider';
 import { type RealtimeEvent } from './types';
 import { useI18n } from '@shared/i18n/i18n-context';
@@ -67,7 +67,7 @@ export default function RealtimeNotices() {
                                 aria-label={i18n.t('notice.dismiss', 'Dismiss')}
                                 onClick={() => dismiss(notice.id)}
                             >
-                                <AiOutlineClose />
+                                <IconX />
                             </Button>
                         </Card>
                     )}

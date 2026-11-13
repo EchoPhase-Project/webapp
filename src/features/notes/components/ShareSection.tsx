@@ -1,5 +1,5 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -89,7 +89,7 @@ export default function ShareSection(props: { noteId: string }) {
                                     ).replace('{name}', share.user.name)}
                                     onClick={() => void remove(share.user.id)}
                                 >
-                                    <AiOutlineClose />
+                                    <IconX />
                                 </Button>
                             </li>
                         )}

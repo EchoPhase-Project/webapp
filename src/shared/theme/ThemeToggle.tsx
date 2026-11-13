@@ -1,7 +1,6 @@
 import { useTheme } from './theme-context';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { FaRegularMoon } from 'solid-icons/fa';
-import { OcSun2 } from 'solid-icons/oc';
+import { IconMoon, IconSun } from '@shared/ui/icons';
 import './theme.scss';
 
 export function ThemeToggle() {
@@ -27,9 +26,9 @@ export function ThemeToggle() {
             title={label()}
         >
             {theme() === 'dark' ? (
-                <FaRegularMoon class="theme" />
+                <IconMoon class="theme" />
             ) : (
-                <OcSun2 class="theme" />
+                <IconSun class="theme" />
             )}
         </button>
     );

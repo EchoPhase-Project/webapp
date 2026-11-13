@@ -8,7 +8,7 @@ import {
     Show,
 } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
-import { AiOutlinePlus, AiOutlineSearch } from 'solid-icons/ai';
+import { IconPlus, IconSearch } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { Note } from '@shared/api/types';
@@ -91,7 +91,7 @@ export default function NotesPage() {
                 docs="notes"
                 actions={
                     <Button onClick={() => setEditing(undefined)}>
-                        <AiOutlinePlus />
+                        <IconPlus />
                         {t('new', 'New note')}
                     </Button>
                 }
@@ -102,7 +102,7 @@ export default function NotesPage() {
                     id="notes-search"
                     name="q"
                     type="search"
-                    icon={AiOutlineSearch}
+                    icon={IconSearch}
                     label={t('search', 'Search notes')}
                     value={query()}
                     onInput={(e) => onSearch(e.currentTarget.value)}

@@ -1,10 +1,6 @@
 import { For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
-import {
-    AiOutlineDownload,
-    AiOutlineLock,
-    AiOutlineTeam,
-} from 'solid-icons/ai';
+import { IconDownload, IconLock, IconUsers } from '@shared/ui/icons';
 import type { WorkflowPackage } from '@shared/api/types';
 import { plainText } from '@shared/lib/markdown';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -63,7 +59,7 @@ export default function PackageCard(props: {
             <span class="package-card-meta muted">
                 <span>{props.pkg.owner.name}</span>
                 <span>
-                    <AiOutlineDownload aria-hidden="true" />{' '}
+                    <IconDownload aria-hidden="true" />{' '}
                     {t('card.installs', '{count} installs').replace(
                         '{count}',
                         String(props.pkg.installs)
@@ -71,14 +67,14 @@ export default function PackageCard(props: {
                 </span>
                 <Show when={props.pkg.visibility === 'Private'}>
                     <span>
-                        <AiOutlineLock aria-hidden="true" />{' '}
+                        <IconLock aria-hidden="true" />{' '}
                         {t('visibility.Private', 'Private')}
                     </span>
                 </Show>
                 <Show when={props.pkg.access !== 'Owner'}>
                     <Show when={props.pkg.visibility !== 'Public'}>
                         <span>
-                            <AiOutlineTeam aria-hidden="true" />{' '}
+                            <IconUsers aria-hidden="true" />{' '}
                             {t('card.shared', 'Shared with you')}
                         </span>
                     </Show>

@@ -10,14 +10,14 @@ import {
 } from 'solid-js';
 import { A, useNavigate, useSearchParams } from '@solidjs/router';
 import {
-    AiOutlineApartment,
-    AiOutlineApi,
-    AiOutlineArrowLeft,
-    AiOutlineBranches,
-    AiOutlineCaretRight,
-    AiOutlineClockCircle,
-    AiOutlineHistory,
-} from 'solid-icons/ai';
+    IconApi,
+    IconArrowLeft,
+    IconCaretRightFilled,
+    IconClock,
+    IconGitBranch,
+    IconHierarchy,
+    IconHistory,
+} from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -91,11 +91,11 @@ export default function WorkflowDetails(props: {
     const path = (name: WorkflowTab) =>
         workflowPath(props.packageId, props.id, name);
     const icons: Record<WorkflowTab, Component> = {
-        overview: AiOutlineApartment,
-        webhooks: AiOutlineApi,
-        schedules: AiOutlineClockCircle,
-        runs: AiOutlineHistory,
-        versions: AiOutlineBranches,
+        overview: IconHierarchy,
+        webhooks: IconApi,
+        schedules: IconClock,
+        runs: IconHistory,
+        versions: IconGitBranch,
     };
 
     const hints: Record<WorkflowTab, () => string> = {
@@ -113,7 +113,7 @@ export default function WorkflowDetails(props: {
             const w = workflow();
             return w
                 ? {
-                      icon: AiOutlineApartment,
+                      icon: IconHierarchy,
                       label: w.name,
                       items: tabs().map((name) => ({
                           icon: icons[name],
@@ -182,7 +182,7 @@ export default function WorkflowDetails(props: {
 
     const back = (
         <A href={packagePath(props.packageId)} class="workflow-back">
-            <AiOutlineArrowLeft aria-hidden="true" />{' '}
+            <IconArrowLeft aria-hidden="true" />{' '}
             {pkg()?.name ?? t('back', 'Package')}
         </A>
     );
@@ -240,7 +240,7 @@ export default function WorkflowDetails(props: {
                                     {t('delete.open', 'Delete')}
                                 </Button>
                                 <Button onClick={() => setRunning(true)}>
-                                    <AiOutlineCaretRight />
+                                    <IconCaretRightFilled />
                                     {t('run.open', 'Run now')}
                                 </Button>
                             </>

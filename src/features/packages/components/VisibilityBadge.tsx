@@ -1,12 +1,12 @@
 import { Dynamic } from 'solid-js/web';
-import { AiOutlineGlobal, AiOutlineLink, AiOutlineLock } from 'solid-icons/ai';
+import { IconLink, IconLock, IconWorld } from '@shared/ui/icons';
 import type { PackageVisibility } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 
 const ICONS = {
-    Private: AiOutlineLock,
-    Unlisted: AiOutlineLink,
-    Public: AiOutlineGlobal,
+    Private: IconLock,
+    Unlisted: IconLink,
+    Public: IconWorld,
 };
 
 /** Who sees a package, as a capsule beside its name (GitHub's "Private"). */

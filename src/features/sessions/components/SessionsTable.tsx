@@ -1,4 +1,4 @@
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import type { Session } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -49,7 +49,7 @@ export default function SessionsTable(props: {
                             aria-label={t('revoke', 'Revoke session')}
                             onClick={() => props.onRevoke(session.id)}
                         >
-                            <AiOutlineClose />
+                            <IconX />
                         </Button>
                     </Cell>
                 </Row>

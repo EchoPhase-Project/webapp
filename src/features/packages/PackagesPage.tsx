@@ -6,7 +6,7 @@ import {
     Show,
 } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { AiOutlinePlus } from 'solid-icons/ai';
+import { IconPlus } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -74,7 +74,7 @@ export default function PackagesPage() {
                             onErrors={(e) => setErrors(groupErrors(e, []))}
                         />
                         <Button onClick={() => setCreating(true)}>
-                            <AiOutlinePlus />
+                            <IconPlus />
                             {t('packages.new', 'New package')}
                         </Button>
                     </>

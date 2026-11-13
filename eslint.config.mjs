@@ -13,6 +13,13 @@ const noParent = layer(
     'Import through an alias (@shared/..., @features/...), not ../',
     '../*'
 );
+// Every icon comes from one module, so the app keeps one set and one name
+// for each meaning; src/shared/ui/icons.ts alone imports the libraries.
+const iconLibraries = layer(
+    'Icons come from @shared/ui/icons.',
+    'solid-icons',
+    'solid-icons/*'
+);
 const features = fs.readdirSync('src/features');
 
 export default defineConfig([
@@ -40,7 +47,10 @@ export default defineConfig([
                 'error',
                 { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
             ],
-            'no-restricted-imports': ['error', { patterns: [noParent] }],
+            'no-restricted-imports': [
+                'error',
+                { patterns: [noParent, iconLibraries] },
+            ],
         },
     },
 
@@ -59,6 +69,7 @@ export default defineConfig([
                 {
                     patterns: [
                         noParent,
+                        iconLibraries,
                         layer(
                             'Shared code cannot depend on app, features or dev pages.',
                             '@app/*',
@@ -79,6 +90,7 @@ export default defineConfig([
                 {
                     patterns: [
                         noParent,
+                        iconLibraries,
                         layer(
                             'A feature uses shared code and itself; move what two features need to src/shared.',
                             '@app/*',
@@ -102,6 +114,7 @@ export default defineConfig([
                 {
                     patterns: [
                         noParent,
+                        iconLibraries,
                         layer(
                             'Dev pages try out shared code only.',
                             '@app/*',
@@ -119,6 +132,14 @@ export default defineConfig([
         rules: {
             '@typescript-eslint/unbound-method': 'off',
             '@typescript-eslint/no-non-null-assertion': 'off',
+        },
+    },
+
+    {
+        // The one module that imports the icon libraries.
+        files: ['src/shared/ui/icons.ts'],
+        rules: {
+            'no-restricted-imports': ['error', { patterns: [noParent] }],
         },
     },
 ]);

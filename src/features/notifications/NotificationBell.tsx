@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, on, onCleanup, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { AiOutlineBell, AiOutlineClose } from 'solid-icons/ai';
+import { IconBell, IconX } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import type { AppNotification } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -128,7 +128,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                     aria-haspopup="true"
                     onClick={() => setOpen((v) => !v)}
                 >
-                    <AiOutlineBell />
+                    <IconBell />
                     <Show when={unread() > 0}>
                         <span class="header-dot" aria-hidden="true" />
                     </Show>
@@ -212,7 +212,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                                         void remove(n)
                                                     }
                                                 >
-                                                    <AiOutlineClose />
+                                                    <IconX />
                                                 </Button>
                                             </li>
                                         );

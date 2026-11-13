@@ -1,5 +1,5 @@
 import { createEffect, createSignal, For, Show } from 'solid-js';
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -108,7 +108,7 @@ export default function TagsEditor(props: {
                                             )
                                         }
                                     >
-                                        <AiOutlineClose aria-hidden="true" />
+                                        <IconX aria-hidden="true" />
                                     </button>
                                 </span>
                             </li>

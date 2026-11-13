@@ -1,6 +1,5 @@
 import { createSignal } from 'solid-js';
-import { FaRegularUser } from 'solid-icons/fa';
-import { BiRegularLock } from 'solid-icons/bi';
+import { IconLock, IconUser } from '@shared/ui/icons';
 import { groupErrors } from '@shared/api/errors';
 import { useAuth } from '@shared/api/auth-provider';
 import type { FormErrors } from '@shared/api/errors';
@@ -54,7 +53,7 @@ export default function LoginForm(props: { onSwitch: () => void }) {
                 id={inputId('username')}
                 name="username"
                 label={t('form.username', 'Username')}
-                icon={FaRegularUser}
+                icon={IconUser}
                 errors={errors().username}
                 type="text"
                 autocomplete="username"
@@ -72,7 +71,7 @@ export default function LoginForm(props: { onSwitch: () => void }) {
                 id={inputId('password')}
                 name="password"
                 label={t('form.password', 'Password')}
-                icon={BiRegularLock}
+                icon={IconLock}
                 errors={errors().password}
                 type="password"
                 autocomplete="current-password"

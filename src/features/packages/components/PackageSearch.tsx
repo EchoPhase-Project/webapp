@@ -5,7 +5,7 @@ import {
     For,
     Show,
 } from 'solid-js';
-import { AiOutlineClose, AiOutlineSearch } from 'solid-icons/ai';
+import { IconSearch, IconX } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { exploreTags } from '@features/packages/api';
 
@@ -127,7 +127,7 @@ export default function PackageSearch(props: {
     return (
         <div class="packages-search-wrap" role="search">
             <div class="field field--compact packages-search">
-                <AiOutlineSearch class="field-icon" aria-hidden="true" />
+                <IconSearch class="field-icon" aria-hidden="true" />
                 <label class="visually-hidden" for="packages-search">
                     {t('search', 'Search packages')}
                 </label>
@@ -171,7 +171,7 @@ export default function PackageSearch(props: {
                             input?.focus();
                         }}
                     >
-                        <AiOutlineClose aria-hidden="true" />
+                        <IconX aria-hidden="true" />
                     </button>
                 </Show>
             </div>

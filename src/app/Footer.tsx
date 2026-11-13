@@ -1,6 +1,6 @@
 import { For, Match, Switch, type JSX } from 'solid-js';
 import { A } from '@solidjs/router';
-import { AiOutlineGithub } from 'solid-icons/ai';
+import { IconBrandGithub } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth-provider';
 import { outage } from '@shared/api/outage-watch';
@@ -138,7 +138,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         aria-label="GitHub"
                     >
-                        <AiOutlineGithub />
+                        <IconBrandGithub />
                     </a>
                 </div>
 

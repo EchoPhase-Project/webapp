@@ -1,9 +1,5 @@
 import { Show } from 'solid-js';
-import {
-    AiFillPushpin,
-    AiOutlineClockCircle,
-    AiOutlineTeam,
-} from 'solid-icons/ai';
+import { IconClock, IconPinnedFilled, IconUsers } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import type { Note } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -32,7 +28,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
             <span class="note-card-head">
                 <span class="note-card-title">{props.note.title}</span>
                 <Show when={props.note.pinned}>
-                    <AiFillPushpin
+                    <IconPinnedFilled
                         class="note-card-icon"
                         aria-label={t('card.pinned', 'Pinned')}
                     />
@@ -44,7 +40,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
             <span class="note-card-meta muted">
                 <Show when={props.note.access !== 'Owner'}>
                     <span>
-                        <AiOutlineTeam aria-hidden="true" />{' '}
+                        <IconUsers aria-hidden="true" />{' '}
                         {t('card.from', 'from {name}').replace(
                             '{name}',
                             props.note.owner.name
@@ -54,7 +50,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
                 <Show when={props.note.remindAt}>
                     {(at) => (
                         <span>
-                            <AiOutlineClockCircle aria-hidden="true" />{' '}
+                            <IconClock aria-hidden="true" />{' '}
                             {DateHelper.format(
                                 at(),
                                 user()?.timeZone,

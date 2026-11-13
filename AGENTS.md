@@ -68,6 +68,8 @@ and the tests are successful.
 - Before you write new markup, use the components in `src/shared/ui`:
   Button, Field, Modal, ConfirmDialog, Card, Table, EmptyState, PageHeader,
   Switch.
+- Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
+  library. ESLint enforces this rule.
 - Each page starts with `PageHeader`. Each page sets its title with
   `useRootMeta()`.
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens

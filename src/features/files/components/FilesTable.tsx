@@ -1,4 +1,4 @@
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import type { FilePurpose, StoredFile } from '@shared/api/types';
 import { useAuth } from '@shared/api/auth-provider';
 import { formatBytes } from '@shared/lib/bytes';
@@ -80,7 +80,7 @@ export default function FilesTable(props: {
                             disabled={props.busy}
                             onClick={() => props.onDelete(file)}
                         >
-                            <AiOutlineClose />
+                            <IconX />
                         </Button>
                     </Cell>
                 </Row>

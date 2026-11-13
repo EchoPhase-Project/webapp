@@ -1,12 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, screen } from '@solidjs/testing-library';
-import {
-    AiOutlineCompass,
-    AiOutlineFolder,
-    AiOutlineUser,
-} from 'solid-icons/ai';
-import { VsNote } from 'solid-icons/vs';
+import { IconCompass, IconFolder, IconNotes, IconUser } from '@shared/ui/icons';
 import { renderPage } from '@shared/testing/render-page';
 import type { NavModel } from './nav-link';
 import { DesktopNav } from './desktop-nav';
@@ -17,13 +12,13 @@ const Home = () => <span>logo</span>;
 const model = (over: Partial<NavModel> = {}): NavModel => ({
     home: { icon: Home, label: 'Home', href: '/' },
     sections: [
-        { icon: AiOutlineCompass, label: 'Explore', href: '/explore' },
+        { icon: IconCompass, label: 'Explore', href: '/explore' },
         {
-            icon: VsNote,
+            icon: IconNotes,
             label: 'Workspace',
             items: [
-                { icon: VsNote, label: 'Notes', href: '/notes' },
-                { icon: AiOutlineFolder, label: 'Files', href: '/files' },
+                { icon: IconNotes, label: 'Notes', href: '/notes' },
+                { icon: IconFolder, label: 'Files', href: '/files' },
             ],
         },
     ],
@@ -33,7 +28,7 @@ const model = (over: Partial<NavModel> = {}): NavModel => ({
         userName: 'dusty',
         avatarFileId: null,
         items: [
-            { icon: AiOutlineUser, label: 'Profile', href: '/profile' },
+            { icon: IconUser, label: 'Profile', href: '/profile' },
             { label: 'Log out', onSelect: logout },
         ],
     },

@@ -1,11 +1,11 @@
 import { createSignal, For, Show } from 'solid-js';
 import {
-    AiOutlineCopy,
-    AiOutlineDelete,
-    AiOutlineEdit,
-    AiOutlineEye,
-    AiOutlineEyeInvisible,
-} from 'solid-icons/ai';
+    IconCopy,
+    IconEye,
+    IconEyeOff,
+    IconPencil,
+    IconTrash,
+} from '@shared/ui/icons';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -143,7 +143,7 @@ export default function WebhookTable(props: {
                                         )
                                     }
                                 >
-                                    <AiOutlineCopy />
+                                    <IconCopy />
                                 </Button>
                             </span>
                         </Cell>
@@ -195,9 +195,9 @@ export default function WebhookTable(props: {
                                 >
                                     <Show
                                         when={shown() === hook.blockId}
-                                        fallback={<AiOutlineEye />}
+                                        fallback={<IconEye />}
                                     >
-                                        <AiOutlineEyeInvisible />
+                                        <IconEyeOff />
                                     </Show>
                                 </Button>
                                 <Button
@@ -214,7 +214,7 @@ export default function WebhookTable(props: {
                                         )
                                     }
                                 >
-                                    <AiOutlineCopy />
+                                    <IconCopy />
                                 </Button>
                             </span>
                         </Cell>
@@ -239,7 +239,7 @@ export default function WebhookTable(props: {
                                     disabled={busy()}
                                     onClick={() => setEditing(hook)}
                                 >
-                                    <AiOutlineEdit />
+                                    <IconPencil />
                                 </Button>
                                 <Button
                                     variant="icon-danger"
@@ -254,7 +254,7 @@ export default function WebhookTable(props: {
                                     disabled={busy()}
                                     onClick={() => setDeleting(hook)}
                                 >
-                                    <AiOutlineDelete />
+                                    <IconTrash />
                                 </Button>
                             </span>
                         </Cell>

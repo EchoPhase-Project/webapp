@@ -10,8 +10,7 @@ import {
 } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { useLocation } from '@solidjs/router';
-import { AiOutlineClose, AiOutlineDown } from 'solid-icons/ai';
-import { IoEllipsisHorizontal } from 'solid-icons/io';
+import { IconChevronDown, IconDots, IconX } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import type { NavItem, NavModel, NavSection } from './nav-link';
@@ -67,7 +66,7 @@ function DrawerGroup(props: {
                 onClick={() => props.onToggle()}
             >
                 {props.content}
-                <AiOutlineDown class="drawer-chevron" aria-hidden="true" />
+                <IconChevronDown class="drawer-chevron" aria-hidden="true" />
             </button>
             <ul id={id} class="drawer-sublist" hidden={!props.open}>
                 <For each={props.items}>
@@ -189,7 +188,7 @@ function Drawer(props: { nav: NavModel; open: boolean; onClose: () => void }) {
                         aria-label={t('nav.close', 'Close the menu')}
                         onClick={() => props.onClose()}
                     >
-                        <AiOutlineClose />
+                        <IconX />
                     </button>
                 </div>
 
@@ -351,7 +350,7 @@ export function MobileNav(props: { nav: NavModel }) {
                             onClick={() => setOpen(true)}
                         >
                             <i class="nav-icon" aria-hidden="true">
-                                <IoEllipsisHorizontal />
+                                <IconDots />
                             </i>
                             <span class="mobile-nav-label">
                                 {t('nav.more', 'More')}

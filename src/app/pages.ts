@@ -1,12 +1,13 @@
 import { lazy, type Component } from 'solid-js';
 import {
-    AiOutlineAppstore,
-    AiOutlineCompass,
-    AiOutlineFolder,
-    AiOutlineUser,
-} from 'solid-icons/ai';
-import { FiPackage } from 'solid-icons/fi';
-import { VsNote, VsSettings } from 'solid-icons/vs';
+    IconAdjustmentsHorizontal,
+    IconCompass,
+    IconFolder,
+    IconLayoutGrid,
+    IconNotes,
+    IconPackage,
+    IconUser,
+} from '@shared/ui/icons';
 
 /** A sidebar group: its entry opens a sub-menu of the pages in it. */
 export type NavGroup = 'workspace' | 'settings';
@@ -36,11 +37,15 @@ export interface Page {
 /** The groups' own entries in the sidebar, where their first page would be. */
 export const NAV_GROUPS: Record<NavGroup, Omit<PageNav, 'group'>> = {
     workspace: {
-        icon: AiOutlineAppstore,
+        icon: IconLayoutGrid,
         key: 'nav.workspace',
         text: 'Workspace',
     },
-    settings: { icon: VsSettings, key: 'nav.settings', text: 'Settings' },
+    settings: {
+        icon: IconAdjustmentsHorizontal,
+        key: 'nav.settings',
+        text: 'Settings',
+    },
 };
 
 /**
@@ -83,7 +88,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/packages/ExplorePage')),
         auth: true,
         nav: {
-            icon: AiOutlineCompass,
+            icon: IconCompass,
             key: 'nav.explore.label',
             text: 'Explore',
             description: {
@@ -97,7 +102,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/packages/PackagesPage')),
         auth: true,
         nav: {
-            icon: FiPackage,
+            icon: IconPackage,
             key: 'nav.packages.label',
             text: 'Packages',
             description: {
@@ -134,7 +139,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/notes/NotesPage')),
         auth: true,
         nav: {
-            icon: VsNote,
+            icon: IconNotes,
             key: 'nav.notes.label',
             text: 'Notes',
             description: {
@@ -149,7 +154,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/files/FilesPage')),
         auth: true,
         nav: {
-            icon: AiOutlineFolder,
+            icon: IconFolder,
             key: 'nav.files.label',
             text: 'Files',
             description: {
@@ -164,7 +169,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/profile/ProfilePage')),
         auth: true,
         nav: {
-            icon: AiOutlineUser,
+            icon: IconUser,
             key: 'nav.profile.label',
             text: 'Profile',
             description: {
@@ -179,7 +184,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/sessions/SessionsPage')),
         auth: true,
         nav: {
-            icon: VsSettings,
+            icon: IconAdjustmentsHorizontal,
             key: 'nav.sessions.label',
             text: 'Sessions',
             description: {
@@ -194,7 +199,7 @@ export const PAGES: Page[] = [
         component: lazy(() => import('@features/api-clients/ApiClientsPage')),
         auth: true,
         nav: {
-            icon: VsSettings,
+            icon: IconAdjustmentsHorizontal,
             key: 'nav.api_clients.label',
             text: 'API clients',
             description: {

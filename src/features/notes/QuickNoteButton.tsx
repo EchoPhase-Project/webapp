@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import { AiOutlineFileAdd } from 'solid-icons/ai';
+import { IconFilePlus } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import NoteEditorModal from './components/NoteEditorModal';
 import { notesChanged } from './notes-changes';
@@ -18,7 +18,7 @@ export default function QuickNoteButton() {
                 title={t('quick', 'New note')}
                 onClick={() => setOpen(true)}
             >
-                <AiOutlineFileAdd />
+                <IconFilePlus />
             </button>
             <NoteEditorModal
                 open={open()}

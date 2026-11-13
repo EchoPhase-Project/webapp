@@ -4,10 +4,16 @@ import { useRootMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth-provider';
 import Card from '@shared/ui/Card';
-import { AiOutlineApi, AiOutlineGithub } from 'solid-icons/ai';
-import { BsDiagram3 } from 'solid-icons/bs';
-import { TbOutlinePlugConnected, TbOutlineBolt } from 'solid-icons/tb';
-import { FiLock, FiServer, FiCode } from 'solid-icons/fi';
+import {
+    IconApi,
+    IconBolt,
+    IconBrandGithub,
+    IconCode,
+    IconLock,
+    IconPlugConnected,
+    IconServer,
+    IconSitemap,
+} from '@shared/ui/icons';
 import './about.scss';
 
 const Org = 'https://github.com/EchoPhase-Project';
@@ -15,16 +21,16 @@ const Org = 'https://github.com/EchoPhase-Project';
 type Item = { key: string; icon: Component<{ class?: string }> };
 
 const FEATURES: Item[] = [
-    { key: 'connections', icon: TbOutlinePlugConnected },
-    { key: 'workflows', icon: BsDiagram3 },
-    { key: 'api', icon: AiOutlineApi },
-    { key: 'realtime', icon: TbOutlineBolt },
+    { key: 'connections', icon: IconPlugConnected },
+    { key: 'workflows', icon: IconSitemap },
+    { key: 'api', icon: IconApi },
+    { key: 'realtime', icon: IconBolt },
 ];
 
 const PRINCIPLES: Item[] = [
-    { key: 'open', icon: FiCode },
-    { key: 'self_hosted', icon: FiServer },
-    { key: 'private', icon: FiLock },
+    { key: 'open', icon: IconCode },
+    { key: 'self_hosted', icon: IconServer },
+    { key: 'private', icon: IconLock },
 ];
 
 // English fallbacks; the texts live in about.<code>.json.
@@ -123,7 +129,7 @@ export default function AboutPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <AiOutlineGithub />
+                        <IconBrandGithub />
                         {t('cta.source', 'Source code')}
                     </a>
                 </div>

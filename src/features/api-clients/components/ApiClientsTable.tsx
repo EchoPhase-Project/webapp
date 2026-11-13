@@ -1,4 +1,4 @@
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import type { ApiClient } from '@shared/api/types';
 import { useAuth } from '@shared/api/auth-provider';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -64,7 +64,7 @@ export default function ApiClientsTable(props: {
                             disabled={props.busy}
                             onClick={() => props.onDelete(client)}
                         >
-                            <AiOutlineClose />
+                            <IconX />
                         </Button>
                     </Cell>
                 </Row>

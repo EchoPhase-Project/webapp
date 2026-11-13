@@ -1,8 +1,6 @@
 import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
-import { FaRegularUser } from 'solid-icons/fa';
-import { BiRegularLock } from 'solid-icons/bi';
-import { AiOutlineTags } from 'solid-icons/ai';
+import { IconLock, IconTags, IconUser } from '@shared/ui/icons';
 import { groupErrors } from '@shared/api/errors';
 import { useAuth } from '@shared/api/auth-provider';
 import type { FormErrors } from '@shared/api/errors';
@@ -61,7 +59,7 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
                 id={inputId('name')}
                 name="name"
                 label={t('form.fullname', 'Full name')}
-                icon={FaRegularUser}
+                icon={IconUser}
                 errors={errors().name}
                 type="text"
                 autocomplete="name"
@@ -79,7 +77,7 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
                 id={inputId('username')}
                 name="username"
                 label={t('form.username', 'Username')}
-                icon={AiOutlineTags}
+                icon={IconTags}
                 errors={errors().username}
                 type="text"
                 autocomplete="username"
@@ -97,7 +95,7 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
                 id={inputId('password')}
                 name="password"
                 label={t('form.password', 'Password')}
-                icon={BiRegularLock}
+                icon={IconLock}
                 errors={errors().password}
                 type="password"
                 autocomplete="new-password"

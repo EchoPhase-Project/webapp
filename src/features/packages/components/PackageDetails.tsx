@@ -6,7 +6,7 @@ import {
     Show,
 } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { AiOutlineArrowLeft, AiOutlineDownload } from 'solid-icons/ai';
+import { IconArrowLeft, IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -83,7 +83,7 @@ export default function PackageDetails(props: { id: string }) {
 
     const back = (
         <A href="/explore" class="package-back">
-            <AiOutlineArrowLeft aria-hidden="true" /> {t('back', 'Explore')}
+            <IconArrowLeft aria-hidden="true" /> {t('back', 'Explore')}
         </A>
     );
 
@@ -142,7 +142,7 @@ export default function PackageDetails(props: { id: string }) {
                                 disabled={!content()}
                                 onClick={() => setInstalling(true)}
                             >
-                                <AiOutlineDownload />
+                                <IconDownload />
                                 {t('install.open', 'Install')}
                             </Button>
                         }

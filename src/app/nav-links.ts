@@ -1,4 +1,4 @@
-import { AiOutlineLogin, AiOutlineLogout } from 'solid-icons/ai';
+import { IconLogin, IconLogout } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
@@ -92,7 +92,7 @@ export function useNav(): () => NavModel {
                           items: [
                               ...accountItems,
                               {
-                                  icon: AiOutlineLogout,
+                                  icon: IconLogout,
                                   label: t('nav.logout', 'Log out'),
                                   onSelect: () => void logout(),
                               },
@@ -102,7 +102,7 @@ export function useNav(): () => NavModel {
             login:
                 me === null
                     ? {
-                          icon: AiOutlineLogin,
+                          icon: IconLogin,
                           label: t('nav.login', 'Log in'),
                           href: '/auth',
                       }

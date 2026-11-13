@@ -1,5 +1,5 @@
 import { createSignal, onCleanup, onMount, type JSX } from 'solid-js';
-import { AiOutlineDown, AiOutlineUp } from 'solid-icons/ai';
+import { IconChevronDown, IconChevronUp } from '@shared/ui/icons';
 
 /**
  * The middle of the navigation: scrolls when its sections do not fit, its
@@ -64,7 +64,7 @@ export default function NavScroll(props: {
                 aria-hidden="true"
                 onClick={() => step(-1)}
             >
-                <AiOutlineUp />
+                <IconChevronUp />
             </button>
             <div
                 class="nav-scroll"
@@ -83,7 +83,7 @@ export default function NavScroll(props: {
                 aria-hidden="true"
                 onClick={() => step(1)}
             >
-                <AiOutlineDown />
+                <IconChevronDown />
             </button>
         </div>
     );

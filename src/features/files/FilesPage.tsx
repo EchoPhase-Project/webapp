@@ -1,5 +1,5 @@
 import { createRenderEffect, createSignal, on, Show } from 'solid-js';
-import { AiOutlineUpload } from 'solid-icons/ai';
+import { IconUpload } from '@shared/ui/icons';
 import { useRootMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -93,7 +93,7 @@ export default function FilesPage() {
                 docs="files"
                 actions={
                     <FilePicker busy={busy()} onPick={(f) => void upload(f)}>
-                        <AiOutlineUpload />
+                        <IconUpload />
                         {t('upload', 'Upload')}
                     </FilePicker>
                 }

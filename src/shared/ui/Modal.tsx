@@ -1,5 +1,5 @@
 import { createEffect, createUniqueId, on, Show, type JSX } from 'solid-js';
-import { AiOutlineClose } from 'solid-icons/ai';
+import { IconX } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from './Button';
 import './modal.scss';
@@ -87,7 +87,7 @@ export default function Modal(props: ModalProps) {
                             aria-label={i18n.t('close', 'Close')}
                             onClick={close}
                         >
-                            <AiOutlineClose />
+                            <IconX />
                         </Button>
                     </Show>
                 </header>

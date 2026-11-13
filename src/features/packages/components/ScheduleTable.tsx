@@ -1,5 +1,5 @@
 import { createSignal, For, Show } from 'solid-js';
-import { AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from 'solid-icons/ai';
+import { IconPencil, IconPlus, IconTrash } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
@@ -95,7 +95,7 @@ export default function ScheduleTable(props: {
                     )}
                 </p>
                 <Button variant="ghost" onClick={() => setEditing('new')}>
-                    <AiOutlinePlus />
+                    <IconPlus />
                     {t('schedule.add', 'Add a schedule')}
                 </Button>
             </div>
@@ -138,7 +138,7 @@ export default function ScheduleTable(props: {
                                     disabled={busy()}
                                     onClick={() => setEditing(schedule)}
                                 >
-                                    <AiOutlineEdit />
+                                    <IconPencil />
                                 </Button>
                                 <Button
                                     variant="icon-danger"
@@ -153,7 +153,7 @@ export default function ScheduleTable(props: {
                                     disabled={busy()}
                                     onClick={() => setDeleting(schedule)}
                                 >
-                                    <AiOutlineDelete />
+                                    <IconTrash />
                                 </Button>
                             </span>
                         </Cell>

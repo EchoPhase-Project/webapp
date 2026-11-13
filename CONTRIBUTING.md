@@ -89,6 +89,18 @@ Before you write new markup, make pages from the components in
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                           |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings                                                                                                     |
 
+### Icons
+
+- Import each icon from `@shared/ui/icons`. Do not import an icon library
+  directly. ESLint stops a direct import.
+- Only `src/shared/ui/icons.ts` imports the icon libraries. This file is the
+  list of all icons in the app.
+- Each export has the name of the icon in the Tabler catalogue
+  (tabler.io/icons), for example `IconX` or `IconTrash`. Thus, a new icon
+  has a known name.
+- Use one icon for one meaning. Before you add an export, find an export with
+  the same meaning in `icons.ts`.
+
 ### Styles
 
 - Use only the colour tokens in `src/shared/styles/tokens.scss`. Each token
