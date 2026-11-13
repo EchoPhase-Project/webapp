@@ -1,9 +1,10 @@
-import { createEffect, createSignal, For } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { PackageVisibility, WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import RadioGroup from '@shared/ui/RadioGroup';
 import { inputOf, updatePackage } from '@features/packages/api';
 import SettingsCard from './SettingsCard';
 import VisibilityBadge from './VisibilityBadge';
@@ -66,48 +67,32 @@ export default function VisibilityEditor(props: {
                 errors={errors()}
                 inputId={() => 'package-visibility'}
             />
-            <fieldset id="package-visibility" class="choices">
-                <legend class="visually-hidden">
-                    {t('editor.visibility', 'Who sees it')}
-                </legend>
-                <For each={VISIBILITIES}>
-                    {(option) => (
-                        <label class="choice">
-                            <input
-                                type="radio"
-                                name="visibility"
-                                value={option}
-                                checked={visibility() === option}
-                                disabled={busy()}
-                                onChange={() => setVisibility(option)}
-                            />
-                            <span class="choice-text">
-                                <strong>
-                                    {t(`visibility.${option}`, option)}
-                                </strong>
-                                <span class="muted">
-                                    {
-                                        {
-                                            Private: t(
-                                                'visibility.Private_hint',
-                                                'You and the people you share it with'
-                                            ),
-                                            Unlisted: t(
-                                                'visibility.Unlisted_hint',
-                                                'Anyone signed in who has the link'
-                                            ),
-                                            Public: t(
-                                                'visibility.Public_hint',
-                                                'Everyone, listed in Explore'
-                                            ),
-                                        }[option]
-                                    }
-                                </span>
-                            </span>
-                        </label>
-                    )}
-                </For>
-            </fieldset>
+            <RadioGroup
+                id="package-visibility"
+                legend={t('editor.visibility', 'Who sees it')}
+                name="visibility"
+                value={visibility()}
+                onChange={setVisibility}
+                disabled={busy()}
+                options={VISIBILITIES.map((option) => ({
+                    value: option,
+                    label: t(`visibility.${option}`, option),
+                    description: {
+                        Private: t(
+                            'visibility.Private_hint',
+                            'You and the people you share it with'
+                        ),
+                        Unlisted: t(
+                            'visibility.Unlisted_hint',
+                            'Anyone signed in who has the link'
+                        ),
+                        Public: t(
+                            'visibility.Public_hint',
+                            'Everyone, listed in Explore'
+                        ),
+                    }[option],
+                }))}
+            />
         </SettingsCard>
     );
 }

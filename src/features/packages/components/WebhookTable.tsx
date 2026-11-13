@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import {
     IconCopy,
     IconEye,
@@ -10,9 +10,11 @@ import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import Checkbox from '@shared/ui/Checkbox';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
+import RadioGroup from '@shared/ui/RadioGroup';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import { saveWorkflow } from '@features/packages/api';
 import {
@@ -325,45 +327,27 @@ function WebhookForm(form: {
                 form.onSave(respond(), replace());
             }}
         >
-            <fieldset class="choices">
-                <legend class="field-label">
-                    {t('webhook.respond_title', 'Answer')}
-                </legend>
-                <For each={RESPONDS}>
-                    {(option) => (
-                        <label class="choice">
-                            <input
-                                type="radio"
-                                name="respond"
-                                checked={respond() === option}
-                                onChange={() => setRespond(option)}
-                            />
-                            <span class="choice-text">
-                                <strong>{respondLabel(t, option)}</strong>
-                                <span class="muted">
-                                    {t(`webhook.respond.${option}`, option)}
-                                </span>
-                            </span>
-                        </label>
-                    )}
-                </For>
-            </fieldset>
-            <label class="choice">
-                <input
-                    type="checkbox"
-                    checked={replace()}
-                    onChange={(e) => setReplace(e.currentTarget.checked)}
-                />
-                <span class="choice-text">
-                    <strong>{t('webhook.replace', 'New secret')}</strong>
-                    <span class="muted">
-                        {t(
-                            'webhook.replace_short',
-                            'The old one stops working at once.'
-                        )}
-                    </span>
-                </span>
-            </label>
+            <RadioGroup
+                legend={t('webhook.respond_title', 'Answer')}
+                showLegend
+                name="respond"
+                value={respond()}
+                onChange={setRespond}
+                options={RESPONDS.map((option) => ({
+                    value: option,
+                    label: respondLabel(t, option),
+                    description: t(`webhook.respond.${option}`, option),
+                }))}
+            />
+            <Checkbox
+                checked={replace()}
+                onChange={setReplace}
+                label={t('webhook.replace', 'New secret')}
+                description={t(
+                    'webhook.replace_short',
+                    'The old one stops working at once.'
+                )}
+            />
             <Button type="submit" busy={form.busy}>
                 {t('settings.save', 'Save')}
             </Button>

@@ -283,44 +283,16 @@
   min-width: 0;
 }
 
-.package-picker-item {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  cursor: pointer;
-
-  > span {
-    display: grid;
-    gap: 2px;
-  }
-
-  input {
-    margin-top: 3px;
-    accent-color: var(--accent);
-  }
-}
-
-.package-picker-item {
-  align-items: center;
-
-  > span {
-    display: inline;
-  }
-}
-
+// The workflows as Checkbox cards, scrolled when many; room around them
+// for a card's focus ring, which the scrolling box would cut.
 .package-picker-list {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   max-height: 16rem;
   overflow-y: auto;
-  margin: 0;
-  padding: 0;
+  margin: -4px;
+  padding: 4px;
   list-style: none;
-}
-
-.package-picker-version {
-  margin-left: auto;
-  font-size: 0.78rem;
 }
 
 .package-hint {

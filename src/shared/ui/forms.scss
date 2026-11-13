@@ -133,7 +133,7 @@
   background-color: var(--on-primary);
 }
 
-// One of a few (radios) or an option (a checkbox): each a row with its
+// One of a few (RadioGroup) or an option (Checkbox): each a card with its
 // name and a line on what it means; the chosen one in the accent.
 .choices {
   display: grid;
@@ -177,4 +177,12 @@
   .muted {
     font-size: 0.82rem;
   }
+}
+
+// The name, with what goes beside it (a badge) on its line.
+.choice-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }

@@ -1,0 +1,57 @@
+// @vitest-environment jsdom
+import { afterEach, describe, expect, it } from 'vitest';
+import { createSignal } from 'solid-js';
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import Checkbox from './Checkbox';
+
+function renderBox() {
+    const [on, setOn] = createSignal(false);
+    render(() => (
+        <Checkbox
+            checked={on()}
+            onChange={setOn}
+            label={
+                <>
+                    Daily report <span>main</span>
+                </>
+            }
+            description="v3"
+        />
+    ));
+    return on;
+}
+
+describe('Checkbox', () => {
+    afterEach(cleanup);
+
+    it('is named by its label and ticked by a click anywhere on the card', () => {
+        const on = renderBox();
+        const box = screen.getByRole<HTMLInputElement>('checkbox', {
+            name: /Daily report/,
+        });
+        expect(box.checked).toBe(false);
+
+        fireEvent.click(screen.getByText('v3'));
+        expect(on()).toBe(true);
+        expect(box.checked).toBe(true);
+
+        fireEvent.click(box);
+        expect(on()).toBe(false);
+    });
+
+    it('can be shown but not changed', () => {
+        render(() => (
+            <Checkbox
+                checked={true}
+                onChange={() => {}}
+                label="New secret"
+                disabled
+            />
+        ));
+        const box = screen.getByRole<HTMLInputElement>('checkbox', {
+            name: 'New secret',
+        });
+        expect(box.disabled).toBe(true);
+        expect(box.checked).toBe(true);
+    });
+});

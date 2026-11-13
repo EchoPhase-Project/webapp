@@ -8,6 +8,7 @@ import type {
 } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import Checkbox from '@shared/ui/Checkbox';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FieldError, { errorId } from '@shared/ui/FieldError';
 import Modal from '@shared/ui/Modal';
@@ -172,28 +173,27 @@ function PublishForm(props: {
                             const order = () => chosen().indexOf(workflow.id);
                             return (
                                 <li>
-                                    <label class="package-picker-item">
-                                        <input
-                                            type="checkbox"
-                                            checked={order() >= 0}
-                                            disabled={busy()}
-                                            onChange={(e) =>
-                                                toggle(
-                                                    workflow.id,
-                                                    e.currentTarget.checked
-                                                )
-                                            }
-                                        />
-                                        <span>{workflow.name}</span>
-                                        <Show when={order() === 0}>
-                                            <span class="package-badge">
-                                                {t('editor.main', 'main')}
-                                            </span>
-                                        </Show>
-                                        <span class="muted package-picker-version">
-                                            v{workflow.version}
-                                        </span>
-                                    </label>
+                                    <Checkbox
+                                        checked={order() >= 0}
+                                        disabled={busy()}
+                                        onChange={(on) =>
+                                            toggle(workflow.id, on)
+                                        }
+                                        label={
+                                            <>
+                                                {workflow.name}
+                                                <Show when={order() === 0}>
+                                                    <span class="package-badge">
+                                                        {t(
+                                                            'editor.main',
+                                                            'main'
+                                                        )}
+                                                    </span>
+                                                </Show>
+                                            </>
+                                        }
+                                        description={`v${workflow.version}`}
+                                    />
                                 </li>
                             );
                         }}
