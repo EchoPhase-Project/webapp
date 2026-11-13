@@ -104,6 +104,19 @@ main h1:focus {
   outline: none;
 }
 
+// Icons take the size of the text around them (as solid-icons did): a
+// component sets font-size, or its own width and height. :where() keeps this
+// at zero specificity, so any component rule wins. Tabler draws a 2px line
+// for 24px; at 14-20px that reads heavy, so the line is set here (CSS beats
+// the stroke prop, so change the weight in styles only). Filled icons use
+// fill and ignore it.
+:where(.tabler-icon) {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  stroke-width: 1.75;
+}
+
 // Set for a frame while the theme changes (theme-context): no fades.
 .no-transition,
 .no-transition * {

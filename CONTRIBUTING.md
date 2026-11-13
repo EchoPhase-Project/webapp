@@ -100,6 +100,13 @@ Before you write new markup, make pages from the components in
   has a known name.
 - Use one icon for one meaning. Before you add an export, find an export with
   the same meaning in `icons.ts`.
+- Take each icon from Tabler (`@tabler/icons-solidjs`). If Tabler does not
+  have the icon, use `solid-icons`: first `fi` (Feather), then `si` for brand
+  logos. Feather has the style that is nearest to Tabler.
+- If you export an icon from `solid-icons`, write a comment in `icons.ts`. The
+  comment tells which Tabler icons you examined.
+- The icon size is the font size of the text around the icon. The line width
+  is in `global.scss` (`.tabler-icon`). Do not set `size` or `stroke` in JSX.
 
 ### Styles
 

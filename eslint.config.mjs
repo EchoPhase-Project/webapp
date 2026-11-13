@@ -18,7 +18,9 @@ const noParent = layer(
 const iconLibraries = layer(
     'Icons come from @shared/ui/icons.',
     'solid-icons',
-    'solid-icons/*'
+    'solid-icons/*',
+    '@tabler/icons-solidjs',
+    '@tabler/icons-solidjs/*'
 );
 const features = fs.readdirSync('src/features');
 
