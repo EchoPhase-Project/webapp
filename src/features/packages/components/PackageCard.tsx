@@ -44,6 +44,7 @@ export default function PackageCard(props: {
                     <For each={props.pkg.tags}>
                         {(tag) => (
                             <li>
+                                {/* eslint-disable-next-line no-restricted-syntax -- a tag chip that filters by it, in the tag's colours, not an action button */}
                                 <button
                                     type="button"
                                     class={tagClass(tag)}

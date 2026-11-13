@@ -20,6 +20,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
     };
 
     return (
+        // eslint-disable-next-line no-restricted-syntax -- a card that opens the note as a whole, not an action button
         <button
             type="button"
             class="note-card card"

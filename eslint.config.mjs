@@ -22,6 +22,26 @@ const iconLibraries = layer(
     '@tabler/icons-solidjs',
     '@tabler/icons-solidjs/*'
 );
+// Controls come from src/shared/ui (Button, HeaderButton, Tabs, Checkbox,
+// RadioGroup, Select), so they keep one look and one keyboard behaviour. A
+// clickable card or row elsewhere disables the rule on its line, with why.
+const ownControls = [
+    {
+        selector: 'JSXOpeningElement[name.name="button"]',
+        message:
+            'Use Button (or HeaderButton, Tabs) from @shared/ui; a clickable card or row needs a reason: eslint-disable-next-line with it.',
+    },
+    {
+        selector:
+            'JSXOpeningElement[name.name="input"]:has(JSXAttribute[name.name="type"][value.value=/^(checkbox|radio)$/])',
+        message:
+            'Use Checkbox or RadioGroup (or Switch, for a setting saved at once) from @shared/ui.',
+    },
+    {
+        selector: 'JSXOpeningElement[name.name="select"]',
+        message: 'Use Select from @shared/ui.',
+    },
+];
 const features = fs.readdirSync('src/features');
 
 export default defineConfig([
@@ -53,7 +73,19 @@ export default defineConfig([
                 'error',
                 { patterns: [noParent, iconLibraries] },
             ],
+            'no-restricted-syntax': ['error', ...ownControls],
         },
+    },
+
+    {
+        // Where the controls are made, the navigation's own system, and
+        // tests that render bare markup.
+        files: [
+            'src/shared/ui/**',
+            'src/shared/nav/**',
+            'src/**/*.test.{ts,tsx}',
+        ],
+        rules: { 'no-restricted-syntax': 'off' },
     },
 
     {

@@ -82,12 +82,33 @@ stylesheet, `<feature>.scss`.
 Before you write new markup, make pages from the components in
 `src/shared/ui`:
 
-| Component                                             | Purpose                                                                                                                                                   |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action) |
-| `Field`, `FieldError`, `ErrorSummary`                 | Form fields with their labels and errors, connected for screen readers                                                                                    |
-| `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                           |
-| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings                                                                                                     |
+| Component                                             | Purpose                                                                                                                                                                                     |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action), `link` (an action in a sentence) |
+| `HeaderButton`                                        | The square icon buttons in the top bar (new note, notifications, theme)                                                                                                                     |
+| `Tabs`                                                | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern                                                                                           |
+| `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                      |
+| `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                            |
+| `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                             |
+| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
+
+### Controls
+
+- Make buttons, tabs, checkboxes, radio buttons, and selects with the
+  components in `src/shared/ui`. Do not write `<button>`, `<select>`, or
+  `<input type="checkbox">` in a feature. These components have one look and
+  one keyboard behaviour.
+- ESLint (`no-restricted-syntax`) stops these elements outside
+  `src/shared/ui` and `src/shared/nav`.
+- If a full card or a full row opens an item, you can use `<button>`. Then
+  write `eslint-disable-next-line no-restricted-syntax` with the reason on the
+  line above it. A card is not an action button, and the `.btn` style does
+  not apply to it.
+- Use `Switch` for a setting that the app saves immediately. Use `Checkbox`
+  for an option that a form sends. The two controls have different
+  behaviour.
+- If an action goes to a different page, use a link (`<A>`). Do not use
+  `Button variant="link"` for it.
 
 ### Icons
 

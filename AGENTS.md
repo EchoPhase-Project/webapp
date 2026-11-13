@@ -66,8 +66,12 @@ and the tests are successful.
 ### UI and styles
 
 - Before you write new markup, use the components in `src/shared/ui`:
-  Button, Field, Modal, ConfirmDialog, Card, Table, EmptyState, PageHeader,
-  Switch.
+  Button, HeaderButton, Tabs, Field, Select, Checkbox, RadioGroup, Modal,
+  ConfirmDialog, Card, Table, EmptyState, PageHeader, Switch.
+- Do not write `<button>`, `<select>`, or a checkbox or radio `<input>`
+  outside `src/shared/ui` and `src/shared/nav`. ESLint enforces this rule.
+- If a full card or row opens an item, it can be a `<button>`. Then disable
+  the rule on that line and write the reason.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
 - Each page starts with `PageHeader`. Each page sets its title with

@@ -177,6 +177,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                         const words = () => wordingOf(n, t);
                                         return (
                                             <li classList={{ unread: !n.read }}>
+                                                {/* eslint-disable-next-line no-restricted-syntax -- an item of the list that opens what it is about, not an action button */}
                                                 <button
                                                     type="button"
                                                     class="notification-item"

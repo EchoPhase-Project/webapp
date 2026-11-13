@@ -93,6 +93,7 @@ export default function RunList(props: {
                 <For each={runs()}>
                     {(run) => (
                         <li class="workflow-run">
+                            {/* eslint-disable-next-line no-restricted-syntax -- a whole row that opens the run's details, not an action button */}
                             <button
                                 type="button"
                                 class="workflow-run-row"
