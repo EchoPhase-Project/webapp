@@ -1,29 +1,20 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
-import { fakeApi, json } from '@shared/testing/fake-api';
+import { afterEach, describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import ProfilePage from './ProfilePage';
 
-const me = (avatarFileId: string | null = null) => ({
-    id: 'u1',
-    userName: 'dusty',
-    name: 'Dusty',
-    timeZone: 'UTC',
-    avatarFileId,
-});
-
 describe('ProfilePage', () => {
     afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
         sessionStorage.clear();
     });
 
     it('uploads a picture and shows it', async () => {
         let avatar: string | null = null;
         const api = fakeApi({
-            'GET /api/v1/auth/me': () => json(200, me(avatar)),
+            'GET /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: avatar })),
             'GET /api/v1/roles/me': () => json(200, []),
             'PUT /api/v1/auth/me/avatar': () => {
                 avatar = 'a1';
@@ -53,10 +44,11 @@ describe('ProfilePage', () => {
 
     it('saves only the changed name', async () => {
         const api = fakeApi({
-            'GET /api/v1/auth/me': () => json(200, me()),
+            'GET /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: null })),
             'GET /api/v1/roles/me': () => json(200, []),
             'PATCH /api/v1/auth/me': () =>
-                json(200, { ...me(), name: 'Rusty' }),
+                json(200, user({ avatarFileId: null, name: 'Rusty' })),
         });
 
         renderPage(() => <ProfilePage />);

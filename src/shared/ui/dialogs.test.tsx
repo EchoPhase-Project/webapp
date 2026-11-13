@@ -1,13 +1,11 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import ConfirmDialog from './ConfirmDialog';
 import Modal from './Modal';
 
 describe('ConfirmDialog', () => {
-    afterEach(cleanup);
-
     it('starts on Cancel and acts only on the red button', () => {
         const onConfirm = vi.fn();
         const onCancel = vi.fn();
@@ -40,8 +38,6 @@ describe('ConfirmDialog', () => {
 });
 
 describe('Modal', () => {
-    afterEach(cleanup);
-
     it('cannot be dismissed when it says so: no close button, Escape ignored', () => {
         const onClose = vi.fn();
         render(() => (

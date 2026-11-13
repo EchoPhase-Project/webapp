@@ -1,47 +1,12 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, screen } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { screen } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import { pkg } from './ExplorePage.test';
+import { pkg } from './fixtures';
 import PackagesPage from './PackagesPage';
 
-export const workflow = (over: Record<string, unknown> = {}) => ({
-    id: 'w1',
-    packageId: 'p1',
-    key: 'k1',
-    name: 'Guild report',
-    active: false,
-    version: 3,
-    contentHash: 'h',
-    createdAt: '2026-10-25T10:00:00Z',
-    updatedAt: '2026-10-25T10:00:00Z',
-    program: {
-        blocks: [
-            {
-                id: 1,
-                type: 'WebhookTrigger',
-                params: { secret: 'a-secret-of-sixteen' },
-            },
-            { id: 2, type: 'Print', name: 'say hi', params: {} },
-        ],
-        connections: [{ from: 1, to: 2, output: 'main' }],
-        startIds: [],
-        settings: {},
-    },
-    webhooks: [
-        { blockId: 1, path: '/api/v1/hooks/w1/1', respond: 'Immediately' },
-    ],
-    schedules: [],
-    ...over,
-});
-
 describe('PackagesPage', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('lists the caller’s packages, where they came from, and those shared with them', async () => {
         fakeApi({
             ...signedIn,

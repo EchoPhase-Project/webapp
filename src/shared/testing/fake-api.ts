@@ -37,14 +37,17 @@ export function fakeApi(routes: Record<string, Handler>) {
     };
 }
 
+/** The user /auth/me answers with, changed by `over`. */
+export const user = (over: Record<string, unknown> = {}) => ({
+    id: 'u1',
+    userName: 'dusty',
+    name: 'Dusty',
+    timeZone: 'UTC',
+    ...over,
+});
+
 /** A signed-in user, as /auth/me and /roles/me answer. */
 export const signedIn = {
-    'GET /api/v1/auth/me': () =>
-        json(200, {
-            id: 'u1',
-            userName: 'dusty',
-            name: 'Dusty',
-            timeZone: 'UTC',
-        }),
+    'GET /api/v1/auth/me': () => json(200, user()),
     'GET /api/v1/roles/me': () => json(200, ['admin']),
 };

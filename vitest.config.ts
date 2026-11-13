@@ -15,6 +15,10 @@ export default defineConfig({
         // jsdom. A component test opts in with `// @vitest-environment jsdom`.
         environment: 'node',
         include: ['src/**/*.test.{ts,tsx}'],
+        // After each test: unmount what it rendered (the setup file) and put
+        // back the globals it stubbed (fakeApi stubs fetch).
+        setupFiles: ['src/shared/testing/setup.ts'],
+        unstubGlobals: true,
         // Stylesheets come out empty in tests, ?raw too; the palette test
         // reads the colour tokens.
         css: { include: [/tokens\.scss/] },
@@ -26,6 +30,7 @@ export default defineConfig({
                 'src/**/*.d.ts',
                 'src/dev/**',
                 'src/shared/testing/**',
+                'src/**/fixtures.ts',
             ],
             reporter: ['text-summary', 'lcov', 'html'],
             reportsDirectory: 'artifacts/coverage',

@@ -1,17 +1,10 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-    cleanup,
-    fireEvent,
-    screen,
-    waitFor,
-    within,
-} from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { pageSection } from '@shared/nav/page-section';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import { pkg } from './ExplorePage.test';
-import { workflow } from './PackagesPage.test';
+import { pkg, workflow } from './fixtures';
 import MyPackagePage from './MyPackagePage';
 
 const PATTERN = '/packages/:id/:section?';
@@ -60,11 +53,6 @@ const routes = (
 });
 
 describe('MyPackagePage', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('lists its workflows and gives the navigation its group', async () => {
         fakeApi(routes());
         renderPage(() => <MyPackagePage />, '/packages/p1/workflows', PATTERN);

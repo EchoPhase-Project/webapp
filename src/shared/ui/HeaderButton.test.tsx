@@ -1,11 +1,9 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import HeaderButton from './HeaderButton';
 
 describe('HeaderButton', () => {
-    afterEach(cleanup);
-
     it('is named by its label, says it on hover, and does not submit', () => {
         const onClick = vi.fn();
         render(() => (

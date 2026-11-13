@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import type { ErrorItem } from '@shared/api/types';
 import Select from './Select';
@@ -30,8 +30,6 @@ function renderSelect(errors?: ErrorItem[]) {
 }
 
 describe('Select', () => {
-    afterEach(cleanup);
-
     it('labels the list, shows the value and reports a choice', () => {
         const value = renderSelect();
         const select = screen.getByRole<HTMLSelectElement>('combobox', {

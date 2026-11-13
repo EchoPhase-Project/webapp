@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import Tabs, { tabPanelProps } from './Tabs';
 
 type Tab = 'write' | 'preview' | 'help';
@@ -33,8 +33,6 @@ function renderTabs() {
 const tabNamed = (name: string) => screen.getByRole('tab', { name });
 
 describe('Tabs', () => {
-    afterEach(cleanup);
-
     it('names the list, marks the selected tab and ties the panel to it', () => {
         renderTabs();
         expect(screen.getByRole('tablist', { name: 'Text' })).toBeTruthy();

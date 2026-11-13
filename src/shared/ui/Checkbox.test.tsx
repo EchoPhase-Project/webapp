@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import Checkbox from './Checkbox';
 
 function renderBox() {
@@ -22,8 +22,6 @@ function renderBox() {
 }
 
 describe('Checkbox', () => {
-    afterEach(cleanup);
-
     it('is named by its label and ticked by a click anywhere on the card', () => {
         const on = renderBox();
         const box = screen.getByRole<HTMLInputElement>('checkbox', {

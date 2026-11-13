@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('runtimeConfig', () => {
     afterEach(() => {
-        vi.unstubAllGlobals();
         vi.resetModules();
     });
 

@@ -1,16 +1,11 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { fireEvent, screen } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import ApiClientsPage from './ApiClientsPage';
 
 describe('ApiClientsPage', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('shows an error under the field it is about', async () => {
         fakeApi({
             ...signedIn,
@@ -83,11 +78,6 @@ describe('ApiClientsPage', () => {
 });
 
 describe('ApiClientsPage dialog', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('opens the form in a dialog and closes it with its button', async () => {
         fakeApi({
             ...signedIn,
@@ -108,11 +98,6 @@ describe('ApiClientsPage dialog', () => {
 });
 
 describe('ApiClientsPage delete', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('deletes a client only after the confirmation', async () => {
         let clients = [
             {

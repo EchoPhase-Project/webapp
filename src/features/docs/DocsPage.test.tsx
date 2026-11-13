@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, screen } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { screen } from '@solidjs/testing-library';
 import { fakeApi } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import DocsPage from './DocsPage';
@@ -9,11 +9,6 @@ import { ARTICLES, loadArticle, titleOf } from './docs';
 const PATTERN = '/docs/:slug?';
 
 describe('DocsPage', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('has every article in English, each with a title', async () => {
         for (const slug of ARTICLES) {
             const text = await loadArticle(slug, 'en');

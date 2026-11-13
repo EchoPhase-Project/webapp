@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { afterEach, describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { CsrfService } from '@shared/api/csrf';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
@@ -11,8 +11,6 @@ const firefox =
 
 describe('SessionsPage', () => {
     afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
         sessionStorage.clear();
     });
 

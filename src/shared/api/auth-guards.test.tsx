@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@solidjs/testing-library';
 import { MemoryRouter, Route, createMemoryHistory } from '@solidjs/router';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
@@ -63,11 +63,6 @@ function app(start: string) {
 }
 
 describe('requireAuth', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('sends a signed-out user to sign in, with the way back', async () => {
         fakeApi({ 'GET /api/v1/auth/me': () => json(401) });
         const history = app('/sessions?page=2');
@@ -91,11 +86,6 @@ describe('requireAuth', () => {
 });
 
 describe('SignedIn / SignedOut', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('renders only the parts for the current state', async () => {
         fakeApi(signedIn);
         app('/');

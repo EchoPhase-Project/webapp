@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import PasswordForm from './PasswordForm';
@@ -19,11 +19,6 @@ const fill = (current: string, next: string, again: string) => {
 };
 
 describe('PasswordForm', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('catches two different new passwords before asking the server', async () => {
         const api = fakeApi({});
         renderPage(() => <PasswordForm />);

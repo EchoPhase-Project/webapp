@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import RadioGroup from './RadioGroup';
 
 type Seen = 'Private' | 'Public';
@@ -26,8 +26,6 @@ function renderGroup(disabled = false) {
 }
 
 describe('RadioGroup', () => {
-    afterEach(cleanup);
-
     it('names the group by its legend and each radio by its label', () => {
         renderGroup();
         const group = screen.getByRole('group', { name: 'Who sees it' });

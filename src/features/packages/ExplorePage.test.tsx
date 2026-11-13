@@ -1,38 +1,17 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { afterEach, describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import ExplorePage from './ExplorePage';
 import { parseQuery, queryOf } from './components/PackageSearch';
-
-export const pkg = (over: Record<string, unknown> = {}) => ({
-    id: 'p1',
-    name: 'Guild tools',
-    summary: '',
-    readme: '# Guild tools\n\nLists the **guilds** of a bot.',
-    visibility: 'Public',
-    tags: ['discord-bot'],
-    latestVersion: 2,
-    installs: 7,
-    workflows: 0,
-    errorWorkflow: null,
-    source: null,
-    access: 'Read',
-    owner: { id: 'u2', userName: 'ann', name: 'Ann' },
-    stamp: 's1',
-    createdAt: '2026-10-25T10:00:00Z',
-    updatedAt: '2026-10-25T10:00:00Z',
-    ...over,
-});
+import { pkg } from './fixtures';
 
 const page = (data: unknown[], nextCursor: string | null = null) =>
     json(200, { data, nextCursor, hasMore: nextCursor !== null });
 
 describe('ExplorePage', () => {
     afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
         sessionStorage.clear();
     });
 

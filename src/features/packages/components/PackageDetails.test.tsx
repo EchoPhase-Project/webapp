@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { afterEach, describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import { pkg } from '@features/packages/ExplorePage.test';
+import { pkg } from '@features/packages/fixtures';
 import PackageDetails from './PackageDetails';
 import { defaultChoice } from './InstallModal';
 
@@ -55,8 +55,6 @@ const routes = (over: Record<string, () => Response> = {}) => ({
 
 describe('PackageDetails', () => {
     afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
         sessionStorage.clear();
     });
 

@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { pageSection } from '@shared/nav/page-section';
 import { renderPage } from '@shared/testing/render-page';
-import { pkg } from '@features/packages/ExplorePage.test';
-import { workflow } from '@features/packages/PackagesPage.test';
+import { pkg, workflow } from '@features/packages/fixtures';
 import WorkflowDetails from './WorkflowDetails';
 
 const run = (over: Record<string, unknown> = {}) => ({
@@ -59,11 +58,6 @@ const routes = (
 });
 
 describe('WorkflowDetails', () => {
-    afterEach(() => {
-        cleanup();
-        vi.unstubAllGlobals();
-    });
-
     it('shows what it is: its blocks only; its webhooks and schedules have tabs', async () => {
         fakeApi(routes());
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);

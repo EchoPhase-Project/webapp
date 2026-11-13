@@ -1,12 +1,10 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library';
+import { fireEvent, render, screen } from '@solidjs/testing-library';
 import Switch from './Switch';
 
 describe('Switch', () => {
-    afterEach(cleanup);
-
     it('follows its owner: on when the owner says so, back when it does not', () => {
         const [on, setOn] = createSignal(false);
         let accept = true;

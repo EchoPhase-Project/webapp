@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@solidjs/testing-library';
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import Field from './Field';
 
@@ -9,8 +9,6 @@ const Icon = (props: { class?: string }) => (
 );
 
 describe('Field', () => {
-    afterEach(cleanup);
-
     it('labels the input, shows the hint as placeholder, and the icon', () => {
         render(() => (
             <I18nProvider>

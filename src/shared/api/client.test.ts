@@ -22,7 +22,6 @@ describe('api client', () => {
     });
 
     afterEach(() => {
-        vi.unstubAllGlobals();
         fetch.mockReset();
     });
 
