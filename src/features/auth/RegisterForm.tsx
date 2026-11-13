@@ -124,13 +124,9 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
 
             <p class="auth-switch">
                 {t('signup.switch_question', 'Already have an account?')}{' '}
-                <button
-                    type="button"
-                    class="link-button"
-                    onClick={() => props.onSwitch()}
-                >
+                <Button variant="link" onClick={() => props.onSwitch()}>
                     {t('signup.switch', 'Log in')}
-                </button>
+                </Button>
             </p>
         </form>
     );

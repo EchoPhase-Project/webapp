@@ -93,13 +93,9 @@ export default function LoginForm(props: { onSwitch: () => void }) {
 
             <p class="auth-switch">
                 {t('login.switch_question', 'No account yet?')}{' '}
-                <button
-                    type="button"
-                    class="link-button"
-                    onClick={() => props.onSwitch()}
-                >
+                <Button variant="link" onClick={() => props.onSwitch()}>
                     {t('login.switch', 'Sign up')}
-                </button>
+                </Button>
             </p>
         </form>
     );

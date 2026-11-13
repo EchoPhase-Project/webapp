@@ -96,19 +96,23 @@
   color: var(--text-muted);
 }
 
-.footer-link {
-  padding: 0;
-  border: none;
-  background: none;
-  font: inherit;
+.footer-link,
+.btn.btn-link.footer-link {
   font-weight: 500;
   text-align: left;
   color: var(--text);
   text-decoration: none;
-  cursor: pointer;
 
-  &:hover {
+  // The link variant's own colours on focus: the footer's instead.
+  &:active,
+  &:focus {
+    color: var(--text);
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
     color: var(--text-hover);
+    text-decoration: none;
   }
 }
 

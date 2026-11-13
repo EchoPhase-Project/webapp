@@ -470,6 +470,39 @@ a.btn {
   }
 }
 
+// An action inside a sentence (Sign up, Cookie settings), drawn as a link:
+// none of the button's box, case or size; the text around it sets the font.
+.btn.btn-link {
+  display: inline;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-align: inherit;
+  text-transform: none;
+  white-space: normal;
+  vertical-align: baseline;
+  line-height: inherit;
+  color: var(--link);
+  background: none;
+
+  &:active,
+  &:focus {
+    color: var(--link);
+    background: none;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    color: var(--link-hover);
+    background: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 // Out of sight but read by screen readers (labels shown as placeholders),
 // or out of sight and inert (the file input behind a button).
 .visually-hidden {

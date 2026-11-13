@@ -6,6 +6,7 @@ import { useAuth } from '@shared/api/auth-provider';
 import { outage } from '@shared/api/outage-watch';
 import { setSettingsOpen } from '@shared/lib/consent';
 import BrandMark from '@shared/ui/BrandMark';
+import Button from '@shared/ui/Button';
 import './footer.scss';
 
 const Org = 'https://github.com/EchoPhase-Project';
@@ -28,13 +29,13 @@ function FooterLink(props: { item: Item }): JSX.Element {
         >
             <Match when={props.item.onClick}>
                 {(onClick) => (
-                    <button
-                        type="button"
+                    <Button
+                        variant="link"
                         class="footer-link"
                         onClick={() => onClick()()}
                     >
                         {props.item.text}
-                    </button>
+                    </Button>
                 )}
             </Match>
             <Match when={props.item.external}>

@@ -7,7 +7,9 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
      * removes something and turns red on hover (delete, revoke);
      * ghost-danger: a quiet button that leads to removing something;
      * danger: the confirmed destructive action itself; danger-outline: a
-     * button that leads to one (it asks first), red but not loud.
+     * button that leads to one (it asks first), red but not loud; link: an
+     * action inside a sentence, drawn as a link (a move to another page is
+     * an <A>, not this).
      */
     variant?:
         | 'primary'
@@ -16,7 +18,8 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
         | 'icon-danger'
         | 'ghost-danger'
         | 'danger'
-        | 'danger-outline';
+        | 'danger-outline'
+        | 'link';
     /** Working: disabled, and announced as busy. */
     busy?: boolean;
 };

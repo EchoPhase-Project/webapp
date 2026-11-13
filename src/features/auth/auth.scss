@@ -58,22 +58,6 @@
   line-height: 1.5;
 }
 
-.link-button {
-  padding: 0;
-  border: none;
-  background: none;
-  font: inherit;
-  font-weight: 600;
-  color: var(--link);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--link-hover);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .auth-card {
     transition: none;
