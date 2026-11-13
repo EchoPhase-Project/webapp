@@ -239,40 +239,6 @@ main {
   }
 }
 
-select {
-  appearance: none;
-  border: 0;
-  outline: 0;
-  font: inherit;
-  font-size: 0.85em;
-  padding: 0.75em 4em 0.75em 0.75em;
-  background:
-    url('../../static/assets/svg/arrow.svg') no-repeat right 0.8em center /
-      1.4em,
-    linear-gradient(
-      to left,
-      color-mix(in srgb, var(--text) 30%, transparent) 3em,
-      color-mix(in srgb, var(--text) 20%, transparent) 3em
-    );
-  color: var(--text);
-  border-radius: 1em;
-  box-shadow: 0 0 1em 0 color-mix(in srgb, var(--shadow) 20%, transparent);
-  cursor: pointer;
-
-  &::-ms-expand {
-    display: none;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  option {
-    color: inherit;
-    background-color: color-mix(in srgb, var(--bg) 80%, transparent);
-  }
-}
-
 header {
   position: relative;
   padding: 12px;

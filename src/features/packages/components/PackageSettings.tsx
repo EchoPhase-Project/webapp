@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, Show } from 'solid-js';
+import { createEffect, createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
@@ -6,7 +6,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
-import FieldError from '@shared/ui/FieldError';
+import Select from '@shared/ui/Select';
 import { deletePackage, inputOf, updatePackage } from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
 import PackageShares from './PackageShares';
@@ -138,24 +138,24 @@ export default function PackageSettings(props: {
                 }
             >
                 <ErrorSummary errors={errors()} inputId={() => ERROR_FIELD} />
-                <label class="visually-hidden" for={ERROR_FIELD}>
-                    {t('settings.errors', 'When a run fails')}
-                </label>
-                <select
+                <Select
                     id={ERROR_FIELD}
-                    class="package-select"
+                    label={t('settings.errors', 'When a run fails')}
                     disabled={busy()}
                     value={errorWorkflow()}
-                    onChange={(e) => setErrorWorkflow(e.currentTarget.value)}
-                >
-                    <option value="">
-                        {t('settings.no_error_workflow', 'None')}
-                    </option>
-                    <For each={props.workflows}>
-                        {(w) => <option value={w.key}>{w.name}</option>}
-                    </For>
-                </select>
-                <FieldError for={ERROR_FIELD} errors={errors().errorWorkflow} />
+                    onChange={setErrorWorkflow}
+                    options={[
+                        {
+                            value: '',
+                            label: t('settings.no_error_workflow', 'None'),
+                        },
+                        ...props.workflows.map((w) => ({
+                            value: w.key,
+                            label: w.name,
+                        })),
+                    ]}
+                    errors={errors().errorWorkflow}
+                />
             </SettingsCard>
 
             <SettingsCard

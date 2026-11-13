@@ -300,26 +300,6 @@
   font-size: 0.8rem;
 }
 
-.package-connection {
-  display: grid;
-  gap: 4px;
-}
-
-.package-select {
-  padding: 8px 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  background: var(--surface-raised);
-  font: inherit;
-  color: var(--text);
-
-  &:focus {
-    outline: none;
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
-  }
-}
-
 .package-notice {
   margin: 0;
   padding: 10px 12px;

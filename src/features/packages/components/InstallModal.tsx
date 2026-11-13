@@ -9,6 +9,7 @@ import type {
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import Select from '@shared/ui/Select';
 import Modal from '@shared/ui/Modal';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { installPackage, myConnections } from '@features/packages/api';
@@ -138,48 +139,46 @@ function InstallForm(props: {
                     </legend>
                     <For each={props.content.connections}>
                         {(needed) => (
-                            <div class="package-connection">
-                                <label for={inputId(needed.name)}>
-                                    <strong>{needed.name}</strong>
-                                    <Show when={needed.provider}>
-                                        {(provider) => (
-                                            <span class="muted">
-                                                {' '}
-                                                · {provider()}
-                                            </span>
-                                        )}
-                                    </Show>
-                                </label>
-                                <select
-                                    id={inputId(needed.name)}
-                                    class="package-select"
-                                    disabled={busy() || mine.loading}
-                                    value={choiceOf(needed)}
-                                    onChange={(e) =>
-                                        setChosen((c) => ({
-                                            ...c,
-                                            [needed.name]:
-                                                e.currentTarget.value,
-                                        }))
-                                    }
-                                >
-                                    <option value="">
-                                        {t(
+                            <Select
+                                id={inputId(needed.name)}
+                                showLabel
+                                label={
+                                    <>
+                                        <strong>{needed.name}</strong>
+                                        <Show when={needed.provider}>
+                                            {(provider) => (
+                                                <span class="muted">
+                                                    {' '}
+                                                    · {provider()}
+                                                </span>
+                                            )}
+                                        </Show>
+                                    </>
+                                }
+                                disabled={busy() || mine.loading}
+                                value={choiceOf(needed)}
+                                onChange={(value) =>
+                                    setChosen((c) => ({
+                                        ...c,
+                                        [needed.name]: value,
+                                    }))
+                                }
+                                options={[
+                                    {
+                                        value: '',
+                                        label: t(
                                             'install.later',
                                             'None yet: set it up later'
-                                        )}
-                                    </option>
-                                    <For
-                                        each={candidates(needed, mine() ?? [])}
-                                    >
-                                        {(c) => (
-                                            <option value={c.name}>
-                                                {c.name} ({c.provider})
-                                            </option>
-                                        )}
-                                    </For>
-                                </select>
-                            </div>
+                                        ),
+                                    },
+                                    ...candidates(needed, mine() ?? []).map(
+                                        (c) => ({
+                                            value: c.name,
+                                            label: `${c.name} (${c.provider})`,
+                                        })
+                                    ),
+                                ]}
+                            />
                         )}
                     </For>
                 </fieldset>

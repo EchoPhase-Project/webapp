@@ -186,3 +186,67 @@
   gap: 6px;
   align-items: center;
 }
+
+// A Select: the native list dressed as a field. Its own chevron over it,
+// not the browser's arrow (themed, the same in every browser), and it lets
+// clicks through to the select.
+.select-box {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+
+.select-input {
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 34px 8px 10px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background-color: var(--surface-raised);
+  font: inherit;
+  color: var(--text);
+  text-overflow: ellipsis;
+  cursor: pointer;
+  @include prefixes.prefix(transition, 'border-color, box-shadow', webkit);
+  @include prefixes.prefix(
+    transition-duration,
+    var(--transition-speed),
+    webkit
+  );
+
+  &:focus {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 1px var(--focus);
+  }
+
+  &.invalid {
+    box-shadow: 0 0 0 2px var(--danger);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  // The open list in the theme's colours (Chrome and Firefox draw it so).
+  option {
+    color: var(--text);
+    background-color: var(--surface);
+  }
+}
+
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+
+  .select-input:disabled + & {
+    opacity: 0.6;
+  }
+}
