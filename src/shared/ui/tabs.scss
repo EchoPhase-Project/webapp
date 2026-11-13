@@ -1,0 +1,41 @@
+// A line of tabs (Write / Preview): quiet labels on a rule, the selected one
+// in the text colour and underlined in the accent.
+.tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+// The shown label (README) on the left, the tabs pushed to the right.
+.tabs-label {
+  margin-right: auto;
+}
+
+.tabs-list {
+  display: flex;
+  gap: 4px;
+}
+
+.tabs-tab {
+  padding: 6px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+}
+
+// A hint at the end of the line (Markdown works).
+.tabs-aside {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}

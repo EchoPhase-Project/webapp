@@ -25,29 +25,6 @@
   font-size: inherit;
 }
 
-.packages-tabs {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-}
-
-.packages-tab {
-  padding: 6px 10px;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: none;
-  font: inherit;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  cursor: pointer;
-
-  &[aria-selected='true'] {
-    color: var(--text);
-    border-bottom-color: var(--accent);
-  }
-}
-
 .packages-more {
   display: flex;
   justify-content: center;
@@ -258,10 +235,6 @@
 .package-readme {
   display: grid;
   gap: 8px;
-}
-
-.package-readme-label {
-  margin-right: auto;
 }
 
 .package-readme-preview {

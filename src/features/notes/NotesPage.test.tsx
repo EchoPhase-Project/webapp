@@ -64,7 +64,7 @@ describe('NotesPage', () => {
         fireEvent.input(screen.getByLabelText('Title (optional)'), {
             target: { value: 'Idea' },
         });
-        fireEvent.input(screen.getByLabelText('Text'), {
+        fireEvent.input(screen.getByRole('textbox', { name: 'Text' }), {
             target: { value: '# Big\n\n<b>raw</b>' },
         });
         fireEvent.click(screen.getByRole('tab', { name: 'Preview' }));

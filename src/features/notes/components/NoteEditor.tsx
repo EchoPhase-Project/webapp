@@ -8,6 +8,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import Markdown from '@shared/ui/Markdown';
 import Switch from '@shared/ui/Switch';
+import Tabs, { tabPanelProps } from '@shared/ui/Tabs';
 import { createNote, updateNote } from '@features/notes/api';
 
 const FIELDS = ['title', 'body'] as const;
@@ -109,69 +110,67 @@ export default function NoteEditor(props: {
                     onInput={(e) => setTitle(e.currentTarget.value)}
                 />
 
-                <div class="note-tabs" role="tablist">
-                    <button
-                        type="button"
-                        role="tab"
-                        aria-selected={!preview()}
-                        class="note-tab"
-                        onClick={() => setPreview(false)}
-                    >
-                        {t('editor.write', 'Write')}
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        aria-selected={preview()}
-                        class="note-tab"
-                        onClick={() => setPreview(true)}
-                    >
-                        {t('editor.preview', 'Preview')}
-                    </button>
-                    <span class="note-hint muted">
-                        {t('editor.markdown', 'Markdown works')}
-                    </span>
-                </div>
+                <Tabs
+                    id="note-text"
+                    label={t('editor.body', 'Text')}
+                    value={preview() ? 'preview' : 'write'}
+                    onChange={(tab) => setPreview(tab === 'preview')}
+                    tabs={[
+                        { value: 'write', label: t('editor.write', 'Write') },
+                        {
+                            value: 'preview',
+                            label: t('editor.preview', 'Preview'),
+                        },
+                    ]}
+                    aside={t('editor.markdown', 'Markdown works')}
+                />
 
-                <Show
-                    when={!preview()}
-                    fallback={
-                        <div class="note-preview">
-                            <Show
-                                when={body().trim()}
-                                fallback={
-                                    <p class="muted">
-                                        {t(
-                                            'editor.nothing',
-                                            'Nothing to preview yet'
-                                        )}
-                                    </p>
-                                }
-                            >
-                                <Markdown text={body()} />
-                            </Show>
-                        </div>
-                    }
+                <div
+                    {...tabPanelProps(
+                        'note-text',
+                        preview() ? 'preview' : 'write'
+                    )}
                 >
-                    <label class="visually-hidden" for={inputId('body')}>
-                        {t('editor.body', 'Text')}
-                    </label>
-                    <textarea
-                        id={inputId('body')}
-                        name="body"
-                        class="note-body-input"
-                        classList={{ invalid: !!errors().body?.length }}
-                        placeholder={t(
-                            'editor.placeholder',
-                            'Write in Markdown: # heading, **bold**, - list, [link](https://…)'
-                        )}
-                        rows={12}
-                        maxLength={100000}
-                        disabled={busy()}
-                        value={body()}
-                        onInput={(e) => setBody(e.currentTarget.value)}
-                    />
-                </Show>
+                    <Show
+                        when={!preview()}
+                        fallback={
+                            <div class="note-preview">
+                                <Show
+                                    when={body().trim()}
+                                    fallback={
+                                        <p class="muted">
+                                            {t(
+                                                'editor.nothing',
+                                                'Nothing to preview yet'
+                                            )}
+                                        </p>
+                                    }
+                                >
+                                    <Markdown text={body()} />
+                                </Show>
+                            </div>
+                        }
+                    >
+                        <label class="visually-hidden" for={inputId('body')}>
+                            {t('editor.body', 'Text')}
+                        </label>
+                        <textarea
+                            id={inputId('body')}
+                            name="body"
+                            class="note-body-input"
+                            classList={{ invalid: !!errors().body?.length }}
+                            placeholder={t(
+                                'editor.placeholder',
+                                'Write in Markdown: # heading, **bold**, - list, [link](https://…)'
+                            )}
+                            rows={12}
+                            maxLength={100000}
+                            disabled={busy()}
+                            value={body()}
+                            onInput={(e) => setBody(e.currentTarget.value)}
+                        />
+                    </Show>
+                </div>
 
                 <Show when={isOwner()}>
                     <Switch

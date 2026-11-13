@@ -77,34 +77,6 @@
   margin: 0;
 }
 
-.note-tabs {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-}
-
-.note-tab {
-  padding: 6px 10px;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: none;
-  font: inherit;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  cursor: pointer;
-
-  &[aria-selected='true'] {
-    color: var(--text);
-    border-bottom-color: var(--accent);
-  }
-}
-
-.note-hint {
-  margin-left: auto;
-  font-size: 0.78rem;
-}
-
 .note-body-input {
   width: 100%;
   box-sizing: border-box;

@@ -8,6 +8,7 @@ import Field from '@shared/ui/Field';
 import FieldError from '@shared/ui/FieldError';
 import Markdown from '@shared/ui/Markdown';
 import Modal from '@shared/ui/Modal';
+import Tabs, { tabPanelProps } from '@shared/ui/Tabs';
 import { createPackage, inputOf, updatePackage } from '@features/packages/api';
 
 const FIELDS = ['name', 'summary', 'readme'] as const;
@@ -126,68 +127,66 @@ function PackageForm(props: {
             />
 
             <div class="package-readme">
-                <div class="packages-tabs" role="tablist">
-                    <span class="field-label package-readme-label">
-                        {t('editor.readme', 'README')}
-                    </span>
-                    <button
-                        type="button"
-                        role="tab"
-                        class="packages-tab"
-                        aria-selected={!preview()}
-                        onClick={() => setPreview(false)}
-                    >
-                        {t('editor.write', 'Write')}
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        class="packages-tab"
-                        aria-selected={preview()}
-                        onClick={() => setPreview(true)}
-                    >
-                        {t('editor.preview', 'Preview')}
-                    </button>
-                </div>
-                <Show
-                    when={!preview()}
-                    fallback={
-                        <div class="package-readme-preview">
-                            <Show
-                                when={readme().trim()}
-                                fallback={
-                                    <p class="muted">
-                                        {t(
-                                            'editor.nothing',
-                                            'Nothing to preview yet'
-                                        )}
-                                    </p>
-                                }
-                            >
-                                <Markdown text={readme()} />
-                            </Show>
-                        </div>
-                    }
+                <Tabs
+                    id="package-readme"
+                    label={t('editor.readme', 'README')}
+                    showLabel
+                    value={preview() ? 'preview' : 'write'}
+                    onChange={(tab) => setPreview(tab === 'preview')}
+                    tabs={[
+                        { value: 'write', label: t('editor.write', 'Write') },
+                        {
+                            value: 'preview',
+                            label: t('editor.preview', 'Preview'),
+                        },
+                    ]}
+                />
+                <div
+                    {...tabPanelProps(
+                        'package-readme',
+                        preview() ? 'preview' : 'write'
+                    )}
                 >
-                    <label class="visually-hidden" for={inputId('readme')}>
-                        {t('editor.readme', 'README')}
-                    </label>
-                    <textarea
-                        id={inputId('readme')}
-                        name="readme"
-                        class="package-textarea"
-                        classList={{ invalid: !!errors().readme?.length }}
-                        placeholder={t(
-                            'editor.readme_placeholder',
-                            'What it does, what it needs (connections, settings), how to start it. Markdown works.'
-                        )}
-                        rows={10}
-                        maxLength={100000}
-                        disabled={busy()}
-                        value={readme()}
-                        onInput={(e) => setReadme(e.currentTarget.value)}
-                    />
-                </Show>
+                    <Show
+                        when={!preview()}
+                        fallback={
+                            <div class="package-readme-preview">
+                                <Show
+                                    when={readme().trim()}
+                                    fallback={
+                                        <p class="muted">
+                                            {t(
+                                                'editor.nothing',
+                                                'Nothing to preview yet'
+                                            )}
+                                        </p>
+                                    }
+                                >
+                                    <Markdown text={readme()} />
+                                </Show>
+                            </div>
+                        }
+                    >
+                        <label class="visually-hidden" for={inputId('readme')}>
+                            {t('editor.readme', 'README')}
+                        </label>
+                        <textarea
+                            id={inputId('readme')}
+                            name="readme"
+                            class="package-textarea"
+                            classList={{ invalid: !!errors().readme?.length }}
+                            placeholder={t(
+                                'editor.readme_placeholder',
+                                'What it does, what it needs (connections, settings), how to start it. Markdown works.'
+                            )}
+                            rows={10}
+                            maxLength={100000}
+                            disabled={busy()}
+                            value={readme()}
+                            onInput={(e) => setReadme(e.currentTarget.value)}
+                        />
+                    </Show>
+                </div>
                 <FieldError for={inputId('readme')} errors={errors().readme} />
             </div>
 
