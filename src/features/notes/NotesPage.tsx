@@ -12,6 +12,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createDebounced } from '@shared/lib/debounced';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Field from '@shared/ui/Field';
@@ -36,11 +37,10 @@ export default function NotesPage() {
     const [query, setQuery] = createSignal('');
     // The search waits for a pause in typing.
     const [search, setSearch] = createSignal('');
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    const debounce = createDebounced(250);
     const onSearch = (value: string) => {
         setQuery(value);
-        clearTimeout(timer);
-        timer = setTimeout(() => setSearch(value.trim()), 250);
+        debounce(() => setSearch(value.trim()));
     };
 
     const [notes, { refetch, mutate }] = createResource(

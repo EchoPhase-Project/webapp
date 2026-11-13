@@ -4,6 +4,7 @@ import { IconBell, IconX } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import type { AppNotification } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
+import { createDismiss } from '@shared/lib/dismiss';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import HeaderButton from '@shared/ui/HeaderButton';
@@ -70,18 +71,11 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
     onCleanup(props.feed.subscribe('notification.created', onCreated));
 
     // Closes on a click elsewhere and on Escape.
-    const onDocClick = (e: MouseEvent) => {
-        if (open() && root && !root.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && open()) setOpen(false);
-    };
-    document.addEventListener('click', onDocClick);
-    document.addEventListener('keydown', onKey);
-    onCleanup(() => {
-        document.removeEventListener('click', onDocClick);
-        document.removeEventListener('keydown', onKey);
-    });
+    createDismiss(
+        () => root,
+        open,
+        () => setOpen(false)
+    );
 
     function openItem(n: AppNotification) {
         if (!n.read) {

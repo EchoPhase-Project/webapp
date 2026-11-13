@@ -3,6 +3,7 @@ import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createDebounced } from '@shared/lib/debounced';
 import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
@@ -30,18 +31,19 @@ export default function ExplorePage() {
     const [query, setQuery] = createSignal(queryOf(params.tag ?? '', ''));
     // The words, once typing pauses.
     const [search, setSearch] = createSignal('');
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    const debounce = createDebounced(250);
     const onSearch = (value: string, now = false) => {
         setQuery(value);
-        clearTimeout(timer);
         const apply = () => {
             const parsed = parseQuery(value);
             setSearch(parsed.words);
             if (parsed.tag !== tag())
                 setParams({ tag: parsed.tag || undefined });
         };
-        if (now) apply();
-        else timer = setTimeout(apply, 250);
+        if (now) {
+            debounce.cancel();
+            apply();
+        } else debounce(apply);
     };
     // A tag picked on a card goes into the line, with the words kept.
     const pickTag = (picked: string) =>

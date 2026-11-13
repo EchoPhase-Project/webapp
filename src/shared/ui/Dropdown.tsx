@@ -1,4 +1,5 @@
-import { createSignal, onCleanup, For } from 'solid-js';
+import { createEffect, createSignal, onCleanup, For } from 'solid-js';
+import { createDismiss } from '@shared/lib/dismiss';
 import './dropdown.scss';
 
 type DropdownOption<T> = {
@@ -77,42 +78,40 @@ export function Dropdown<T>(props: DropdownProps<T>) {
         setDropUp(triggerRect.bottom + menuHeight > window.innerHeight);
     };
 
-    // Used for both click and focusout.
-    const handleClickOutside = (event: Event) => {
-        if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
-            setIsOpen(false);
-            setSearchTerm('');
-            document.removeEventListener('click', handleClickOutside);
-            document.removeEventListener('focusout', handleClickOutside);
+    const close = () => {
+        setIsOpen(false);
+        setSearchTerm('');
+    };
+
+    // A click elsewhere and Escape close it.
+    createDismiss(() => dropdownRef, isOpen, close);
+
+    // Focus that leaves an element outside it closes it as well.
+    const handleFocusOut = (event: Event) => {
+        if (dropdownRef && !dropdownRef.contains(event.target as Node)) close();
+    };
+
+    // While open: typing filters the list; a scroll may flip it up or down.
+    createEffect(() => {
+        if (!isOpen()) return;
+        document.addEventListener('focusout', handleFocusOut);
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('scroll', calculateDropUp, true);
+        onCleanup(() => {
+            document.removeEventListener('focusout', handleFocusOut);
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('scroll', calculateDropUp, true);
-        }
-    };
+        });
+    });
 
     const toggleDropdown = () => {
-        const newState = !isOpen();
-        setIsOpen(newState);
-        if (newState) {
-            requestAnimationFrame(calculateDropUp);
-            document.addEventListener('click', handleClickOutside);
-            document.addEventListener('focusout', handleClickOutside);
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('scroll', calculateDropUp, true);
-        } else {
-            setSearchTerm('');
-            document.removeEventListener('click', handleClickOutside);
-            document.removeEventListener('focusout', handleClickOutside);
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('scroll', calculateDropUp, true);
+        if (isOpen()) {
+            close();
+            return;
         }
+        setIsOpen(true);
+        requestAnimationFrame(calculateDropUp);
     };
-
-    onCleanup(() => {
-        document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('focusout', handleClickOutside);
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('scroll', calculateDropUp, true);
-    });
 
     const selectedOption = () =>
         props.options.find((o) => o.value === props.selectedValue);
@@ -125,10 +124,6 @@ export function Dropdown<T>(props: DropdownProps<T>) {
             e.preventDefault();
         } else if (e.key === 'Backspace') {
             setSearchTerm((prev) => prev.slice(0, -1));
-            e.preventDefault();
-        } else if (e.key === 'Escape') {
-            setIsOpen(false);
-            setSearchTerm('');
             e.preventDefault();
         }
     };
@@ -248,15 +243,13 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     props.onChange(option.value);
-                                    setIsOpen(false);
-                                    setSearchTerm('');
+                                    close();
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault();
                                         props.onChange(option.value);
-                                        setIsOpen(false);
-                                        setSearchTerm('');
+                                        close();
                                     }
                                 }}
                             >

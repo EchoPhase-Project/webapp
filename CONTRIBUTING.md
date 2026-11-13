@@ -81,6 +81,14 @@ stylesheet, `<feature>.scss`.
   `@shared/meta/page-meta`: `usePageMeta(() => ({ title, description }))`.
   Do not add " · EchoPhase" to the title. `usePageMeta` adds it.
 - A page starts with `PageHeader`.
+- Use the helpers in `src/shared/lib` before you write the same logic again:
+    - `createDebounced(ms)`: a search that waits for a pause in typing.
+    - `createDismiss(ref, isOpen, close)`: a popup that closes on a click
+      outside and on Escape.
+    - `createClipboard()`: a copy button with a "Copied" state
+      (`ui.copied`).
+    - `createChangeSignal()`: a count that makes open lists fetch again
+      after a change in a different part of the app.
 - Put the content of a page in an element with the `page-stack` class
   (`global.scss`). If a page needs more styles, add a feature class next to
   it. Do not write the same grid again in a feature stylesheet.

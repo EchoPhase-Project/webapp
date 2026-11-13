@@ -1,5 +1,5 @@
-import { createSignal } from 'solid-js';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createClipboard } from '@shared/lib/clipboard';
 import Button from '@shared/ui/Button';
 import Card from '@shared/ui/Card';
 
@@ -9,20 +9,16 @@ export default function SecretNotice(props: {
     onDismiss: () => void;
 }) {
     const t = useLocalizer('api-clients');
-    const [copied, setCopied] = createSignal(false);
+    const clipboard = createClipboard();
     let code: HTMLElement | undefined;
 
     async function copy() {
-        try {
-            await navigator.clipboard.writeText(props.secret);
-            setCopied(true);
-        } catch {
-            // No clipboard (insecure context, refused): select it to copy by hand.
-            const range = document.createRange();
-            if (code) range.selectNodeContents(code);
-            getSelection()?.removeAllRanges();
-            getSelection()?.addRange(range);
-        }
+        if (await clipboard.copy(props.secret)) return;
+        // No clipboard (insecure context, refused): select it to copy by hand.
+        const range = document.createRange();
+        if (code) range.selectNodeContents(code);
+        getSelection()?.removeAllRanges();
+        getSelection()?.addRange(range);
     }
 
     return (
@@ -31,7 +27,9 @@ export default function SecretNotice(props: {
             <code ref={code}>{props.secret}</code>
             <div class="secret-actions">
                 <Button onClick={() => void copy()}>
-                    {copied() ? t('ui.copied', 'Copied') : t('copy', 'Copy')}
+                    {clipboard.copied()
+                        ? t('ui.copied', 'Copied')
+                        : t('copy', 'Copy')}
                 </Button>
                 <Button variant="ghost" onClick={() => props.onDismiss()}>
                     {t('ui.done', 'Done')}

@@ -9,6 +9,7 @@ import {
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import { createClipboard } from '@shared/lib/clipboard';
 import Button from '@shared/ui/Button';
 import Checkbox from '@shared/ui/Checkbox';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
@@ -51,7 +52,7 @@ export default function WebhookTable(props: {
 }) {
     const t = useLocalizer('workflows');
     const [shown, setShown] = createSignal<number | null>(null);
-    const [copied, setCopied] = createSignal<string | null>(null);
+    const { copied, copy } = createClipboard();
     const [editing, setEditing] = createSignal<Webhook | null>(null);
     const [deleting, setDeleting] = createSignal<Webhook | null>(null);
     const { busy, errors, run } = createSubmit();
@@ -62,15 +63,6 @@ export default function WebhookTable(props: {
         return typeof value === 'string' ? value : '';
     };
     const respondText = (respond: Respond) => respondLabel(t, respond);
-
-    async function copy(text: string, what: string) {
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopied(what);
-        } catch {
-            // No clipboard (insecure context): nothing to do.
-        }
-    }
 
     function save(program: Workflow['program']) {
         return run(

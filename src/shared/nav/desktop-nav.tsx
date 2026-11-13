@@ -11,6 +11,7 @@ import {
 import { Dynamic } from 'solid-js/web';
 import { useLocation } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
+import { createDismiss } from '@shared/lib/dismiss';
 import Avatar from '@shared/ui/Avatar';
 import type { NavItem, NavModel, NavSection } from './nav-link';
 import NavScroll from './nav-scroll';
@@ -154,27 +155,16 @@ export function DesktopNav(props: { nav: NavModel }) {
     const toggle = (key: string) =>
         setOpen((current) => (current === key ? null : key));
 
-    const onDocumentClick = (e: MouseEvent) => {
-        if (nav && !nav.contains(e.target as Node)) close();
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') close();
-    };
+    createDismiss(
+        () => nav,
+        () => open() !== null,
+        close
+    );
+    // A resize moves the rail: the open list closes too.
     createEffect(() => {
-        if (open()) {
-            document.addEventListener('click', onDocumentClick);
-            document.addEventListener('keydown', onKeyDown);
-            window.addEventListener('resize', close);
-        } else {
-            document.removeEventListener('click', onDocumentClick);
-            document.removeEventListener('keydown', onKeyDown);
-            window.removeEventListener('resize', close);
-        }
-    });
-    onCleanup(() => {
-        document.removeEventListener('click', onDocumentClick);
-        document.removeEventListener('keydown', onKeyDown);
-        window.removeEventListener('resize', close);
+        if (!open()) return;
+        window.addEventListener('resize', close);
+        onCleanup(() => window.removeEventListener('resize', close));
     });
 
     const ACCOUNT = '\u0000account';
