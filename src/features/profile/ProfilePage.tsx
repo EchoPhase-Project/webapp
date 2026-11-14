@@ -1,8 +1,6 @@
 import { Show } from 'solid-js';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useQueryClient } from '@tanstack/solid-query';
-import { authKeys, useAuth } from '@shared/api/auth';
-import type { ApiResult } from '@shared/api/client';
+import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
@@ -11,7 +9,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import PageHeader from '@shared/ui/PageHeader';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { removeAvatar, setAvatar } from './api';
+import { removeAvatarMutation, setAvatarMutation } from './api';
 import PasswordForm from './components/PasswordForm';
 import ProfileForm from './components/ProfileForm';
 import './profile.scss';
@@ -22,7 +20,6 @@ const PICTURES = 'image/png,image/jpeg,image/webp';
 /** The signed-in user's profile: picture, name, username, time zone and password. */
 export default function ProfilePage() {
     const { user } = useAuth();
-    const queryClient = useQueryClient();
     const t = useLocalizer('profile');
 
     usePageMeta(() => ({
@@ -33,12 +30,9 @@ export default function ProfilePage() {
         ),
     }));
 
-    const { busy, errors, run } = createSubmit();
-
-    const changing = (call: () => Promise<ApiResult<unknown>>) =>
-        run(call, () =>
-            queryClient.invalidateQueries({ queryKey: authKeys.me() })
-        );
+    const { busy, errors, mutation } = createSubmit();
+    const settingAvatar = mutation(setAvatarMutation);
+    const removingAvatar = mutation(removeAvatarMutation);
 
     return (
         <div class="page-stack profile-container">
@@ -76,9 +70,7 @@ export default function ProfilePage() {
                                             accept={PICTURES}
                                             busy={busy()}
                                             onPick={(file) =>
-                                                void changing(() =>
-                                                    setAvatar(file)
-                                                )
+                                                void settingAvatar.run(file)
                                             }
                                         >
                                             {me().avatarFileId
@@ -90,7 +82,7 @@ export default function ProfilePage() {
                                                 variant="ghost"
                                                 disabled={busy()}
                                                 onClick={() =>
-                                                    void changing(removeAvatar)
+                                                    void removingAvatar.run()
                                                 }
                                             >
                                                 {t('picture.remove', 'Remove')}
