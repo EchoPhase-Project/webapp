@@ -48,6 +48,23 @@ const ownControls = [
         message: 'Use TextArea (or MarkdownEditor) from @shared/ui.',
     },
 ];
+// Only the API layer calls the API: a feature's api.ts or api/<entity>.ts
+// describes its queries and mutations, components use those descriptions.
+// Then each key, cache update and staleTime has one place.
+const apiLayer = {
+    regex: '^(@shared/api/|\\./)client$',
+    importNames: ['api', 'request'],
+    allowTypeImports: true,
+    message:
+        "Call the API in the feature's api.ts (or api/<entity>.ts) and use its …Query and …Mutation descriptions here.",
+};
+// What a user sees lives in the session's QueryClient or under the
+// SessionProvider: a module-level signal or store would outlive the session
+// and show one user's data to the next.
+const moduleState = ['createSignal', 'createStore'].map((name) => ({
+    selector: `:matches(Program, Program > ExportNamedDeclaration) > VariableDeclaration > VariableDeclarator > CallExpression.init[callee.name="${name}"]`,
+    message: `No ${name} at the top of a feature module: keep user state in Query, in a component, or in sessionScoped from @shared/api/session-provider.`,
+}));
 const features = fs.readdirSync('src/features');
 
 export default defineConfig([
@@ -88,7 +105,32 @@ export default defineConfig([
                 { patterns: [noParent, iconLibraries] },
             ],
             'no-restricted-syntax': ['error', ...ownControls],
+            '@typescript-eslint/no-restricted-imports': [
+                'error',
+                { patterns: [apiLayer] },
+            ],
         },
+    },
+
+    {
+        files: ['src/features/**'],
+        rules: {
+            'no-restricted-syntax': ['error', ...ownControls, ...moduleState],
+        },
+    },
+
+    {
+        // The API layer: the features' descriptions, the session and the
+        // user (auth.ts, session-provider.tsx), and tests that call the API
+        // as a page would.
+        files: [
+            'src/features/*/api.ts',
+            'src/features/*/api/*.ts',
+            'src/shared/api/auth.ts',
+            'src/shared/api/session-provider.tsx',
+            'src/**/*.test.{ts,tsx}',
+        ],
+        rules: { '@typescript-eslint/no-restricted-imports': 'off' },
     },
 
     {
