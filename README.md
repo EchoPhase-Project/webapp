@@ -74,8 +74,10 @@ feature.
 
 The API is called through `api` in `shared/api/client.ts` (openapi-fetch over
 `schema.d.ts`): paths, parameters and bodies are checked against the contract,
-the CSRF token and cookies go along, and `send()` turns an answer into
-`{ ok, data }` or `{ ok, errors }`.
+the CSRF token and cookies go along, and `request()` turns an answer into its
+data or throws an `ApiError`. Data lives in TanStack Query, one `QueryClient`
+per signed-in session: each feature describes its queries and mutations in its
+`api.ts` (or `api/<entity>.ts`), and components use only those descriptions.
 
 Tests sit next to what they test (`*.test.ts[x]`). Component tests render with
 `renderPage` and answer API calls with `fakeApi` (`shared/testing/`), in jsdom.

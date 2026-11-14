@@ -6,7 +6,7 @@ import { fakeApi, json, signedIn, user } from '@shared/testing/fake-api';
 import { renderRoutes } from '@shared/testing/render-page';
 import { logoutMutation } from './auth';
 import { authKeys } from './auth-keys';
-import { api, send } from './client';
+import { api } from './client';
 import { outage } from './outage-watch';
 import { createSubmit } from './submit';
 import { sessionClient } from './session-provider';
@@ -83,7 +83,7 @@ describe('requireAuth', () => {
         expect(await screen.findByText('secret page')).toBeTruthy();
 
         // Any API call answering 401 means the session is over.
-        await send(api.GET('/api/v1/sessions'));
+        await api.GET('/api/v1/sessions');
         expect(await screen.findByText('sign-in form')).toBeTruthy();
         expect(history.get()).toBe('/auth?next=%2Fsessions');
     });

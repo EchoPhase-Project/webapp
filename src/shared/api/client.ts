@@ -96,10 +96,6 @@ export const NetworkError: ErrorItem = {
     message: 'Network error occurred',
 };
 
-/** An answer, or what went wrong as the API's error items. */
-export type ApiResult<T> =
-    { ok: true; data: T } | { ok: false; errors: ErrorItem[] };
-
 /** The API's error body: ErrorBody[], a single ErrorBody, or anything else. */
 export function errorsOf(body: unknown, response: Response): ErrorItem[] {
     if (Array.isArray(body)) return body as ErrorItem[];
@@ -158,35 +154,6 @@ export async function request<T>(
     if (!response.ok)
         throw new ApiError(errorsOf(error, response), response.status);
     return data as T;
-}
-
-/**
- * Awaits a call of `api` as an ApiResult: no exceptions to catch, a
- * dropped connection is a network_error. An aborted request still throws.
- * On its way out: new code uses request().
- */
-export async function send<T>(
-    call: Promise<{ data?: T; error?: unknown; response: Response }>
-): Promise<ApiResult<T>> {
-    try {
-        return { ok: true, data: await request(call) };
-    } catch (e) {
-        if (e instanceof ApiError) return { ok: false, errors: e.errors };
-        throw e;
-    }
-}
-
-/**
- * For the few answers the contract leaves undescribed (the server returns a
- * projection, see types.ts): the caller names their shape. Drop each use
- * once the server documents the response.
- */
-export const untyped = <T>(result: ApiResult<unknown>) =>
-    result as ApiResult<T>;
-
-/** The data of a successful answer, or `fallback` when the call failed. */
-export function dataOr<T, F>(result: ApiResult<T>, fallback: F): T | F {
-    return result.ok ? result.data : fallback;
 }
 
 /**

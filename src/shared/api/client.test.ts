@@ -4,13 +4,11 @@ import { CsrfService } from './csrf';
 import {
     api,
     ApiError,
-    dataOr,
     errorsOf,
     multipart,
     NetworkError,
     onUnauthorized,
     request,
-    send,
 } from './client';
 
 const json = (
@@ -63,30 +61,6 @@ describe('api client', () => {
             body: { userName: 'u', password: 'p' } as never,
         });
         expect(CsrfService.getToken()).toBe('fresh');
-    });
-
-    it('turns answers into results', async () => {
-        fetch.mockResolvedValueOnce(json(200, ['admin']));
-        expect(await send(api.GET('/api/v1/roles/me'))).toEqual({
-            ok: true,
-            data: ['admin'],
-        });
-
-        fetch.mockResolvedValueOnce(
-            json(400, [{ code: 'Invalid', message: 'Bad name', field: 'name' }])
-        );
-        expect(await send(api.GET('/api/v1/roles/me'))).toEqual({
-            ok: false,
-            errors: [{ code: 'Invalid', message: 'Bad name', field: 'name' }],
-        });
-    });
-
-    it('reports a dropped connection as a network error', async () => {
-        fetch.mockRejectedValue(new TypeError('Failed to fetch'));
-        expect(await send(api.GET('/api/v1/roles/me'))).toEqual({
-            ok: false,
-            errors: [NetworkError],
-        });
     });
 });
 
@@ -163,8 +137,6 @@ describe('request', () => {
         fetch.mockRejectedValue(abort);
 
         await expect(request(api.GET('/api/v1/roles/me'))).rejects.toBe(abort);
-        fetch.mockRejectedValue(abort);
-        await expect(send(api.GET('/api/v1/roles/me'))).rejects.toBe(abort);
     });
 });
 
@@ -253,13 +225,6 @@ describe('errorsOf', () => {
         expect(errorsOf('<html>proxy page</html>', res)).toEqual([
             { code: 'http_502', message: 'Bad Gateway' },
         ]);
-    });
-});
-
-describe('dataOr', () => {
-    it('is the data of a success, else the fallback', () => {
-        expect(dataOr({ ok: true, data: [1, 2] }, [])).toEqual([1, 2]);
-        expect(dataOr({ ok: false, errors: [NetworkError] }, null)).toBeNull();
     });
 });
 

@@ -8,7 +8,7 @@ import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage, renderRoutes } from '@shared/testing/render-page';
 import { requireAuth } from './auth-guards';
 import { authKeys, meQuery, updateProfileMutation, useAuth } from './auth';
-import { api, request, send } from './client';
+import { api, request } from './client';
 import { CsrfService } from './csrf';
 import {
     endSession,
@@ -164,7 +164,7 @@ describe('a client per session', () => {
         const { otherTab } = renderPage(() => <Who />);
         await waitFor(() => expect(who()).toBe('Anna'));
 
-        const annasCall = send(api.GET('/api/v1/sessions'));
+        const annasCall = api.GET('/api/v1/sessions');
         await ticks(); // the request is out (and marked with Anna's session)
         endSession();
         me = boris;
@@ -194,7 +194,7 @@ describe('a client per session', () => {
 
         // No tick between the start and the replace: the other middlewares
         // (CSRF, the 401 watch) have not run yet.
-        const annasCall = send(api.GET('/api/v1/sessions'));
+        const annasCall = api.GET('/api/v1/sessions');
         startSession(boris, '/');
         const borisSession = sessionClient();
 
@@ -232,7 +232,7 @@ describe('a client per session', () => {
         const navigate = vi.spyOn(history, 'set');
 
         await Promise.all(
-            Array.from({ length: 5 }, () => send(api.GET('/api/v1/sessions')))
+            Array.from({ length: 5 }, () => api.GET('/api/v1/sessions'))
         );
 
         expect(await screen.findByText('sign-in form')).toBeTruthy();
@@ -676,7 +676,7 @@ describe('sessionStore', () => {
         await waitFor(() => expect(who()).toBe('Anna'));
         sessionStore<string>('draft').set('kept');
 
-        await send(api.GET('/api/v1/sessions'));
+        await api.GET('/api/v1/sessions');
         await waitFor(() => expect(who()).toBe('nobody'));
         expect(localStorage.getItem('user:anna:draft')).toBe('"kept"');
         unmount();
