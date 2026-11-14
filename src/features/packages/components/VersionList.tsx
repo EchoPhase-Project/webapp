@@ -58,7 +58,7 @@ export default function VersionList(props: {
                                 <Show
                                     when={v.version === props.workflow.version}
                                 >
-                                    <span class="workflow-badge">
+                                    <span class="badge">
                                         {t('versions.current', 'current')}
                                     </span>
                                 </Show>
@@ -75,7 +75,7 @@ export default function VersionList(props: {
                                     )}
                                 </Show>
                             </span>
-                            <span class="workflow-version-actions">
+                            <span class="actions-row">
                                 <a
                                     class="btn btn-ghost"
                                     href={workflowExportUrl(

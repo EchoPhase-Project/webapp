@@ -102,11 +102,7 @@
 
 // Errors: under their field, or (about the form as a whole) at its top.
 .errorlist {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 2px;
+  @include mix.plain-list(2px);
   color: var(--danger);
   font-size: 0.82rem;
   line-height: 1.4;

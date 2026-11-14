@@ -173,6 +173,13 @@ Before you write new markup, make pages from the components in
   components use. Before you copy a rule, examine this file.
   `@include mix.input-frame` gives the border, the focus ring, and the
   invalid ring of a field.
+  `@include mix.plain-list(6px)` removes the bullets and the indent of a
+  list, and puts its items in a column.
+- `global.scss` contains classes that many pages use. `actions-row` is a
+  row of buttons, and `actions-row--end` moves it to the right. `badge` is
+  a small label, for example a version. `pill pill--ok` (or `--bad`,
+  `--busy`, `--quiet`) is a status word. Do not make a copy of these
+  classes in a feature.
 - Use the flowing-lines pattern (`.patterned`, `Card patterned`) only for
   brand areas: the sign-in card, empty states, the outage screen, the About
   page. Do not use it on tables, menus, or forms.

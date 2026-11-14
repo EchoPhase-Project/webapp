@@ -81,11 +81,7 @@
   }
 
   ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 8px;
+    @include mix.plain-list(8px);
   }
 }
 

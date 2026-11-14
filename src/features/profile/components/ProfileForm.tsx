@@ -115,7 +115,7 @@ export default function ProfileForm(props: { user: User }) {
                 }}
             />
 
-            <div class="profile-form-actions">
+            <div class="actions-row">
                 <Button type="submit" busy={busy()} disabled={!changed()}>
                     {t('ui.save', 'Save')}
                 </Button>

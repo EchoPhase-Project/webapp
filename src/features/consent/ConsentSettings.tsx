@@ -104,7 +104,7 @@ export default function ConsentSettings() {
                 </For>
             </div>
 
-            <div class="consent-actions">
+            <div class="actions-row actions-row--end">
                 <Button variant="ghost" onClick={() => save(NoConsent)}>
                     {t('reject_all', 'Reject all')}
                 </Button>

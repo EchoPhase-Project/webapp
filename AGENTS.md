@@ -98,7 +98,10 @@ and the tests are successful.
   `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".
 - Put the content of a page in an element with the `page-stack` class.
 - Before you copy a style rule, examine the mixins in
-  `shared/styles/mixins.scss` (`mix.input-frame`).
+  `shared/styles/mixins.scss` (`mix.input-frame`, `mix.plain-list`).
+- For a row of buttons, use the `actions-row` class (add
+  `actions-row--end` for the right side). For a small label, use `badge`.
+  For a status word, use `pill pill--ok` (or `--bad`, `--busy`, `--quiet`).
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens
   include the two themes. `palette.test.ts` examines the contrast.
 - Do not use hex colours in components.

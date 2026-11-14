@@ -76,7 +76,7 @@ export default function PackageWorkflowList(props: {
                                                 props.pkg.errorWorkflow
                                             }
                                         >
-                                            <span class="workflow-badge">
+                                            <span class="badge">
                                                 {t(
                                                     'package.error_badge',
                                                     'handles errors'

@@ -283,6 +283,56 @@ html {
   font-size: 0.85rem;
 }
 
+// A row of buttons (a form's or a dialog's actions), 8px apart on one line,
+// wrapping when narrow; --end puts them at the right, as a dialog's.
+.actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.actions-row--end {
+  justify-content: flex-end;
+}
+
+// A small label beside a name (a version, "main"), or a link as one.
+.badge {
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-raised);
+  font-size: 0.75rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+// A state in a word, outlined in its colour. The word says it; the colour
+// only repeats it.
+.pill {
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--ok {
+    color: var(--success);
+  }
+
+  &--bad {
+    color: var(--danger);
+  }
+
+  &--busy {
+    color: var(--accent);
+  }
+
+  &--quiet {
+    color: var(--text-muted);
+  }
+}
+
 // A state at a glance: its colour, on a tint of it.
 .status-pill {
   display: inline-block;

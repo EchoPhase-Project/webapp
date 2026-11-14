@@ -183,7 +183,7 @@ function PublishForm(props: {
                                             <>
                                                 {workflow.name}
                                                 <Show when={order() === 0}>
-                                                    <span class="package-badge">
+                                                    <span class="badge">
                                                         {t(
                                                             'editor.main',
                                                             'main'
@@ -246,7 +246,7 @@ function PublishForm(props: {
                 value={changelog()}
                 onInput={(e) => setChangelog(e.currentTarget.value)}
             />
-            <div class="package-actions">
+            <div class="actions-row actions-row--end">
                 <Button
                     type="submit"
                     busy={busy()}

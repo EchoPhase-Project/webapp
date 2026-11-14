@@ -82,7 +82,7 @@ export default function RunDialog(props: {
                     value={input()}
                     onInput={(e) => setInput(e.currentTarget.value)}
                 />
-                <div class="workflow-actions">
+                <div class="actions-row actions-row--end">
                     <Button type="submit" busy={busy()}>
                         {t('run.start', 'Run')}
                     </Button>

@@ -25,7 +25,7 @@ export default function SecretNotice(props: {
         <Card class="secret-notice" role="status">
             <p>{t('secret', 'Secret (shown once, copy it now):')}</p>
             <code ref={code}>{props.secret}</code>
-            <div class="secret-actions">
+            <div class="actions-row">
                 <Button onClick={() => void copy()}>
                     {clipboard.copied()
                         ? t('ui.copied', 'Copied')

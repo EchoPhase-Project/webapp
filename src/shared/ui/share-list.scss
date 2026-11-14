@@ -15,11 +15,7 @@
 }
 
 .share-list-items {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list(6px);
   font-size: 0.9rem;
 
   li {

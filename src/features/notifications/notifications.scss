@@ -37,9 +37,7 @@
 }
 
 .notifications-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list;
   overflow-y: auto;
 
   li {

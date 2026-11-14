@@ -137,7 +137,7 @@ export default function NoteEditor(props: {
                     />
                 </Show>
 
-                <div class="note-actions">
+                <div class="actions-row">
                     <Button type="submit" busy={busy()}>
                         {t('ui.save', 'Save')}
                     </Button>

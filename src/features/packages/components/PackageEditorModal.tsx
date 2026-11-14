@@ -130,7 +130,7 @@ function PackageForm(props: {
                 onInput={setReadme}
             />
 
-            <div class="package-actions">
+            <div class="actions-row actions-row--end">
                 <Button type="submit" busy={busy()}>
                     {props.pkg
                         ? t('ui.save', 'Save')

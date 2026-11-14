@@ -99,7 +99,7 @@ export default function PasswordForm() {
                 value={confirm()}
                 onInput={edited(setConfirm)}
             />
-            <div class="profile-form-actions">
+            <div class="actions-row">
                 <Button
                     type="submit"
                     busy={busy()}

@@ -5,7 +5,7 @@ import { statusTone } from '@features/packages/format';
 export default function RunStatus(props: { status: string }) {
     const t = useLocalizer('workflows');
     return (
-        <span class={`run-status run-status--${statusTone(props.status)}`}>
+        <span class={`pill pill--${statusTone(props.status)}`}>
             {t(`status.${props.status}`, props.status)}
         </span>
     );

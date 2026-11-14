@@ -171,7 +171,7 @@ export default function PackageDetails(props: { id: string }) {
 
                         <aside class="package-side">
                             <Show when={isOwner()}>
-                                <section class="package-side-section package-owner-actions">
+                                <section class="actions-row">
                                     <A
                                         class="btn btn-ghost"
                                         href={packagePath(p().id, 'settings')}
@@ -203,7 +203,7 @@ export default function PackageDetails(props: { id: string }) {
                                                                 {w.name}
                                                             </span>
                                                             <Show when={w.main}>
-                                                                <span class="package-badge">
+                                                                <span class="badge">
                                                                     {t(
                                                                         'editor.main',
                                                                         'main'

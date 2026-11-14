@@ -94,9 +94,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list;
 }
 
 // A tag as a capsule, as GitHub's labels: its colour (by its name) as the
@@ -168,19 +166,9 @@
   }
 }
 
-.package-owner-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .package-list,
 .package-versions {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list(6px);
   font-size: 0.9rem;
 
   li {
@@ -205,15 +193,6 @@
 .package-changelog {
   font-size: 0.85rem;
   color: var(--text-muted);
-}
-
-.package-badge {
-  padding: 0 6px;
-  border-radius: 4px;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  font-size: 0.72rem;
-  color: var(--text);
 }
 
 .package-picker,
@@ -249,12 +228,6 @@
   border-left: 3px solid var(--warning);
   background: var(--surface-raised);
   font-size: 0.9rem;
-}
-
-.package-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
 }
 
 // Who sees a package, beside its name: an outlined capsule, as GitHub's

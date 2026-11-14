@@ -42,7 +42,7 @@ export default function ConsentBanner() {
                         {t('banner.policy', 'Privacy Policy')}
                     </A>
                 </p>
-                <div class="consent-actions">
+                <div class="actions-row actions-row--end">
                     <Button
                         variant="ghost"
                         onClick={() => setSettingsOpen(true)}

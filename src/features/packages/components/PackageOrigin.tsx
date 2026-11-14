@@ -15,10 +15,7 @@ export default function PackageOrigin(props: {
         <>
             <Show when={props.pkg.source}>
                 {(source) => (
-                    <A
-                        class="workflow-badge"
-                        href={`/explore/${source().packageId}`}
-                    >
+                    <A class="badge" href={`/explore/${source().packageId}`}>
                         {t('packages.installed', 'installed, v{version}', {
                             version: source().version ?? '',
                         })}
@@ -26,7 +23,7 @@ export default function PackageOrigin(props: {
                 )}
             </Show>
             <Show when={props.pkg.latestVersion > 0}>
-                <A class="workflow-badge" href={`/explore/${props.pkg.id}`}>
+                <A class="badge" href={`/explore/${props.pkg.id}`}>
                     {t('packages.published', 'published, v{version}', {
                         version: props.pkg.latestVersion,
                     })}

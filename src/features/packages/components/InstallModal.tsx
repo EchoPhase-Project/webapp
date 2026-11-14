@@ -176,7 +176,7 @@ function InstallForm(props: {
                     </For>
                 </fieldset>
             </Show>
-            <div class="package-actions">
+            <div class="actions-row actions-row--end">
                 <Button type="submit" busy={busy()}>
                     {t('install.submit', 'Install')}
                 </Button>
@@ -213,7 +213,7 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
                     )}
                 </p>
             </Show>
-            <div class="package-actions">
+            <div class="actions-row actions-row--end">
                 <Button variant="ghost" onClick={() => props.onClose()}>
                     {t('ui.done', 'Done')}
                 </Button>

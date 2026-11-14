@@ -67,7 +67,7 @@ export default function ProfilePage() {
                                 />
                                 <div class="profile-picture-text">
                                     <ErrorSummary errors={errors()} />
-                                    <div class="profile-picture-actions">
+                                    <div class="actions-row">
                                         <FilePicker
                                             accept={PICTURES}
                                             busy={busy()}

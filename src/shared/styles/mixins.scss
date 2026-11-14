@@ -28,3 +28,16 @@
     box-shadow: 0 0 0 2px var(--danger);
   }
 }
+
+// A list without bullets or indent. With $gap, its items are a column that
+// far apart; without, the list sets its own layout (a row, a flex column).
+@mixin plain-list($gap: null) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @if $gap != null {
+    display: grid;
+    gap: $gap;
+  }
+}

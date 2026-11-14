@@ -59,7 +59,7 @@ export default function ConfirmDialog<T>(props: ItemProps<T> | OpenProps) {
             onClose={props.onCancel}
         >
             <div class="confirm-text">{body()}</div>
-            <div class="confirm-actions">
+            <div class="actions-row actions-row--end">
                 <Button
                     variant="ghost"
                     autofocus

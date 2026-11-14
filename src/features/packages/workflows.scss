@@ -4,11 +4,7 @@
 }
 
 .workflows-list {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list(10px);
 }
 
 .card.workflows-item {
@@ -39,16 +35,6 @@
   font-size: 0.8rem;
 }
 
-.workflow-badge {
-  padding: 0 6px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: var(--text);
-  background: var(--surface-raised);
-  text-decoration: none;
-}
-
 // Whether its triggers run: a row of its own, as a setting.
 .workflow-controls {
   padding: 12px 16px;
@@ -59,16 +45,6 @@
   .switch-row {
     width: 100%;
   }
-}
-
-.workflow-actions,
-.workflow-version-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.workflow-actions {
-  justify-content: flex-end;
 }
 
 .workflow-notice {
@@ -148,11 +124,7 @@
 .workflow-blocks,
 .workflow-versions,
 .workflow-runs {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  @include mix.plain-list(6px);
 }
 
 .workflow-blocks li,
@@ -252,31 +224,6 @@
   display: flex;
   justify-content: center;
   margin-top: 8px;
-}
-
-// The word says it; the colour only repeats it.
-.run-status {
-  padding: 1px 8px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid currentColor;
-
-  &--ok {
-    color: var(--success);
-  }
-
-  &--bad {
-    color: var(--danger);
-  }
-
-  &--busy {
-    color: var(--accent);
-  }
-
-  &--quiet {
-    color: var(--text-muted);
-  }
 }
 
 // A tab of a workflow's triggers: what it is and its action, then a table.
