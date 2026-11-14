@@ -5,7 +5,7 @@ import {
     type MutationOptions,
     type QueryClient,
 } from '@tanstack/solid-query';
-import { ApiError, type ApiResult } from './client';
+import { ApiError } from './client';
 import { groupErrors, type FormErrors } from './errors';
 import type { ErrorItem } from './types';
 
@@ -13,38 +13,16 @@ const NoErrors: FormErrors = {};
 
 type OnFail = (errors: ErrorItem[]) => FormErrors | void;
 
-/** Whether a call answered an ApiResult (a function on send()), not data. */
-function isApiResult(value: unknown): value is ApiResult<unknown> {
-    if (!value || typeof value !== 'object') return false;
-    const result = value as { ok?: unknown; data?: unknown; errors?: unknown };
-    const keys = Object.keys(value).length;
-    return (
-        (result.ok === true && 'data' in value && keys === 2) ||
-        (result.ok === false && Array.isArray(result.errors) && keys === 2)
-    );
-}
-
-/**
- * The data of what a transitional call answered: data as is, an ApiResult
- * unwrapped, and its failure thrown as an ApiError (the status of an
- * ApiResult is not known: 0).
- */
-async function unwrap(call: () => Promise<unknown>): Promise<unknown> {
-    const answer = await call();
-    if (!isApiResult(answer)) return answer;
-    if (answer.ok) return answer.data;
-    throw new ApiError(answer.errors, 0);
-}
-
 /**
  * A form's save, as a TanStack mutation: a busy flag while a call is out,
  * and its errors grouped by the form's `fields` (the rest under FORM).
  * Made with the component: it takes the session's QueryClient.
  *
- * A mutation description (`…Mutation` in a feature's api.ts) saves through
- * `mutation(describe)`: `run(vars, onOk)`, or `runFor(key, vars, onOk)`.
- * The description's onSuccess does the cache work; `onOk` does only the
- * form's (close, go on), after it.
+ * Every save goes through a mutation description (`…Mutation` in a
+ * feature's api.ts): `mutation(describe)` gives `run(vars, onOk)` and
+ * `runFor(key, vars, onOk)`. The description's onSuccess does the cache
+ * work; `onOk` does only the form's (close, go on), after it. `pending`
+ * keeps the form busy around work of several steps.
  *
  * A list whose rows act on their own (a switch per row) saves each row with
  * `runFor(key, …)`: `busy(key)` and `errors(key)` are that row's, so one row
@@ -53,12 +31,6 @@ async function unwrap(call: () => Promise<unknown>): Promise<unknown> {
 export function createSubmit(fields: readonly string[] = []) {
     // A context hook: here, while the component is made, never in a handler.
     const queryClient = useQueryClient();
-    // Transitional (until step 10): run(call) and runFor(key, call) of the
-    // features whose api.ts has no descriptions yet go through this one.
-    const calls = useMutation(
-        () => ({ mutationFn: unwrap }),
-        () => queryClient
-    );
     const [formBusy, setFormBusy] = createSignal(false);
     const [formErrors, setErrors] = createSignal<FormErrors>({});
     // Keyed saves: how many calls are out, and the last errors, per key.
@@ -200,68 +172,5 @@ export function createSubmit(fields: readonly string[] = []) {
         };
     }
 
-    /**
-     * Transitional (removed in step 10; new code uses `mutation`): sends
-     * `call`, busy until it and `onOk` are done. `call` answers data or an
-     * ApiResult. A failure shows its errors (or what `onFail` makes of them,
-     * when it returns something); a success clears them and hands the data
-     * to `onOk`. True on success.
-     */
-    function run<T>(
-        call: () => Promise<ApiResult<T>>,
-        onOk?: (data: T) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean>;
-    function run<T>(
-        call: () => Promise<T>,
-        onOk?: (data: T) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean>;
-    function run(
-        call: () => Promise<unknown>,
-        onOk?: (data: unknown) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean> {
-        return send(
-            pending,
-            setErrors,
-            () => calls.mutateAsync(call),
-            onOk,
-            onFail
-        );
-    }
-
-    /**
-     * Transitional, as `run`: for one key, such as a row's id. `busy(key)`
-     * while it is out, and its errors under `errors(key)`. Other keys and
-     * the form are not touched.
-     */
-    function runFor<T>(
-        key: string,
-        call: () => Promise<ApiResult<T>>,
-        onOk?: (data: T) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean>;
-    function runFor<T>(
-        key: string,
-        call: () => Promise<T>,
-        onOk?: (data: T) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean>;
-    function runFor(
-        key: string,
-        call: () => Promise<unknown>,
-        onOk?: (data: unknown) => unknown,
-        onFail?: OnFail
-    ): Promise<boolean> {
-        return send(
-            aroundKey(key),
-            showKey(key),
-            () => calls.mutateAsync(call),
-            onOk,
-            onFail
-        );
-    }
-
-    return { busy, errors, setErrors, pending, run, runFor, mutation };
+    return { busy, errors, setErrors, pending, mutation };
 }
