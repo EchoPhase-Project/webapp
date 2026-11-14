@@ -1,14 +1,19 @@
 import { createSignal } from 'solid-js';
-import type { ErrorItem } from '@shared/api/types';
+import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/TextArea';
 import { runWorkflow } from '@features/packages/api';
 
 const inputId = 'workflow-run-input';
 
-/** Runs it now, active or not, with an input: a JSON value, or nothing. */
+/**
+ * Runs it now, active or not, with an input: a JSON value, or nothing. Input
+ * that is not JSON is the field's error; what the server refuses (too many
+ * runs, a program with issues) is the dialog's, at its top.
+ */
 export default function RunDialog(props: {
     workflowId: string;
     open: boolean;
@@ -17,49 +22,38 @@ export default function RunDialog(props: {
 }) {
     const t = useLocalizer('workflows');
     const [input, setInput] = createSignal('');
-    const [error, setError] = createSignal<string | null>(null);
-    // The message as the field's error (no code: shown as it is).
-    const errors = (): ErrorItem[] | undefined => {
-        const message = error();
-        return message ? [{ code: '', message }] : undefined;
-    };
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, setErrors, run } = createSubmit();
 
-    /** Shows the message under the input and focuses it, so it is read out. */
-    function fail(message: string) {
-        setError(message);
-        document.getElementById(inputId)?.focus();
-    }
-
-    async function run(e: Event) {
+    async function start(e: Event) {
         e.preventDefault();
         let value: unknown = undefined;
         if (input().trim()) {
             try {
                 value = JSON.parse(input());
             } catch {
-                fail(
-                    t(
-                        'run.bad_json',
-                        'The input is not JSON: a value such as {"user": "ann"}, a number or "text".'
-                    )
-                );
+                // No code: the message is shown as it is. ErrorSummary moves
+                // the focus to the input, so it is read out.
+                setErrors({
+                    input: [
+                        {
+                            code: '',
+                            message: t(
+                                'run.bad_json',
+                                'The input is not JSON: a value such as {"user": "ann"}, a number or "text".'
+                            ),
+                        },
+                    ],
+                });
                 return;
             }
         }
-        setBusy(true);
-        try {
-            const result = await runWorkflow(props.workflowId, value);
-            if (!result.ok) {
-                fail(result.errors.map((x) => x.message).join(' '));
-                return;
+        await run(
+            () => runWorkflow(props.workflowId, value),
+            () => {
+                setInput('');
+                props.onStarted();
             }
-            setError(null);
-            setInput('');
-            props.onStarted();
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     return (
@@ -68,7 +62,8 @@ export default function RunDialog(props: {
             title={t('run.title', 'Run now')}
             onClose={() => props.onClose()}
         >
-            <form class="vert-form" onSubmit={(e) => void run(e)} noValidate>
+            <form class="vert-form" onSubmit={(e) => void start(e)} noValidate>
+                <ErrorSummary errors={errors()} inputId={() => inputId} />
                 <TextArea
                     id={inputId}
                     label={t(
@@ -76,7 +71,7 @@ export default function RunDialog(props: {
                         'Input (JSON, optional): what its first blocks get as input'
                     )}
                     showLabel
-                    errors={errors()}
+                    errors={errors().input}
                     rows={6}
                     spellcheck={false}
                     value={input()}

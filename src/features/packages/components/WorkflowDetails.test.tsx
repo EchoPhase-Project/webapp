@@ -227,6 +227,35 @@ describe('WorkflowDetails', () => {
         ).toEqual({ input: { user: 'ann' } });
     });
 
+    it('shows what the server refuses at the dialog top, one line each', async () => {
+        const api = fakeApi(
+            routes({
+                'POST /api/v1/workflows/w1/runs': () =>
+                    json(400, [
+                        {
+                            code: 'ProgramInvalid',
+                            message: 'Block 2: no input.',
+                        },
+                        { code: 'ProgramInvalid', message: 'Block 5: no url.' },
+                    ]),
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+        fireEvent.click(await screen.findByRole('button', { name: 'Run now' }));
+        const input = screen.getByLabelText(/Input \(JSON/);
+        fireEvent.click(screen.getByRole('button', { name: 'Run' }));
+
+        const summary = await screen.findByRole('alert');
+        expect(
+            [...summary.querySelectorAll('li')].map((li) => li.textContent)
+        ).toEqual(['Block 2: no input.', 'Block 5: no url.']);
+        expect(document.activeElement).toBe(summary);
+        // Not the input's fault: the field stays as it was.
+        expect(input.getAttribute('aria-invalid')).toBe('false');
+        expect(api.calls('POST /api/v1/workflows/w1/runs')).toHaveLength(1);
+        expect(screen.getByRole('dialog')).toBeTruthy();
+    });
+
     it('lists its runs and opens one to its result', async () => {
         fakeApi(
             routes({
