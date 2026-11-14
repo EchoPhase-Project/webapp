@@ -3,6 +3,7 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import solid from 'eslint-plugin-solid/configs/typescript';
+import query from '@tanstack/eslint-plugin-query';
 import { defineConfig } from 'eslint/config';
 
 // Who may import whom: app wires everything; a feature uses shared code and
@@ -55,6 +56,9 @@ export default defineConfig([
     js.configs.recommended,
     tseslint.configs.recommendedTypeChecked,
     solid,
+    // TanStack Query's own rules: stable clients, complete query keys, the
+    // order of the options that type inference depends on.
+    ...query.configs['flat/recommended'],
 
     {
         files: ['src/**/*.{ts,tsx}'],
