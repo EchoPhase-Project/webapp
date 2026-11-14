@@ -8,7 +8,7 @@ import RealtimeNotices from '@features/realtime/RealtimeNotices';
 import { useRealtime } from '@features/realtime/realtime-provider';
 import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
-import { notesChanged } from '@features/notes/notes-changes';
+import { followNoteEvents } from '@features/notes/note-events';
 import { followRunEvents } from '@features/packages/run-events';
 import { useAuth } from '@shared/api/auth';
 import { useI18n } from '@shared/i18n/i18n-context';
@@ -26,13 +26,7 @@ const Layout: Component<ParentProps> = (props) => {
     const { isAuthenticated, user } = useAuth();
     const { t } = useI18n();
     // A note shared with the user shows up in an open list at once.
-    onCleanup(
-        realtime.subscribe('notification.created', (event) => {
-            const kind = (event.notification as { kind?: string } | undefined)
-                ?.kind;
-            if (kind === 'note_shared') notesChanged();
-        })
-    );
+    onCleanup(followNoteEvents(realtime, queryClient));
     // A run started: merged on top of the open run lists; a run done:
     // patched in place from the event.
     onCleanup(followRunEvents(realtime, queryClient));

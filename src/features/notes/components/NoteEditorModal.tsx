@@ -7,7 +7,7 @@ import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
-import { deleteNote, unshareNote } from '@features/notes/api';
+import { deleteNoteMutation, leaveNoteMutation } from '@features/notes/api';
 import NoteEditor from './NoteEditor';
 import ShareSection from './ShareSection';
 
@@ -20,7 +20,6 @@ export default function NoteEditorModal(props: {
     /** Absent: a new note. */
     note?: Note;
     onClose: () => void;
-    onSaved?: (note: Note) => void;
     /** It was deleted, or the user left it. */
     onGone?: (id: string) => void;
 }) {
@@ -32,6 +31,8 @@ export default function NoteEditorModal(props: {
     // open), leaving under the editor's buttons.
     const deleting = createSubmit();
     const leaving = createSubmit();
+    const deleteNote = deleting.mutation(deleteNoteMutation);
+    const leaveNote = leaving.mutation(leaveNoteMutation);
     const busy = () => deleting.busy() || leaving.busy();
 
     const title = () =>
@@ -42,19 +43,15 @@ export default function NoteEditorModal(props: {
               : t('editor.edit', 'Edit note');
 
     function remove(note: Note) {
-        return deleting.run(
-            () => deleteNote(note.id),
-            () => {
-                setConfirming(false);
-                props.onGone?.(note.id);
-            }
-        );
+        return deleteNote.run(note.id, () => {
+            setConfirming(false);
+            props.onGone?.(note.id);
+        });
     }
 
     function leave(note: Note) {
-        return leaving.run(
-            () => unshareNote(note.id, user()?.id ?? ''),
-            () => props.onGone?.(note.id)
+        return leaveNote.run({ id: note.id, userId: user()?.id ?? '' }, () =>
+            props.onGone?.(note.id)
         );
     }
 
@@ -118,10 +115,7 @@ export default function NoteEditorModal(props: {
                     </Show>
                     <NoteEditor
                         note={props.note}
-                        onSaved={(note) => {
-                            props.onSaved?.(note);
-                            close();
-                        }}
+                        onSaved={close}
                         footer={footer()}
                     />
                     <ErrorSummary errors={leaving.errors()} />

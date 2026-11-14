@@ -9,7 +9,7 @@ import Field from '@shared/ui/Field';
 import Markdown from '@shared/ui/Markdown';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Switch from '@shared/ui/Switch';
-import { createNote, updateNote } from '@features/notes/api';
+import { createNoteMutation, updateNoteMutation } from '@features/notes/api';
 
 const FIELDS = ['title', 'body'] as const;
 const inputId = (field: string) => `note-${field}`;
@@ -45,7 +45,10 @@ export default function NoteEditor(props: {
               DateHelper.toLocalInput(new Date(props.note.remindAt))
             : ''
     );
-    const { busy, errors, run } = createSubmit(FIELDS);
+    const submit = createSubmit(FIELDS);
+    const { busy, errors } = submit;
+    const create = submit.mutation(createNoteMutation);
+    const update = submit.mutation(updateNoteMutation);
 
     async function save(e?: Event) {
         e?.preventDefault();
@@ -59,10 +62,10 @@ export default function NoteEditor(props: {
             expectedStamp: props.note?.stamp ?? null,
         };
         const note = props.note;
-        await run(
-            () => (note ? updateNote(note.id, input) : createNote(input)),
-            (saved) => props.onSaved(saved)
-        );
+        const onSaved = (saved: Note) => props.onSaved(saved);
+        await (note
+            ? update.run({ id: note.id, body: input }, onSaved)
+            : create.run(input, onSaved));
     }
 
     const onKeyDown = (e: KeyboardEvent) => {

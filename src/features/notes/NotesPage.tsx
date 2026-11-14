@@ -1,31 +1,32 @@
 import {
     createEffect,
-    createResource,
     createSignal,
     For,
+    Match,
     on,
     Show,
+    Switch,
 } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
+import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { IconPlus, IconSearch } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Field from '@shared/ui/Field';
+import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
-import { getNote, listNotes } from './api';
+import { noteQuery, notesQuery } from './api';
 import NoteCard from './components/NoteCard';
 import NoteEditorModal from './components/NoteEditorModal';
-import { notesChanged, notesVersion } from './notes-changes';
 import './notes.scss';
 
 /** The user's notes and those shared with them: search, open, write. */
 export default function NotesPage() {
-    const { isAuthenticated } = useAuth();
+    const queryClient = useQueryClient();
     const t = useLocalizer('notes');
     const [params, setParams] = useSearchParams<{ open?: string }>();
 
@@ -43,40 +44,28 @@ export default function NotesPage() {
         debounce(() => setSearch(value.trim()));
     };
 
-    const [notes, { refetch, mutate }] = createResource(
-        () => (isAuthenticated() ? { q: search(), v: notesVersion() } : false),
-        ({ q }) => listNotes(q)
-    );
+    // The list follows the cache: a save, a delete or a note shared with
+    // the user (an event) asks it again.
+    const notes = useQuery(() => notesQuery(search()));
 
     // What the dialog shows: null closed, undefined a new note.
     const [editing, setEditing] = createSignal<Note | null | undefined>(null);
 
-    // /notes?open=<id> (a notification's link) opens that note.
+    // /notes?open=<id> (a notification's link) opens that note; one gone or
+    // not shared any more opens nothing.
     createEffect(
         on(
-            () => (isAuthenticated() ? params.open : undefined),
+            () => params.open,
             async (id) => {
                 if (!id) return;
-                const result = await getNote(id);
-                if (result.ok) setEditing(result.data);
+                const note = await queryClient
+                    .fetchQuery(noteQuery(id))
+                    .catch(() => undefined);
+                if (note) setEditing(note);
                 setParams({ open: undefined }, { replace: true });
             }
         )
     );
-
-    const saved = (note: Note) => {
-        mutate((list) => {
-            const rest = (list ?? []).filter((n) => n.id !== note.id);
-            return [note, ...rest];
-        });
-        void refetch();
-    };
-
-    const gone = (id: string) => {
-        mutate((list) => (list ?? []).filter((n) => n.id !== id));
-        setEditing(null);
-        notesChanged();
-    };
 
     return (
         <div class="page-stack">
@@ -105,46 +94,50 @@ export default function NotesPage() {
                 />
             </div>
 
-            <Show
-                when={(notes() ?? []).length > 0}
-                fallback={
-                    <Show when={!notes.loading}>
-                        <EmptyState
-                            action={
-                                <Show when={!search()}>
-                                    <Button
-                                        onClick={() => setEditing(undefined)}
-                                    >
-                                        {t('first', 'Write the first one')}
-                                    </Button>
-                                </Show>
-                            }
-                        >
-                            {search()
-                                ? t('none_found', 'No notes match.')
-                                : t('empty', 'No notes yet.')}
-                        </EmptyState>
-                    </Show>
-                }
-            >
-                <div class="notes-grid">
-                    <For each={notes()}>
-                        {(note) => (
-                            <NoteCard
-                                note={note}
-                                onOpen={() => setEditing(note)}
-                            />
-                        )}
-                    </For>
-                </div>
-            </Show>
+            <Switch>
+                <Match when={notes.isError && notes.error}>
+                    {(error) => (
+                        <LoadError
+                            error={error()}
+                            busy={notes.isFetching}
+                            onRetry={() => notes.refetch()}
+                        />
+                    )}
+                </Match>
+                <Match when={notes.isSuccess && notes.data.length === 0}>
+                    <EmptyState
+                        action={
+                            <Show when={!search()}>
+                                <Button onClick={() => setEditing(undefined)}>
+                                    {t('first', 'Write the first one')}
+                                </Button>
+                            </Show>
+                        }
+                    >
+                        {search()
+                            ? t('none_found', 'No notes match.')
+                            : t('empty', 'No notes yet.')}
+                    </EmptyState>
+                </Match>
+                <Match when={notes.isSuccess}>
+                    <div class="notes-grid">
+                        <For each={notes.data}>
+                            {(note) => (
+                                <NoteCard
+                                    note={note}
+                                    onOpen={() => setEditing(note)}
+                                />
+                            )}
+                        </For>
+                    </div>
+                </Match>
+            </Switch>
 
             <NoteEditorModal
                 open={editing() !== null}
                 note={editing() ?? undefined}
                 onClose={() => setEditing(null)}
-                onSaved={saved}
-                onGone={gone}
+                onGone={() => setEditing(null)}
             />
         </div>
     );
