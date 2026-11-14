@@ -24,23 +24,35 @@ const csrf: Middleware = {
     },
 };
 
-const unauthorizedListeners = new Set<() => void>();
+const unauthorizedListeners = new Set<(request: Request) => void>();
 
 /**
- * Called when the API answers 401 outside /auth/*: the session ended (the
- * server refreshes expired access tokens itself). Returns an unsubscribe.
+ * Called with the request that got a 401 outside signing in: the session
+ * ended (the server refreshes expired access tokens itself). Returns an
+ * unsubscribe.
  */
-export function onUnauthorized(listener: () => void): () => void {
+export function onUnauthorized(
+    listener: (request: Request) => void
+): () => void {
     unauthorizedListeners.add(listener);
     return () => unauthorizedListeners.delete(listener);
 }
 
-// /auth/* answers 401 as part of signing in (me while signed out, a wrong
-// password): that is no news.
+// These answer 401 as part of signing in (me while signed out, a wrong
+// password): that is no news. The rest of /auth/me is a signed-in user's.
+const SigningIn = new Set([
+    'POST /api/v1/auth/login',
+    'POST /api/v1/auth/register',
+    'GET /api/v1/auth/me',
+]);
+
 const sessionEnd: Middleware = {
-    onResponse({ response, schemaPath }) {
-        if (response.status === 401 && !schemaPath.startsWith('/api/v1/auth/'))
-            unauthorizedListeners.forEach((listener) => listener());
+    onResponse({ request, response, schemaPath }) {
+        if (
+            response.status === 401 &&
+            !SigningIn.has(`${request.method} ${schemaPath}`)
+        )
+            unauthorizedListeners.forEach((listener) => listener(request));
         return response;
     },
 };

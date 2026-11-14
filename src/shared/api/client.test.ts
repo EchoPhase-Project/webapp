@@ -1,7 +1,15 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CsrfService } from './csrf';
-import { api, dataOr, errorsOf, multipart, NetworkError, send } from './client';
+import {
+    api,
+    dataOr,
+    errorsOf,
+    multipart,
+    NetworkError,
+    onUnauthorized,
+    send,
+} from './client';
 
 const json = (
     status: number,
@@ -77,6 +85,66 @@ describe('api client', () => {
             ok: false,
             errors: [NetworkError],
         });
+    });
+});
+
+describe('session end', () => {
+    const fetch = vi.fn<(request: Request) => Promise<Response>>();
+    const listener = vi.fn<(request: Request) => void>();
+    let unsubscribe: () => void;
+
+    beforeEach(() => {
+        vi.stubGlobal('fetch', fetch);
+        fetch.mockImplementation(() => Promise.resolve(json(401, null)));
+        unsubscribe = onUnauthorized(listener);
+    });
+
+    afterEach(() => {
+        unsubscribe();
+        fetch.mockReset();
+        listener.mockReset();
+    });
+
+    it('is no news on a 401 while signing in', async () => {
+        await api.POST('/api/v1/auth/login', {
+            body: { userName: 'u', password: 'p' } as never,
+        });
+        await api.POST('/api/v1/auth/register', { body: {} as never });
+        await api.GET('/api/v1/auth/me');
+
+        expect(listener).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        [
+            'PATCH',
+            '/api/v1/auth/me',
+            () => api.PATCH('/api/v1/auth/me', { body: {} as never }),
+        ],
+        [
+            'PUT',
+            '/api/v1/auth/me/avatar',
+            () => api.PUT('/api/v1/auth/me/avatar', { body: {} as never }),
+        ],
+        [
+            'DELETE',
+            '/api/v1/auth/me/avatar',
+            () => api.DELETE('/api/v1/auth/me/avatar'),
+        ],
+        [
+            'POST',
+            '/api/v1/auth/me/password',
+            () => api.POST('/api/v1/auth/me/password', { body: {} as never }),
+        ],
+        ['GET', '/api/v1/sessions', () => api.GET('/api/v1/sessions')],
+    ])('ends the session on a 401 of %s %s', async (method, path, call) => {
+        await call();
+
+        expect(listener).toHaveBeenCalledOnce();
+        const [request] = listener.mock.calls[0];
+        expect(request).toBeInstanceOf(Request);
+        expect(request.method).toBe(method);
+        expect(new URL(request.url).pathname).toBe(path);
     });
 });
 
