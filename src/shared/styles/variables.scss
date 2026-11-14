@@ -3,4 +3,6 @@
 
 $font-primary: 'Inter';
 $font-secondary: 'Inter';
+// Code and text typed as it is (Markdown, JSON, cron): Fira Code, loaded in global.scss.
+$font-mono: 'Fira Code', ui-monospace, monospace;
 $transition-speed: 200ms;

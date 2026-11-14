@@ -150,14 +150,14 @@
 }
 
 .workflow-code {
-  font-family: var(--font-secondary);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
 
 .workflow-block-id {
   min-width: 2.5em;
-  font-family: var(--font-secondary);
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text-muted);
 }
@@ -215,7 +215,7 @@
   padding: 10px 12px;
   overflow: auto;
   border-radius: 6px;
-  font-family: var(--font-secondary);
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   background: var(--surface-raised);
 }
