@@ -8,7 +8,6 @@
     "create": "Create"
   },
   "secret": "Secret (shown once, copy it now):",
-  "delete": "Delete {name}",
   "columns": {
     "expires": "Expires",
     "last_used": "Last used",

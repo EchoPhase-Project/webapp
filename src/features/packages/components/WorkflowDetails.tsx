@@ -2,15 +2,13 @@ import {
     createEffect,
     createResource,
     createSignal,
-    For,
     on,
     Show,
     type Component,
 } from 'solid-js';
-import { A, useNavigate, useSearchParams } from '@solidjs/router';
+import { useNavigate, useSearchParams } from '@solidjs/router';
 import {
     IconApi,
-    IconArrowLeft,
     IconCaretRightFilled,
     IconClock,
     IconGitBranch,
@@ -23,11 +21,13 @@ import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
+import { NavTabs } from '@shared/ui/Tabs';
 import Switch from '@shared/ui/Switch';
 import {
     deleteWorkflow,
@@ -162,11 +162,11 @@ export default function WorkflowDetails(props: {
         }
     }
 
-    const back = (
-        <A href={packagePath(props.packageId)} class="workflow-back">
-            <IconArrowLeft aria-hidden="true" />{' '}
-            {pkg()?.name ?? t('back', 'Package')}
-        </A>
+    const back = () => (
+        <BackLink
+            href={packagePath(props.packageId)}
+            label={pkg()?.name ?? t('back', 'Package')}
+        />
     );
 
     return (
@@ -174,7 +174,7 @@ export default function WorkflowDetails(props: {
             when={workflow()}
             fallback={
                 <Show when={!workflow.loading}>
-                    {back}
+                    {back()}
                     <EmptyState>
                         {t(
                             'not_found',
@@ -186,7 +186,7 @@ export default function WorkflowDetails(props: {
         >
             {(w) => (
                 <div class="page-stack workflow-page">
-                    {back}
+                    {back()}
                     <PageHeader
                         eyebrow={t('eyebrow', 'Workflows')}
                         title={w().name}
@@ -247,24 +247,15 @@ export default function WorkflowDetails(props: {
                         />
                     </div>
 
-                    <nav
-                        class="workflow-tabs"
-                        aria-label={t('tab.label', 'Workflow')}
-                    >
-                        <For each={tabs()}>
-                            {(name) => (
-                                <A
-                                    class="workflow-tab"
-                                    href={path(name)}
-                                    aria-current={
-                                        tab() === name ? 'page' : undefined
-                                    }
-                                >
-                                    {t(`tab.${name}`, name)}
-                                </A>
-                            )}
-                        </For>
-                    </nav>
+                    <NavTabs
+                        label={t('tab.label', 'Workflow')}
+                        value={tab()}
+                        tabs={tabs().map((name) => ({
+                            value: name,
+                            label: t(`tab.${name}`, name),
+                            href: path(name),
+                        }))}
+                    />
 
                     <div role="tabpanel">
                         <Show when={tab() === 'overview'}>

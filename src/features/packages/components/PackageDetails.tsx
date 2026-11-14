@@ -1,11 +1,12 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { IconArrowLeft, IconDownload } from '@shared/ui/icons';
+import { IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { dataOr } from '@shared/api/client';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import Markdown from '@shared/ui/Markdown';
@@ -71,10 +72,8 @@ export default function PackageDetails(props: { id: string }) {
         }
     }
 
-    const back = (
-        <A href="/explore" class="package-back">
-            <IconArrowLeft aria-hidden="true" /> {t('back', 'Explore')}
-        </A>
+    const back = () => (
+        <BackLink href="/explore" label={t('back', 'Explore')} />
     );
 
     return (
@@ -82,7 +81,7 @@ export default function PackageDetails(props: { id: string }) {
             when={pkg()}
             fallback={
                 <Show when={!pkg.loading}>
-                    {back}
+                    {back()}
                     <EmptyState>
                         {t(
                             'not_found',
@@ -94,7 +93,7 @@ export default function PackageDetails(props: { id: string }) {
         >
             {(p) => (
                 <div class="page-stack package-page">
-                    {back}
+                    {back()}
                     <PageHeader
                         eyebrow={t('eyebrow', 'Workflows')}
                         title={

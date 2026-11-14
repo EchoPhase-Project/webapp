@@ -1,11 +1,5 @@
 import { createSignal, Show } from 'solid-js';
-import {
-    IconCopy,
-    IconEye,
-    IconEyeOff,
-    IconPencil,
-    IconTrash,
-} from '@shared/ui/icons';
+import { IconCopy, IconEye, IconEyeOff, IconPencil } from '@shared/ui/icons';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -17,6 +11,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import RadioGroup from '@shared/ui/RadioGroup';
 import { Cell, Row, Table } from '@shared/ui/Table';
+import RemoveButton from '@shared/ui/RemoveButton';
 import { saveWorkflow } from '@features/packages/api';
 import {
     newSecret,
@@ -225,21 +220,14 @@ export default function WebhookTable(props: {
                                 >
                                     <IconPencil />
                                 </Button>
-                                <Button
-                                    variant="icon-danger"
-                                    aria-label={t(
-                                        'webhook.delete',
-                                        'Delete the webhook'
-                                    )}
-                                    title={t(
+                                <RemoveButton
+                                    label={t(
                                         'webhook.delete',
                                         'Delete the webhook'
                                     )}
                                     disabled={busy()}
                                     onClick={() => setDeleting(hook)}
-                                >
-                                    <IconTrash />
-                                </Button>
+                                />
                             </span>
                         </Cell>
                     </Row>

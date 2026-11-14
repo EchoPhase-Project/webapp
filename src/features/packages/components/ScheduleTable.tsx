@@ -1,5 +1,5 @@
 import { createSignal, Show } from 'solid-js';
-import { IconPencil, IconPlus, IconTrash } from '@shared/ui/icons';
+import { IconPencil, IconPlus } from '@shared/ui/icons';
 import type { FormErrors } from '@shared/api/errors';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
@@ -11,6 +11,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import Modal from '@shared/ui/Modal';
 import { Cell, Row, Table } from '@shared/ui/Table';
+import RemoveButton from '@shared/ui/RemoveButton';
 import TimeZoneField from '@shared/ui/TimeZoneField';
 import { saveWorkflow } from '@features/packages/api';
 import {
@@ -117,21 +118,14 @@ export default function ScheduleTable(props: {
                                 >
                                     <IconPencil />
                                 </Button>
-                                <Button
-                                    variant="icon-danger"
-                                    aria-label={t(
-                                        'schedule.delete',
-                                        'Delete the schedule'
-                                    )}
-                                    title={t(
+                                <RemoveButton
+                                    label={t(
                                         'schedule.delete',
                                         'Delete the schedule'
                                     )}
                                     disabled={busy()}
                                     onClick={() => setDeleting(schedule)}
-                                >
-                                    <IconTrash />
-                                </Button>
+                                />
                             </span>
                         </Cell>
                     </Row>

@@ -71,9 +71,18 @@ describe('useLocalizer(ns)', () => {
         try {
             await shown(
                 () => useLocalizer('files'),
-                (t) => t('delete', 'Delete {name}', { name: 'a.txt' })
+                (t) =>
+                    t(
+                        'confirm_delete.text',
+                        '{name} is deleted for good; links to it stop working.',
+                        { name: 'a.txt' }
+                    )
             );
-            expect(await screen.findByText('Șterge a.txt')).toBeTruthy();
+            expect(
+                await screen.findByText(
+                    'a.txt va fi șters definitiv; linkurile către el nu vor mai funcționa.'
+                )
+            ).toBeTruthy();
         } finally {
             localStorage.removeItem('app_locale');
         }

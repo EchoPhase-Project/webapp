@@ -8,7 +8,6 @@
     "create": "Creează"
   },
   "secret": "Secret (afișat o singură dată, copiază-l acum):",
-  "delete": "Șterge {name}",
   "columns": {
     "expires": "Expiră",
     "last_used": "Ultima utilizare",

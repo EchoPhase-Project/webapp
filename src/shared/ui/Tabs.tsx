@@ -1,4 +1,5 @@
 import { For, Show, type JSX } from 'solid-js';
+import { A } from '@solidjs/router';
 import './tabs.scss';
 
 type TabsProps<T extends string> = {
@@ -107,5 +108,35 @@ export default function Tabs<T extends string>(props: TabsProps<T>) {
                 <span class="tabs-aside">{props.aside}</span>
             </Show>
         </div>
+    );
+}
+
+/**
+ * Tabs that are links (each part of a page has its own address): a named
+ * <nav>, the current one marked with aria-current. The Tab key goes
+ * through them as through any links; the page under them is the panel.
+ */
+export function NavTabs<T extends string>(props: {
+    /** What the tabs go through (e.g. "Package"): the nav's name. */
+    label: string;
+    value: T;
+    tabs: readonly { value: T; label: string; href: string }[];
+}) {
+    return (
+        <nav class="tabs" aria-label={props.label}>
+            <For each={props.tabs}>
+                {(tab) => (
+                    <A
+                        class="tabs-tab"
+                        href={tab.href}
+                        aria-current={
+                            tab.value === props.value ? 'page' : undefined
+                        }
+                    >
+                        {tab.label}
+                    </A>
+                )}
+            </For>
+        </nav>
     );
 }

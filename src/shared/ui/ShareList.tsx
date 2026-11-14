@@ -2,10 +2,10 @@ import { createResource, createSignal, For, Show, type JSX } from 'solid-js';
 import type { ApiResult } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { IconX } from '@shared/ui/icons';
 import Button from './Button';
 import ErrorSummary from './ErrorSummary';
 import Field from './Field';
+import RemoveButton from './RemoveButton';
 import SettingsCard from './SettingsCard';
 import './share-list.scss';
 
@@ -88,14 +88,11 @@ export default function ShareList<T extends { user: Sharee }>(
                                 </span>
                             </span>
                             {props.detail?.(share)}
-                            <Button
-                                variant="icon-danger"
+                            <RemoveButton
+                                label={props.removeLabel(share.user.name)}
                                 disabled={busy()}
-                                aria-label={props.removeLabel(share.user.name)}
                                 onClick={() => void remove(share.user.id)}
-                            >
-                                <IconX />
-                            </Button>
+                            />
                         </li>
                     )}
                 </For>

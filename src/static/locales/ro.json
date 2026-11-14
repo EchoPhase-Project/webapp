@@ -155,6 +155,7 @@
   "ui": {
     "more": "Citiți mai mult",
     "delete": "Șterge",
+    "delete_named": "Șterge {name}",
     "save": "Salvează",
     "name": "Nume",
     "actions": "Acțiuni",

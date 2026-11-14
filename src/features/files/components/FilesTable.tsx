@@ -1,10 +1,9 @@
-import { IconX } from '@shared/ui/icons';
 import type { FilePurpose, StoredFile } from '@shared/api/types';
 import { formatBytes } from '@shared/lib/bytes';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
-import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
+import RemoveButton from '@shared/ui/RemoveButton';
 import { contentUrl } from '@features/files/api';
 
 const COLUMNS = ['name', 'purpose', 'size', 'uploaded', 'actions'] as const;
@@ -66,16 +65,13 @@ export default function FilesTable(props: {
                         label={column('actions')}
                         props={{ class: 'actions' }}
                     >
-                        <Button
-                            variant="icon-danger"
-                            aria-label={t('delete', 'Delete {name}', {
+                        <RemoveButton
+                            label={t('ui.delete_named', 'Delete {name}', {
                                 name: file.name,
                             })}
                             disabled={props.busy}
                             onClick={() => props.onDelete(file)}
-                        >
-                            <IconX />
-                        </Button>
+                        />
                     </Cell>
                 </Row>
             )}

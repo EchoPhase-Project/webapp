@@ -1,0 +1,8 @@
+// A BackLink: an arrow and the place's name, small, at the page's left.
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  font-size: 0.88rem;
+}

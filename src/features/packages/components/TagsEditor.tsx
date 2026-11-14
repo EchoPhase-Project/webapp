@@ -1,10 +1,10 @@
 import { createEffect, createSignal, For, Show } from 'solid-js';
-import { IconX } from '@shared/ui/icons';
 import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
+import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { inputOf, updatePackage } from '@features/packages/api';
 import { tagClass } from '@features/packages/tags';
@@ -87,10 +87,9 @@ export default function TagsEditor(props: {
                             <li>
                                 <span class={tagClass(tag)}>
                                     {tag}
-                                    <Button
-                                        variant="icon-danger"
+                                    <RemoveButton
                                         class="package-tag-remove"
-                                        aria-label={t(
+                                        label={t(
                                             'tags.remove',
                                             'Remove {tag}',
                                             { tag }
@@ -100,9 +99,7 @@ export default function TagsEditor(props: {
                                                 list.filter((x) => x !== tag)
                                             )
                                         }
-                                    >
-                                        <IconX aria-hidden="true" />
-                                    </Button>
+                                    />
                                 </span>
                             </li>
                         )}

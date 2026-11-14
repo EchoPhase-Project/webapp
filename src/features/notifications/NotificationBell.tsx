@@ -1,6 +1,6 @@
 import { createEffect, createSignal, For, on, onCleanup, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { IconBell, IconX } from '@shared/ui/icons';
+import { IconBell } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import type { AppNotification } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -8,6 +8,7 @@ import { createDismiss } from '@shared/lib/dismiss';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import HeaderButton from '@shared/ui/HeaderButton';
+import RemoveButton from '@shared/ui/RemoveButton';
 import { deleteNotification, fetchInbox, markAllRead, markRead } from './api';
 import { wordingOf } from './wording';
 import './notifications.scss';
@@ -189,18 +190,15 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                                                         {date(n.createdAt)}
                                                     </span>
                                                 </button>
-                                                <Button
-                                                    variant="icon-danger"
-                                                    aria-label={t(
+                                                <RemoveButton
+                                                    label={t(
                                                         'delete',
                                                         'Delete notification'
                                                     )}
                                                     onClick={() =>
                                                         void remove(n)
                                                     }
-                                                >
-                                                    <IconX />
-                                                </Button>
+                                                />
                                             </li>
                                         );
                                     }}

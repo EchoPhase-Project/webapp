@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
-import Tabs, { tabPanelProps } from './Tabs';
+import { MemoryRouter, Route } from '@solidjs/router';
+import Tabs, { NavTabs, tabPanelProps } from './Tabs';
 
 type Tab = 'write' | 'preview' | 'help';
 
@@ -101,5 +102,45 @@ describe('Tabs', () => {
             tabNamed('Help'),
             screen.getByRole('textbox', { name: 'Body' }),
         ]);
+    });
+});
+
+describe('NavTabs', () => {
+    it('is a named nav of links, the current one marked', async () => {
+        render(() => (
+            <MemoryRouter>
+                <Route
+                    path="*"
+                    component={() => (
+                        <NavTabs
+                            label="Package"
+                            value="runs"
+                            tabs={[
+                                {
+                                    value: 'workflows',
+                                    label: 'Workflows',
+                                    href: '/p/1',
+                                },
+                                {
+                                    value: 'runs',
+                                    label: 'Runs',
+                                    href: '/p/1/runs',
+                                },
+                            ]}
+                        />
+                    )}
+                />
+            </MemoryRouter>
+        ));
+        const nav = await screen.findByRole('navigation', { name: 'Package' });
+        const runs = screen.getByRole('link', { name: 'Runs' });
+        expect(nav.contains(runs)).toBe(true);
+        expect(runs.getAttribute('href')).toBe('/p/1/runs');
+        expect(runs.getAttribute('aria-current')).toBe('page');
+        expect(
+            screen
+                .getByRole('link', { name: 'Workflows' })
+                .getAttribute('aria-current')
+        ).toBeNull();
     });
 });

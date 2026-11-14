@@ -1,20 +1,16 @@
-import {
-    createEffect,
-    createResource,
-    createSignal,
-    For,
-    Show,
-} from 'solid-js';
-import { A, useNavigate, useParams } from '@solidjs/router';
-import { IconArrowLeft } from '@shared/ui/icons';
+import { createEffect, createResource, createSignal, Show } from 'solid-js';
+import { useNavigate, useParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
+import BackLink from '@shared/ui/BackLink';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
+import { NavTabs } from '@shared/ui/Tabs';
 import { listWorkflows } from './api';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
+import PackageOrigin from './components/PackageOrigin';
 import PackageSettings from './components/PackageSettings';
 import PackageWorkflowList from './components/PackageWorkflowList';
 import RunList from './components/RunList';
@@ -65,11 +61,8 @@ export default function MyPackagePage() {
     const names = () =>
         Object.fromEntries((workflows() ?? []).map((w) => [w.id, w.name]));
 
-    const back = (
-        <A href="/packages" class="workflow-back">
-            <IconArrowLeft aria-hidden="true" />{' '}
-            {t('packages.title', 'Packages')}
-        </A>
+    const back = () => (
+        <BackLink href="/packages" label={t('packages.title', 'Packages')} />
     );
 
     return (
@@ -77,7 +70,7 @@ export default function MyPackagePage() {
             when={pkg()}
             fallback={
                 <Show when={!pkg.loading}>
-                    {back}
+                    {back()}
                     <EmptyState>
                         {t(
                             'package.not_found',
@@ -89,7 +82,7 @@ export default function MyPackagePage() {
         >
             {(p) => (
                 <div class="page-stack workflow-page">
-                    {back}
+                    {back()}
                     <PageHeader
                         eyebrow={t('package.eyebrow', 'Package')}
                         title={
@@ -101,65 +94,24 @@ export default function MyPackagePage() {
                         description={p().summary || undefined}
                         meta={
                             <span class="workflow-meta">
-                                <Show when={p().source}>
-                                    {(source) => (
-                                        <A
-                                            class="workflow-badge"
-                                            href={`/explore/${source().packageId}`}
-                                        >
-                                            {t(
-                                                'packages.installed',
-                                                'installed, v{version}',
-                                                {
-                                                    version:
-                                                        source().version ?? '',
-                                                }
-                                            )}
-                                        </A>
-                                    )}
-                                </Show>
-                                <Show when={p().latestVersion > 0}>
-                                    <A
-                                        class="workflow-badge"
-                                        href={`/explore/${p().id}`}
-                                    >
-                                        {t(
-                                            'packages.published',
-                                            'published, v{version}',
-                                            { version: p().latestVersion }
-                                        )}
-                                    </A>
-                                </Show>
+                                <PackageOrigin pkg={p()} />
                             </span>
                         }
                     />
 
                     <div class="workflow-tabs-row">
-                        <nav
-                            class="workflow-tabs"
-                            aria-label={t('package.sections', 'Package')}
-                        >
-                            <For each={SECTIONS}>
-                                {(name) => (
-                                    <A
-                                        class="workflow-tab"
-                                        href={packagePath(
-                                            p().id,
-                                            name === 'workflows'
-                                                ? undefined
-                                                : name
-                                        )}
-                                        aria-current={
-                                            section() === name
-                                                ? 'page'
-                                                : undefined
-                                        }
-                                    >
-                                        {t(`package.${name}`, name)}
-                                    </A>
-                                )}
-                            </For>
-                        </nav>
+                        <NavTabs
+                            label={t('package.sections', 'Package')}
+                            value={section()}
+                            tabs={SECTIONS.map((name) => ({
+                                value: name,
+                                label: t(`package.${name}`, name),
+                                href: packagePath(
+                                    p().id,
+                                    name === 'workflows' ? undefined : name
+                                ),
+                            }))}
+                        />
                         <Show when={section() === 'workflows'}>
                             <span class="workflow-tabs-actions">
                                 <ImportWorkflowButton

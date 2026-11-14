@@ -3,7 +3,6 @@
   "description": "Fișierele încărcate de dvs. și cele create pentru dvs.",
   "eyebrow": "Stocare",
   "empty": "Încă nu aveți fișiere",
-  "delete": "Șterge {name}",
   "columns": {
     "name": "Nume",
     "purpose": "Scop",

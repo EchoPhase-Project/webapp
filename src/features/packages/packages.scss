@@ -132,14 +132,6 @@
   }
 }
 
-.package-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-self: start;
-  font-size: 0.88rem;
-}
-
 .package-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 18rem;

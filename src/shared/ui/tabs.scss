@@ -1,5 +1,5 @@
-// A line of tabs (Write / Preview): quiet labels on a rule, the selected one
-// in the text colour and underlined in the accent.
+// A line of tabs (Write / Preview, or NavTabs' links): quiet labels on a
+// rule, the selected one in the text colour and underlined in the accent.
 .tabs {
   display: flex;
   gap: 4px;
@@ -25,9 +25,11 @@
   font: inherit;
   font-size: 0.85rem;
   color: var(--text-muted);
+  text-decoration: none;
   cursor: pointer;
 
-  &[aria-selected='true'] {
+  &[aria-selected='true'],
+  &[aria-current='page'] {
     color: var(--text);
     border-bottom-color: var(--accent);
   }

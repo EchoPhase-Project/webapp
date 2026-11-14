@@ -49,14 +49,6 @@
   text-decoration: none;
 }
 
-.workflow-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-self: start;
-  font-size: 0.88rem;
-}
-
 // Whether its triggers run: a row of its own, as a setting.
 .workflow-controls {
   padding: 12px 16px;
@@ -87,25 +79,6 @@
   font-size: 0.9rem;
 }
 
-.workflow-tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
-}
-
-.workflow-tab {
-  padding: 6px 10px;
-  border-bottom: 2px solid transparent;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  text-decoration: none;
-
-  &[aria-current='page'] {
-    color: var(--text);
-    border-bottom-color: var(--accent);
-  }
-}
-
 // The tabs with the section's own action at their end, on the same line.
 .workflow-tabs-row {
   display: flex;
@@ -114,7 +87,7 @@
   gap: 8px;
   border-bottom: 1px solid var(--border);
 
-  .workflow-tabs {
+  .tabs {
     border-bottom: none;
   }
 }

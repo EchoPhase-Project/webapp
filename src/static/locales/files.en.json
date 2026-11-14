@@ -3,7 +3,6 @@
   "description": "Files you uploaded, and those made for you.",
   "eyebrow": "Storage",
   "empty": "No files yet",
-  "delete": "Delete {name}",
   "columns": {
     "name": "Name",
     "purpose": "Purpose",

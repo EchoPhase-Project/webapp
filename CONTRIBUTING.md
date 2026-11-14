@@ -102,7 +102,7 @@ Before you write new markup, make pages from the components in
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action), `link` (an action in a sentence) |
 | `HeaderButton`                                        | The square icon buttons in the top bar (new note, notifications, theme)                                                                                                                     |
-| `Tabs`                                                | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern                                                                                           |
+| `Tabs`, `NavTabs`                                     | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern. `NavTabs` are links to the parts of a page                                               |
 | `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                      |
 | `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                            |
 | `TimeZoneField`                                       | A field for an IANA time zone, with the zones of the browser as suggestions                                                                                                                 |
@@ -111,6 +111,8 @@ Before you write new markup, make pages from the components in
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
 | `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                   |
 | `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                               |
+| `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                            |
+| `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                     |
 
 ### Controls
 

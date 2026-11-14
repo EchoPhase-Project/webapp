@@ -155,6 +155,7 @@
   "ui": {
     "more": "Read more",
     "delete": "Delete",
+    "delete_named": "Delete {name}",
     "save": "Save",
     "name": "Name",
     "actions": "Actions",

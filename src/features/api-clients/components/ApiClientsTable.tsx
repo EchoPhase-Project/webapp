@@ -1,9 +1,8 @@
-import { IconX } from '@shared/ui/icons';
 import type { ApiClient } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import Button from '@shared/ui/Button';
 import { Table, Cell, Row } from '@shared/ui/Table';
+import RemoveButton from '@shared/ui/RemoveButton';
 
 const COLUMNS = ['name', 'expires', 'last_used', 'created', 'actions'] as const;
 // Each column's key and English text; the shared words are site-wide.
@@ -52,16 +51,13 @@ export default function ApiClientsTable(props: {
                         label={column('actions')}
                         props={{ class: 'actions' }}
                     >
-                        <Button
-                            variant="icon-danger"
-                            aria-label={t('delete', 'Delete {name}', {
+                        <RemoveButton
+                            label={t('ui.delete_named', 'Delete {name}', {
                                 name: client.Name,
                             })}
                             disabled={props.busy}
                             onClick={() => props.onDelete(client)}
-                        >
-                            <IconX />
-                        </Button>
+                        />
                     </Cell>
                 </Row>
             )}

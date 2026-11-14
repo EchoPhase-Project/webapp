@@ -13,6 +13,7 @@ import PageHeader from '@shared/ui/PageHeader';
 import { myPackages } from './api';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageEditorModal from './components/PackageEditorModal';
+import PackageOrigin from './components/PackageOrigin';
 import VisibilityBadge from './components/VisibilityBadge';
 import { packagePath } from './package-nav';
 import './packages.scss';
@@ -117,37 +118,7 @@ export default function PackagesPage() {
                                                 { count: p.workflows }
                                             )}
                                         </span>
-                                        <Show when={p.source}>
-                                            {(source) => (
-                                                <A
-                                                    class="workflow-badge"
-                                                    href={`/explore/${source().packageId}`}
-                                                >
-                                                    {t(
-                                                        'packages.installed',
-                                                        'installed, v{version}',
-                                                        {
-                                                            version:
-                                                                source()
-                                                                    .version ??
-                                                                '',
-                                                        }
-                                                    )}
-                                                </A>
-                                            )}
-                                        </Show>
-                                        <Show when={p.latestVersion > 0}>
-                                            <A
-                                                class="workflow-badge"
-                                                href={`/explore/${p.id}`}
-                                            >
-                                                {t(
-                                                    'packages.published',
-                                                    'published, v{version}',
-                                                    { version: p.latestVersion }
-                                                )}
-                                            </A>
-                                        </Show>
+                                        <PackageOrigin pkg={p} />
                                         <span>{date(p.updatedAt)}</span>
                                     </span>
                                 </span>
