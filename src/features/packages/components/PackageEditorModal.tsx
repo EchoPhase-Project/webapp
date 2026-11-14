@@ -5,10 +5,8 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
-import FieldError from '@shared/ui/FieldError';
-import Markdown from '@shared/ui/Markdown';
+import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Modal from '@shared/ui/Modal';
-import Tabs, { tabPanelProps } from '@shared/ui/Tabs';
 import { createPackage, inputOf, updatePackage } from '@features/packages/api';
 
 const FIELDS = ['name', 'summary', 'readme'] as const;
@@ -59,7 +57,6 @@ function PackageForm(props: {
     const [summary, setSummary] = createSignal(props.pkg?.summary ?? '');
     const [readme, setReadme] = createSignal(props.pkg?.readme ?? '');
     /* eslint-enable solid/reactivity */
-    const [preview, setPreview] = createSignal(false);
     const { busy, errors, run } = createSubmit(FIELDS);
 
     async function save(e: Event) {
@@ -116,69 +113,22 @@ function PackageForm(props: {
                 onInput={(e) => setSummary(e.currentTarget.value)}
             />
 
-            <div class="package-readme">
-                <Tabs
-                    id="package-readme"
-                    label={t('editor.readme', 'README')}
-                    showLabel
-                    value={preview() ? 'preview' : 'write'}
-                    onChange={(tab) => setPreview(tab === 'preview')}
-                    tabs={[
-                        { value: 'write', label: t('ui.write', 'Write') },
-                        {
-                            value: 'preview',
-                            label: t('ui.preview', 'Preview'),
-                        },
-                    ]}
-                />
-                <div
-                    {...tabPanelProps(
-                        'package-readme',
-                        preview() ? 'preview' : 'write'
-                    )}
-                >
-                    <Show
-                        when={!preview()}
-                        fallback={
-                            <div class="package-readme-preview">
-                                <Show
-                                    when={readme().trim()}
-                                    fallback={
-                                        <p class="muted">
-                                            {t(
-                                                'ui.nothing_to_preview',
-                                                'Nothing to preview yet'
-                                            )}
-                                        </p>
-                                    }
-                                >
-                                    <Markdown text={readme()} />
-                                </Show>
-                            </div>
-                        }
-                    >
-                        <label class="visually-hidden" for={inputId('readme')}>
-                            {t('editor.readme', 'README')}
-                        </label>
-                        <textarea
-                            id={inputId('readme')}
-                            name="readme"
-                            class="package-textarea"
-                            classList={{ invalid: !!errors().readme?.length }}
-                            placeholder={t(
-                                'editor.readme_placeholder',
-                                'What it does, what it needs (connections, settings), how to start it. Markdown works.'
-                            )}
-                            rows={10}
-                            maxLength={100000}
-                            disabled={busy()}
-                            value={readme()}
-                            onInput={(e) => setReadme(e.currentTarget.value)}
-                        />
-                    </Show>
-                </div>
-                <FieldError for={inputId('readme')} errors={errors().readme} />
-            </div>
+            <MarkdownEditor
+                id={inputId('readme')}
+                name="readme"
+                label={t('editor.readme', 'README')}
+                showLabel
+                errors={errors().readme}
+                placeholder={t(
+                    'editor.readme_placeholder',
+                    'What it does, what it needs (connections, settings), how to start it. Markdown works.'
+                )}
+                rows={10}
+                maxLength={100000}
+                disabled={busy()}
+                value={readme()}
+                onInput={setReadme}
+            />
 
             <div class="package-actions">
                 <Button type="submit" busy={busy()}>

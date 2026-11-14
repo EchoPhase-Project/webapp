@@ -51,6 +51,7 @@ export default defineConfig(({ mode }) => {
                         `@use "shared/styles/variables" as vars;`,
                         `@use "shared/styles/media" as comp;`,
                         `@use "shared/styles/prefixes" as prefixes;`,
+                        `@use "shared/styles/mixins" as mix;`,
                     ].join('\n'),
                 },
             },

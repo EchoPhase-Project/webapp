@@ -34,25 +34,22 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 6px;
-  background-color: var(--surface-raised);
-  border: 1px solid var(--input-border);
   color: var(--text-muted);
-  @include prefixes.prefix(transition, 'border-color, box-shadow', webkit);
-  @include prefixes.prefix(
-    transition-duration,
-    var(--transition-speed),
-    webkit
-  );
+  @include mix.input-frame('&:focus-within');
+}
 
-  &:focus-within {
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
-  }
-
-  &.invalid {
-    box-shadow: 0 0 0 2px var(--danger);
-  }
+// A TextArea: the field's frame around a few lines of monospaced text.
+.field-textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-family: var(--font-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text);
+  resize: vertical;
+  @include mix.input-frame;
 }
 
 // A shorter field, for a search line or a filter.
@@ -201,29 +198,11 @@
   width: 100%;
   min-width: 0;
   padding: 8px 34px 8px 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  background-color: var(--surface-raised);
   font: inherit;
   color: var(--text);
   text-overflow: ellipsis;
   cursor: pointer;
-  @include prefixes.prefix(transition, 'border-color, box-shadow', webkit);
-  @include prefixes.prefix(
-    transition-duration,
-    var(--transition-speed),
-    webkit
-  );
-
-  &:focus {
-    outline: none;
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
-  }
-
-  &.invalid {
-    box-shadow: 0 0 0 2px var(--danger);
-  }
+  @include mix.input-frame;
 
   &:disabled {
     opacity: 0.6;

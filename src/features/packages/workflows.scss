@@ -310,35 +310,6 @@
   }
 }
 
-.workflow-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  background: var(--surface-raised);
-  font-family: var(--font-secondary);
-  font-size: 0.85rem;
-  color: var(--text);
-  resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
-  }
-
-  &.invalid {
-    box-shadow: 0 0 0 2px var(--danger);
-  }
-}
-
-.workflow-error {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--danger);
-}
-
 // A settings card: body, then a footer (hint left, action right).
 .settings-card {
   display: grid;

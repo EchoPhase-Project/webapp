@@ -74,11 +74,12 @@ and the tests are successful.
 ### UI and styles
 
 - Before you write new markup, use the components in `src/shared/ui`:
-  Button, HeaderButton, Tabs, Field, TimeZoneField, Select, Checkbox,
-  RadioGroup, Modal, ConfirmDialog, Card, Table, EmptyState, PageHeader,
-  Switch.
-- Do not write `<button>`, `<select>`, or a checkbox or radio `<input>`
-  outside `src/shared/ui` and `src/shared/nav`. ESLint enforces this rule.
+  Button, HeaderButton, Tabs, Field, TimeZoneField, TextArea,
+  MarkdownEditor, Select, Checkbox, RadioGroup, Modal, ConfirmDialog, Card,
+  Table, EmptyState, PageHeader, Switch.
+- Do not write `<button>`, `<select>`, `<textarea>`, or a checkbox or radio
+  `<input>` outside `src/shared/ui` and `src/shared/nav`. ESLint enforces
+  this rule.
 - If a full card or row opens an item, it can be a `<button>`. Then disable
   the rule on that line and write the reason.
 - If a `ConfirmDialog` asks about one item, give it `item` and
@@ -93,6 +94,8 @@ and the tests are successful.
 - Each page sets its title and description with
   `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".
 - Put the content of a page in an element with the `page-stack` class.
+- Before you copy a style rule, examine the mixins in
+  `shared/styles/mixins.scss` (`mix.input-frame`).
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens
   include the two themes. `palette.test.ts` examines the contrast.
 - Do not use hex colours in components.

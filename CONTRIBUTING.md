@@ -106,15 +106,16 @@ Before you write new markup, make pages from the components in
 | `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                      |
 | `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                            |
 | `TimeZoneField`                                       | A field for an IANA time zone, with the zones of the browser as suggestions                                                                                                                 |
+| `TextArea`, `MarkdownEditor`                          | Text of more than one line, with its label and errors. `MarkdownEditor` adds the Write and Preview tabs                                                                                     |
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                             |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
 
 ### Controls
 
-- Make buttons, tabs, checkboxes, radio buttons, and selects with the
-  components in `src/shared/ui`. Do not write `<button>`, `<select>`, or
-  `<input type="checkbox">` in a feature. These components have one look and
-  one keyboard behaviour.
+- Make buttons, tabs, checkboxes, radio buttons, selects, and text areas with
+  the components in `src/shared/ui`. Do not write `<button>`, `<select>`,
+  `<textarea>`, or `<input type="checkbox">` in a feature. These components
+  have one look and one keyboard behaviour.
 - ESLint (`no-restricted-syntax`) stops these elements outside
   `src/shared/ui` and `src/shared/nav`.
 - If a full card or a full row opens an item, you can use `<button>`. Then
@@ -163,7 +164,11 @@ Before you write new markup, make pages from the components in
 - Do not apply styles to bare elements (`p`, `h1`, `header`) outside
   `global.scss`.
 - Each SCSS file gets the modules `vars`, `comp` (`@include comp.media(…)`),
-  and `prefixes` automatically (`vite.config.ts`). Do not import them.
+  `prefixes`, and `mix` automatically (`vite.config.ts`). Do not import them.
+- `mix` (`src/shared/styles/mixins.scss`) contains the rules that many
+  components use. Before you copy a rule, examine this file.
+  `@include mix.input-frame` gives the border, the focus ring, and the
+  invalid ring of a field.
 - Use the flowing-lines pattern (`.patterned`, `Card patterned`) only for
   brand areas: the sign-in card, empty states, the outage screen, the About
   page. Do not use it on tables, menus, or forms.

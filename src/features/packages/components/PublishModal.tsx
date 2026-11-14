@@ -12,6 +12,7 @@ import Checkbox from '@shared/ui/Checkbox';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FieldError, { errorId } from '@shared/ui/FieldError';
 import Modal from '@shared/ui/Modal';
+import TextArea from '@shared/ui/TextArea';
 import { getWorkflow, publishVersion } from '@features/packages/api';
 
 const FIELDS = ['workflows', 'changelog'] as const;
@@ -230,13 +231,15 @@ function PublishForm(props: {
                     errors={errors().workflows}
                 />
             </fieldset>
-            <label class="field-label" for={inputId('changelog')}>
-                {t('publish.changelog', 'What changed (Markdown, optional)')}
-            </label>
-            <textarea
+            <TextArea
                 id={inputId('changelog')}
                 name="changelog"
-                class="package-textarea package-textarea-short"
+                label={t(
+                    'publish.changelog',
+                    'What changed (Markdown, optional)'
+                )}
+                showLabel
+                errors={errors().changelog}
                 rows={4}
                 maxLength={10000}
                 disabled={busy()}

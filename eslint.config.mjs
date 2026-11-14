@@ -23,8 +23,9 @@ const iconLibraries = layer(
     '@tabler/icons-solidjs/*'
 );
 // Controls come from src/shared/ui (Button, HeaderButton, Tabs, Checkbox,
-// RadioGroup, Select), so they keep one look and one keyboard behaviour. A
-// clickable card or row elsewhere disables the rule on its line, with why.
+// RadioGroup, Select, TextArea), so they keep one look and one keyboard
+// behaviour, and their errors show the same way. A clickable card or row
+// elsewhere disables the rule on its line, with why.
 const ownControls = [
     {
         selector: 'JSXOpeningElement[name.name="button"]',
@@ -40,6 +41,10 @@ const ownControls = [
     {
         selector: 'JSXOpeningElement[name.name="select"]',
         message: 'Use Select from @shared/ui.',
+    },
+    {
+        selector: 'JSXOpeningElement[name.name="textarea"]',
+        message: 'Use TextArea (or MarkdownEditor) from @shared/ui.',
     },
 ];
 const features = fs.readdirSync('src/features');

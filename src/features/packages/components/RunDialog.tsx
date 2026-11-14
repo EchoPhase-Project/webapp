@@ -1,7 +1,9 @@
-import { createSignal, Show } from 'solid-js';
+import { createSignal } from 'solid-js';
+import type { ErrorItem } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import Modal from '@shared/ui/Modal';
+import TextArea from '@shared/ui/TextArea';
 import { runWorkflow } from '@features/packages/api';
 
 const inputId = 'workflow-run-input';
@@ -16,7 +18,18 @@ export default function RunDialog(props: {
     const t = useLocalizer('workflows');
     const [input, setInput] = createSignal('');
     const [error, setError] = createSignal<string | null>(null);
+    // The message as the field's error (no code: shown as it is).
+    const errors = (): ErrorItem[] | undefined => {
+        const message = error();
+        return message ? [{ code: '', message }] : undefined;
+    };
     const [busy, setBusy] = createSignal(false);
+
+    /** Shows the message under the input and focuses it, so it is read out. */
+    function fail(message: string) {
+        setError(message);
+        document.getElementById(inputId)?.focus();
+    }
 
     async function run(e: Event) {
         e.preventDefault();
@@ -25,7 +38,7 @@ export default function RunDialog(props: {
             try {
                 value = JSON.parse(input());
             } catch {
-                setError(
+                fail(
                     t(
                         'run.bad_json',
                         'The input is not JSON: a value such as {"user": "ann"}, a number or "text".'
@@ -38,7 +51,7 @@ export default function RunDialog(props: {
         try {
             const result = await runWorkflow(props.workflowId, value);
             if (!result.ok) {
-                setError(result.errors.map((x) => x.message).join(' '));
+                fail(result.errors.map((x) => x.message).join(' '));
                 return;
             }
             setError(null);
@@ -56,32 +69,19 @@ export default function RunDialog(props: {
             onClose={() => props.onClose()}
         >
             <form class="vert-form" onSubmit={(e) => void run(e)} noValidate>
-                <label class="field-label" for={inputId}>
-                    {t(
+                <TextArea
+                    id={inputId}
+                    label={t(
                         'run.input',
                         'Input (JSON, optional): what its first blocks get as input'
                     )}
-                </label>
-                <textarea
-                    id={inputId}
-                    class="workflow-textarea"
-                    classList={{ invalid: !!error() }}
+                    showLabel
+                    errors={errors()}
                     rows={6}
                     spellcheck={false}
-                    aria-invalid={!!error()}
-                    aria-describedby={error() ? `${inputId}-error` : undefined}
                     value={input()}
                     onInput={(e) => setInput(e.currentTarget.value)}
                 />
-                <Show when={error()}>
-                    <p
-                        id={`${inputId}-error`}
-                        class="workflow-error"
-                        role="alert"
-                    >
-                        {error()}
-                    </p>
-                </Show>
                 <div class="workflow-actions">
                     <Button type="submit" busy={busy()}>
                         {t('run.start', 'Run')}

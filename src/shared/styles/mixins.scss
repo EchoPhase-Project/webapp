@@ -1,0 +1,30 @@
+// Rules that several components share; vite.config.ts loads this file into
+// every stylesheet as `mix`.
+
+@use 'prefixes';
+
+// An input's frame (a field, a select, a text area): a raised background in
+// a thin border; the focus ring and the invalid ring on it. $focus is the
+// selector of its focused state: '&:focus' for the control itself,
+// '&:focus-within' for a group around an input.
+@mixin input-frame($focus: '&:focus') {
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background-color: var(--surface-raised);
+  @include prefixes.prefix(transition, 'border-color, box-shadow', webkit);
+  @include prefixes.prefix(
+    transition-duration,
+    var(--transition-speed),
+    webkit
+  );
+
+  #{$focus} {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 1px var(--focus);
+  }
+
+  &.invalid {
+    box-shadow: 0 0 0 2px var(--danger);
+  }
+}

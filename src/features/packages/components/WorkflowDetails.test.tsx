@@ -206,7 +206,15 @@ describe('WorkflowDetails', () => {
         const input = screen.getByLabelText(/Input \(JSON/);
         fireEvent.input(input, { target: { value: '{nope' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
-        expect(await screen.findByRole('alert')).toBeTruthy();
+        // The message under the input, which takes the focus to read it out.
+        await waitFor(() =>
+            expect(input.getAttribute('aria-invalid')).toBe('true')
+        );
+        expect(document.activeElement).toBe(input);
+        expect(
+            document.getElementById(input.getAttribute('aria-describedby')!)!
+                .textContent
+        ).toMatch(/not JSON/);
         expect(api.calls('POST /api/v1/workflows/w1/runs')).toHaveLength(0);
 
         fireEvent.input(input, { target: { value: '{"user": "ann"}' } });

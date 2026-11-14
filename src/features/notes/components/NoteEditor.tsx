@@ -7,8 +7,8 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import Markdown from '@shared/ui/Markdown';
+import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Switch from '@shared/ui/Switch';
-import Tabs, { tabPanelProps } from '@shared/ui/Tabs';
 import { createNote, updateNote } from '@features/notes/api';
 
 const FIELDS = ['title', 'body'] as const;
@@ -45,7 +45,6 @@ export default function NoteEditor(props: {
               DateHelper.toLocalInput(new Date(props.note.remindAt))
             : ''
     );
-    const [preview, setPreview] = createSignal(false);
     const { busy, errors, run } = createSubmit(FIELDS);
 
     async function save(e?: Event) {
@@ -100,67 +99,22 @@ export default function NoteEditor(props: {
                     onInput={(e) => setTitle(e.currentTarget.value)}
                 />
 
-                <Tabs
-                    id="note-text"
+                <MarkdownEditor
+                    id={inputId('body')}
+                    name="body"
                     label={t('editor.body', 'Text')}
-                    value={preview() ? 'preview' : 'write'}
-                    onChange={(tab) => setPreview(tab === 'preview')}
-                    tabs={[
-                        { value: 'write', label: t('ui.write', 'Write') },
-                        {
-                            value: 'preview',
-                            label: t('ui.preview', 'Preview'),
-                        },
-                    ]}
                     aside={t('editor.markdown', 'Markdown works')}
-                />
-
-                <div
-                    {...tabPanelProps(
-                        'note-text',
-                        preview() ? 'preview' : 'write'
+                    errors={errors().body}
+                    placeholder={t(
+                        'editor.placeholder',
+                        'Write in Markdown: # heading, **bold**, - list, [link](https://…)'
                     )}
-                >
-                    <Show
-                        when={!preview()}
-                        fallback={
-                            <div class="note-preview">
-                                <Show
-                                    when={body().trim()}
-                                    fallback={
-                                        <p class="muted">
-                                            {t(
-                                                'ui.nothing_to_preview',
-                                                'Nothing to preview yet'
-                                            )}
-                                        </p>
-                                    }
-                                >
-                                    <Markdown text={body()} />
-                                </Show>
-                            </div>
-                        }
-                    >
-                        <label class="visually-hidden" for={inputId('body')}>
-                            {t('editor.body', 'Text')}
-                        </label>
-                        <textarea
-                            id={inputId('body')}
-                            name="body"
-                            class="note-body-input"
-                            classList={{ invalid: !!errors().body?.length }}
-                            placeholder={t(
-                                'editor.placeholder',
-                                'Write in Markdown: # heading, **bold**, - list, [link](https://…)'
-                            )}
-                            rows={12}
-                            maxLength={100000}
-                            disabled={busy()}
-                            value={body()}
-                            onInput={(e) => setBody(e.currentTarget.value)}
-                        />
-                    </Show>
-                </div>
+                    rows={12}
+                    maxLength={100000}
+                    disabled={busy()}
+                    value={body()}
+                    onInput={setBody}
+                />
 
                 <Show when={isOwner()}>
                     <Switch

@@ -229,47 +229,6 @@
   color: var(--text);
 }
 
-.package-readme {
-  display: grid;
-  gap: 8px;
-}
-
-.package-readme-preview {
-  min-height: 10rem;
-  padding: 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-}
-
-.package-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 12rem;
-  padding: 10px 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  background: var(--surface-raised);
-  font: inherit;
-  font-family: var(--font-secondary);
-  font-size: 0.9rem;
-  color: var(--text);
-  resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
-  }
-
-  &.invalid {
-    box-shadow: 0 0 0 2px var(--danger);
-  }
-}
-
-.package-textarea-short {
-  min-height: 6rem;
-}
-
 .package-picker,
 .package-connections {
   display: grid;

@@ -1,0 +1,16 @@
+// A MarkdownEditor: the tabs, then the text area or the preview, 8px apart.
+.markdown-editor {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+// The preview in the text area's frame, about as tall, scrolled when long.
+.markdown-editor-preview {
+  min-height: 14rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+}
