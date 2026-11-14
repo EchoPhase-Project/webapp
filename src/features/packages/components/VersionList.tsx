@@ -8,7 +8,7 @@ import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import LoadError from '@shared/ui/LoadError';
 import {
-    restoreWorkflowVersion,
+    restoreWorkflowVersionMutation,
     workflowExportUrl,
     workflowVersionsQuery,
 } from '@features/packages/api/workflows';
@@ -16,35 +16,29 @@ import {
 /**
  * Its saved versions, newest first: one per change of the program. An old
  * one can be exported, or restored: as a new version on top, history kept.
- * A save of the workflow (`onRestored` here, its other editors elsewhere)
+ * A save of the workflow (a restore here, its other editors elsewhere)
  * asks the list again.
  */
-export default function VersionList(props: {
-    workflow: Workflow;
-    onRestored: (workflow: Workflow) => void;
-}) {
+export default function VersionList(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
     const versions = useQuery(() => workflowVersionsQuery(props.workflow.id));
     const [restoring, setRestoring] = createSignal<WorkflowVersion | null>(
         null
     );
-    const { busy, errors, setErrors, run } = createSubmit();
+    const { busy, errors, setErrors, mutation } = createSubmit();
+    const bringBack = mutation(restoreWorkflowVersionMutation);
 
     // A failure (the workflow changed meanwhile) shows in the dialog, which
     // stays open.
     function restore(version: WorkflowVersion) {
-        return run(
-            () =>
-                restoreWorkflowVersion(
-                    props.workflow.id,
-                    version.version,
-                    props.workflow.version
-                ),
-            (workflow) => {
-                setRestoring(null);
-                props.onRestored(workflow);
-            }
+        return bringBack.run(
+            {
+                id: props.workflow.id,
+                version: version.version,
+                currentVersion: props.workflow.version,
+            },
+            () => setRestoring(null)
         );
     }
 

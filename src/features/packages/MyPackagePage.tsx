@@ -1,18 +1,17 @@
 import { createEffect, createSignal, Match, Show, Switch } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
-import { useQuery, useQueryClient } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { isNotFound } from '@shared/api/client';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
-import type { WorkflowSummary } from '@shared/api/types';
 import BackLink from '@shared/ui/BackLink';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
 import { NavTabs } from '@shared/ui/Tabs';
-import { packageKeys, packageWorkflowsQuery } from './api/packages';
+import { packageWorkflowsQuery } from './api/packages';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageOrigin from './components/PackageOrigin';
 import PackageSettings from './components/PackageSettings';
@@ -34,7 +33,6 @@ export default function MyPackagePage() {
     const params = useParams<{ id: string; section?: string }>();
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
 
     const section = (): Section =>
         SECTIONS.includes(params.section as Section)
@@ -66,15 +64,6 @@ export default function MyPackagePage() {
 
     const names = () =>
         Object.fromEntries((workflows.data ?? []).map((w) => [w.id, w.name]));
-
-    // A workflow switched on or off: its row changes at once.
-    function changed(workflow: WorkflowSummary) {
-        queryClient.setQueryData(
-            packageKeys.workflows(params.id),
-            (list: WorkflowSummary[] | undefined) =>
-                list?.map((w) => (w.id === workflow.id ? workflow : w))
-        );
-    }
 
     const back = () => (
         <BackLink href="/packages" label={t('packages.title', 'Packages')} />
@@ -147,7 +136,6 @@ export default function MyPackagePage() {
                                 pkg={p()}
                                 workflows={workflows.data ?? []}
                                 loading={!workflows.isSuccess}
-                                onChange={changed}
                             />
                         </Show>
                         <Show when={section() === 'runs'}>

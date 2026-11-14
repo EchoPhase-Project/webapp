@@ -26,10 +26,7 @@ type Schedule = Workflow['schedules'][number];
  * zone it is read in, when it fires next; adding one (it starts the
  * workflow where its other triggers do), editing or deleting one.
  */
-export default function ScheduleTable(props: {
-    workflow: Workflow;
-    onChange: (workflow: Workflow) => void;
-}) {
+export default function ScheduleTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
     // Editing: null, closed; 'new', adding; a schedule, editing it.
@@ -42,10 +39,7 @@ export default function ScheduleTable(props: {
         setEditing,
         setDeleting,
         deleting,
-    } = useProgramSave<Schedule, Schedule | 'new'>(
-        () => props.workflow,
-        (saved) => props.onChange(saved)
-    );
+    } = useProgramSave<Schedule, Schedule | 'new'>(() => props.workflow);
 
     async function submit(cron: string, zone: string) {
         const target = editing();

@@ -8,7 +8,7 @@ import {
     type Component,
 } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
-import { useQuery, useQueryClient } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import {
     IconApi,
     IconCaretRightFilled,
@@ -32,12 +32,10 @@ import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
 import { NavTabs } from '@shared/ui/Tabs';
 import Switch from '@shared/ui/Switch';
-import { packageKeys } from '@features/packages/api/packages';
 import {
-    deleteWorkflow,
-    setActive,
+    deleteWorkflowMutation,
+    updateWorkflowMutation,
     workflowExportUrl,
-    workflowKeys,
     workflowQuery,
 } from '@features/packages/api/workflows';
 import {
@@ -72,7 +70,6 @@ export default function WorkflowDetails(props: {
     const date = useDateFormat();
     const navigate = useNavigate();
     const [params] = useSearchParams<{ edited?: string }>();
-    const queryClient = useQueryClient();
 
     const workflow = useQuery(() => workflowQuery(props.id));
     // Webhooks only while it has a WebhookTrigger.
@@ -125,7 +122,9 @@ export default function WorkflowDetails(props: {
     );
     const [running, setRunning] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const { busy, errors, setErrors, run } = createSubmit();
+    const { busy, errors, setErrors, mutation } = createSubmit();
+    const updating = mutation(updateWorkflowMutation);
+    const removing = mutation(deleteWorkflowMutation);
 
     usePageMeta(() => ({
         title: workflow.data?.name ?? t('title', 'Workflows'),
@@ -143,39 +142,16 @@ export default function WorkflowDetails(props: {
         )
     );
 
-    // Until step 9's mutations: a save puts the workflow the server answered
-    // in the cache; its versions and its package's list are asked again.
-    function saved(w: Workflow) {
-        queryClient.setQueryData(workflowKeys.detail(w.id), w);
-        void queryClient.invalidateQueries({
-            queryKey: workflowKeys.versions(w.id),
-        });
-        void queryClient.invalidateQueries({
-            queryKey: packageKeys.workflows(w.packageId),
-        });
-    }
-
     async function toggle(w: Workflow, active: boolean) {
-        await run(() => setActive(w, active), saved);
+        await updating.run({ workflow: w, changes: { active } });
     }
 
     // A failure: called by another workflow, or the package's error workflow.
     async function remove() {
         try {
-            await run(
-                () => deleteWorkflow(props.id),
-                () => {
-                    queryClient.removeQueries({
-                        queryKey: workflowKeys.detail(props.id),
-                    });
-                    void queryClient.invalidateQueries({
-                        queryKey: packageKeys.workflows(props.packageId),
-                    });
-                    void queryClient.invalidateQueries({
-                        queryKey: packageKeys.mine(),
-                    });
-                    navigate(packagePath(props.packageId));
-                }
+            await removing.run(
+                { id: props.id, packageId: props.packageId },
+                () => navigate(packagePath(props.packageId))
             );
         } finally {
             setDeleting(false);
@@ -282,22 +258,16 @@ export default function WorkflowDetails(props: {
                                 <ProgramOverview workflow={w()} />
                             </Show>
                             <Show when={tab() === 'webhooks'}>
-                                <WebhookTable workflow={w()} onChange={saved} />
+                                <WebhookTable workflow={w()} />
                             </Show>
                             <Show when={tab() === 'schedules'}>
-                                <ScheduleTable
-                                    workflow={w()}
-                                    onChange={saved}
-                                />
+                                <ScheduleTable workflow={w()} />
                             </Show>
                             <Show when={tab() === 'runs'}>
                                 <RunList workflowId={w().id} />
                             </Show>
                             <Show when={tab() === 'versions'}>
-                                <VersionList
-                                    workflow={w()}
-                                    onRestored={saved}
-                                />
+                                <VersionList workflow={w()} />
                             </Show>
                         </div>
 

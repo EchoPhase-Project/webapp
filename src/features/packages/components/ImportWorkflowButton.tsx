@@ -1,11 +1,9 @@
-import { createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { useQueryClient } from '@tanstack/solid-query';
+import { createSubmit } from '@shared/api/submit';
 import type { ErrorItem } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import FilePicker from '@shared/ui/FilePicker';
-import { packageKeys } from '@features/packages/api/packages';
-import { importWorkflow } from '@features/packages/api/workflows';
+import { importWorkflowMutation } from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';
 
 /**
@@ -18,32 +16,24 @@ export default function ImportWorkflowButton(props: {
 }) {
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const [busy, setBusy] = createSignal(false);
+    const { busy, mutation } = createSubmit();
+    const importing = mutation(importWorkflowMutation);
 
-    async function upload(file: File) {
-        setBusy(true);
-        try {
-            const result = await importWorkflow(file, props.packageId);
-            if (!result.ok) {
-                props.onErrors(result.errors);
-                return;
+    function upload(file: File) {
+        return importing.run(
+            { file, packageId: props.packageId },
+            ({ workflow: w, intact }) => {
+                props.onErrors([]);
+                navigate(
+                    `${packagePath(w.packageId)}/${w.id}${intact ? '' : '?edited=1'}`
+                );
+            },
+            // The page shows them, next to its other errors.
+            (errors) => {
+                props.onErrors(errors);
+                return {};
             }
-            props.onErrors([]);
-            const w = result.data.workflow;
-            // Its package has one more workflow (or is new): asked again.
-            void queryClient.invalidateQueries({
-                queryKey: packageKeys.workflows(w.packageId),
-            });
-            void queryClient.invalidateQueries({
-                queryKey: packageKeys.mine(),
-            });
-            navigate(
-                `${packagePath(w.packageId)}/${w.id}${result.data.intact ? '' : '?edited=1'}`
-            );
-        } finally {
-            setBusy(false);
-        }
+        );
     }
 
     return (

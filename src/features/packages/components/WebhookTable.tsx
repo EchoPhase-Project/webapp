@@ -39,10 +39,7 @@ function respondLabel(
  * the secret (shown on request, copyable), what the caller gets back, and
  * editing (the answer, a new secret) or deleting one.
  */
-export default function WebhookTable(props: {
-    workflow: Workflow;
-    onChange: (workflow: Workflow) => void;
-}) {
+export default function WebhookTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const [shown, setShown] = createSignal<number | null>(null);
     const { copied, copy } = createClipboard();
@@ -55,10 +52,7 @@ export default function WebhookTable(props: {
         setEditing,
         setDeleting,
         deleting,
-    } = useProgramSave<Webhook>(
-        () => props.workflow,
-        (saved) => props.onChange(saved)
-    );
+    } = useProgramSave<Webhook>(() => props.workflow);
 
     const url = (hook: Webhook) => `${location.origin}${hook.path}`;
     const secret = (hook: Webhook) => {
