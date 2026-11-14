@@ -1,13 +1,10 @@
 import {
     mutationOptions,
     queryOptions,
-    useMutation,
     useQuery,
-    useQueryClient,
-    type MutationOptions,
     type QueryClient,
 } from '@tanstack/solid-query';
-import { api, ApiError, request, type ApiResult } from './client';
+import { api, ApiError, request } from './client';
 import { authKeys } from './auth-keys';
 import { safeNext } from './auth-guards';
 import { endSession, startSession } from './session-provider';
@@ -116,27 +113,5 @@ export function useAuth() {
         roles: () => roles.data,
         isAuthenticated: () => !!me.data,
         authError: () => me.error,
-    };
-}
-
-/**
- * Transitional, until createSubmit takes mutations: a mutation description
- * as a call that answers an ApiResult, for `run(() => call(v))`. Called
- * while the component is made (it takes the session's client).
- */
-export function useResultMutation<TData, TVariables>(
-    describe: (
-        queryClient: QueryClient
-    ) => MutationOptions<TData, Error, TVariables>
-): (variables: TVariables) => Promise<ApiResult<TData>> {
-    const queryClient = useQueryClient();
-    const mutation = useMutation(() => describe(queryClient));
-    return async (variables) => {
-        try {
-            return { ok: true, data: await mutation.mutateAsync(variables) };
-        } catch (e) {
-            if (e instanceof ApiError) return { ok: false, errors: e.errors };
-            throw e;
-        }
     };
 }

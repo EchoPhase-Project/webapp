@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
 import { IconLock, IconTags, IconUser } from '@shared/ui/icons';
-import { registerMutation, useResultMutation } from '@shared/api/auth';
+import { registerMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -24,8 +24,8 @@ export default function RegisterForm(props: {
         password: '',
     });
 
-    const { busy, errors, run } = createSubmit(FIELDS);
-    const register = useResultMutation(registerMutation);
+    const { busy, errors, mutation } = createSubmit(FIELDS);
+    const register = mutation(registerMutation);
 
     const i18n = useI18n();
     const t = useLocalizer('auth');
@@ -35,15 +35,13 @@ export default function RegisterForm(props: {
     async function handleRegister(e: Event) {
         e.preventDefault();
         // The zone is the browser's, not a field: the user can change it later.
-        await run(() =>
-            register({
-                data: {
-                    ...registerForm(),
-                    timeZone: DateHelper.browserTimeZone(),
-                },
-                next: props.next,
-            })
-        );
+        await register.run({
+            data: {
+                ...registerForm(),
+                timeZone: DateHelper.browserTimeZone(),
+            },
+            next: props.next,
+        });
     }
 
     return (

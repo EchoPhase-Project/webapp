@@ -10,10 +10,10 @@ import {
     logoutMutation,
     meQuery,
     useAuth,
-    useResultMutation,
 } from './auth';
 import { ApiError } from './client';
 import { CsrfService } from './csrf';
+import { createSubmit } from './submit';
 import {
     onSessionChange,
     sessionClient,
@@ -120,11 +120,11 @@ describe('meQuery', () => {
 
 describe('loginMutation', () => {
     function Login() {
-        const login = useResultMutation(loginMutation);
+        const login = createSubmit().mutation(loginMutation);
         return (
             <button
                 onClick={() =>
-                    void login({
+                    void login.run({
                         credentials: { username: 'anna', password: 'pw' },
                         next: '/notes',
                     })
@@ -211,8 +211,8 @@ describe('loginMutation', () => {
 
 describe('logoutMutation', () => {
     function Logout() {
-        const logout = useResultMutation(logoutMutation);
-        return <button onClick={() => void logout()}>log out</button>;
+        const logout = createSubmit().mutation(logoutMutation);
+        return <button onClick={() => void logout.run()}>log out</button>;
     }
 
     const signedInAs = (token: string) => ({

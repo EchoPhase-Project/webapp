@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import { updateProfileMutation, useResultMutation } from '@shared/api/auth';
+import { updateProfileMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { User } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -13,7 +13,6 @@ const inputId = (field: string) => `profile-${field}`;
 
 /** The name, username and time zone; sends only what changed. */
 export default function ProfileForm(props: { user: User }) {
-    const updateProfile = useResultMutation(updateProfileMutation);
     const t = useLocalizer('profile');
     // Seeded once: the user is in the props, edits stay local until saved.
     // eslint-disable-next-line solid/reactivity
@@ -22,7 +21,8 @@ export default function ProfileForm(props: { user: User }) {
     const [username, setUsername] = createSignal(props.user.userName ?? '');
     // eslint-disable-next-line solid/reactivity
     const [timeZone, setTimeZone] = createSignal(props.user.timeZone);
-    const { busy, errors, run } = createSubmit(FIELDS);
+    const { busy, errors, mutation } = createSubmit(FIELDS);
+    const updateProfile = mutation(updateProfileMutation);
     const [saved, setSaved] = createSignal(false);
 
     const changed = () =>
@@ -33,22 +33,18 @@ export default function ProfileForm(props: { user: User }) {
     async function save(e: Event) {
         e.preventDefault();
         setSaved(false);
-        await run(
-            () =>
-                updateProfile({
-                    name:
-                        name().trim() !== props.user.name
-                            ? name().trim()
-                            : null,
-                    username:
-                        username().trim() !== (props.user.userName ?? '')
-                            ? username().trim()
-                            : null,
-                    timeZone:
-                        timeZone().trim() !== props.user.timeZone
-                            ? timeZone().trim()
-                            : null,
-                }),
+        await updateProfile.run(
+            {
+                name: name().trim() !== props.user.name ? name().trim() : null,
+                username:
+                    username().trim() !== (props.user.userName ?? '')
+                        ? username().trim()
+                        : null,
+                timeZone:
+                    timeZone().trim() !== props.user.timeZone
+                        ? timeZone().trim()
+                        : null,
+            },
             () => setSaved(true)
         );
     }

@@ -4,10 +4,11 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { Route } from '@solidjs/router';
 import { fakeApi, json, signedIn, user } from '@shared/testing/fake-api';
 import { renderRoutes } from '@shared/testing/render-page';
-import { logoutMutation, useResultMutation } from './auth';
+import { logoutMutation } from './auth';
 import { authKeys } from './auth-keys';
 import { api, send } from './client';
 import { outage } from './outage-watch';
+import { createSubmit } from './submit';
 import { sessionClient } from './session-provider';
 import { SignedIn, SignedOut, requireAuth, safeNext } from './auth-guards';
 
@@ -31,11 +32,11 @@ describe('safeNext', () => {
 });
 
 function SecretPage() {
-    const logout = useResultMutation(logoutMutation);
+    const logout = createSubmit().mutation(logoutMutation);
     return (
         <>
             <p>secret page</p>
-            <button onClick={() => void logout()}>log out</button>
+            <button onClick={() => void logout.run()}>log out</button>
         </>
     );
 }
