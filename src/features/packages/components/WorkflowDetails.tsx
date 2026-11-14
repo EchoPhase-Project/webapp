@@ -104,7 +104,7 @@ export default function WorkflowDetails(props: {
     };
 
     // In the navigation: its own parts, then back to its package.
-    const [pkg] = usePackage(
+    const pkg = usePackage(
         () => props.packageId,
         () => {
             const w = workflow();
@@ -165,7 +165,7 @@ export default function WorkflowDetails(props: {
     const back = () => (
         <BackLink
             href={packagePath(props.packageId)}
-            label={pkg()?.name ?? t('back', 'Package')}
+            label={pkg.data?.name ?? t('back', 'Package')}
         />
     );
 

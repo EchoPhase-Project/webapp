@@ -1,8 +1,10 @@
 import { createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import { useQueryClient } from '@tanstack/solid-query';
 import type { ErrorItem } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import FilePicker from '@shared/ui/FilePicker';
+import { packageKeys } from '@features/packages/api/packages';
 import { importWorkflow } from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';
 
@@ -16,6 +18,7 @@ export default function ImportWorkflowButton(props: {
 }) {
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [busy, setBusy] = createSignal(false);
 
     async function upload(file: File) {
@@ -28,6 +31,13 @@ export default function ImportWorkflowButton(props: {
             }
             props.onErrors([]);
             const w = result.data.workflow;
+            // Its package has one more workflow (or is new): asked again.
+            void queryClient.invalidateQueries({
+                queryKey: packageKeys.workflows(w.packageId),
+            });
+            void queryClient.invalidateQueries({
+                queryKey: packageKeys.mine(),
+            });
             navigate(
                 `${packagePath(w.packageId)}/${w.id}${result.data.intact ? '' : '?edited=1'}`
             );

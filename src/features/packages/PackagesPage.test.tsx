@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { screen } from '@solidjs/testing-library';
+import { fireEvent, screen } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { pkg } from './fixtures';
@@ -62,5 +62,27 @@ describe('PackagesPage', () => {
                 await screen.findByRole('link', { name: 'Find one in Explore' })
             ).getAttribute('href')
         ).toBe('/explore');
+    });
+
+    it('shows a failed read with a retry, not “no packages”', async () => {
+        let broken = true;
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/workflow-packages': () =>
+                broken
+                    ? json(500, { code: 'TestBroken', message: 'Try later.' })
+                    : json(200, [pkg({ name: 'Mine', access: 'Owner' })]),
+        });
+
+        renderPage(() => <PackagesPage />);
+
+        expect((await screen.findByRole('alert')).textContent).toBe(
+            'Try later.'
+        );
+        expect(screen.queryByText(/No packages yet/)).toBeNull();
+
+        broken = false;
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+        expect(await screen.findByRole('link', { name: 'Mine' })).toBeTruthy();
     });
 });

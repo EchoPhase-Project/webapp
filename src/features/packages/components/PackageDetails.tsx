@@ -1,8 +1,9 @@
-import { createResource, createSignal, For, Show } from 'solid-js';
+import { createSignal, For, Match, Show, Switch } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
+import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth';
-import { dataOr } from '@shared/api/client';
+import { isNotFound } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -11,12 +12,14 @@ import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import LoadError from '@shared/ui/LoadError';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
 import {
-    getContent,
-    getPackage,
-    listPackageVersions,
+    packageContentQuery,
+    packageKeys,
+    packageQuery,
+    packageVersionsQuery,
     unsharePackage,
 } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
@@ -32,43 +35,41 @@ export default function PackageDetails(props: { id: string }) {
     const t = useLocalizer('packages');
     const { user } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const [pkg, { mutate }] = createResource(
-        () => props.id,
-        async (id) => {
-            const result = await getPackage(id);
-            return dataOr(result, null);
-        }
-    );
-    const [content] = createResource(
-        () => (pkg() ? props.id : false),
-        async (id) => {
-            const result = await getContent(id);
-            return dataOr(result, null);
-        }
-    );
-    const [versions] = createResource(
-        () => (pkg() ? props.id : false),
-        listPackageVersions
-    );
+    // The three at once: the package, its latest version (none before the
+    // first publish: a 404, nothing to install), its versions.
+    const pkg = useQuery(() => packageQuery(props.id));
+    const content = useQuery(() => packageContentQuery(props.id));
+    const versions = useQuery(() => packageVersionsQuery(props.id));
 
     const [installing, setInstalling] = createSignal(false);
     const leaving = createSubmit();
     usePageMeta(() => ({
-        title: pkg()?.name ?? t('title', 'Explore'),
+        title: pkg.data?.name ?? t('title', 'Explore'),
         description:
-            pkg()?.summary ||
+            pkg.data?.summary ||
             t('description', 'Workflow packages to read and install.'),
     }));
 
-    const isOwner = () => pkg()?.access === 'Owner';
+    const isOwner = () => pkg.data?.access === 'Owner';
     const date = useDateFormat();
 
     // A failure shows above the button.
     function leave() {
         return leaving.run(
             () => unsharePackage(props.id, user()?.id ?? ''),
-            () => navigate('/packages')
+            () => {
+                // Until step 9's mutation: gone for the caller, all about it
+                // dropped.
+                queryClient.removeQueries({
+                    queryKey: packageKeys.detail(props.id),
+                });
+                void queryClient.invalidateQueries({
+                    queryKey: packageKeys.mine(),
+                });
+                navigate('/packages');
+            }
         );
     }
 
@@ -77,10 +78,9 @@ export default function PackageDetails(props: { id: string }) {
     );
 
     return (
-        <Show
-            when={pkg()}
+        <Switch
             fallback={
-                <Show when={!pkg.loading}>
+                <>
                     {back()}
                     <EmptyState>
                         {t(
@@ -88,246 +88,309 @@ export default function PackageDetails(props: { id: string }) {
                             'This package does not exist, or it is not shared with you.'
                         )}
                     </EmptyState>
-                </Show>
+                </>
             }
         >
-            {(p) => (
-                <div class="page-stack package-page">
-                    {back()}
-                    <PageHeader
-                        eyebrow={t('eyebrow', 'Workflows')}
-                        title={
-                            <>
-                                {p().name}{' '}
-                                <VisibilityBadge visibility={p().visibility} />
-                            </>
-                        }
-                        description={p().summary || undefined}
-                        meta={
-                            <span class="package-meta">
-                                <span>
-                                    {t('by', 'by {name}', {
-                                        name:
-                                            p().owner.name ||
-                                            `@${p().owner.userName ?? ''}`,
-                                    })}
-                                </span>
-                                <span>
-                                    {t('card.installs', '{count} installs', {
-                                        count: p().installs,
-                                    })}
-                                </span>
-                                <span>
-                                    {t('updated', 'updated {date}', {
-                                        date: date(p().updatedAt),
-                                    })}
-                                </span>
-                            </span>
-                        }
-                        actions={
-                            <Button
-                                disabled={!content()}
-                                onClick={() => setInstalling(true)}
-                            >
-                                <IconDownload />
-                                {t('install.open', 'Install')}
-                            </Button>
-                        }
-                    />
-
-                    <Show when={p().tags.length > 0}>
-                        <ul
-                            class="package-tags"
-                            aria-label={t('ui.tags', 'Tags')}
-                        >
-                            <For each={p().tags}>
-                                {(tag) => (
-                                    <li>
-                                        <A
-                                            class={tagClass(tag)}
-                                            href={`/explore?tag=${encodeURIComponent(tag)}`}
-                                        >
-                                            {tag}
-                                        </A>
-                                    </li>
-                                )}
-                            </For>
-                        </ul>
-                    </Show>
-
-                    <div class="package-layout">
-                        <div class="package-readme-view card">
-                            <Show
-                                when={p().readme.trim()}
-                                fallback={
-                                    <p class="muted">
-                                        {t('no_readme', 'No README.')}
-                                    </p>
-                                }
-                            >
-                                <Markdown text={p().readme} />
-                            </Show>
-                        </div>
-
-                        <aside class="package-side">
-                            <Show when={isOwner()}>
-                                <section class="actions-row">
-                                    <A
-                                        class="btn btn-ghost"
-                                        href={packagePath(p().id, 'settings')}
-                                    >
+            <Match when={pkg.data}>
+                {(p) => (
+                    <div class="page-stack package-page">
+                        {back()}
+                        <PageHeader
+                            eyebrow={t('eyebrow', 'Workflows')}
+                            title={
+                                <>
+                                    {p().name}{' '}
+                                    <VisibilityBadge
+                                        visibility={p().visibility}
+                                    />
+                                </>
+                            }
+                            description={p().summary || undefined}
+                            meta={
+                                <span class="package-meta">
+                                    <span>
+                                        {t('by', 'by {name}', {
+                                            name:
+                                                p().owner.name ||
+                                                `@${p().owner.userName ?? ''}`,
+                                        })}
+                                    </span>
+                                    <span>
                                         {t(
-                                            'manage',
-                                            'Manage it in your packages'
+                                            'card.installs',
+                                            '{count} installs',
+                                            {
+                                                count: p().installs,
+                                            }
                                         )}
-                                    </A>
-                                </section>
-                            </Show>
+                                    </span>
+                                    <span>
+                                        {t('updated', 'updated {date}', {
+                                            date: date(p().updatedAt),
+                                        })}
+                                    </span>
+                                </span>
+                            }
+                            actions={
+                                <Button
+                                    disabled={!content.data}
+                                    onClick={() => setInstalling(true)}
+                                >
+                                    <IconDownload />
+                                    {t('install.open', 'Install')}
+                                </Button>
+                            }
+                        />
 
-                            <Show when={content()}>
-                                {(c) => (
-                                    <>
-                                        <section class="package-side-section">
-                                            <h2>
-                                                {t(
-                                                    'workflows',
-                                                    'Workflows in version {version}',
-                                                    { version: c().version }
-                                                )}
-                                            </h2>
-                                            <ul class="package-list">
-                                                <For each={c().workflows}>
-                                                    {(w) => (
-                                                        <li>
-                                                            <span>
-                                                                {w.name}
-                                                            </span>
-                                                            <Show when={w.main}>
-                                                                <span class="badge">
-                                                                    {t(
-                                                                        'editor.main',
-                                                                        'main'
-                                                                    )}
-                                                                </span>
-                                                            </Show>
-                                                            <span class="muted">
-                                                                {t(
-                                                                    'blocks',
-                                                                    '{count} blocks',
-                                                                    {
-                                                                        count: w
-                                                                            .program
-                                                                            .blocks
-                                                                            .length,
-                                                                    }
-                                                                )}
-                                                            </span>
-                                                        </li>
-                                                    )}
-                                                </For>
-                                            </ul>
-                                        </section>
-                                        <Show when={c().connections.length > 0}>
+                        <Show when={p().tags.length > 0}>
+                            <ul
+                                class="package-tags"
+                                aria-label={t('ui.tags', 'Tags')}
+                            >
+                                <For each={p().tags}>
+                                    {(tag) => (
+                                        <li>
+                                            <A
+                                                class={tagClass(tag)}
+                                                href={`/explore?tag=${encodeURIComponent(tag)}`}
+                                            >
+                                                {tag}
+                                            </A>
+                                        </li>
+                                    )}
+                                </For>
+                            </ul>
+                        </Show>
+
+                        <div class="package-layout">
+                            <div class="package-readme-view card">
+                                <Show
+                                    when={p().readme.trim()}
+                                    fallback={
+                                        <p class="muted">
+                                            {t('no_readme', 'No README.')}
+                                        </p>
+                                    }
+                                >
+                                    <Markdown text={p().readme} />
+                                </Show>
+                            </div>
+
+                            <aside class="package-side">
+                                <Show when={isOwner()}>
+                                    <section class="actions-row">
+                                        <A
+                                            class="btn btn-ghost"
+                                            href={packagePath(
+                                                p().id,
+                                                'settings'
+                                            )}
+                                        >
+                                            {t(
+                                                'manage',
+                                                'Manage it in your packages'
+                                            )}
+                                        </A>
+                                    </section>
+                                </Show>
+
+                                <Show
+                                    when={
+                                        content.isError &&
+                                        !isNotFound(content.error) &&
+                                        content.error
+                                    }
+                                >
+                                    {(error) => (
+                                        <LoadError
+                                            error={error()}
+                                            busy={content.isFetching}
+                                            onRetry={() => content.refetch()}
+                                        />
+                                    )}
+                                </Show>
+                                <Show when={content.data}>
+                                    {(c) => (
+                                        <>
                                             <section class="package-side-section">
                                                 <h2>
                                                     {t(
-                                                        'install.connections',
-                                                        'Connections they use'
+                                                        'workflows',
+                                                        'Workflows in version {version}',
+                                                        { version: c().version }
                                                     )}
                                                 </h2>
                                                 <ul class="package-list">
-                                                    <For each={c().connections}>
-                                                        {(needed) => (
+                                                    <For each={c().workflows}>
+                                                        {(w) => (
                                                             <li>
                                                                 <span>
-                                                                    {
-                                                                        needed.name
-                                                                    }
+                                                                    {w.name}
                                                                 </span>
                                                                 <Show
                                                                     when={
-                                                                        needed.provider
+                                                                        w.main
                                                                     }
                                                                 >
-                                                                    {(
-                                                                        provider
-                                                                    ) => (
-                                                                        <span class="muted">
-                                                                            {provider()}
-                                                                        </span>
-                                                                    )}
+                                                                    <span class="badge">
+                                                                        {t(
+                                                                            'editor.main',
+                                                                            'main'
+                                                                        )}
+                                                                    </span>
                                                                 </Show>
+                                                                <span class="muted">
+                                                                    {t(
+                                                                        'blocks',
+                                                                        '{count} blocks',
+                                                                        {
+                                                                            count: w
+                                                                                .program
+                                                                                .blocks
+                                                                                .length,
+                                                                        }
+                                                                    )}
+                                                                </span>
                                                             </li>
                                                         )}
                                                     </For>
                                                 </ul>
                                             </section>
-                                        </Show>
-                                    </>
-                                )}
-                            </Show>
+                                            <Show
+                                                when={
+                                                    c().connections.length > 0
+                                                }
+                                            >
+                                                <section class="package-side-section">
+                                                    <h2>
+                                                        {t(
+                                                            'install.connections',
+                                                            'Connections they use'
+                                                        )}
+                                                    </h2>
+                                                    <ul class="package-list">
+                                                        <For
+                                                            each={
+                                                                c().connections
+                                                            }
+                                                        >
+                                                            {(needed) => (
+                                                                <li>
+                                                                    <span>
+                                                                        {
+                                                                            needed.name
+                                                                        }
+                                                                    </span>
+                                                                    <Show
+                                                                        when={
+                                                                            needed.provider
+                                                                        }
+                                                                    >
+                                                                        {(
+                                                                            provider
+                                                                        ) => (
+                                                                            <span class="muted">
+                                                                                {provider()}
+                                                                            </span>
+                                                                        )}
+                                                                    </Show>
+                                                                </li>
+                                                            )}
+                                                        </For>
+                                                    </ul>
+                                                </section>
+                                            </Show>
+                                        </>
+                                    )}
+                                </Show>
 
-                            <section class="package-side-section">
-                                <h2>{t('versions', 'Versions')}</h2>
-                                <ol class="package-versions">
-                                    <For each={versions()}>
-                                        {(v) => (
-                                            <li>
-                                                <span class="package-version-head">
-                                                    <strong>
-                                                        v{v.version}
-                                                    </strong>
-                                                    <span class="muted">
-                                                        {date(v.createdAt)}
-                                                    </span>
-                                                </span>
-                                                <Show when={v.changelog.trim()}>
-                                                    <Markdown
-                                                        text={v.changelog}
-                                                        class="package-changelog"
-                                                    />
-                                                </Show>
-                                            </li>
+                                <section class="package-side-section">
+                                    <h2>{t('versions', 'Versions')}</h2>
+                                    <Show
+                                        when={
+                                            versions.isError && versions.error
+                                        }
+                                    >
+                                        {(error) => (
+                                            <LoadError
+                                                error={error()}
+                                                busy={versions.isFetching}
+                                                onRetry={() =>
+                                                    versions.refetch()
+                                                }
+                                            />
                                         )}
-                                    </For>
-                                </ol>
-                            </section>
+                                    </Show>
+                                    <ol class="package-versions">
+                                        <For each={versions.data}>
+                                            {(v) => (
+                                                <li>
+                                                    <span class="package-version-head">
+                                                        <strong>
+                                                            v{v.version}
+                                                        </strong>
+                                                        <span class="muted">
+                                                            {date(v.createdAt)}
+                                                        </span>
+                                                    </span>
+                                                    <Show
+                                                        when={v.changelog.trim()}
+                                                    >
+                                                        <Markdown
+                                                            text={v.changelog}
+                                                            class="package-changelog"
+                                                        />
+                                                    </Show>
+                                                </li>
+                                            )}
+                                        </For>
+                                    </ol>
+                                </section>
 
-                            <Show
-                                when={
-                                    !isOwner() && p().visibility === 'Private'
-                                }
-                            >
-                                <ErrorSummary errors={leaving.errors()} />
-                                <Button
-                                    variant="ghost"
-                                    disabled={leaving.busy()}
-                                    onClick={() => void leave()}
+                                <Show
+                                    when={
+                                        !isOwner() &&
+                                        p().visibility === 'Private'
+                                    }
                                 >
-                                    {t('leave', 'Leave this package')}
-                                </Button>
-                            </Show>
-                        </aside>
-                    </div>
+                                    <ErrorSummary errors={leaving.errors()} />
+                                    <Button
+                                        variant="ghost"
+                                        disabled={leaving.busy()}
+                                        onClick={() => void leave()}
+                                    >
+                                        {t('leave', 'Leave this package')}
+                                    </Button>
+                                </Show>
+                            </aside>
+                        </div>
 
-                    <Show when={content()}>
-                        {(c) => (
-                            <InstallModal
-                                open={installing()}
-                                packageId={p().id}
-                                content={c()}
-                                onClose={() => {
-                                    setInstalling(false);
-                                    // The count may have grown.
-                                    void getPackage(p().id).then(
-                                        (r) => r.ok && mutate(r.data)
-                                    );
-                                }}
-                            />
-                        )}
-                    </Show>
-                </div>
-            )}
-        </Show>
+                        <Show when={content.data}>
+                            {(c) => (
+                                <InstallModal
+                                    open={installing()}
+                                    packageId={p().id}
+                                    content={c()}
+                                    onClose={() => setInstalling(false)}
+                                />
+                            )}
+                        </Show>
+                    </div>
+                )}
+            </Match>
+            <Match when={pkg.isPending}>{null}</Match>
+            <Match when={pkg.isError && !isNotFound(pkg.error) && pkg.error}>
+                {(error) => (
+                    <div class="page-stack">
+                        {back()}
+                        <LoadError
+                            error={error()}
+                            busy={pkg.isFetching}
+                            onRetry={() => pkg.refetch()}
+                        />
+                    </div>
+                )}
+            </Match>
+        </Switch>
     );
 }

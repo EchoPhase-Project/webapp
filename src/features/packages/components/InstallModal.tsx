@@ -1,5 +1,6 @@
-import { createResource, createSignal, For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
+import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import type {
     ConnectionSummary,
     PackageConnection,
@@ -9,10 +10,12 @@ import type {
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import LoadError from '@shared/ui/LoadError';
 import Select from '@shared/ui/Select';
 import Modal from '@shared/ui/Modal';
 import { createSubmit } from '@shared/api/submit';
-import { installPackage, myConnections } from '@features/packages/api/packages';
+import { myConnectionsQuery } from '@features/packages/api/connections';
+import { installPackage, packageKeys } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 
 const inputId = (field: string) => `package-install-${field}`;
@@ -88,13 +91,15 @@ function InstallForm(props: {
     onInstalled: (install: PackageInstall) => void;
 }) {
     const t = useLocalizer('packages');
-    const [mine] = createResource(myConnections);
+    const queryClient = useQueryClient();
+    const connections = useQuery(() => myConnectionsQuery());
+    const mine = () => connections.data ?? [];
     const [chosen, setChosen] = createSignal<Record<string, string>>({});
     const { busy, errors, run } = createSubmit();
 
     // Until the user picks, the same-named connection (or none).
     const choiceOf = (needed: PackageConnection) =>
-        chosen()[needed.name] ?? defaultChoice(needed, mine() ?? []);
+        chosen()[needed.name] ?? defaultChoice(needed, mine());
 
     async function install(e: Event) {
         e.preventDefault();
@@ -111,13 +116,33 @@ function InstallForm(props: {
                     props.content.version,
                     connections
                 ),
-            (installed) => props.onInstalled(installed)
+            (installed) => {
+                // Until step 9's mutation: a new package of the caller's,
+                // and one more install of this one.
+                void queryClient.invalidateQueries({
+                    queryKey: packageKeys.mine(),
+                });
+                void queryClient.invalidateQueries({
+                    queryKey: packageKeys.detail(props.packageId),
+                    exact: true,
+                });
+                props.onInstalled(installed);
+            }
         );
     }
 
     return (
         <form class="vert-form" onSubmit={(e) => void install(e)} noValidate>
             <ErrorSummary errors={errors()} inputId={inputId} />
+            <Show when={connections.isError && connections.error}>
+                {(error) => (
+                    <LoadError
+                        error={error()}
+                        busy={connections.isFetching}
+                        onRetry={() => connections.refetch()}
+                    />
+                )}
+            </Show>
             <p>
                 {t(
                     'install.lead',
@@ -148,7 +173,7 @@ function InstallForm(props: {
                                         </Show>
                                     </>
                                 }
-                                disabled={busy() || mine.loading}
+                                disabled={busy() || connections.isPending}
                                 value={choiceOf(needed)}
                                 onChange={(value) =>
                                     setChosen((c) => ({
@@ -164,12 +189,10 @@ function InstallForm(props: {
                                             'None yet: set it up later'
                                         ),
                                     },
-                                    ...candidates(needed, mine() ?? []).map(
-                                        (c) => ({
-                                            value: c.name,
-                                            label: `${c.name} (${c.provider})`,
-                                        })
-                                    ),
+                                    ...candidates(needed, mine()).map((c) => ({
+                                        value: c.name,
+                                        label: `${c.name} (${c.provider})`,
+                                    })),
                                 ]}
                             />
                         )}

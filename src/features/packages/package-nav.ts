@@ -1,5 +1,4 @@
-import { createResource } from 'solid-js';
-import { dataOr } from '@shared/api/client';
+import { useQuery } from '@tanstack/solid-query';
 import type { WorkflowPackage } from '@shared/api/types';
 import type { NavSection } from '@shared/nav/nav-link';
 import {
@@ -10,7 +9,7 @@ import {
 } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { usePageSection } from '@shared/nav/page-section';
-import { getPackage } from './api/packages';
+import { packageQuery } from './api/packages';
 
 /** A package's own pages: its workflows (and each workflow's page), its runs, its settings. */
 export const packagePath = (id: string, section?: 'runs' | 'settings') =>
@@ -33,20 +32,19 @@ export const workflowPath = (
  * also gets a group in the navigation, after "Packages": the package's
  * own, or, given `instead` (an open workflow's), that one, which then
  * links back to the package as its last item. One group, so a workflow
- * named as its package does not read twice.
+ * named as its package does not read twice. The query is packageQuery's:
+ * a page that also reads the package (PackageDetails) makes no second
+ * request.
  */
 export function usePackage(
     id: () => string,
     instead?: (pkg: WorkflowPackage) => NavSection | null
 ) {
     const t = useLocalizer('workflows');
-    const [pkg, actions] = createResource(id, async (packageId) => {
-        const result = await getPackage(packageId);
-        return dataOr(result, null);
-    });
+    const pkg = useQuery(() => packageQuery(id()));
 
     usePageSection(() => {
-        const p = pkg();
+        const p = pkg.data;
         if (!p || p.access !== 'Owner') return null;
         const own = instead?.(p);
         if (own)
@@ -111,5 +109,5 @@ export function usePackage(
         };
     });
 
-    return [pkg, actions] as const;
+    return pkg;
 }

@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
+import { useQuery } from '@tanstack/solid-query';
 import { pageSection } from '@shared/nav/page-section';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { packageContentQuery } from './api/packages';
 import { pkg, workflow } from './fixtures';
 import MyPackagePage from './MyPackagePage';
 
@@ -214,5 +216,82 @@ describe('MyPackagePage', () => {
         expect(
             await api.calls('PUT /api/v1/workflow-packages/p1')[1].json()
         ).toMatchObject({ tags: ['discord-bot'], visibility: 'Private' });
+    });
+
+    it('shows a failed read of the package with a retry', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1': () =>
+                    json(500, { code: 'TestBroken', message: 'Try later.' }),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/workflows', PATTERN);
+
+        expect((await screen.findByRole('alert')).textContent).toBe(
+            'Try later.'
+        );
+        expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
+        expect(screen.queryByText(/does not exist/)).toBeNull();
+    });
+
+    it('a publish asks the latest content again, not a published version’s', async () => {
+        const content = (version: number) => ({
+            version,
+            changelog: '',
+            contentHash: 'h',
+            createdAt: '2026-10-26T10:00:00Z',
+            workflows: [],
+            connections: [],
+        });
+        const api = fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'GET /api/v1/workflow-packages/p1/content': (r) =>
+                    json(
+                        200,
+                        content(
+                            Number(
+                                new URL(r.url).searchParams.get('version') ?? 2
+                            )
+                        )
+                    ),
+                'POST /api/v1/workflow-packages/p1/versions': () =>
+                    json(201, {
+                        version: 2,
+                        changelog: '',
+                        contentHash: 'h',
+                        createdAt: '2026-10-26T10:00:00Z',
+                    }),
+            })
+        );
+        const contentCalls = (version: string | null) =>
+            api
+                .calls('GET /api/v1/workflow-packages/p1/content')
+                .filter(
+                    (r) =>
+                        new URL(r.url).searchParams.get('version') === version
+                );
+        // Something on the page reads version 1 and the latest.
+        renderPage(
+            () => {
+                useQuery(() => packageContentQuery('p1', 1));
+                useQuery(() => packageContentQuery('p1'));
+                return <MyPackagePage />;
+            },
+            '/packages/p1/settings',
+            PATTERN
+        );
+        await waitFor(() => expect(contentCalls(null)).toHaveLength(1));
+        expect(contentCalls('1')).toHaveLength(1);
+
+        const open = await screen.findByRole('button', { name: 'New version' });
+        await waitFor(() => expect(open).toHaveProperty('disabled', false));
+        fireEvent.click(open);
+        const publish = screen.getByRole('button', { name: 'Publish' });
+        await waitFor(() => expect(publish).toHaveProperty('disabled', false));
+        fireEvent.click(publish);
+
+        await waitFor(() => expect(contentCalls(null)).toHaveLength(2));
+        expect(contentCalls('1')).toHaveLength(1);
     });
 });

@@ -1,14 +1,9 @@
-import {
-    createResource,
-    createSignal,
-    createUniqueId,
-    For,
-    Show,
-} from 'solid-js';
+import { createSignal, createUniqueId, For, Show } from 'solid-js';
+import { useQuery } from '@tanstack/solid-query';
 import { IconSearch, IconX } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import { exploreTags } from '@features/packages/api/packages';
+import { exploreTagsQuery } from '@features/packages/api/packages';
 
 /** What a search line asks for: a tag (`tag:name`, the last one wins) and words. */
 export function parseQuery(text: string): { tag: string; words: string } {
@@ -61,15 +56,17 @@ export default function PackageSearch(props: {
     const token = () => lastToken(props.value);
     const tagPrefix = () => /^tag:(.*)$/i.exec(token())?.[1];
 
-    const [tags] = createResource(
-        () => (open() && tagPrefix() !== undefined ? tagPrefix() : false),
-        (prefix: string) => exploreTags(prefix)
-    );
+    // Only while the list is open after `tag:`. A failure offers no tags:
+    // the search still works without them.
+    const tags = useQuery(() => ({
+        ...exploreTagsQuery(tagPrefix() ?? ''),
+        enabled: open() && tagPrefix() !== undefined,
+    }));
 
     const suggestions = (): Suggestion[] => {
         const prefix = tagPrefix();
         if (prefix !== undefined)
-            return (tags() ?? []).map((tag) => ({
+            return (tags.data ?? []).map((tag) => ({
                 insert: `tag:${tag.tag}`,
                 label: tag.tag,
                 hint: t('search_hint.packages', '{count} packages', {

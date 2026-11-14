@@ -1,12 +1,12 @@
 import {
     infiniteQueryOptions,
+    keepPreviousData,
     mutationOptions,
     queryOptions,
     type QueryClient,
 } from '@tanstack/solid-query';
-import { api, dataOr, request, send, type ApiResult } from '@shared/api/client';
+import { api, request, send, type ApiResult } from '@shared/api/client';
 import type {
-    ConnectionSummary,
     PackageContent,
     PackageInput,
     PackageInstall,
@@ -15,19 +15,98 @@ import type {
     PackageTag,
     PackageVersion,
     WorkflowPackage,
+    WorkflowSummary,
 } from '@shared/api/types';
 import { cursorPages } from '@shared/lib/paged-list';
 
 // Packages: the caller's own (their workflows live in them), and the
-// published ones everyone reads in Explore.
+// published ones everyone reads in Explore. Reads are on Query; the
+// changes still on ApiResult functions move to mutations in step 9.
 
 export const packageKeys = {
     all: ['packages'] as const,
+    mine: () => [...packageKeys.all, 'mine'] as const,
+    /** All Explore searches: a change of who sees a package asks them again. */
+    exploreLists: () => [...packageKeys.all, 'explore'] as const,
     explore: (q: string, tag: string) =>
-        [...packageKeys.all, 'explore', { q, tag }] as const,
+        [...packageKeys.exploreLists(), { q, tag }] as const,
+    exploreTags: (q: string) =>
+        [...packageKeys.all, 'explore-tags', q] as const,
     detail: (id: string) => [...packageKeys.all, 'detail', id] as const,
+    content: (id: string, version?: number) =>
+        [...packageKeys.detail(id), 'content', version ?? 'latest'] as const,
+    versions: (id: string) => [...packageKeys.detail(id), 'versions'] as const,
     shares: (id: string) => [...packageKeys.detail(id), 'shares'] as const,
+    workflows: (id: string) =>
+        [...packageKeys.detail(id), 'workflows'] as const,
 };
+
+/** One package, as the caller may see it. */
+export const packageQuery = (id: string) =>
+    queryOptions({
+        queryKey: packageKeys.detail(id),
+        queryFn: ({ signal }) =>
+            request<WorkflowPackage>(
+                api.GET('/api/v1/workflow-packages/{id}', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
+
+/** The caller's packages, then those shared with them. */
+export const myPackagesQuery = () =>
+    queryOptions({
+        queryKey: packageKeys.mine(),
+        queryFn: ({ signal }) =>
+            request<WorkflowPackage[]>(
+                api.GET('/api/v1/workflow-packages', { signal })
+            ),
+    });
+
+/**
+ * A version with its workflows; the latest without `version`. A published
+ * version never changes on the server (a new publish is a new number), so
+ * one asked by number stays fresh; the latest changes with each publish.
+ */
+export const packageContentQuery = (id: string, version?: number) =>
+    queryOptions({
+        queryKey: packageKeys.content(id, version),
+        queryFn: ({ signal }) =>
+            request<PackageContent>(
+                api.GET('/api/v1/workflow-packages/{id}/content', {
+                    params: { path: { id }, query: { version } },
+                    signal,
+                })
+            ),
+        staleTime: version === undefined ? undefined : Infinity,
+    });
+
+/** Its published versions, newest first. */
+export const packageVersionsQuery = (id: string) =>
+    queryOptions({
+        queryKey: packageKeys.versions(id),
+        queryFn: ({ signal }) =>
+            request<PackageVersion[]>(
+                api.GET('/api/v1/workflow-packages/{id}/versions', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
+
+/** The workflows of one of the caller's packages, by name. */
+export const packageWorkflowsQuery = (id: string) =>
+    queryOptions({
+        queryKey: packageKeys.workflows(id),
+        queryFn: ({ signal }) =>
+            request<WorkflowSummary[]>(
+                api.GET('/api/v1/workflows', {
+                    params: { query: { packageId: id } },
+                    signal,
+                })
+            ),
+    });
 
 /** Whom a package is shared with, for its owner. */
 export const packageSharesQuery = (id: string) =>
@@ -102,27 +181,24 @@ export const explorePackagesInfiniteQuery = (q = '', tag = '') =>
         ...cursorPages,
     });
 
-/** The tags of public packages, most used first, those starting with `q`. */
-export async function exploreTags(q: string): Promise<PackageTag[]> {
-    const result = await send(
-        api.GET('/api/v1/workflow-packages/explore/tags', {
-            params: { query: { q: q || undefined, limit: 8 } },
-        })
-    );
-    return dataOr(result, []);
-}
-
-/** The caller's packages, then those shared with them. */
-export async function myPackages(): Promise<WorkflowPackage[]> {
-    const result = await send(api.GET('/api/v1/workflow-packages'));
-    return dataOr(result, []);
-}
-
-export function getPackage(id: string): Promise<ApiResult<WorkflowPackage>> {
-    return send(
-        api.GET('/api/v1/workflow-packages/{id}', { params: { path: { id } } })
-    );
-}
+/**
+ * The tags of public packages, most used first, those starting with `q`.
+ * They change slowly: kept fresh for five minutes. While another prefix is
+ * out, the last answer stays shown.
+ */
+export const exploreTagsQuery = (q: string) =>
+    queryOptions({
+        queryKey: packageKeys.exploreTags(q),
+        queryFn: ({ signal }) =>
+            request<PackageTag[]>(
+                api.GET('/api/v1/workflow-packages/explore/tags', {
+                    params: { query: { q: q || undefined, limit: 8 } },
+                    signal,
+                })
+            ),
+        staleTime: 5 * 60_000,
+        placeholderData: keepPreviousData,
+    });
 
 /** A new, empty package: workflows are made in it, versions published from it. */
 export function createPackage(
@@ -175,29 +251,6 @@ export function deletePackage(id: string): Promise<ApiResult<unknown>> {
     );
 }
 
-export async function listPackageVersions(
-    id: string
-): Promise<PackageVersion[]> {
-    const result = await send(
-        api.GET('/api/v1/workflow-packages/{id}/versions', {
-            params: { path: { id } },
-        })
-    );
-    return dataOr(result, []);
-}
-
-/** A version with its workflows; the latest without `version`. */
-export function getContent(
-    id: string,
-    version?: number
-): Promise<ApiResult<PackageContent>> {
-    return send(
-        api.GET('/api/v1/workflow-packages/{id}/content', {
-            params: { path: { id }, query: { version } },
-        })
-    );
-}
-
 export function publishVersion(
     id: string,
     body: PackagePublish
@@ -234,10 +287,4 @@ export function unsharePackage(
             params: { path: { id, userId } },
         })
     );
-}
-
-/** The caller's connections, to map a package's onto. */
-export async function myConnections(): Promise<ConnectionSummary[]> {
-    const result = await send(api.GET('/api/v1/connections'));
-    return dataOr(result, []);
 }

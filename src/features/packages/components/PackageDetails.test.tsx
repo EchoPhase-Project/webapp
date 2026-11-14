@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { Route } from '@solidjs/router';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
-import { renderPage } from '@shared/testing/render-page';
+import { renderPage, renderRoutes } from '@shared/testing/render-page';
 import { pkg } from '@features/packages/fixtures';
+import { usePackage } from '@features/packages/package-nav';
+import PackagePage from '@features/packages/PackagePage';
 import PackageDetails from './PackageDetails';
 import { defaultChoice } from './InstallModal';
 
@@ -150,6 +153,94 @@ describe('PackageDetails', () => {
         expect(
             screen.queryByRole('button', { name: 'New version' })
         ).toBeNull();
+    });
+
+    it('shares one request for the package with usePackage', async () => {
+        const api = fakeApi(routes());
+
+        renderPage(() => {
+            usePackage(() => 'p1');
+            return <PackageDetails id="p1" />;
+        });
+
+        expect(
+            await screen.findAllByRole('heading', { name: /^Guild tools/ })
+        ).toHaveLength(2);
+        expect(api.calls('GET /api/v1/workflow-packages/p1')).toHaveLength(1);
+    });
+
+    it('shows a failed read with a retry, not “not found”', async () => {
+        let broken = true;
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1': () =>
+                    broken
+                        ? json(500, {
+                              code: 'TestBroken',
+                              message: 'Try later.',
+                          })
+                        : json(200, pkg()),
+            })
+        );
+
+        renderPage(() => <PackageDetails id="p1" />);
+
+        expect((await screen.findByRole('alert')).textContent).toBe(
+            'Try later.'
+        );
+        expect(screen.queryByText(/does not exist/)).toBeNull();
+
+        broken = false;
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+        expect(
+            await screen.findAllByRole('heading', { name: /^Guild tools/ })
+        ).toHaveLength(2);
+    });
+
+    it('says a package it cannot find does not exist', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1': () =>
+                    json(404, { code: 'NotFound', message: 'Not found.' }),
+            })
+        );
+
+        renderPage(() => <PackageDetails id="p1" />);
+
+        expect(await screen.findByText(/does not exist/)).toBeTruthy();
+        expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+    });
+
+    it('moves to another package without showing the first one meanwhile', async () => {
+        let answer: (r: Response) => void = () => {};
+        fakeApi({
+            ...routes(),
+            'GET /api/v1/workflow-packages/p2': () =>
+                new Promise<Response>((resolve) => (answer = resolve)),
+            'GET /api/v1/workflow-packages/p2/content': () =>
+                json(404, { code: 'NotFound', message: 'No version yet.' }),
+            'GET /api/v1/workflow-packages/p2/versions': () => json(200, []),
+        });
+        const { history } = renderRoutes(
+            () => <Route path="/explore/:id" component={PackagePage} />,
+            '/explore/p1'
+        );
+        expect(
+            await screen.findAllByRole('heading', { name: /^Guild tools/ })
+        ).toHaveLength(2);
+
+        history.set({ value: '/explore/p2' });
+
+        await waitFor(() => expect(screen.queryByText('Louder.')).toBeNull());
+        expect(
+            screen.queryByRole('heading', { name: /^Guild tools/ })
+        ).toBeNull();
+
+        answer(json(200, pkg({ id: 'p2', name: 'Raid tools', readme: '' })));
+        expect(
+            await screen.findByRole('heading', { name: /^Raid tools/ })
+        ).toBeTruthy();
+        expect(screen.queryByText('3 blocks')).toBeNull();
     });
 
     it('picks nothing for a connection the caller lacks', () => {

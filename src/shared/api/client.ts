@@ -133,6 +133,10 @@ export class ApiError extends Error {
     }
 }
 
+/** A read answered 404: the item is gone, or the caller may not see it. */
+export const isNotFound = (error: unknown) =>
+    error instanceof ApiError && error.status === 404;
+
 const isAbort = (e: unknown) =>
     e instanceof DOMException && e.name === 'AbortError';
 
