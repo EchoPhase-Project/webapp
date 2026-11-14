@@ -1,4 +1,4 @@
-import { createRoot } from 'solid-js';
+import { createEffect, createRoot } from 'solid-js';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiResult } from './client';
 import { FORM } from './errors';
@@ -47,6 +47,21 @@ describe('createSubmit', () => {
 
         await submit.run(() => answer({ ok: true, data: null }));
         expect(submit.errors()).toEqual({});
+    });
+
+    it('shows a failure once no longer busy, so the inputs can take the focus', async () => {
+        const submit = inRoot(() => createSubmit());
+        const seen: boolean[] = [];
+        createRoot(() =>
+            createEffect(() => {
+                if (Object.keys(submit.errors()).length > 0)
+                    seen.push(submit.busy());
+            })
+        );
+        await submit.run(() =>
+            answer({ ok: false, errors: [{ code: 'X', message: 'x' }] })
+        );
+        expect(seen).toEqual([false]);
     });
 
     it('shows what onFail makes of a failure, when it returns something', async () => {

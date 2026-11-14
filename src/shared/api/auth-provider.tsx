@@ -12,12 +12,9 @@ import type {
     LoginCredentials,
     RegisterData,
     ProfileUpdate,
-    ErrorItem,
 } from './types';
 import { CsrfService } from './csrf';
 import { api, dataOr, onUnauthorized, send, type ApiResult } from './client';
-
-type Outcome = { success: boolean; error?: ErrorItem[] };
 
 interface AuthContextValue {
     /** undefined while loading, null when signed out. */
@@ -26,17 +23,16 @@ interface AuthContextValue {
     refetchUser: () =>
         User | null | undefined | Promise<User | null | undefined>;
     isAuthenticated: Accessor<boolean>;
+    /** True while signing in, up or out: the session changes. */
     isLoading: Accessor<boolean>;
-    login: (credentials: LoginCredentials) => Promise<Outcome>;
-    register: (data: RegisterData) => Promise<Outcome>;
-    updateProfile: (data: ProfileUpdate) => Promise<Outcome>;
+    login: (credentials: LoginCredentials) => Promise<ApiResult<void>>;
+    register: (data: RegisterData) => Promise<ApiResult<void>>;
+    /** The answer's data is the user as saved. */
+    updateProfile: (data: ProfileUpdate) => Promise<ApiResult<User>>;
     logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>();
-
-const outcome = (result: ApiResult<unknown>): Outcome =>
-    result.ok ? { success: true } : { success: false, error: result.errors };
 
 export const AuthProvider: ParentComponent = (props) => {
     const [isLoading, setIsLoading] = createSignal(false);
@@ -75,12 +71,12 @@ export const AuthProvider: ParentComponent = (props) => {
     };
 
     // The CSRF token comes with the answer (the client keeps it).
-    const signedIn = async (result: ApiResult<unknown>) => {
+    const signedIn = async <T,>(result: ApiResult<T>) => {
         if (result.ok) {
             await refetchUser();
             await refetchRoles();
         }
-        return outcome(result);
+        return result;
     };
 
     const login = (credentials: LoginCredentials) =>
@@ -100,15 +96,13 @@ export const AuthProvider: ParentComponent = (props) => {
             )
         );
 
-    // Changes the signed-in user's name and/or time zone; omitted fields stay.
-    const updateProfile = (data: ProfileUpdate) =>
-        busy(async () => {
-            const result = await send(
-                api.PATCH('/api/v1/auth/me', { body: data })
-            );
-            if (result.ok) setUser(result.data);
-            return outcome(result);
-        });
+    // Changes the signed-in user's name and/or time zone; omitted fields
+    // stay. The form shows its own busy state: the session does not change.
+    const updateProfile = async (data: ProfileUpdate) => {
+        const result = await send(api.PATCH('/api/v1/auth/me', { body: data }));
+        if (result.ok) setUser(result.data);
+        return result;
+    };
 
     const logout = () =>
         busy(async () => {

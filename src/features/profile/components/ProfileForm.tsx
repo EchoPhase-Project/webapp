@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { useAuth } from '@shared/api/auth-provider';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { User } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -22,8 +22,7 @@ export default function ProfileForm(props: { user: User }) {
     const [username, setUsername] = createSignal(props.user.userName ?? '');
     // eslint-disable-next-line solid/reactivity
     const [timeZone, setTimeZone] = createSignal(props.user.timeZone);
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, run } = createSubmit(FIELDS);
     const [saved, setSaved] = createSignal(false);
 
     const changed = () =>
@@ -33,29 +32,25 @@ export default function ProfileForm(props: { user: User }) {
 
     async function save(e: Event) {
         e.preventDefault();
-        setBusy(true);
         setSaved(false);
-        try {
-            const outcome = await updateProfile({
-                name: name().trim() !== props.user.name ? name().trim() : null,
-                username:
-                    username().trim() !== (props.user.userName ?? '')
-                        ? username().trim()
-                        : null,
-                timeZone:
-                    timeZone().trim() !== props.user.timeZone
-                        ? timeZone().trim()
-                        : null,
-            });
-            if (!outcome.success) {
-                setErrors(groupErrors(outcome.error ?? [], FIELDS));
-                return;
-            }
-            setErrors({});
-            setSaved(true);
-        } finally {
-            setBusy(false);
-        }
+        await run(
+            () =>
+                updateProfile({
+                    name:
+                        name().trim() !== props.user.name
+                            ? name().trim()
+                            : null,
+                    username:
+                        username().trim() !== (props.user.userName ?? '')
+                            ? username().trim()
+                            : null,
+                    timeZone:
+                        timeZone().trim() !== props.user.timeZone
+                            ? timeZone().trim()
+                            : null,
+                }),
+            () => setSaved(true)
+        );
     }
 
     return (

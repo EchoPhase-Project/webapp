@@ -1,9 +1,8 @@
 import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
 import { IconLock, IconTags, IconUser } from '@shared/ui/icons';
-import { groupErrors } from '@shared/api/errors';
 import { useAuth } from '@shared/api/auth-provider';
-import type { FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
@@ -21,28 +20,23 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
         password: '',
     });
 
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit(FIELDS);
     const auth = useAuth();
 
     const i18n = useI18n();
     const t = useLocalizer('auth');
-    const isDisabled = () => auth.isLoading() || i18n.isLoading();
+    const isDisabled = () => busy() || i18n.isLoading();
 
+    // AuthPage takes the user on (to ?next=) once signed in.
     async function handleRegister(e: Event) {
         e.preventDefault();
-
         // The zone is the browser's, not a field: the user can change it later.
-        const result = await auth.register({
-            ...registerForm(),
-            timeZone: DateHelper.browserTimeZone(),
-        });
-
-        if (result.success) {
-            setErrors({});
-            // AuthPage takes the user on (to ?next=) once signed in.
-        } else {
-            setErrors(groupErrors(result.error ?? [], FIELDS));
-        }
+        await run(() =>
+            auth.register({
+                ...registerForm(),
+                timeZone: DateHelper.browserTimeZone(),
+            })
+        );
     }
 
     return (

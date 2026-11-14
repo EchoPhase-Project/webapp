@@ -65,4 +65,35 @@ describe('ProfilePage', () => {
             timeZone: null,
         });
     });
+
+    it('shows a refused username under its field, not as saved', async () => {
+        fakeApi({
+            'GET /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: null })),
+            'GET /api/v1/roles/me': () => json(200, []),
+            'PATCH /api/v1/auth/me': () =>
+                json(409, [
+                    {
+                        code: 'TestTaken',
+                        message: 'That username is taken.',
+                        field: 'username',
+                    },
+                ]),
+        });
+
+        renderPage(() => <ProfilePage />);
+
+        const username = await screen.findByLabelText(/^Username/);
+        fireEvent.input(username, { target: { value: 'rusty' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() =>
+            expect(username.getAttribute('aria-invalid')).toBe('true')
+        );
+        expect(document.activeElement).toBe(username);
+        expect(
+            document.getElementById('profile-username-error')?.textContent
+        ).toBe('That username is taken.');
+        expect(screen.queryByText('Saved')).toBe(null);
+    });
 });

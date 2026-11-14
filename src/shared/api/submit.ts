@@ -64,20 +64,33 @@ export function createSubmit(fields: readonly string[] = []) {
         }
     }
 
+    /**
+     * Sends `call` inside `around` (which keeps it busy). A failure's errors
+     * are shown only after `around` ends: the form's inputs are enabled
+     * again, so ErrorSummary can move the focus to the first invalid one.
+     */
     async function send<T>(
-        call: () => Promise<ApiResult<T>>,
+        around: <R>(work: () => Promise<R>) => Promise<R>,
         show: (value: FormErrors) => void,
+        call: () => Promise<ApiResult<T>>,
         onOk?: (data: T) => unknown,
         onFail?: (errors: ErrorItem[]) => FormErrors | void
     ): Promise<boolean> {
-        const result = await call();
-        if (!result.ok) {
-            show(onFail?.(result.errors) ?? groupErrors(result.errors, fields));
-            return false;
-        }
-        show({});
-        await onOk?.(result.data);
-        return true;
+        let failed: FormErrors | undefined;
+        const ok = await around(async () => {
+            const result = await call();
+            if (!result.ok) {
+                failed =
+                    onFail?.(result.errors) ??
+                    groupErrors(result.errors, fields);
+                return false;
+            }
+            show({});
+            await onOk?.(result.data);
+            return true;
+        });
+        if (failed) show(failed);
+        return ok;
     }
 
     /**
@@ -90,7 +103,7 @@ export function createSubmit(fields: readonly string[] = []) {
         onOk?: (data: T) => unknown,
         onFail?: (errors: ErrorItem[]) => FormErrors | void
     ): Promise<boolean> {
-        return pending(() => send(call, setErrors, onOk, onFail));
+        return send(pending, setErrors, call, onOk, onFail);
     }
 
     /**
@@ -98,23 +111,27 @@ export function createSubmit(fields: readonly string[] = []) {
      * and its errors under `errors(key)`. Other keys and the form are not
      * touched.
      */
-    async function runFor<T>(
+    function runFor<T>(
         key: string,
         call: () => Promise<ApiResult<T>>,
         onOk?: (data: T) => unknown,
         onFail?: (errors: ErrorItem[]) => FormErrors | void
     ): Promise<boolean> {
-        count(key, 1);
-        try {
-            return await send(
-                call,
-                (value) => setKeyErrors(key, value),
-                onOk,
-                onFail
-            );
-        } finally {
-            count(key, -1);
-        }
+        const around = async <R>(work: () => Promise<R>): Promise<R> => {
+            count(key, 1);
+            try {
+                return await work();
+            } finally {
+                count(key, -1);
+            }
+        };
+        return send(
+            around,
+            (value) => setKeyErrors(key, value),
+            call,
+            onOk,
+            onFail
+        );
     }
 
     return { busy, errors, setErrors, pending, run, runFor };

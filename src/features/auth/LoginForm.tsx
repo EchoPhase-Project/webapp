@@ -1,8 +1,7 @@
 import { createSignal } from 'solid-js';
 import { IconLock, IconUser } from '@shared/ui/icons';
-import { groupErrors } from '@shared/api/errors';
 import { useAuth } from '@shared/api/auth-provider';
-import type { FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -22,21 +21,14 @@ export default function LoginForm(props: { onSwitch: () => void }) {
         password: '',
     });
 
-    const [errors, setErrors] = createSignal<FormErrors>({});
+    const { busy, errors, run } = createSubmit(FIELDS);
 
-    const isDisabled = () => auth.isLoading() || i18n.isLoading();
+    const isDisabled = () => busy() || i18n.isLoading();
 
+    // AuthPage takes the user on (to ?next=) once signed in.
     async function handleLogin(e: Event) {
         e.preventDefault();
-
-        const result = await auth.login(loginForm());
-
-        if (result.success) {
-            setErrors({});
-            // AuthPage takes the user on (to ?next=) once signed in.
-        } else {
-            setErrors(groupErrors(result.error ?? [], FIELDS));
-        }
+        await run(() => auth.login(loginForm()));
     }
 
     return (
