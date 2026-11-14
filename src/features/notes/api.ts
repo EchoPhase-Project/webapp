@@ -1,5 +1,63 @@
-import { api, dataOr, send, type ApiResult } from '@shared/api/client';
+import {
+    mutationOptions,
+    queryOptions,
+    type QueryClient,
+} from '@tanstack/solid-query';
+import { api, dataOr, request, send, type ApiResult } from '@shared/api/client';
 import type { Note, NoteInput, NoteShare } from '@shared/api/types';
+
+// Only the shares are on Query so far; the rest moves in step 6.
+export const noteKeys = {
+    all: ['notes'] as const,
+    detail: (id: string) => [...noteKeys.all, 'detail', id] as const,
+    shares: (id: string) => [...noteKeys.detail(id), 'shares'] as const,
+};
+
+/** Whom a note is shared with, for its owner. */
+export const noteSharesQuery = (id: string) =>
+    queryOptions({
+        queryKey: noteKeys.shares(id),
+        queryFn: ({ signal }) =>
+            request<NoteShare[]>(
+                api.GET('/api/v1/notes/{id}/shares', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
+
+/** The note `id` shared with one more person, by username. */
+export const shareNoteMutation = (
+    queryClient: QueryClient,
+    id: string,
+    canEdit: boolean
+) =>
+    mutationOptions({
+        mutationKey: [...noteKeys.all, 'share'] as const,
+        mutationFn: (userName: string) =>
+            request<NoteShare>(
+                api.PUT('/api/v1/notes/{id}/shares', {
+                    params: { path: { id } },
+                    body: { userName, canEdit },
+                })
+            ),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: noteKeys.shares(id) }),
+    });
+
+/** The owner removes someone (by user id) from the note `id`. */
+export const unshareNoteMutation = (queryClient: QueryClient, id: string) =>
+    mutationOptions({
+        mutationKey: [...noteKeys.all, 'unshare'] as const,
+        mutationFn: (userId: string) =>
+            request(
+                api.DELETE('/api/v1/notes/{id}/shares/{userId}', {
+                    params: { path: { id, userId } },
+                })
+            ),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: noteKeys.shares(id) }),
+    });
 
 /** The caller's notes and those shared with them; `q` searches title and text. */
 export async function listNotes(q?: string): Promise<Note[]> {
@@ -30,26 +88,6 @@ export function updateNote(
 
 export function deleteNote(id: string): Promise<ApiResult<unknown>> {
     return send(api.DELETE('/api/v1/notes/{id}', { params: { path: { id } } }));
-}
-
-export async function listShares(id: string): Promise<NoteShare[]> {
-    const result = await send(
-        api.GET('/api/v1/notes/{id}/shares', { params: { path: { id } } })
-    );
-    return dataOr(result, []);
-}
-
-export function shareNote(
-    id: string,
-    userName: string,
-    canEdit: boolean
-): Promise<ApiResult<NoteShare>> {
-    return send(
-        api.PUT('/api/v1/notes/{id}/shares', {
-            params: { path: { id } },
-            body: { userName, canEdit },
-        })
-    );
 }
 
 /** The owner removes someone, or the caller leaves a note shared with them. */

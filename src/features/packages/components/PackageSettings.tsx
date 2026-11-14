@@ -11,10 +11,10 @@ import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {
     deletePackage,
-    listShares,
+    packageSharesQuery,
     savePackage,
-    sharePackage,
-    unsharePackage,
+    sharePackageMutation,
+    unsharePackageMutation,
 } from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
 import PublishModal from './PublishModal';
@@ -194,7 +194,6 @@ export default function PackageSettings(props: {
 
             <ShareList
                 card
-                of={props.pkg.id}
                 id="package-share"
                 title={tp('share.title', 'Shared with')}
                 description={tp(
@@ -205,9 +204,13 @@ export default function PackageSettings(props: {
                 removeLabel={(name) =>
                     tp('share.remove', 'Stop sharing with {name}', { name })
                 }
-                list={listShares}
-                share={sharePackage}
-                unshare={unsharePackage}
+                query={packageSharesQuery(props.pkg.id)}
+                share={(queryClient) =>
+                    sharePackageMutation(queryClient, props.pkg.id)
+                }
+                unshare={(queryClient) =>
+                    unsharePackageMutation(queryClient, props.pkg.id)
+                }
             />
 
             <SettingsCard

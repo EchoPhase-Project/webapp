@@ -1,7 +1,13 @@
 import {
+    mutationOptions,
+    queryOptions,
+    type QueryClient,
+} from '@tanstack/solid-query';
+import {
     api,
     dataOr,
     multipart,
+    request,
     send,
     type ApiResult,
 } from '@shared/api/client';
@@ -26,6 +32,59 @@ import type {
 
 // Packages: the caller's own (their workflows live in them), and the
 // published ones everyone reads in Explore.
+
+// Only the shares are on Query so far; the rest moves in steps 8 and 9.
+export const packageKeys = {
+    all: ['packages'] as const,
+    detail: (id: string) => [...packageKeys.all, 'detail', id] as const,
+    shares: (id: string) => [...packageKeys.detail(id), 'shares'] as const,
+};
+
+/** Whom a package is shared with, for its owner. */
+export const packageSharesQuery = (id: string) =>
+    queryOptions({
+        queryKey: packageKeys.shares(id),
+        queryFn: ({ signal }) =>
+            request<PackageShare[]>(
+                api.GET('/api/v1/workflow-packages/{id}/shares', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
+
+/** The package `id` shared with one more person, by username. */
+export const sharePackageMutation = (queryClient: QueryClient, id: string) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'share'] as const,
+        mutationFn: (userName: string) =>
+            request<PackageShare>(
+                api.PUT('/api/v1/workflow-packages/{id}/shares', {
+                    params: { path: { id } },
+                    body: { userName },
+                })
+            ),
+        onSuccess: () =>
+            queryClient.invalidateQueries({
+                queryKey: packageKeys.shares(id),
+            }),
+    });
+
+/** The owner removes someone (by user id) from the package `id`. */
+export const unsharePackageMutation = (queryClient: QueryClient, id: string) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'unshare'] as const,
+        mutationFn: (userId: string) =>
+            request(
+                api.DELETE('/api/v1/workflow-packages/{id}/shares/{userId}', {
+                    params: { path: { id, userId } },
+                })
+            ),
+        onSuccess: () =>
+            queryClient.invalidateQueries({
+                queryKey: packageKeys.shares(id),
+            }),
+    });
 
 /** A page of public packages and the cursor of the next (null: the last). */
 export interface ExplorePage {
@@ -196,28 +255,7 @@ export function listPackageRuns(
     );
 }
 
-export async function listShares(id: string): Promise<PackageShare[]> {
-    const result = await send(
-        api.GET('/api/v1/workflow-packages/{id}/shares', {
-            params: { path: { id } },
-        })
-    );
-    return dataOr(result, []);
-}
-
-export function sharePackage(
-    id: string,
-    userName: string
-): Promise<ApiResult<PackageShare>> {
-    return send(
-        api.PUT('/api/v1/workflow-packages/{id}/shares', {
-            params: { path: { id } },
-            body: { userName },
-        })
-    );
-}
-
-/** The owner removes someone, or the caller leaves a package shared with them. */
+/** The caller leaves a package shared with them. */
 export function unsharePackage(
     id: string,
     userId: string

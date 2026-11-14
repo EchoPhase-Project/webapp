@@ -2,7 +2,11 @@ import { createSignal } from 'solid-js';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import ShareList from '@shared/ui/ShareList';
 import Switch from '@shared/ui/Switch';
-import { listShares, shareNote, unshareNote } from '@features/notes/api';
+import {
+    noteSharesQuery,
+    shareNoteMutation,
+    unshareNoteMutation,
+} from '@features/notes/api';
 
 /** Whom the note is shared with, for its owner: add by username, remove. */
 export default function ShareSection(props: { noteId: string }) {
@@ -11,7 +15,6 @@ export default function ShareSection(props: { noteId: string }) {
 
     return (
         <ShareList
-            of={props.noteId}
             id="note-share"
             class="note-share"
             title={t('share.title', 'Shared with')}
@@ -19,9 +22,13 @@ export default function ShareSection(props: { noteId: string }) {
             removeLabel={(name) =>
                 t('share.remove', 'Stop sharing with {name}', { name })
             }
-            list={listShares}
-            share={(id, userName) => shareNote(id, userName, canEdit())}
-            unshare={unshareNote}
+            query={noteSharesQuery(props.noteId)}
+            share={(queryClient) =>
+                shareNoteMutation(queryClient, props.noteId, canEdit())
+            }
+            unshare={(queryClient) =>
+                unshareNoteMutation(queryClient, props.noteId)
+            }
             detail={(share) => (
                 <span class="muted">
                     {share.canEdit
