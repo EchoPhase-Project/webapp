@@ -2,7 +2,7 @@ import { For, Match, Switch, type JSX } from 'solid-js';
 import { A } from '@solidjs/router';
 import { IconBrandGithub } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { outage } from '@shared/api/outage-watch';
 import { setSettingsOpen } from '@shared/lib/consent';
 import BrandMark from '@shared/ui/BrandMark';

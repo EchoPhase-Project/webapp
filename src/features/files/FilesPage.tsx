@@ -1,7 +1,7 @@
 import { createRenderEffect, createSignal, on, Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';

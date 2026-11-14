@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
 import { IconLock, IconTags, IconUser } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
+import { registerMutation, useResultMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
@@ -13,7 +13,11 @@ import Field from '@shared/ui/Field';
 const FIELDS = ['name', 'username', 'password'] as const;
 const inputId = (field: string) => `register-${field}`;
 
-export default function RegisterForm(props: { onSwitch: () => void }) {
+export default function RegisterForm(props: {
+    /** Where to go once signed up (?next=). */
+    next?: string;
+    onSwitch: () => void;
+}) {
     const [registerForm, setRegisterForm] = createSignal<RegisterData>({
         name: '',
         username: '',
@@ -21,20 +25,23 @@ export default function RegisterForm(props: { onSwitch: () => void }) {
     });
 
     const { busy, errors, run } = createSubmit(FIELDS);
-    const auth = useAuth();
+    const register = useResultMutation(registerMutation);
 
     const i18n = useI18n();
     const t = useLocalizer('auth');
     const isDisabled = () => busy() || i18n.isLoading();
 
-    // AuthPage takes the user on (to ?next=) once signed in.
+    // A new session starts, at ?next= (or home).
     async function handleRegister(e: Event) {
         e.preventDefault();
         // The zone is the browser's, not a field: the user can change it later.
         await run(() =>
-            auth.register({
-                ...registerForm(),
-                timeZone: DateHelper.browserTimeZone(),
+            register({
+                data: {
+                    ...registerForm(),
+                    timeZone: DateHelper.browserTimeZone(),
+                },
+                next: props.next,
             })
         );
     }

@@ -1,5 +1,5 @@
 import { IconLogin, IconLogout } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
+import { logoutMutation, useAuth, useResultMutation } from '@shared/api/auth';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
 import { pageSection } from '@shared/nav/page-section';
@@ -18,7 +18,9 @@ const ACCOUNT_GROUP: NavGroup = 'settings';
  * policies are in the footer.
  */
 export function useNav(): () => NavModel {
-    const { logout, isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    // Signs out even when the call fails (a new session, without the user).
+    const logout = useResultMutation(logoutMutation);
     const { t } = useI18n();
 
     const item = (page: Page): NavItem => {

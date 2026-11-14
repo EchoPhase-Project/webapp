@@ -9,7 +9,7 @@ import {
 import { useSearchParams } from '@solidjs/router';
 import { IconPlus, IconSearch } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';

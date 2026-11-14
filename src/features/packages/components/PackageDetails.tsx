@@ -1,7 +1,7 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { IconDownload } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { dataOr } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';

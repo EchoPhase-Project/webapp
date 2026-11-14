@@ -1,7 +1,7 @@
 import { Component, lazy } from 'solid-js';
 import { Router } from '@solidjs/router';
 import { I18nProvider } from '@shared/i18n/i18n-context';
-import { AuthProvider } from '@shared/api/auth-provider';
+import { SessionProvider, sessionStart } from '@shared/api/session-provider';
 import { requireAuth } from '@shared/api/auth-guards';
 import { ThemeProvider } from '@shared/theme/theme-context';
 import { RealtimeProvider } from '@features/realtime/realtime-provider';
@@ -26,16 +26,41 @@ const routes = [
     },
 ];
 
+// The query cache of the session, in development only (a chunk of its own).
+const QueryDevtools = import.meta.env.DEV
+    ? lazy(() =>
+          import('@tanstack/solid-query-devtools').then((m) => ({
+              default: m.SolidQueryDevtools,
+          }))
+      )
+    : () => null;
+
+/**
+ * The router of one session: made anew with each, so it starts where the
+ * session does (after signing in, at `next`). Router takes its first
+ * location from the address bar when it is made.
+ */
+const SessionRouter = (props: RouterComponentProps) => {
+    const start = sessionStart();
+    // Once, as the router is made: its base does not change.
+    // eslint-disable-next-line solid/reactivity
+    if (start) history.replaceState(null, '', (props.base ?? '') + start);
+    return (
+        <Router base={props.base} root={props.root}>
+            {routes}
+        </Router>
+    );
+};
+
 const RouterComponent = (props: RouterComponentProps) => (
     <ThemeProvider>
         <I18nProvider>
-            <AuthProvider>
+            <SessionProvider>
                 <RealtimeProvider>
-                    <Router base={props.base} root={props.root}>
-                        {routes}
-                    </Router>
+                    <SessionRouter base={props.base} root={props.root} />
                 </RealtimeProvider>
-            </AuthProvider>
+                <QueryDevtools />
+            </SessionProvider>
         </I18nProvider>
     </ThemeProvider>
 );

@@ -1,5 +1,5 @@
 import { createSignal, Show } from 'solid-js';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';

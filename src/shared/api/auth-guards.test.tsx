@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
-import { MemoryRouter, Route, createMemoryHistory } from '@solidjs/router';
+import { Route, createMemoryHistory } from '@solidjs/router';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
-import { AuthProvider } from './auth-provider';
+import { SessionMemoryRouter, freshSession } from '@shared/testing/render-page';
+import { SessionProvider } from './session-provider';
 import { api, send } from './client';
 import { SignedIn, SignedOut, requireAuth, safeNext } from './auth-guards';
 
@@ -28,12 +29,13 @@ describe('safeNext', () => {
 });
 
 function app(start: string) {
+    freshSession();
     const history = createMemoryHistory();
     history.set({ value: start });
     render(() => (
         <I18nProvider>
-            <AuthProvider>
-                <MemoryRouter history={history}>
+            <SessionProvider>
+                <SessionMemoryRouter history={history}>
                     <Route
                         path="/sessions"
                         component={requireAuth(() => (
@@ -55,8 +57,8 @@ function app(start: string) {
                         )}
                     />
                     <Route path="/auth" component={() => <p>sign-in form</p>} />
-                </MemoryRouter>
-            </AuthProvider>
+                </SessionMemoryRouter>
+            </SessionProvider>
         </I18nProvider>
     ));
     return history;

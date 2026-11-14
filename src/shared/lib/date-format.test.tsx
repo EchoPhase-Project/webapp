@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { screen } from '@solidjs/testing-library';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { useDateFormat } from './date-format';

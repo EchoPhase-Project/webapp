@@ -2,7 +2,7 @@ import { createResource, createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';

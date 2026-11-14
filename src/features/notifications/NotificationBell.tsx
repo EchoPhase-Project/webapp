@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For, on, onCleanup, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { IconBell } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import type { AppNotification } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { createDismiss } from '@shared/lib/dismiss';

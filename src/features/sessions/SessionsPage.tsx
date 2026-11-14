@@ -1,7 +1,7 @@
 import { createResource, createSignal } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';

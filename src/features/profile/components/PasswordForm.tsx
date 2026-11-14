@@ -1,4 +1,6 @@
 import { createSignal } from 'solid-js';
+import { useQueryClient } from '@tanstack/solid-query';
+import { authKeys } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -20,6 +22,7 @@ export default function PasswordForm() {
     const [confirm, setConfirm] = createSignal('');
     const { busy, errors, setErrors, run } = createSubmit(FIELDS);
     const [done, setDone] = createSignal(false);
+    const queryClient = useQueryClient();
 
     const edited =
         (set: (value: string) => void) =>
@@ -56,6 +59,10 @@ export default function PasswordForm() {
                 setNext('');
                 setConfirm('');
                 setDone(true);
+                // New tokens: /auth/me brings this tab a new CSRF token.
+                void queryClient.invalidateQueries({
+                    queryKey: authKeys.me(),
+                });
             }
         );
     }

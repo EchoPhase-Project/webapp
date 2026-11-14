@@ -2,7 +2,7 @@ import { For, type Component } from 'solid-js';
 import { A } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import Card from '@shared/ui/Card';
 import {
     IconApi,

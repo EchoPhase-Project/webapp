@@ -1,7 +1,7 @@
 import { createEffect, createSignal, on, Show } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import { createPagedList } from '@shared/lib/paged-list';

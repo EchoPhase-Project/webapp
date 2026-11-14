@@ -1,4 +1,4 @@
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { useI18n } from '@shared/i18n/i18n-context';
 import { DateHelper } from '@shared/lib/date-helper';
 

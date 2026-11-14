@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import { useAuth } from '@shared/api/auth-provider';
+import { updateProfileMutation, useResultMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { User } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -13,7 +13,7 @@ const inputId = (field: string) => `profile-${field}`;
 
 /** The name, username and time zone; sends only what changed. */
 export default function ProfileForm(props: { user: User }) {
-    const { updateProfile } = useAuth();
+    const updateProfile = useResultMutation(updateProfileMutation);
     const t = useLocalizer('profile');
     // Seeded once: the user is in the props, edits stay local until saved.
     // eslint-disable-next-line solid/reactivity

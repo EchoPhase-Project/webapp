@@ -8,11 +8,11 @@ import {
     type Accessor,
     type ParentComponent,
 } from 'solid-js';
-import { api, send as call, untyped } from '@shared/api/client';
-import { useAuth } from '@shared/api/auth-provider';
+import { useQueryClient } from '@tanstack/solid-query';
+import { meQuery, useAuth } from '@shared/api/auth';
+import { gatewayIntentsQuery } from './api';
 import {
     Op,
-    type GatewayIntent,
     type ProtocolMessage,
     type RealtimeEvent,
     type RealtimeHandler,
@@ -36,12 +36,15 @@ const MaxBackoffMs = 30_000;
  * subscribed to the requested intents the token allows. Pings at half the
  * heartbeat interval the server announces; reconnects with backoff after a
  * drop, first asking /auth/me so an expired access token gets refreshed (or
- * a finished session ends the loop). Closed on sign-out.
+ * a finished session ends the loop). Lives in the session's tree: a new
+ * session (sign-in, sign-out) unmounts it, which closes the socket.
  */
 export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
     props
 ) => {
     const auth = useAuth();
+    // Taken now: a context hook, not callable from the handlers below.
+    const queryClient = useQueryClient();
     const [status, setStatus] = createSignal<RealtimeStatus>('idle');
     const [intents, setIntents] = createSignal<string[]>([]);
     const handlers = new Map<string, Set<RealtimeHandler>>();
@@ -73,12 +76,12 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
 
     // Only the intents the token may have: asking for others is an error.
     const allowedIntents = async (): Promise<string[]> => {
-        const result = untyped<GatewayIntent[]>(
-            await call(api.GET('/api/v1/gateway/intents'))
-        );
-        if (!result.ok) return [];
+        const all = await queryClient
+            .fetchQuery({ ...gatewayIntentsQuery(), staleTime: 0 })
+            .catch(() => undefined);
+        if (!all) return [];
         const allowed = new Set(
-            result.data.filter((i) => i.allowed).map((i) => i.name)
+            all.filter((i) => i.allowed).map((i) => i.name)
         );
         return wantedIntents().filter((name) => allowed.has(name));
     };
@@ -154,14 +157,12 @@ export const RealtimeProvider: ParentComponent<{ intents?: string[] }> = (
                 (1 + Math.random() / 2);
             retryTimer = window.setTimeout(async () => {
                 // Refreshes an expired access token through the refresh
-                // cookie; a 401 means the session is over.
-                const me = await api
-                    .GET('/api/v1/auth/me')
+                // cookie. Null (a 401): the session is over, and watchUser
+                // ends it, which unmounts this provider.
+                const me = await queryClient
+                    .fetchQuery({ ...meQuery(), staleTime: 0 })
                     .catch(() => undefined);
-                if (me?.response.status === 401) {
-                    await auth.refetchUser();
-                    return;
-                }
+                if (me === null) return;
                 void connect();
             }, delay);
         };

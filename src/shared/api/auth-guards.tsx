@@ -1,6 +1,6 @@
 import { Match, Show, Switch, type Component, type JSX } from 'solid-js';
 import { Navigate, useLocation, type RouteSectionProps } from '@solidjs/router';
-import { useAuth } from './auth-provider';
+import { useAuth } from './auth';
 
 const SignInPath = '/auth';
 
@@ -29,9 +29,11 @@ function signInHref(here: { pathname: string; search: string; hash: string }) {
 }
 
 /**
- * A page for signed-in users only: nothing while the user is loading, a
- * redirect to sign in (and back) when signed out. Also when the session
- * ends while the page is open: the API client signs the user out on a 401.
+ * A page for signed-in users only: a redirect to sign in (and back) when
+ * signed out, also when the session ends while the page is open (a 401
+ * ends it). Nothing while the user is loading, and nothing when the check
+ * failed (no answer, a 5xx): that is not "signed out", and the outage
+ * screen covers the page until the server is back.
  */
 export function requireAuth<P extends RouteSectionProps>(
     page: Component<P>
@@ -41,6 +43,7 @@ export function requireAuth<P extends RouteSectionProps>(
         const location = useLocation();
         return (
             <Switch>
+                <Match when={auth.authError()}>{null}</Match>
                 <Match when={auth.user() === null}>
                     <Navigate href={signInHref(location)} />
                 </Match>

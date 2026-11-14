@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { IconLock, IconUser } from '@shared/ui/icons';
-import { useAuth } from '@shared/api/auth-provider';
+import { loginMutation, useResultMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
@@ -11,10 +11,14 @@ import Field from '@shared/ui/Field';
 const FIELDS = ['username', 'password'] as const;
 const inputId = (field: string) => `login-${field}`;
 
-export default function LoginForm(props: { onSwitch: () => void }) {
+export default function LoginForm(props: {
+    /** Where to go once signed in (?next=). */
+    next?: string;
+    onSwitch: () => void;
+}) {
     const i18n = useI18n();
     const t = useLocalizer('auth');
-    const auth = useAuth();
+    const login = useResultMutation(loginMutation);
 
     const [loginForm, setLoginForm] = createSignal<LoginCredentials>({
         username: '',
@@ -25,10 +29,10 @@ export default function LoginForm(props: { onSwitch: () => void }) {
 
     const isDisabled = () => busy() || i18n.isLoading();
 
-    // AuthPage takes the user on (to ?next=) once signed in.
+    // A new session starts, at ?next= (or home).
     async function handleLogin(e: Event) {
         e.preventDefault();
-        await run(() => auth.login(loginForm()));
+        await run(() => login({ credentials: loginForm(), next: props.next }));
     }
 
     return (

@@ -1,6 +1,6 @@
 import { Show } from 'solid-js';
 import { Navigate, useSearchParams } from '@solidjs/router';
-import { useAuth } from '@shared/api/auth-provider';
+import { useAuth } from '@shared/api/auth';
 import { safeNext } from '@shared/api/auth-guards';
 import BrandMark from '@shared/ui/BrandMark';
 import RegisterForm from './RegisterForm';
@@ -49,14 +49,20 @@ export default function AuthPage() {
                         inert={isRegister()}
                     >
                         <BrandMark class="auth-mark" />
-                        <LoginForm onSwitch={() => turn(true)} />
+                        <LoginForm
+                            next={search.next}
+                            onSwitch={() => turn(true)}
+                        />
                     </div>
                     <div
                         class="auth-face auth-back patterned"
                         inert={!isRegister()}
                     >
                         <BrandMark class="auth-mark" />
-                        <RegisterForm onSwitch={() => turn(false)} />
+                        <RegisterForm
+                            next={search.next}
+                            onSwitch={() => turn(false)}
+                        />
                     </div>
                 </div>
             </div>

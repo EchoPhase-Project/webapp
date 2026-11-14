@@ -1,6 +1,7 @@
 import { Show } from 'solid-js';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth-provider';
+import { useQueryClient } from '@tanstack/solid-query';
+import { authKeys, useAuth } from '@shared/api/auth';
 import type { ApiResult } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -20,7 +21,8 @@ const PICTURES = 'image/png,image/jpeg,image/webp';
 
 /** The signed-in user's profile: picture, name, username, time zone and password. */
 export default function ProfilePage() {
-    const { user, refetchUser } = useAuth();
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
     const t = useLocalizer('profile');
 
     usePageMeta(() => ({
@@ -34,7 +36,9 @@ export default function ProfilePage() {
     const { busy, errors, run } = createSubmit();
 
     const changing = (call: () => Promise<ApiResult<unknown>>) =>
-        run(call, () => refetchUser());
+        run(call, () =>
+            queryClient.invalidateQueries({ queryKey: authKeys.me() })
+        );
 
     return (
         <div class="page-stack profile-container">
