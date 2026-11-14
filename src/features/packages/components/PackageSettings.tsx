@@ -8,9 +8,16 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Select from '@shared/ui/Select';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { deletePackage, inputOf, updatePackage } from '@features/packages/api';
+import ShareList from '@shared/ui/ShareList';
+import {
+    deletePackage,
+    inputOf,
+    listShares,
+    sharePackage,
+    unsharePackage,
+    updatePackage,
+} from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
-import PackageShares from './PackageShares';
 import PublishModal from './PublishModal';
 import TagsEditor from './TagsEditor';
 import VisibilityEditor from './VisibilityEditor';
@@ -182,7 +189,23 @@ export default function PackageSettings(props: {
                 }
             />
 
-            <PackageShares packageId={props.pkg.id} />
+            <ShareList
+                card
+                of={props.pkg.id}
+                id="package-share"
+                title={tp('share.title', 'Shared with')}
+                description={tp(
+                    'share.description',
+                    'They read it and install it, while it is private.'
+                )}
+                empty={tp('share.none', 'Nobody yet.')}
+                removeLabel={(name) =>
+                    tp('share.remove', 'Stop sharing with {name}', { name })
+                }
+                list={listShares}
+                share={sharePackage}
+                unshare={unsharePackage}
+            />
 
             <SettingsCard
                 danger

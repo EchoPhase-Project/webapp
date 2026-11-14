@@ -85,42 +85,9 @@
   align-items: center;
 }
 
+// The ShareList under the note, set off by a rule.
 .note-share {
-  display: grid;
-  gap: 10px;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
-
-  h3 {
-    margin: 0;
-    font-size: 0.95rem;
-  }
-
-  p {
-    margin: 0;
-  }
-}
-
-.note-share-list {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-
-    > :first-child {
-      flex: 1;
-    }
-  }
-}
-
-.note-share-form {
-  display: grid;
-  gap: 10px;
 }

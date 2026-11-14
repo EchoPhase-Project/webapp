@@ -110,6 +110,7 @@ Before you write new markup, make pages from the components in
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                             |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
 | `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                   |
+| `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                               |
 
 ### Controls
 

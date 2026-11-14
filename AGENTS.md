@@ -76,7 +76,7 @@ and the tests are successful.
 - Before you write new markup, use the components in `src/shared/ui`:
   Button, HeaderButton, Tabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Modal, ConfirmDialog, Card,
-  SettingsCard, Table, EmptyState, PageHeader, Switch.
+  SettingsCard, ShareList, Table, EmptyState, PageHeader, Switch.
 - On a settings page, put each part in a `SettingsCard`. Do not make a
   `Card` with an `h2` for it.
 - Do not write `<button>`, `<select>`, `<textarea>`, or a checkbox or radio

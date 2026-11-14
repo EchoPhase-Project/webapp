@@ -1,0 +1,45 @@
+// A ShareList: the people, each with a remove button at the end of the row,
+// then the username to share with one more.
+.share-list {
+  display: grid;
+  gap: 10px;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.share-list-items {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: center;
+
+    > :first-child {
+      flex: 1;
+    }
+  }
+}
+
+.share-list-form {
+  display: grid;
+  gap: 10px;
+}
+
+// On a settings page, the username field as wide as the other fields.
+.settings-card-body .share-list-input {
+  max-width: 24rem;
+}
