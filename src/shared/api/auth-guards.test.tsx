@@ -2,10 +2,13 @@
 import { describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { Route } from '@solidjs/router';
-import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
+import { fakeApi, json, signedIn, user } from '@shared/testing/fake-api';
 import { renderRoutes } from '@shared/testing/render-page';
 import { logoutMutation, useResultMutation } from './auth';
+import { authKeys } from './auth-keys';
 import { api, send } from './client';
+import { outage } from './outage-watch';
+import { sessionClient } from './session-provider';
 import { SignedIn, SignedOut, requireAuth, safeNext } from './auth-guards';
 
 describe('safeNext', () => {
@@ -98,23 +101,46 @@ describe('requireAuth', () => {
         expect(history.get()).toBe('/sessions');
     });
 
-    it('neither shows the page nor redirects when the check fails', async () => {
-        for (const answer of [
-            () => json(500, { code: 'Boom', message: 'boom' }),
-            () => Promise.reject(new TypeError('Failed to fetch')),
-        ]) {
-            const api = fakeApi({ 'GET /api/v1/auth/me': answer });
-            const { history, unmount } = app('/sessions');
+    it('keeps the page of a known user when a later check fails', async () => {
+        let meAnswer = () => json(200, user());
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/auth/me': () => meAnswer(),
+        });
+        const { history } = app('/sessions');
+        expect(await screen.findByText('secret page')).toBeTruthy();
 
-            await waitFor(() =>
-                expect(api.calls('GET /api/v1/auth/me')).toHaveLength(1)
-            );
-            await new Promise((done) => setTimeout(done, 20));
-            expect(screen.queryByText('secret page')).toBeNull();
-            expect(screen.queryByText('sign-in form')).toBeNull();
-            expect(history.get()).toBe('/sessions');
-            unmount();
-        }
+        // A background refresh (back to the tab) answers 500: Query keeps
+        // the user, and so does the guard.
+        meAnswer = () => json(500, { code: 'Boom', message: 'boom' });
+        await sessionClient().refetchQueries({ queryKey: authKeys.me() });
+
+        expect(api.calls('GET /api/v1/auth/me')).toHaveLength(2);
+        expect(screen.getByText('secret page')).toBeTruthy();
+        expect(screen.queryByRole('alert')).toBeNull();
+        expect(history.get()).toBe('/sessions');
+    });
+
+    it('shows a failed first check (a 500) with a way to ask again', async () => {
+        let meAnswer = () => json(500, { code: 'Boom', message: 'boom' });
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/auth/me': () => meAnswer(),
+        });
+        const { history } = app('/sessions');
+
+        expect((await screen.findByRole('alert')).textContent).toContain(
+            'boom'
+        );
+        expect(screen.queryByText('secret page')).toBeNull();
+        expect(history.get()).toBe('/sessions');
+
+        meAnswer = () => json(200, user());
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+        expect(await screen.findByText('secret page')).toBeTruthy();
+        expect(api.calls('GET /api/v1/auth/me')).toHaveLength(2);
+        expect(screen.queryByRole('alert')).toBeNull();
     });
 
     it('after a logout opens the same address, and so sends to sign in', async () => {
@@ -129,6 +155,31 @@ describe('requireAuth', () => {
 
         expect(await screen.findByText('sign-in form')).toBeTruthy();
         expect(history.get()).toBe('/auth?next=%2Fsessions');
+    });
+});
+
+// Last: the outage watch is module state, and once it has seen an outage
+// it stays for the rest of the file.
+describe('requireAuth during an outage', () => {
+    it('neither shows the page nor redirects (the outage screen covers it)', async () => {
+        for (const answer of [
+            () => Promise.reject(new TypeError('Failed to fetch')),
+            () => json(502),
+        ]) {
+            const api = fakeApi({ 'GET /api/v1/auth/me': answer });
+            const { history, unmount } = app('/sessions');
+
+            await waitFor(() =>
+                expect(api.calls('GET /api/v1/auth/me')).toHaveLength(1)
+            );
+            await waitFor(() => expect(outage()).not.toBeNull());
+            await new Promise((done) => setTimeout(done, 20));
+            expect(screen.queryByText('secret page')).toBeNull();
+            expect(screen.queryByText('sign-in form')).toBeNull();
+            expect(screen.queryByRole('alert')).toBeNull();
+            expect(history.get()).toBe('/sessions');
+            unmount();
+        }
     });
 });
 

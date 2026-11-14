@@ -1,6 +1,14 @@
 import { Match, Show, Switch, type Component, type JSX } from 'solid-js';
 import { Navigate, useLocation, type RouteSectionProps } from '@solidjs/router';
+import { useIsFetching, useQueryClient } from '@tanstack/solid-query';
+import { useI18n } from '@shared/i18n/i18n-context';
+import Button from '@shared/ui/Button';
+import ErrorSummary from '@shared/ui/ErrorSummary';
 import { useAuth } from './auth';
+import { authKeys } from './auth-keys';
+import { ApiError, NetworkError } from './client';
+import { FORM } from './errors';
+import { outage } from './outage-watch';
 
 const SignInPath = '/auth';
 
@@ -29,11 +37,45 @@ function signInHref(here: { pathname: string; search: string; hash: string }) {
 }
 
 /**
+ * The check of who is signed in failed with an answer (a 500), not an
+ * outage: what went wrong, and a way to ask again.
+ */
+function CheckFailed(props: { error: Error }) {
+    const i18n = useI18n();
+    const queryClient = useQueryClient();
+    const asking = useIsFetching(() => ({ queryKey: authKeys.me() }));
+    const errors = () => ({
+        [FORM]:
+            props.error instanceof ApiError
+                ? props.error.errors
+                : [NetworkError],
+    });
+    return (
+        <div class="page-stack">
+            <ErrorSummary errors={errors()} />
+            <div class="actions-row">
+                <Button
+                    busy={asking() > 0}
+                    onClick={() =>
+                        void queryClient.refetchQueries({
+                            queryKey: authKeys.me(),
+                        })
+                    }
+                >
+                    {i18n.t('ui.try_again', 'Try again')}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+/**
  * A page for signed-in users only: a redirect to sign in (and back) when
  * signed out, also when the session ends while the page is open (a 401
- * ends it). Nothing while the user is loading, and nothing when the check
- * failed (no answer, a 5xx): that is not "signed out", and the outage
- * screen covers the page until the server is back.
+ * ends it). A known user keeps the page when a later check fails. Before
+ * the user is known: nothing while loading or during an outage (its screen
+ * covers the page), and the error with "Try again" for any other failure
+ * (a 500) — that is not "signed out" either.
  */
 export function requireAuth<P extends RouteSectionProps>(
     page: Component<P>
@@ -43,11 +85,13 @@ export function requireAuth<P extends RouteSectionProps>(
         const location = useLocation();
         return (
             <Switch>
-                <Match when={auth.authError()}>{null}</Match>
+                <Match when={auth.user()}>{page(props)}</Match>
                 <Match when={auth.user() === null}>
                     <Navigate href={signInHref(location)} />
                 </Match>
-                <Match when={auth.user()}>{page(props)}</Match>
+                <Match when={!outage() && auth.authError()}>
+                    {(error) => <CheckFailed error={error()} />}
+                </Match>
             </Switch>
         );
     };
