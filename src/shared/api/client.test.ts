@@ -3,11 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CsrfService } from './csrf';
 import {
     api,
+    ApiError,
     dataOr,
     errorsOf,
     multipart,
     NetworkError,
     onUnauthorized,
+    request,
     send,
 } from './client';
 
@@ -85,6 +87,96 @@ describe('api client', () => {
             ok: false,
             errors: [NetworkError],
         });
+    });
+});
+
+describe('request', () => {
+    const fetch = vi.fn<(request: Request) => Promise<Response>>();
+
+    beforeEach(() => {
+        vi.stubGlobal('fetch', fetch);
+    });
+
+    afterEach(() => {
+        fetch.mockReset();
+    });
+
+    const failure = async (call: Promise<unknown>) => {
+        const error = await call.then(
+            () => expect.fail('expected a failure'),
+            (e: unknown) => e
+        );
+        expect(error).toBeInstanceOf(ApiError);
+        return error as ApiError;
+    };
+
+    it('is the data of a 2xx answer', async () => {
+        fetch.mockResolvedValue(json(200, ['admin']));
+        expect(await request(api.GET('/api/v1/roles/me'))).toEqual(['admin']);
+    });
+
+    it('throws a list of error bodies with the status', async () => {
+        const item = { code: 'Invalid', message: 'Bad name', field: 'name' };
+        fetch.mockResolvedValue(json(400, [item]));
+
+        const error = await failure(request(api.GET('/api/v1/roles/me')));
+        expect(error.errors).toEqual([item]);
+        expect(error.status).toBe(400);
+        expect(error.message).toBe('Bad name');
+        expect(error.name).toBe('ApiError');
+    });
+
+    it('throws a single error body with the status', async () => {
+        const item = { code: 'NotFound', message: 'Gone' };
+        fetch.mockResolvedValue(json(404, item));
+
+        const error = await failure(request(api.GET('/api/v1/roles/me')));
+        expect(error.errors).toEqual([item]);
+        expect(error.status).toBe(404);
+    });
+
+    it('throws the status for an unknown body', async () => {
+        fetch.mockResolvedValue(
+            new Response('<html>proxy page</html>', {
+                status: 502,
+                statusText: 'Bad Gateway',
+            })
+        );
+
+        const error = await failure(request(api.GET('/api/v1/roles/me')));
+        expect(error.errors).toEqual([
+            { code: 'http_502', message: 'Bad Gateway' },
+        ]);
+        expect(error.status).toBe(502);
+    });
+
+    it('throws a dropped connection as a network error with status 0', async () => {
+        fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+
+        const error = await failure(request(api.GET('/api/v1/roles/me')));
+        expect(error.errors).toEqual([NetworkError]);
+        expect(error.status).toBe(0);
+    });
+
+    it('lets an abort through as is', async () => {
+        const abort = new DOMException('Aborted', 'AbortError');
+        fetch.mockRejectedValue(abort);
+
+        await expect(request(api.GET('/api/v1/roles/me'))).rejects.toBe(abort);
+        fetch.mockRejectedValue(abort);
+        await expect(send(api.GET('/api/v1/roles/me'))).rejects.toBe(abort);
+    });
+});
+
+describe('ApiError', () => {
+    it('tells an API error from a bug', () => {
+        expect(new ApiError([NetworkError], 0)).toBeInstanceOf(ApiError);
+        expect(new ApiError([NetworkError], 0)).toBeInstanceOf(Error);
+        expect(new TypeError('x is undefined')).not.toBeInstanceOf(ApiError);
+    });
+
+    it('falls back to a plain message without error items', () => {
+        expect(new ApiError([], 500).message).toBe('Request failed');
     });
 });
 

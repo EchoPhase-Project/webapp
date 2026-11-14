@@ -97,20 +97,57 @@ export function errorsOf(body: unknown, response: Response): ErrorItem[] {
 }
 
 /**
+ * What a failed call throws: the API's error items, as forms show them, and
+ * the HTTP status (0: no answer).
+ */
+export class ApiError extends Error {
+    readonly errors: ErrorItem[];
+    readonly status: number;
+
+    constructor(errors: ErrorItem[], status: number) {
+        super(errors[0]?.message ?? 'Request failed');
+        this.name = 'ApiError';
+        this.errors = errors;
+        this.status = status;
+    }
+}
+
+const isAbort = (e: unknown) =>
+    e instanceof DOMException && e.name === 'AbortError';
+
+/**
+ * Awaits a call of `api`: its data, or an ApiError. A dropped connection is
+ * a network_error with status 0; an aborted request throws its AbortError.
+ */
+export async function request<T>(
+    call: Promise<{ data?: T; error?: unknown; response: Response }>
+): Promise<T> {
+    let answer: Awaited<typeof call>;
+    try {
+        answer = await call;
+    } catch (e) {
+        if (isAbort(e)) throw e;
+        throw new ApiError([NetworkError], 0);
+    }
+    const { data, error, response } = answer;
+    if (!response.ok)
+        throw new ApiError(errorsOf(error, response), response.status);
+    return data as T;
+}
+
+/**
  * Awaits a call of `api` as an ApiResult: no exceptions to catch, a
  * dropped connection is a network_error. An aborted request still throws.
+ * On its way out: new code uses request().
  */
 export async function send<T>(
     call: Promise<{ data?: T; error?: unknown; response: Response }>
 ): Promise<ApiResult<T>> {
     try {
-        const { data, error, response } = await call;
-        return response.ok
-            ? { ok: true, data: data as T }
-            : { ok: false, errors: errorsOf(error, response) };
+        return { ok: true, data: await request(call) };
     } catch (e) {
-        if (e instanceof DOMException && e.name === 'AbortError') throw e;
-        return { ok: false, errors: [NetworkError] };
+        if (e instanceof ApiError) return { ok: false, errors: e.errors };
+        throw e;
     }
 }
 
