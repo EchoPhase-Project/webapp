@@ -11,11 +11,10 @@ import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {
     deletePackage,
-    inputOf,
     listShares,
+    savePackage,
     sharePackage,
     unsharePackage,
-    updatePackage,
 } from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
 import PublishModal from './PublishModal';
@@ -49,8 +48,7 @@ export default function PackageSettings(props: {
         e.preventDefault();
         await run(
             () =>
-                updatePackage(props.pkg.id, {
-                    ...inputOf(props.pkg),
+                savePackage(props.pkg, {
                     errorWorkflow: errorWorkflow() || null,
                 }),
             (pkg) => props.onSaved(pkg)

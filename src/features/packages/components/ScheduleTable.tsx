@@ -1,7 +1,6 @@
 import { createSignal, Show } from 'solid-js';
 import { IconPencil, IconPlus } from '@shared/ui/icons';
 import type { FormErrors } from '@shared/api/errors';
-import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -13,14 +12,12 @@ import Modal from '@shared/ui/Modal';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
 import TimeZoneField from '@shared/ui/TimeZoneField';
-import { saveWorkflow } from '@features/packages/api';
 import {
     addTrigger,
-    removeBlock,
     setParams,
     setTimeZone,
-    type Program,
 } from '@features/packages/program-edit';
+import { useProgramSave } from '@features/packages/program-save';
 
 type Schedule = Workflow['schedules'][number];
 
@@ -35,17 +32,20 @@ export default function ScheduleTable(props: {
 }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
-    // null: closed; 'new': adding; a schedule: editing it.
-    const [editing, setEditing] = createSignal<Schedule | 'new' | null>(null);
-    const [deleting, setDeleting] = createSignal<Schedule | null>(null);
-    const { busy, errors, run } = createSubmit();
-
-    function save(program: Program) {
-        return run(
-            () => saveWorkflow(props.workflow, { program }),
-            (saved) => props.onChange(saved)
-        );
-    }
+    // Editing: null, closed; 'new', adding; a schedule, editing it.
+    const {
+        busy,
+        errors,
+        save,
+        remove,
+        editing,
+        setEditing,
+        setDeleting,
+        deleting,
+    } = useProgramSave<Schedule, Schedule | 'new'>(
+        () => props.workflow,
+        (saved) => props.onChange(saved)
+    );
 
     async function submit(cron: string, zone: string) {
         const target = editing();
@@ -164,11 +164,7 @@ export default function ScheduleTable(props: {
                 title={t('schedule.delete_title', 'Delete this schedule?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={(schedule) =>
-                    void save(
-                        removeBlock(props.workflow.program, schedule.blockId)
-                    ).then(() => setDeleting(null))
-                }
+                onConfirm={(schedule) => void remove(schedule)}
                 onCancel={() => setDeleting(null)}
             >
                 {t(

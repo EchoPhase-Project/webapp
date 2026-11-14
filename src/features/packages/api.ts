@@ -92,7 +92,7 @@ export function createPackage(
 }
 
 /** Saves all of it (send its errorWorkflow back, or it is cleared). */
-export function updatePackage(
+function updatePackage(
     id: string,
     body: PackageInput
 ): Promise<ApiResult<WorkflowPackage>> {
@@ -105,7 +105,7 @@ export function updatePackage(
 }
 
 /** The package as it is, as the body of an update. */
-export const inputOf = (pkg: WorkflowPackage): PackageInput => ({
+const inputOf = (pkg: WorkflowPackage): PackageInput => ({
     name: pkg.name,
     summary: pkg.summary,
     readme: pkg.readme,
@@ -114,6 +114,17 @@ export const inputOf = (pkg: WorkflowPackage): PackageInput => ({
     errorWorkflow: pkg.errorWorkflow ?? null,
     expectedStamp: pkg.stamp,
 });
+
+/**
+ * Saves one part of it (its tags, who sees it), the rest as it was opened:
+ * someone else's save meanwhile is a conflict (expectedStamp).
+ */
+export function savePackage(
+    pkg: WorkflowPackage,
+    patch: Partial<PackageInput>
+): Promise<ApiResult<WorkflowPackage>> {
+    return updatePackage(pkg.id, { ...inputOf(pkg), ...patch });
+}
 
 /** Deletes it with its workflows; packages others installed from it stay. */
 export function deletePackage(id: string): Promise<ApiResult<unknown>> {

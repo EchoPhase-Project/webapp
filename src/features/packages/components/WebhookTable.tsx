@@ -1,6 +1,5 @@
 import { createSignal, Show } from 'solid-js';
 import { IconCopy, IconEye, IconEyeOff, IconPencil } from '@shared/ui/icons';
-import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createClipboard } from '@shared/lib/clipboard';
@@ -12,13 +11,12 @@ import Modal from '@shared/ui/Modal';
 import RadioGroup from '@shared/ui/RadioGroup';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
-import { saveWorkflow } from '@features/packages/api';
 import {
     newSecret,
     paramsOf,
-    removeBlock,
     setParams,
 } from '@features/packages/program-edit';
+import { useProgramSave } from '@features/packages/program-save';
 
 type Webhook = Workflow['webhooks'][number];
 type Respond = Webhook['respond'];
@@ -48,9 +46,19 @@ export default function WebhookTable(props: {
     const t = useLocalizer('workflows');
     const [shown, setShown] = createSignal<number | null>(null);
     const { copied, copy } = createClipboard();
-    const [editing, setEditing] = createSignal<Webhook | null>(null);
-    const [deleting, setDeleting] = createSignal<Webhook | null>(null);
-    const { busy, errors, run } = createSubmit();
+    const {
+        busy,
+        errors,
+        save,
+        remove,
+        editing,
+        setEditing,
+        setDeleting,
+        deleting,
+    } = useProgramSave<Webhook>(
+        () => props.workflow,
+        (saved) => props.onChange(saved)
+    );
 
     const url = (hook: Webhook) => `${location.origin}${hook.path}`;
     const secret = (hook: Webhook) => {
@@ -58,13 +66,6 @@ export default function WebhookTable(props: {
         return typeof value === 'string' ? value : '';
     };
     const respondText = (respond: Respond) => respondLabel(t, respond);
-
-    function save(program: Workflow['program']) {
-        return run(
-            () => saveWorkflow(props.workflow, { program }),
-            (saved) => props.onChange(saved)
-        );
-    }
 
     async function update(blockId: number, respond: Respond, replace: boolean) {
         let program = setParams(props.workflow.program, blockId, { respond });
@@ -261,11 +262,7 @@ export default function WebhookTable(props: {
                 title={t('webhook.delete_title', 'Delete this webhook?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
-                onConfirm={(hook) =>
-                    void save(
-                        removeBlock(props.workflow.program, hook.blockId)
-                    ).then(() => setDeleting(null))
-                }
+                onConfirm={(hook) => void remove(hook)}
                 onCancel={() => setDeleting(null)}
             >
                 {t(

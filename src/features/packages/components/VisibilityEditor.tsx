@@ -6,7 +6,7 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import RadioGroup from '@shared/ui/RadioGroup';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { inputOf, updatePackage } from '@features/packages/api';
+import { savePackage } from '@features/packages/api';
 import VisibilityBadge from './VisibilityBadge';
 
 const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
@@ -26,11 +26,7 @@ export default function VisibilityEditor(props: {
     async function save(e: Event) {
         e.preventDefault();
         await run(
-            () =>
-                updatePackage(props.pkg.id, {
-                    ...inputOf(props.pkg),
-                    visibility: visibility(),
-                }),
+            () => savePackage(props.pkg, { visibility: visibility() }),
             (pkg) => props.onSaved(pkg)
         );
     }

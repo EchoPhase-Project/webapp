@@ -7,7 +7,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Modal from '@shared/ui/Modal';
-import { createPackage, inputOf, updatePackage } from '@features/packages/api';
+import { createPackage, savePackage } from '@features/packages/api';
 
 const FIELDS = ['name', 'summary', 'readme'] as const;
 const inputId = (field: string) => `package-${field}`;
@@ -72,7 +72,7 @@ function PackageForm(props: {
             () =>
                 // The rest (tags, visibility, error workflow) as it is.
                 pkg
-                    ? updatePackage(pkg.id, { ...inputOf(pkg), ...about })
+                    ? savePackage(pkg, about)
                     : createPackage({ ...about, visibility: 'Private' }),
             (saved) => props.onSaved(saved)
         );

@@ -6,7 +6,7 @@ import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { inputOf, updatePackage } from '@features/packages/api';
+import { savePackage } from '@features/packages/api';
 import { tagClass } from '@features/packages/tags';
 
 const FIELD = 'package-tags-input';
@@ -48,11 +48,7 @@ export default function TagsEditor(props: {
         e.preventDefault();
         add();
         await run(
-            () =>
-                updatePackage(props.pkg.id, {
-                    ...inputOf(props.pkg),
-                    tags: tags(),
-                }),
+            () => savePackage(props.pkg, { tags: tags() }),
             (pkg) => props.onSaved(pkg)
         );
     }
