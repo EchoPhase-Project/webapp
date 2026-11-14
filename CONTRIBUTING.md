@@ -90,8 +90,6 @@ stylesheet, `<feature>.scss`.
       outside and on Escape.
     - `createClipboard()`: a copy button with a "Copied" state
       (`ui.copied`).
-    - `createChangeSignal()`: a count that makes open lists fetch again
-      after a change in a different part of the app.
 
 ## UI
 

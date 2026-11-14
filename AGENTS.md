@@ -98,9 +98,9 @@ and the tests are successful.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
-- Before you write a debounce, a click-outside close, a copy button, or a
-  change count, use the helper in `src/shared/lib`: `createDebounced`,
-  `createDismiss`, `createClipboard`, `createChangeSignal`.
+- Before you write a debounce, a click-outside close, or a copy button, use
+  the helper in `src/shared/lib`: `createDebounced`, `createDismiss`,
+  `createClipboard`.
 - Each page starts with `PageHeader`.
 - Each page sets its title and description with
   `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".
