@@ -243,6 +243,9 @@ header {
 
 // A thin scrollbar in a muted tone, darker under the pointer. The standard
 // properties (Firefox, Chromium) take precedence; ::-webkit-* is for Safari.
+// They do not inherit: set on every element, so a panel that scrolls on its
+// own (notifications, a dialog, a list) has the same bar as the page.
+*,
 html {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--text-muted) 45%, transparent)
