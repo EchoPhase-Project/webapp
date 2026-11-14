@@ -1,18 +1,22 @@
-import { createResource, createSignal } from 'solid-js';
+import { createSignal, Match, Switch } from 'solid-js';
+import { useQuery } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
+import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
-import { listSessions, revokeAllSessions, revokeSession } from './api';
+import {
+    revokeAllSessionsMutation,
+    revokeSessionMutation,
+    sessionsQuery,
+} from './api';
 import SessionsTable from './components/SessionsTable';
 
 /** The signed-in user's sessions, fetched by this page only. */
 export default function SessionsPage() {
-    const { isAuthenticated } = useAuth();
     const t = useLocalizer('sessions');
 
     usePageMeta(() => ({
@@ -20,29 +24,23 @@ export default function SessionsPage() {
         description: t('description', 'List of current active sessions.'),
     }));
 
-    const [sessions, { refetch }] = createResource(
-        isAuthenticated,
-        listSessions
-    );
+    const sessions = useQuery(() => sessionsQuery());
     // One session's failure shows above the list; revoking all shows its
     // own in the confirm dialog, which stays open.
     const one = createSubmit();
     const all = createSubmit();
+    const revokeOne = one.mutation(revokeSessionMutation);
+    const revokeEvery = all.mutation(revokeAllSessionsMutation);
     const [confirming, setConfirming] = createSignal(false);
-    const isLoading = () => one.busy() || all.busy() || sessions.loading;
+    const isLoading = () => one.busy() || all.busy() || sessions.isPending;
 
     function revoke(id: string) {
-        return one.run(
-            () => revokeSession(id),
-            () => refetch()
-        );
+        return revokeOne.run(id);
     }
 
+    // Success ends the session: the page goes with it.
     function revokeAll() {
-        return all.run(revokeAllSessions, async () => {
-            setConfirming(false);
-            await refetch();
-        });
+        return revokeEvery.run(undefined, () => setConfirming(false));
     }
 
     function cancel() {
@@ -64,7 +62,7 @@ export default function SessionsPage() {
                     <Button
                         variant="danger-outline"
                         disabled={
-                            isLoading() || (sessions() ?? []).length === 0
+                            isLoading() || (sessions.data ?? []).length === 0
                         }
                         onClick={() => setConfirming(true)}
                     >
@@ -73,11 +71,24 @@ export default function SessionsPage() {
                 }
             />
             <ErrorSummary errors={one.errors()} />
-            <SessionsTable
-                sessions={sessions() ?? []}
-                busy={isLoading()}
-                onRevoke={(id) => void revoke(id)}
-            />
+            <Switch>
+                <Match when={sessions.isError && sessions.error}>
+                    {(error) => (
+                        <LoadError
+                            error={error()}
+                            busy={sessions.isFetching}
+                            onRetry={() => sessions.refetch()}
+                        />
+                    )}
+                </Match>
+                <Match when={sessions.isSuccess}>
+                    <SessionsTable
+                        sessions={sessions.data ?? []}
+                        busy={isLoading()}
+                        onRevoke={(id) => void revoke(id)}
+                    />
+                </Match>
+            </Switch>
 
             <ConfirmDialog
                 open={confirming()}

@@ -113,6 +113,7 @@ Before you write new markup, make pages from the components in
 | `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                               |
 | `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                            |
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                     |
+| `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                            |
 
 ### Controls
 

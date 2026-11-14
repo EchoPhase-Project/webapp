@@ -1,13 +1,9 @@
 import { Match, Show, Switch, type Component, type JSX } from 'solid-js';
 import { Navigate, useLocation, type RouteSectionProps } from '@solidjs/router';
 import { useIsFetching, useQueryClient } from '@tanstack/solid-query';
-import { useI18n } from '@shared/i18n/i18n-context';
-import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import LoadError from '@shared/ui/LoadError';
 import { useAuth } from './auth';
 import { authKeys } from './auth-keys';
-import { ApiError, NetworkError } from './client';
-import { FORM } from './errors';
 import { outage } from './outage-watch';
 
 const SignInPath = '/auth';
@@ -41,31 +37,16 @@ function signInHref(here: { pathname: string; search: string; hash: string }) {
  * outage: what went wrong, and a way to ask again.
  */
 function CheckFailed(props: { error: Error }) {
-    const i18n = useI18n();
     const queryClient = useQueryClient();
     const asking = useIsFetching(() => ({ queryKey: authKeys.me() }));
-    const errors = () => ({
-        [FORM]:
-            props.error instanceof ApiError
-                ? props.error.errors
-                : [NetworkError],
-    });
     return (
-        <div class="page-stack">
-            <ErrorSummary errors={errors()} />
-            <div class="actions-row">
-                <Button
-                    busy={asking() > 0}
-                    onClick={() =>
-                        void queryClient.refetchQueries({
-                            queryKey: authKeys.me(),
-                        })
-                    }
-                >
-                    {i18n.t('ui.try_again', 'Try again')}
-                </Button>
-            </div>
-        </div>
+        <LoadError
+            error={props.error}
+            busy={asking() > 0}
+            onRetry={() =>
+                queryClient.refetchQueries({ queryKey: authKeys.me() })
+            }
+        />
     );
 }
 

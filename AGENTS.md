@@ -82,7 +82,7 @@ and the tests are successful.
   Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Modal, ConfirmDialog, Card,
   SettingsCard, ShareList, RemoveButton, BackLink, Table, EmptyState,
-  PageHeader, Switch.
+  PageHeader, Switch, LoadError.
 - On a settings page, put each part in a `SettingsCard`. Do not make a
   `Card` with an `h2` for it.
 - Do not write `<button>`, `<select>`, `<textarea>`, or a checkbox or radio

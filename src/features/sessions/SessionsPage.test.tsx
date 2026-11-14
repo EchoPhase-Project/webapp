@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest';
-import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { CsrfService } from '@shared/api/csrf';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
@@ -69,12 +69,55 @@ describe('SessionsPage', () => {
         expect(screen.getByText('Firefox on Linux')).toBeTruthy();
     });
 
-    it('fetches nothing while signed out', async () => {
-        const api = fakeApi({ 'GET /api/v1/auth/me': () => json(401) });
+    it('shows a failed list as an error, not as an empty list', async () => {
+        let broken = true;
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/sessions': () =>
+                broken
+                    ? json(500, { code: 'TestBroken', message: 'Try later.' })
+                    : json(200, {
+                          data: [{ id: 's1', deviceId: firefox }],
+                          hasMore: false,
+                      }),
+        });
 
         renderPage(() => <SessionsPage />);
 
-        expect(await screen.findByText('No active sessions')).toBeTruthy();
-        expect(api.calls('GET /api/v1/sessions')).toHaveLength(0);
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('Try later.');
+        expect(screen.queryByText('No active sessions')).toBeNull();
+
+        broken = false;
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+        expect(await screen.findByText('Firefox on Linux')).toBeTruthy();
+        expect(api.calls('GET /api/v1/sessions')).toHaveLength(2);
+    });
+
+    it('revokes every session after the confirmation and signs out', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/sessions': () =>
+                json(200, {
+                    data: [{ id: 's1', deviceId: firefox }],
+                    hasMore: false,
+                }),
+            'DELETE /api/v1/sessions': () => json(204),
+        });
+
+        const { otherTab } = renderPage(() => <SessionsPage />);
+        await screen.findByText('Firefox on Linux');
+        fireEvent.click(screen.getByRole('button', { name: 'Revoke all' }));
+        expect(api.calls('DELETE /api/v1/sessions')).toHaveLength(0);
+        fireEvent.click(
+            within(screen.getByRole('alertdialog')).getByRole('button', {
+                name: 'Revoke all',
+            })
+        );
+
+        await waitFor(() =>
+            expect(otherTab.received).toEqual([{ type: 'signed-out' }])
+        );
+        expect(api.calls('DELETE /api/v1/sessions')).toHaveLength(1);
     });
 });
