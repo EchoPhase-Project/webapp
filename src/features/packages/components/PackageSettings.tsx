@@ -7,11 +7,11 @@ import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Select from '@shared/ui/Select';
+import SettingsCard from '@shared/ui/SettingsCard';
 import { deletePackage, inputOf, updatePackage } from '@features/packages/api';
 import PackageEditorModal from './PackageEditorModal';
 import PackageShares from './PackageShares';
 import PublishModal from './PublishModal';
-import SettingsCard from './SettingsCard';
 import TagsEditor from './TagsEditor';
 import VisibilityEditor from './VisibilityEditor';
 

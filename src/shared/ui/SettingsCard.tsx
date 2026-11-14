@@ -1,5 +1,6 @@
 import { Show, type JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import './settings-card.scss';
 
 /**
  * One part of a settings page, as GitHub's and Vercel's: a title (and a

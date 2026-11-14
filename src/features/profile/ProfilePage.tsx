@@ -6,10 +6,10 @@ import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import Button from '@shared/ui/Button';
-import Card from '@shared/ui/Card';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import PageHeader from '@shared/ui/PageHeader';
+import SettingsCard from '@shared/ui/SettingsCard';
 import { removeAvatar, setAvatar } from './api';
 import PasswordForm from './components/PasswordForm';
 import ProfileForm from './components/ProfileForm';
@@ -50,59 +50,60 @@ export default function ProfilePage() {
             <Show when={user()}>
                 {(me) => (
                     <>
-                        <Card class="profile-picture">
-                            <Avatar
-                                name={me().name}
-                                seed={me().id}
-                                fileId={me().avatarFileId}
-                                size={96}
-                                initial
-                            />
-                            <div class="profile-picture-text">
-                                <h2>{t('picture.title', 'Picture')}</h2>
-                                <p class="muted">
-                                    {t(
-                                        'picture.hint',
-                                        'PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.'
-                                    )}
-                                </p>
-                                <ErrorSummary errors={errors()} />
-                                <div class="profile-picture-actions">
-                                    <FilePicker
-                                        accept={PICTURES}
-                                        busy={busy()}
-                                        onPick={(file) =>
-                                            void changing(() => setAvatar(file))
-                                        }
-                                    >
-                                        {me().avatarFileId
-                                            ? t('picture.change', 'Change')
-                                            : t('ui.upload', 'Upload')}
-                                    </FilePicker>
-                                    <Show when={me().avatarFileId}>
-                                        <Button
-                                            variant="ghost"
-                                            disabled={busy()}
-                                            onClick={() =>
-                                                void changing(removeAvatar)
+                        <SettingsCard
+                            title={t('picture.title', 'Picture')}
+                            description={t(
+                                'picture.hint',
+                                'PNG, JPEG or WebP, up to 5 MB. Others see it next to your name.'
+                            )}
+                        >
+                            <div class="profile-picture">
+                                <Avatar
+                                    name={me().name}
+                                    seed={me().id}
+                                    fileId={me().avatarFileId}
+                                    size={96}
+                                    initial
+                                />
+                                <div class="profile-picture-text">
+                                    <ErrorSummary errors={errors()} />
+                                    <div class="profile-picture-actions">
+                                        <FilePicker
+                                            accept={PICTURES}
+                                            busy={busy()}
+                                            onPick={(file) =>
+                                                void changing(() =>
+                                                    setAvatar(file)
+                                                )
                                             }
                                         >
-                                            {t('picture.remove', 'Remove')}
-                                        </Button>
-                                    </Show>
+                                            {me().avatarFileId
+                                                ? t('picture.change', 'Change')
+                                                : t('ui.upload', 'Upload')}
+                                        </FilePicker>
+                                        <Show when={me().avatarFileId}>
+                                            <Button
+                                                variant="ghost"
+                                                disabled={busy()}
+                                                onClick={() =>
+                                                    void changing(removeAvatar)
+                                                }
+                                            >
+                                                {t('picture.remove', 'Remove')}
+                                            </Button>
+                                        </Show>
+                                    </div>
                                 </div>
                             </div>
-                        </Card>
+                        </SettingsCard>
 
-                        <Card class="profile-details">
-                            <h2>{t('details.title', 'Details')}</h2>
+                        <SettingsCard title={t('details.title', 'Details')}>
                             <ProfileForm user={me()} />
-                        </Card>
+                        </SettingsCard>
 
-                        <Card class="profile-details">
-                            <h2>{t('password.title', 'Password')}</h2>
+                        <SettingsCard title={t('password.title', 'Password')}>
                             <PasswordForm />
-                        </Card>
+                        </SettingsCard>
                     </>
                 )}
             </Show>

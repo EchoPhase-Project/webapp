@@ -1,12 +1,8 @@
 .profile-container {
   max-width: 40rem;
-
-  h2 {
-    margin: 0;
-    font-size: 1.05rem;
-  }
 }
 
+// The picture beside its actions; on a phone, the actions under it.
 .profile-picture {
   display: flex;
   gap: 22px;
@@ -21,10 +17,6 @@
 .profile-picture-text {
   display: grid;
   gap: 10px;
-
-  p {
-    margin: 0;
-  }
 }
 
 .profile-picture-actions,
@@ -32,9 +24,4 @@
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-.profile-details {
-  display: grid;
-  gap: 14px;
 }

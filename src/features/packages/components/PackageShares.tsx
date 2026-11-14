@@ -5,12 +5,12 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
+import SettingsCard from '@shared/ui/SettingsCard';
 import {
     listShares,
     sharePackage,
     unsharePackage,
 } from '@features/packages/api';
-import SettingsCard from './SettingsCard';
 
 const inputId = (field: string) => `package-share-${field}`;
 

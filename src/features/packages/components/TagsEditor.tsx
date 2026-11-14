@@ -5,9 +5,9 @@ import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
+import SettingsCard from '@shared/ui/SettingsCard';
 import { inputOf, updatePackage } from '@features/packages/api';
 import { tagClass } from '@features/packages/tags';
-import SettingsCard from './SettingsCard';
 
 const FIELD = 'package-tags-input';
 const MAX_TAGS = 10;

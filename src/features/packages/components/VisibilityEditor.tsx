@@ -5,8 +5,8 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import RadioGroup from '@shared/ui/RadioGroup';
+import SettingsCard from '@shared/ui/SettingsCard';
 import { inputOf, updatePackage } from '@features/packages/api';
-import SettingsCard from './SettingsCard';
 import VisibilityBadge from './VisibilityBadge';
 
 const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];

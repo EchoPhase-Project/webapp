@@ -1,0 +1,71 @@
+// A SettingsCard: body, then a footer (hint left, action right).
+.settings-card {
+  display: grid;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.settings-card--danger {
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+}
+
+.settings-card-body {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  min-width: 0;
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+  }
+
+  .select-wrap {
+    max-width: 24rem;
+  }
+}
+
+.settings-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.settings-card-description {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.settings-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 40%, var(--surface));
+}
+
+.settings-card-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.settings-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
