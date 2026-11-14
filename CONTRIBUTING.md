@@ -135,6 +135,9 @@ Before you write new markup, make pages from the components in
   dialog is open while `item` has a value. It gives the item to `onConfirm`
   and to the children function. Thus, the page does not need `open` or a `!`
   assertion.
+- If the action of a `ConfirmDialog` can fail, give the errors to `errors`.
+  Close the dialog only in `onOk`. Thus, the user sees why the action failed
+  and can try again.
 
 ### Icons
 
@@ -233,8 +236,14 @@ contract. Do not write a response type manually in `types.ts`.
   `onFail` returns a value, the form shows that value. Refer to the "unchanged"
   conflict in `PublishModal.tsx`. This keeps the special case adjacent to the
   call.
-- If an action must not show errors, use `pending(work)`. It only sets
-  `busy`.
+- Each action shows its errors. Do not ignore a failed result. If the user
+  does not see the failure, the user thinks that the action was successful.
+- If an action has a `ConfirmDialog`, give the errors to its `errors` prop.
+  The dialog then stays open and shows the errors. On cancel, clear the
+  errors. If the action has no dialog, put an `ErrorSummary` adjacent to the
+  action or above the list. Refer to `VersionList.tsx` and `SessionsPage.tsx`.
+- `pending(work)` only sets `busy`. If you use it, show the errors with
+  `setErrors`.
 - If each row of a list saves on its own, use `runFor(key, call, onOk)` with
   the ID of the row as the key. `busy(key)` and `errors(key)` then apply only
   to that row. `busy()` is true if a save is in progress. Thus, one row that

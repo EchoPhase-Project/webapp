@@ -1,4 +1,5 @@
 import { createResource, createSignal, For, Show } from 'solid-js';
+import { createSubmit } from '@shared/api/submit';
 import type { Workflow, WorkflowVersion } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -27,24 +28,29 @@ export default function VersionList(props: {
     const [restoring, setRestoring] = createSignal<WorkflowVersion | null>(
         null
     );
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, setErrors, run } = createSubmit();
 
-    async function restore(version: WorkflowVersion) {
-        setBusy(true);
-        try {
-            const result = await restoreWorkflowVersion(
-                props.workflow.id,
-                version.version,
-                props.workflow.version
-            );
-            if (result.ok) {
-                props.onRestored(result.data);
+    // A failure (the workflow changed meanwhile) shows in the dialog, which
+    // stays open.
+    function restore(version: WorkflowVersion) {
+        return run(
+            () =>
+                restoreWorkflowVersion(
+                    props.workflow.id,
+                    version.version,
+                    props.workflow.version
+                ),
+            (workflow) => {
+                setRestoring(null);
+                props.onRestored(workflow);
                 void refetch();
             }
-        } finally {
-            setBusy(false);
-            setRestoring(null);
-        }
+        );
+    }
+
+    function cancel() {
+        setRestoring(null);
+        setErrors({});
     }
 
     return (
@@ -110,8 +116,9 @@ export default function VersionList(props: {
                 )}
                 confirm={t('versions.restore', 'Restore')}
                 busy={busy()}
+                errors={errors()}
                 onConfirm={(version) => void restore(version)}
-                onCancel={() => setRestoring(null)}
+                onCancel={cancel}
             >
                 {t(
                     'versions.restore_body',

@@ -36,7 +36,9 @@ export default function FilesPage() {
             next: page.length === PAGE_SIZE ? (page.at(-1)?.id ?? null) : null,
         };
     });
-    const { busy, errors, pending, run } = createSubmit();
+    const { busy, errors, run } = createSubmit();
+    // A failed delete shows in its dialog, which stays open.
+    const removal = createSubmit();
     // The file whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<StoredFile | null>(null);
 
@@ -57,19 +59,21 @@ export default function FilesPage() {
         );
     }
 
-    // A failed delete shows nothing: the dialog closes, the file stays.
-    async function remove(file: StoredFile) {
-        try {
-            await pending(async () => {
-                const result = await deleteFile(file.id);
-                if (result.ok)
-                    files.setItems((current) =>
-                        current.filter((f) => f.id !== file.id)
-                    );
-            });
-        } finally {
-            setDeleting(null);
-        }
+    function remove(file: StoredFile) {
+        return removal.run(
+            () => deleteFile(file.id),
+            () => {
+                setDeleting(null);
+                files.setItems((current) =>
+                    current.filter((f) => f.id !== file.id)
+                );
+            }
+        );
+    }
+
+    function cancelDelete() {
+        setDeleting(null);
+        removal.setErrors({});
     }
 
     return (
@@ -94,7 +98,7 @@ export default function FilesPage() {
 
             <FilesTable
                 files={files.items()}
-                busy={busy()}
+                busy={busy() || removal.busy()}
                 onDelete={setDeleting}
             />
 
@@ -114,9 +118,10 @@ export default function FilesPage() {
                 item={deleting()}
                 title={t('confirm_delete.title', 'Delete this file?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
+                busy={removal.busy()}
+                errors={removal.errors()}
                 onConfirm={(file) => void remove(file)}
-                onCancel={() => setDeleting(null)}
+                onCancel={cancelDelete}
             >
                 {(file) => (
                     <p>

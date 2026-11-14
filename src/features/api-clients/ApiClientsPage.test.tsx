@@ -129,4 +129,40 @@ describe('ApiClientsPage delete', () => {
         expect(await screen.findByText('No API clients')).toBeTruthy();
         expect(api.calls('DELETE /api/v1/api-clients/c1')).toHaveLength(1);
     });
+
+    it('shows a refused delete in the dialog, which stays open', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () =>
+                json(200, [
+                    {
+                        Id: 'c1',
+                        Name: 'bot',
+                        ExpiresAt: null,
+                        LastUsedAt: null,
+                        SecretRotatedAt: null,
+                        CreatedAt: '2026-10-24T12:00:00Z',
+                    },
+                ]),
+            'DELETE /api/v1/api-clients/c1': () =>
+                json(500, { code: 'TestBroken', message: 'Try later.' }),
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Delete bot' })
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('Try later.');
+        expect(document.activeElement).toBe(alert);
+        expect(screen.getByRole('alertdialog').contains(alert)).toBe(true);
+        expect(screen.getByText(/bot stops working at once/)).toBeTruthy();
+
+        // Cancel closes it; the next time it opens without the old error.
+        fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Delete bot' }));
+        expect(screen.queryByRole('alert')).toBe(null);
+    });
 });

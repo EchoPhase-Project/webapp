@@ -3,12 +3,14 @@ import { A, useNavigate } from '@solidjs/router';
 import { IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth-provider';
 import { dataOr } from '@shared/api/client';
+import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
+import ErrorSummary from '@shared/ui/ErrorSummary';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
 import {
@@ -51,7 +53,7 @@ export default function PackageDetails(props: { id: string }) {
     );
 
     const [installing, setInstalling] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
+    const leaving = createSubmit();
     usePageMeta(() => ({
         title: pkg()?.name ?? t('title', 'Explore'),
         description:
@@ -62,14 +64,12 @@ export default function PackageDetails(props: { id: string }) {
     const isOwner = () => pkg()?.access === 'Owner';
     const date = useDateFormat();
 
-    async function leave() {
-        setBusy(true);
-        try {
-            const result = await unsharePackage(props.id, user()?.id ?? '');
-            if (result.ok) navigate('/packages');
-        } finally {
-            setBusy(false);
-        }
+    // A failure shows above the button.
+    function leave() {
+        return leaving.run(
+            () => unsharePackage(props.id, user()?.id ?? ''),
+            () => navigate('/packages')
+        );
     }
 
     const back = () => (
@@ -298,9 +298,10 @@ export default function PackageDetails(props: { id: string }) {
                                     !isOwner() && p().visibility === 'Private'
                                 }
                             >
+                                <ErrorSummary errors={leaving.errors()} />
                                 <Button
                                     variant="ghost"
-                                    disabled={busy()}
+                                    disabled={leaving.busy()}
                                     onClick={() => void leave()}
                                 >
                                     {t('leave', 'Leave this package')}

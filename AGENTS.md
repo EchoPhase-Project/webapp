@@ -72,6 +72,9 @@ and the tests are successful.
   `setBusy` and `groupErrors` steps again.
 - If each row of a list saves on its own, use `runFor(key, call, onOk)`.
   `busy(key)` and `errors(key)` then apply only to that row.
+- Each action shows its errors. Do not ignore a failed result. If the action
+  has a `ConfirmDialog`, give it `errors`, and close it only in `onOk`. If
+  the action has no dialog, show an `ErrorSummary` adjacent to it.
 
 ### UI and styles
 

@@ -1,9 +1,11 @@
 import { createSignal, Show } from 'solid-js';
 import { useAuth } from '@shared/api/auth-provider';
+import { createSubmit } from '@shared/api/submit';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import { deleteNote, unshareNote } from '@features/notes/api';
 import NoteEditor from './NoteEditor';
@@ -26,7 +28,11 @@ export default function NoteEditorModal(props: {
     const { user } = useAuth();
     const [sharing, setSharing] = createSignal(false);
     const [confirming, setConfirming] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
+    // Each shows its own failure: deleting in its confirm dialog (which stays
+    // open), leaving under the editor's buttons.
+    const deleting = createSubmit();
+    const leaving = createSubmit();
+    const busy = () => deleting.busy() || leaving.busy();
 
     const title = () =>
         !props.note
@@ -35,19 +41,31 @@ export default function NoteEditorModal(props: {
               ? props.note.title
               : t('editor.edit', 'Edit note');
 
-    async function gone(call: () => Promise<{ ok: boolean }>) {
-        setBusy(true);
-        try {
-            const result = await call();
-            if (result.ok && props.note) props.onGone?.(props.note.id);
-        } finally {
-            setBusy(false);
-            setConfirming(false);
-        }
+    function remove(note: Note) {
+        return deleting.run(
+            () => deleteNote(note.id),
+            () => {
+                setConfirming(false);
+                props.onGone?.(note.id);
+            }
+        );
     }
+
+    function leave(note: Note) {
+        return leaving.run(
+            () => unshareNote(note.id, user()?.id ?? ''),
+            () => props.onGone?.(note.id)
+        );
+    }
+
+    const cancelDelete = () => {
+        setConfirming(false);
+        deleting.setErrors({});
+    };
 
     const close = () => {
         setSharing(false);
+        leaving.setErrors({});
         props.onClose();
     };
 
@@ -60,11 +78,7 @@ export default function NoteEditorModal(props: {
                         <Button
                             variant="ghost"
                             disabled={busy()}
-                            onClick={() =>
-                                void gone(() =>
-                                    unshareNote(note().id, user()?.id ?? '')
-                                )
-                            }
+                            onClick={() => void leave(note())}
                         >
                             {t('editor.leave', 'Leave this note')}
                         </Button>
@@ -110,6 +124,7 @@ export default function NoteEditorModal(props: {
                         }}
                         footer={footer()}
                     />
+                    <ErrorSummary errors={leaving.errors()} />
                     <Show when={sharing() && props.note}>
                         {(note) => <ShareSection noteId={note().id} />}
                     </Show>
@@ -120,9 +135,10 @@ export default function NoteEditorModal(props: {
                 item={confirming() ? props.note : null}
                 title={t('confirm_delete.title', 'Delete this note?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
-                onConfirm={(note) => void gone(() => deleteNote(note.id))}
-                onCancel={() => setConfirming(false)}
+                busy={deleting.busy()}
+                errors={deleting.errors()}
+                onConfirm={(note) => void remove(note)}
+                onCancel={cancelDelete}
             >
                 {(note) => (
                     <p>

@@ -34,7 +34,7 @@ function renderList(card = false) {
     });
     const unshare = vi.fn((_of: string, userId: string) => {
         people = people.filter((p) => p.user.id !== userId);
-        return Promise.resolve();
+        return Promise.resolve({ ok: true as const, data: null });
     });
     const { container } = render(() => (
         <I18nProvider>

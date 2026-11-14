@@ -39,7 +39,9 @@ export default function PackageSettings(props: {
     const [editing, setEditing] = createSignal(false);
     const [publishing, setPublishing] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const { busy, errors, pending, run } = createSubmit(['errorWorkflow']);
+    const { busy, errors, run } = createSubmit(['errorWorkflow']);
+    // A failed delete shows in its dialog, which stays open.
+    const removal = createSubmit();
     // The choice starts from the package's, and follows it once saved.
     const [errorWorkflow, setErrorWorkflow] = createSignal('');
     createEffect(() => setErrorWorkflow(props.pkg.errorWorkflow ?? ''));
@@ -55,16 +57,19 @@ export default function PackageSettings(props: {
         );
     }
 
-    // A failed delete shows nothing: the dialog closes, the package stays.
-    async function remove() {
-        try {
-            await pending(async () => {
-                const result = await deletePackage(props.pkg.id);
-                if (result.ok) navigate('/packages');
-            });
-        } finally {
-            setDeleting(false);
-        }
+    function remove() {
+        return removal.run(
+            () => deletePackage(props.pkg.id),
+            () => {
+                setDeleting(false);
+                navigate('/packages');
+            }
+        );
+    }
+
+    function cancelDelete() {
+        setDeleting(false);
+        removal.setErrors({});
     }
 
     const docs = (
@@ -215,7 +220,7 @@ export default function PackageSettings(props: {
                 actions={
                     <Button
                         variant="danger-outline"
-                        disabled={busy()}
+                        disabled={busy() || removal.busy()}
                         onClick={() => setDeleting(true)}
                     >
                         {t('settings.delete', 'Delete this package')}
@@ -250,9 +255,10 @@ export default function PackageSettings(props: {
                 open={deleting()}
                 title={t('settings.delete_title', 'Delete this package?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
+                busy={removal.busy()}
+                errors={removal.errors()}
                 onConfirm={() => void remove()}
-                onCancel={() => setDeleting(false)}
+                onCancel={cancelDelete}
             >
                 {t(
                     'settings.delete_body',

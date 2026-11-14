@@ -1,9 +1,11 @@
 import { createResource, createSignal } from 'solid-js';
+import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ErrorSummary from '@shared/ui/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
 import { listSessions, revokeAllSessions, revokeSession } from './api';
 import SessionsTable from './components/SessionsTable';
@@ -22,18 +24,30 @@ export default function SessionsPage() {
         isAuthenticated,
         listSessions
     );
-    const [busy, setBusy] = createSignal(false);
+    // One session's failure shows above the list; revoking all shows its
+    // own in the confirm dialog, which stays open.
+    const one = createSubmit();
+    const all = createSubmit();
     const [confirming, setConfirming] = createSignal(false);
-    const isLoading = () => busy() || sessions.loading;
+    const isLoading = () => one.busy() || all.busy() || sessions.loading;
 
-    async function revoking(call: () => Promise<unknown>) {
-        setBusy(true);
-        try {
-            await call();
+    function revoke(id: string) {
+        return one.run(
+            () => revokeSession(id),
+            () => refetch()
+        );
+    }
+
+    function revokeAll() {
+        return all.run(revokeAllSessions, async () => {
+            setConfirming(false);
             await refetch();
-        } finally {
-            setBusy(false);
-        }
+        });
+    }
+
+    function cancel() {
+        setConfirming(false);
+        all.setErrors({});
     }
 
     return (
@@ -58,23 +72,21 @@ export default function SessionsPage() {
                     </Button>
                 }
             />
+            <ErrorSummary errors={one.errors()} />
             <SessionsTable
                 sessions={sessions() ?? []}
                 busy={isLoading()}
-                onRevoke={(id) => void revoking(() => revokeSession(id))}
+                onRevoke={(id) => void revoke(id)}
             />
 
             <ConfirmDialog
                 open={confirming()}
                 title={t('confirm_revoke_all.title', 'Revoke every session?')}
                 confirm={t('revoke_all', 'Revoke all')}
-                busy={busy()}
-                onConfirm={() =>
-                    void revoking(revokeAllSessions).finally(() =>
-                        setConfirming(false)
-                    )
-                }
-                onCancel={() => setConfirming(false)}
+                busy={all.busy()}
+                errors={all.errors()}
+                onConfirm={() => void revokeAll()}
+                onCancel={cancel}
             >
                 <p>
                     {t(

@@ -2,6 +2,7 @@ import { createResource, createSignal, Show } from 'solid-js';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useAuth } from '@shared/api/auth-provider';
+import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
@@ -33,7 +34,7 @@ export default function ApiClientsPage() {
     );
     const [creating, setCreating] = createSignal(false);
     const [secret, setSecret] = createSignal<string | null>(null);
-    const [busy, setBusy] = createSignal(false);
+    const { busy, errors, setErrors, run } = createSubmit();
     // The client whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<ApiClient | null>(null);
 
@@ -43,15 +44,20 @@ export default function ApiClientsPage() {
         void refetch();
     }
 
-    async function remove(client: ApiClient) {
-        setBusy(true);
-        try {
-            await deleteApiClient(client.Id);
-            await refetch();
-        } finally {
-            setBusy(false);
-            setDeleting(null);
-        }
+    // A failure shows in the dialog, which stays open.
+    function remove(client: ApiClient) {
+        return run(
+            () => deleteApiClient(client.Id),
+            async () => {
+                setDeleting(null);
+                await refetch();
+            }
+        );
+    }
+
+    function cancel() {
+        setDeleting(null);
+        setErrors({});
     }
 
     return (
@@ -99,8 +105,9 @@ export default function ApiClientsPage() {
                 title={t('confirm_delete.title', 'Delete this API client?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
+                errors={errors()}
                 onConfirm={(client) => void remove(client)}
-                onCancel={() => setDeleting(null)}
+                onCancel={cancel}
             >
                 {(client) => (
                     <p>

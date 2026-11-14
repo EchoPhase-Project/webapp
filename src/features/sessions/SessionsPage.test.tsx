@@ -47,6 +47,28 @@ describe('SessionsPage', () => {
         expect(api.calls('GET /api/v1/sessions')).toHaveLength(2);
     });
 
+    it('shows a refused revoke above the list', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/sessions': () =>
+                json(200, {
+                    data: [{ id: 's1', deviceId: firefox }],
+                    hasMore: false,
+                }),
+            'DELETE /api/v1/sessions/s1': () =>
+                json(500, { code: 'TestBroken', message: 'Try later.' }),
+        });
+
+        renderPage(() => <SessionsPage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Revoke session' })
+        );
+
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('Try later.');
+        expect(screen.getByText('Firefox on Linux')).toBeTruthy();
+    });
+
     it('fetches nothing while signed out', async () => {
         const api = fakeApi({ 'GET /api/v1/auth/me': () => json(401) });
 

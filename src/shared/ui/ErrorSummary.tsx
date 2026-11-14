@@ -1,6 +1,7 @@
 import { createEffect, For, Show } from 'solid-js';
 import { FORM, type FormErrors } from '@shared/api/errors';
 import { useI18n } from '@shared/i18n/i18n-context';
+import './forms.scss';
 
 /**
  * A form's errors that are about no field in particular (a wrong password,

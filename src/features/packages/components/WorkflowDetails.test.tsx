@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
+import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { pageSection } from '@shared/nav/page-section';
 import { renderPage } from '@shared/testing/render-page';
@@ -300,6 +300,30 @@ describe('WorkflowDetails', () => {
                 .calls('POST /api/v1/workflows/w1/versions/2/restore')[0]
                 .json()
         ).toEqual({ currentVersion: 3 });
+    });
+
+    it('shows a refused restore in the dialog, which stays open', async () => {
+        fakeApi(
+            routes({
+                'POST /api/v1/workflows/w1/versions/2/restore': () =>
+                    json(409, {
+                        code: 'TestChanged',
+                        message: 'The workflow changed meanwhile.',
+                    }),
+            })
+        );
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="versions" />
+        ));
+
+        fireEvent.click(await screen.findByRole('button', { name: 'Restore' }));
+        const dialog = await screen.findByRole('alertdialog');
+        fireEvent.click(dialog.querySelector('.btn-danger') as HTMLElement);
+
+        const alert = await within(dialog).findByRole('alert');
+        expect(alert.textContent).toBe('The workflow changed meanwhile.');
+        expect(document.activeElement).toBe(alert);
+        expect(dialog.closest('dialog')?.hasAttribute('open')).toBe(true);
     });
 
     it('gives the navigation one group: its parts, then back to its package', async () => {

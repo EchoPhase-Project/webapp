@@ -29,7 +29,7 @@ type ShareListProps<T extends { user: Sharee }> = {
     removeLabel: (name: string) => string;
     list: (of: string) => Promise<T[]>;
     share: (of: string, userName: string) => Promise<ApiResult<unknown>>;
-    unshare: (of: string, userId: string) => Promise<unknown>;
+    unshare: (of: string, userId: string) => Promise<ApiResult<unknown>>;
     /** After a person's name, such as what they may do ("can edit"). */
     detail?: (share: T) => JSX.Element;
     /** Under the username: more of the share (a "May edit" switch). */
@@ -49,7 +49,9 @@ export default function ShareList<T extends { user: Sharee }>(
         (of) => props.list(of)
     );
     const [userName, setUserName] = createSignal('');
-    const { busy, errors, pending, run } = createSubmit(['userName']);
+    const { busy, errors, run } = createSubmit(['userName']);
+    // A failed removal shows above the people, apart from the form's errors.
+    const removing = createSubmit();
     const inputId = (field: string) => `${props.id}-${field}`;
 
     async function add(e: Event) {
@@ -66,10 +68,10 @@ export default function ShareList<T extends { user: Sharee }>(
     }
 
     async function remove(userId: string) {
-        await pending(async () => {
-            await props.unshare(props.of, userId);
-            await refetch();
-        });
+        await removing.run(
+            () => props.unshare(props.of, userId),
+            () => refetch()
+        );
     }
 
     const people = () => (
@@ -90,7 +92,7 @@ export default function ShareList<T extends { user: Sharee }>(
                             {props.detail?.(share)}
                             <RemoveButton
                                 label={props.removeLabel(share.user.name)}
-                                disabled={busy()}
+                                disabled={busy() || removing.busy()}
                                 onClick={() => void remove(share.user.id)}
                             />
                         </li>
@@ -144,6 +146,8 @@ export default function ShareList<T extends { user: Sharee }>(
                     <Show when={props.description}>
                         <p class="muted">{props.description}</p>
                     </Show>
+                    <ErrorSummary errors={removing.errors()} />
+                    <ErrorSummary errors={removing.errors()} />
                     {people()}
                     <form
                         class="share-list-form"
@@ -162,6 +166,7 @@ export default function ShareList<T extends { user: Sharee }>(
                 onSubmit={(e) => void add(e)}
                 actions={submit()}
             >
+                <ErrorSummary errors={removing.errors()} />
                 {people()}
                 {fields()}
             </SettingsCard>

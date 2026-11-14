@@ -1,6 +1,8 @@
 import { Show, type JSX } from 'solid-js';
+import type { FormErrors } from '@shared/api/errors';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from './Button';
+import ErrorSummary from './ErrorSummary';
 import Modal from './Modal';
 
 type CommonProps = {
@@ -8,6 +10,11 @@ type CommonProps = {
     /** The action's name on its button ("Delete", "Revoke all"). */
     confirm: string;
     busy?: boolean;
+    /**
+     * Why the action failed, at the dialog's top; the dialog stays open, so
+     * the user can try again or cancel. Clear them on cancel.
+     */
+    errors?: FormErrors;
     onCancel: () => void;
 };
 
@@ -33,6 +40,7 @@ type OpenProps = CommonProps & {
  * Asks before something that cannot be undone. Cancel has the focus, so an
  * Enter by habit does no harm; the action is the red button. Given an
  * `item`, it is open while the item is there and hands it to `onConfirm`.
+ * Given `errors`, it shows why the action failed (it stays open).
  */
 export default function ConfirmDialog<T>(props: ItemProps<T> | OpenProps) {
     const i18n = useI18n();
@@ -58,6 +66,9 @@ export default function ConfirmDialog<T>(props: ItemProps<T> | OpenProps) {
             role="alertdialog"
             onClose={props.onCancel}
         >
+            <Show when={props.errors}>
+                {(errors) => <ErrorSummary errors={errors()} />}
+            </Show>
             <div class="confirm-text">{body()}</div>
             <div class="actions-row actions-row--end">
                 <Button
