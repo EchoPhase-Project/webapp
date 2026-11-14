@@ -31,7 +31,8 @@ and the tests are successful.
 - `src/features/<name>/`: one feature. A feature contains these items:
     - `XPage.tsx`. This file only assembles the page.
     - `components/`.
-    - `api.ts`.
+    - `api.ts`, or `api/<entity>.ts` if the feature has more than one
+      entity.
     - `<name>.scss`.
     - Tests, adjacent to the code.
 - `src/shared/`: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`,
@@ -60,26 +61,45 @@ and the tests are successful.
 - Do not edit `src/shared/api/schema.d.ts`. The generator makes this file from
   the server contract.
 - Do not write response types manually in `shared/api/types.ts`.
-- Send API calls through `api` and `send()` from `shared/api/client.ts`. Put
-  these calls in the `api.ts` file of the feature.
-- If a call can fail and the page needs a value, use
-  `dataOr(result, fallback)`. To send a file, use `multipart(fields)`. Do not
-  write `as unknown as` for a body.
+- All API calls go through TanStack Query. Write the descriptions of a
+  feature in its `api.ts` or `api/<entity>.ts`.
+- Import `api` and `request` from `shared/api/client.ts` only in these API
+  files and in `shared/api/auth.ts`. Components import the descriptions.
+  ESLint enforces this rule.
+- Give the exports these names: `<entity>Keys`, `<noun>Query`,
+  `<noun>InfiniteQuery`, `<verb><Entity>Mutation`. For other exports,
+  `src/app/structure.test.ts` has a short list.
+- To send a file, use `multipart(fields)`. Do not write `as unknown as` for
+  a body.
+- If a description needs a different `staleTime`, set it in the
+  description.
+- If a read fails, show `LoadError` in place of the data.
 - If a list comes one page at a time, use `createPagedList(describe)` from
-  `shared/lib/paged-list.ts`. Write the `…InfiniteQuery` description in the
-  `api.ts` file of the feature, with `cursorPages`.
+  `shared/lib/paged-list.ts`. Write the `…InfiniteQuery` description with
+  `cursorPages`.
 - If such a list shows the newest item first, use `refreshHead` for a new
   item. If it shows the oldest item first, use `appendItem` for a new item.
 - To change or remove one item, use `patchItem` or `removeItem`. Do not
   invalidate the list.
-- To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`:
-  `run(call, onOk)` sets `busy` and shows the errors. Do not write the
-  `setBusy` and `groupErrors` steps again.
-- If each row of a list saves on its own, use `runFor(key, call, onOk)`.
+- To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`.
+  Then use `submit.mutation(describe)` and its `run(vars, onOk)`.
+- Put the cache changes in the `onSuccess` of the description. Put only the
+  form steps (close, go to a page) in `onOk`.
+- If each row of a list saves on its own, use `runFor(key, vars, onOk)`.
   `busy(key)` and `errors(key)` then apply only to that row.
 - Each action shows its errors. Do not ignore a failed result. If the action
   has a `ConfirmDialog`, give it `errors`, and close it only in `onOk`. If
   the action has no dialog, show an `ErrorSummary` adjacent to it.
+
+### Session
+
+- Change the user only with `startSession` and `endSession`.
+- Keep user data in Query, in a component under `SessionProvider`, or in
+  `sessionScoped` from `shared/api/session-provider.tsx`.
+- Do not put `createSignal` or `createStore` at the top of a feature
+  module. ESLint enforces this rule.
+- To keep user data in the browser storage, use `sessionStore`.
+- To reset an external system for a new user, use `onSessionChange`.
 
 ### UI and styles
 

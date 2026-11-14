@@ -56,7 +56,8 @@ Import through the aliases (`@app/…`, `@features/…`, `@shared/…`, `@dev/�
 - `app` can import all code, because it connects the features.
 
 In a feature, `XPage.tsx` only assembles the page: title, header, layout. Put
-the parts of the page in `components/` and the API calls in `api.ts`. Put
+the parts of the page in `components/` and the API calls in `api.ts` (or
+`api/<entity>.ts`, refer to [The API](#the-api)). Put
 logic that must have tests in plain modules, with the tests adjacent to them
 (`sessions/user-agent.ts` and `user-agent.test.ts`). A feature has one
 stylesheet, `<feature>.scss`.
@@ -70,7 +71,7 @@ stylesheet, `<feature>.scss`.
   Do not destructure props.
 - Components and pages are files in PascalCase (`SessionsPage.tsx`). Modules,
   hooks, and providers are files in kebab-case (`user-agent.ts`,
-  `auth-provider.tsx`).
+  `session-provider.tsx`).
 - Comments are full sentences. They tell why or for which purpose. They do
   not tell what the next line does. Exported functions and components have a
   `/** … */` comment.
@@ -200,10 +201,12 @@ Before you write new markup, make pages from the components in
 
 ## The API
 
-All calls go through the typed client in `src/shared/api/client.ts`
-(openapi-fetch) and `send()`. `send()` returns `{ ok, data }` or
-`{ ok, errors }`. It does not throw exceptions. The types come from the server
-contract. Do not write a response type manually in `types.ts`.
+All API calls go through TanStack Query (`@tanstack/solid-query`): reads,
+changes, sign-in, and sign-out. The cache then keeps one copy of each item,
+and a change shows on all pages. The typed client in
+`src/shared/api/client.ts` (openapi-fetch) gives `api` and `request()`.
+`request()` returns the data or throws an `ApiError`. The types come from the
+server contract. Do not write a response type manually in `types.ts`.
 
 - `api-version` contains the version of the contract that the webapp uses.
   `mise run contract:pull` downloads the contract. `mise run gen:api` makes
@@ -213,18 +216,52 @@ contract. Do not write a response type manually in `types.ts`.
     2. Run `mise run gen:api`.
     3. Repair the errors that the compiler finds.
     4. Commit `api-version` and `schema.d.ts` together.
-- The page shows each error below its field (`groupErrors`). It shows the
-  other errors at the top of the form. The text of an error comes from its
-  code: `errors.<code>` in the locale files. The message from the server is
-  the fallback.
-- If a list call can fail, return `dataOr(result, [])` from
-  `@shared/api/client`. Do not write `result.ok ? result.data : []`.
+
+### The API layer of a feature
+
+- Write the queries and mutations of a feature in its `api.ts`. If the
+  feature has more than one entity, use one `api/<entity>.ts` for each
+  entity (refer to `features/packages/api/`). Each key, cache change, and
+  `staleTime` then has one location.
+- In a description, call `request(api.…)` directly in `queryFn` or
+  `mutationFn`. The feature has no separate HTTP layer, because it would
+  only repeat the descriptions.
+- Components and hooks import only the descriptions of their feature. Only
+  the API files and `src/shared/api/auth.ts` import `api` and `request`.
+  ESLint (`@typescript-eslint/no-restricted-imports`) enforces this rule.
+- Give the exports of an API file these names:
+    - `<entity>Keys` for the query keys: `packageKeys`, `noteKeys`.
+    - A noun and `Query` for a read: `packageQuery(id)`, `inboxQuery()`.
+    - A noun and `InfiniteQuery` for a list in pages:
+      `filesInfiniteQuery()`.
+    - A verb, the entity, and `Mutation` for a change:
+      `updatePackageMutation`, `revokeSessionMutation`. Use `create`,
+      `update`, `delete`, or a verb of the domain (`publish`, `install`,
+      `share`, `revoke`).
+- An API file exports only these names. `src/app/structure.test.ts` has a
+  short list of other exports, with the reason for each. Thus, a reader
+  finds each endpoint under one name.
+- Wrap a read in `queryOptions` and a change in `mutationOptions`.
+  TypeScript then gets the types of the variables and the data from the
+  description.
+- The default `staleTime` is 30 seconds. If an item changes rarely, set a
+  longer `staleTime` in its description. The exception then stays adjacent
+  to the call.
 - To send a file, make the body with `multipart({ File: file })`. The
   contract types a multipart body as an object of strings. Thus, `multipart`
   keeps the only cast in one location.
+
+### Reads
+
+- If a read fails, show `LoadError` with the error of the query in place of
+  the data. `LoadError` shows the text of the error and a button that tries
+  again. Thus, a failed read never looks like an empty list.
+- Show the load state with `query.isPending` and the error with
+  `query.isError`. Do not use `!query.data` for the load state, because a
+  query can have no data after an error.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `@shared/lib/paged-list`. `describe` gives the `…InfiniteQuery` description
-  from the `api.ts` file of the feature, with `cursorPages`. The helper adds
+  from the API file of the feature, with `cursorPages`. The helper adds
   the pages to the list. A new search is a new key, and Query cancels the
   request for the old key. The ref `watchEnd` gets the next page when the end
   of the list comes into view. Thus, a page does not keep a cursor or a
@@ -238,10 +275,24 @@ contract. Do not write a response type manually in `types.ts`.
 - If one item changes or goes away, use `patchItem` or `removeItem`. Do not
   invalidate the list for these changes. An invalidation fetches all the
   loaded pages again, one after the other.
-- To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
-  `run(call, onOk)` sets `busy`, sends the call, and groups the errors. If
-  the call is successful, `run` clears the errors and gives the data to
-  `onOk`. The save code is then the same in all forms.
+
+### Changes
+
+- To save a form, use `createSubmit(fields)` from `@shared/api/submit`. Give
+  each mutation description to `submit.mutation(describe)`. Its
+  `run(vars, onOk)` sets `busy`, runs the mutation, and groups the errors.
+  The save code is then the same in all forms.
+- Put the cache changes (`setQueryData`, `invalidateQueries`,
+  `removeQueries`) in the `onSuccess` of the description. A mutation then
+  changes the cache in the same way from each page that uses it.
+- Put only the steps of the form (close a dialog, go to a page) in `onOk`.
+  `onOk` runs after `onSuccess`.
+- If `onSuccess` returns the promise of a new fetch, `busy` stays true until
+  the fetch is complete. Thus, the form does not show old data.
+- The page shows each error below its field (`groupErrors`). It shows the
+  other errors at the top of the form. The text of an error comes from its
+  code: `errors.<code>` in the locale files. The message from the server is
+  the fallback.
 - If one error needs a special display, give `run` an `onFail` function. If
   `onFail` returns a value, the form shows that value. Refer to the "unchanged"
   conflict in `PublishModal.tsx`. This keeps the special case adjacent to the
@@ -254,11 +305,39 @@ contract. Do not write a response type manually in `types.ts`.
   action or above the list. Refer to `VersionList.tsx` and `SessionsPage.tsx`.
 - `pending(work)` only sets `busy`. If you use it, show the errors with
   `setErrors`.
-- If each row of a list saves on its own, use `runFor(key, call, onOk)` with
+- If each row of a list saves on its own, use `runFor(key, vars, onOk)` with
   the ID of the row as the key. `busy(key)` and `errors(key)` then apply only
   to that row. `busy()` is true if a save is in progress. Thus, one row that
   saves or fails does not stop the other rows. Refer to
   `PackageWorkflowList.tsx`.
+
+### The session
+
+Each session has its own `QueryClient`. When the user signs in or signs out,
+`SessionProvider` (`src/shared/api/session-provider.tsx`) makes a new client
+and the page tree again. The data of the previous user goes away with the old
+tree.
+
+- Change the user only with `startSession` and `endSession`. `loginMutation`
+  and `logoutMutation` in `src/shared/api/auth.ts` call them. A different
+  change would keep the cache of the previous user.
+- Get the user with `useAuth()` from `@shared/api/auth`. The user is a query
+  in the cache. Thus, many components can call `useAuth()` without more
+  requests.
+- Keep user data in Query, or in a component under `SessionProvider`. The
+  new tree then starts without the data of the previous user.
+- If a module must keep user data, use `sessionScoped(make)` from
+  `@shared/api/session-provider`. It makes a new value for each session.
+- Do not put `createSignal` or `createStore` at the top of a module in
+  `src/features/`. ESLint (`no-restricted-syntax`) enforces this rule. A
+  module signal stays when the user changes, and the next user sees its
+  value.
+- To keep user data in `localStorage`, use `sessionStore(name)`. It adds the
+  user ID to the key. Thus, a different user on the same computer does not
+  see the data.
+- To reset an external system (for example, the user of an error report)
+  for a new user, use `onSessionChange`. The system cannot go in the page
+  tree, so it needs a separate reset.
 - A page that needs a session has `auth: true` in `src/app/pages.ts`.
   `Router.tsx` then adds `requireAuth`. Parts of a page use `SignedIn` and
   `SignedOut`.
