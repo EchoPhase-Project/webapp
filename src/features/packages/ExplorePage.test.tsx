@@ -88,10 +88,6 @@ describe('ExplorePage', () => {
             await screen.findByRole('link', { name: 'Raid bot' })
         ).toBeTruthy();
         expect(explore()).toHaveLength(2);
-        // The old search's query was cancelled (back to idle, no data). Not
-        // `explore()[0].signal.aborted`: in Node a Request follows its signal
-        // through a WeakRef, and once the controller is collected the abort
-        // never reaches the Request, so that check is flaky.
         const old = sessionClient()
             .getQueryCache()
             .find({ queryKey: packageKeys.explore('', ''), exact: true });
