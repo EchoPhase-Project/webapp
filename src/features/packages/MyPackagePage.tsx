@@ -5,7 +5,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { isNotFound } from '@shared/api/client';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
-import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
+import type { WorkflowSummary } from '@shared/api/types';
 import BackLink from '@shared/ui/BackLink';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
@@ -66,18 +66,6 @@ export default function MyPackagePage() {
 
     const names = () =>
         Object.fromEntries((workflows.data ?? []).map((w) => [w.id, w.name]));
-
-    // Until step 9's mutations: a save puts the package the server answered
-    // in the cache; the list of packages, and Explore when who sees it
-    // changed, are asked again.
-    function saved(before: WorkflowPackage, after: WorkflowPackage) {
-        queryClient.setQueryData(packageKeys.detail(after.id), after);
-        void queryClient.invalidateQueries({ queryKey: packageKeys.mine() });
-        if (before.visibility !== after.visibility)
-            void queryClient.invalidateQueries({
-                queryKey: packageKeys.exploreLists(),
-            });
-    }
 
     // A workflow switched on or off: its row changes at once.
     function changed(workflow: WorkflowSummary) {
@@ -169,7 +157,6 @@ export default function MyPackagePage() {
                             <PackageSettings
                                 pkg={p()}
                                 workflows={workflows.data ?? []}
-                                onSaved={(after) => saved(p(), after)}
                             />
                         </Show>
                     </div>

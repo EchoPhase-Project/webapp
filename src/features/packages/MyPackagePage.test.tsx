@@ -5,7 +5,8 @@ import { useQuery } from '@tanstack/solid-query';
 import { pageSection } from '@shared/nav/page-section';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import { packageContentQuery } from './api/packages';
+import { sessionClient } from '@shared/api/session-provider';
+import { packageContentQuery, packageKeys } from './api/packages';
 import { pkg, workflow } from './fixtures';
 import MyPackagePage from './MyPackagePage';
 
@@ -293,5 +294,66 @@ describe('MyPackagePage', () => {
 
         await waitFor(() => expect(contentCalls(null)).toHaveLength(2));
         expect(contentCalls('1')).toHaveLength(1);
+    });
+
+    it('says nothing changed when a publish conflicts with the latest version', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'POST /api/v1/workflow-packages/p1/versions': () =>
+                    json(409, {
+                        code: 'Conflict',
+                        message: 'Same as the latest version.',
+                    }),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+
+        const open = await screen.findByRole('button', { name: 'New version' });
+        await waitFor(() => expect(open).toHaveProperty('disabled', false));
+        fireEvent.click(open);
+        const publish = screen.getByRole('button', { name: 'Publish' });
+        await waitFor(() => expect(publish).toHaveProperty('disabled', false));
+        fireEvent.click(publish);
+
+        expect(
+            await screen.findByText(/Nothing changed since the latest version/)
+        ).toBeTruthy();
+        expect(screen.queryByText('Same as the latest version.')).toBeNull();
+        // The dialog stays open.
+        expect(screen.getByRole('button', { name: 'Publish' })).toBeTruthy();
+    });
+
+    it('deletes the package after asking, drops it from the cache and goes to the list', async () => {
+        const api = fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'GET /api/v1/workflow-packages': () => json(200, []),
+                'DELETE /api/v1/workflow-packages/p1': () =>
+                    new Response(null, { status: 204 }),
+            })
+        );
+        const { history } = renderPage(
+            () => <MyPackagePage />,
+            '/packages/p1/settings',
+            PATTERN
+        );
+
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Delete this package' })
+        );
+        fireEvent.click(
+            within(await screen.findByRole('alertdialog')).getByRole('button', {
+                name: 'Delete',
+            })
+        );
+
+        await waitFor(() => expect(history.get()).toBe('/packages'));
+        expect(api.calls('DELETE /api/v1/workflow-packages/p1')).toHaveLength(
+            1
+        );
+        expect(
+            sessionClient().getQueryState(packageKeys.workflows('p1'))
+        ).toBeUndefined();
     });
 });

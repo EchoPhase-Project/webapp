@@ -1,6 +1,6 @@
 import { createSignal, For, Match, Show, Switch } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { useQuery, useQueryClient } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { IconDownload } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth';
 import { isNotFound } from '@shared/api/client';
@@ -16,11 +16,10 @@ import LoadError from '@shared/ui/LoadError';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
 import {
+    leavePackageMutation,
     packageContentQuery,
-    packageKeys,
     packageQuery,
     packageVersionsQuery,
-    unsharePackage,
 } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 import { tagClass } from '@features/packages/tags';
@@ -35,7 +34,6 @@ export default function PackageDetails(props: { id: string }) {
     const t = useLocalizer('packages');
     const { user } = useAuth();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
 
     // The three at once: the package, its latest version (none before the
     // first publish: a 404, nothing to install), its versions.
@@ -45,6 +43,7 @@ export default function PackageDetails(props: { id: string }) {
 
     const [installing, setInstalling] = createSignal(false);
     const leaving = createSubmit();
+    const leaveShared = leaving.mutation(leavePackageMutation);
     usePageMeta(() => ({
         title: pkg.data?.name ?? t('title', 'Explore'),
         description:
@@ -57,19 +56,8 @@ export default function PackageDetails(props: { id: string }) {
 
     // A failure shows above the button.
     function leave() {
-        return leaving.run(
-            () => unsharePackage(props.id, user()?.id ?? ''),
-            () => {
-                // Until step 9's mutation: gone for the caller, all about it
-                // dropped.
-                queryClient.removeQueries({
-                    queryKey: packageKeys.detail(props.id),
-                });
-                void queryClient.invalidateQueries({
-                    queryKey: packageKeys.mine(),
-                });
-                navigate('/packages');
-            }
+        return leaveShared.run({ id: props.id, userId: user()?.id ?? '' }, () =>
+            navigate('/packages')
         );
     }
 

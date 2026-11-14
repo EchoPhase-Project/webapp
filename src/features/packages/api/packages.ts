@@ -5,7 +5,7 @@ import {
     queryOptions,
     type QueryClient,
 } from '@tanstack/solid-query';
-import { api, request, send, type ApiResult } from '@shared/api/client';
+import { api, request } from '@shared/api/client';
 import type {
     PackageContent,
     PackageInput,
@@ -20,8 +20,7 @@ import type {
 import { cursorPages } from '@shared/lib/paged-list';
 
 // Packages: the caller's own (their workflows live in them), and the
-// published ones everyone reads in Explore. Reads are on Query; the
-// changes still on ApiResult functions move to mutations in step 9.
+// published ones everyone reads in Explore.
 
 export const packageKeys = {
     all: ['packages'] as const,
@@ -200,25 +199,48 @@ export const exploreTagsQuery = (q: string) =>
         placeholderData: keepPreviousData,
     });
 
-/** A new, empty package: workflows are made in it, versions published from it. */
-export function createPackage(
-    body: PackageInput
-): Promise<ApiResult<WorkflowPackage>> {
-    return send(api.POST('/api/v1/workflow-packages', { body }));
+/**
+ * A package saved: kept as the server answered it, and the caller's list
+ * asked again; Explore's searches too when who sees it changed from
+ * `before` (as it was opened).
+ */
+function savedPackage(
+    queryClient: QueryClient,
+    pkg: WorkflowPackage,
+    before?: WorkflowPackage
+) {
+    queryClient.setQueryData(packageKeys.detail(pkg.id), pkg);
+    const lists = [
+        queryClient.invalidateQueries({ queryKey: packageKeys.mine() }),
+    ];
+    if (before && before.visibility !== pkg.visibility)
+        lists.push(
+            queryClient.invalidateQueries({
+                queryKey: packageKeys.exploreLists(),
+            })
+        );
+    return Promise.all(lists);
 }
 
-/** Saves all of it (send its errorWorkflow back, or it is cleared). */
-function updatePackage(
-    id: string,
-    body: PackageInput
-): Promise<ApiResult<WorkflowPackage>> {
-    return send(
-        api.PUT('/api/v1/workflow-packages/{id}', {
-            params: { path: { id } },
-            body,
-        })
-    );
+/**
+ * A package gone for the caller: all about it dropped (its content,
+ * versions, shares and workflows are under its key), their list asked again.
+ */
+function gonePackage(queryClient: QueryClient, id: string) {
+    queryClient.removeQueries({ queryKey: packageKeys.detail(id) });
+    return queryClient.invalidateQueries({ queryKey: packageKeys.mine() });
 }
+
+/** A new, empty package: workflows are made in it, versions published from it. */
+export const createPackageMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'create'] as const,
+        mutationFn: (body: PackageInput) =>
+            request<WorkflowPackage>(
+                api.POST('/api/v1/workflow-packages', { body })
+            ),
+        onSuccess: (pkg) => savedPackage(queryClient, pkg),
+    });
 
 /** The package as it is, as the body of an update. */
 const inputOf = (pkg: WorkflowPackage): PackageInput => ({
@@ -232,59 +254,129 @@ const inputOf = (pkg: WorkflowPackage): PackageInput => ({
 });
 
 /**
- * Saves one part of it (its tags, who sees it), the rest as it was opened:
- * someone else's save meanwhile is a conflict (expectedStamp).
+ * Saves one part of a package (`patch`: its tags, who sees it), the rest as
+ * it was opened (`pkg`): someone else's save meanwhile is a conflict
+ * (expectedStamp).
  */
-export function savePackage(
-    pkg: WorkflowPackage,
-    patch: Partial<PackageInput>
-): Promise<ApiResult<WorkflowPackage>> {
-    return updatePackage(pkg.id, { ...inputOf(pkg), ...patch });
-}
+export const updatePackageMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'update'] as const,
+        mutationFn: (v: {
+            pkg: WorkflowPackage;
+            patch: Partial<PackageInput>;
+        }) =>
+            request<WorkflowPackage>(
+                api.PUT('/api/v1/workflow-packages/{id}', {
+                    params: { path: { id: v.pkg.id } },
+                    body: { ...inputOf(v.pkg), ...v.patch },
+                })
+            ),
+        onSuccess: (pkg, v) => savedPackage(queryClient, pkg, v.pkg),
+    });
 
 /** Deletes it with its workflows; packages others installed from it stay. */
-export function deletePackage(id: string): Promise<ApiResult<unknown>> {
-    return send(
-        api.DELETE('/api/v1/workflow-packages/{id}', {
-            params: { path: { id } },
-        })
-    );
-}
+export const deletePackageMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'delete'] as const,
+        mutationFn: (id: string) =>
+            request(
+                api.DELETE('/api/v1/workflow-packages/{id}', {
+                    params: { path: { id } },
+                })
+            ),
+        onSuccess: (_, id) => gonePackage(queryClient, id),
+    });
 
-export function publishVersion(
-    id: string,
-    body: PackagePublish
-): Promise<ApiResult<PackageVersion>> {
-    return send(
-        api.POST('/api/v1/workflow-packages/{id}/versions', {
-            params: { path: { id } },
-            body,
-        })
-    );
-}
+/**
+ * A new version of the package `id`. It shows at once as the latest; the
+ * package, its versions, its latest content and Explore are asked again.
+ * The content of published versions never changes: left alone (exact keys).
+ */
+export const publishPackageVersionMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'publish'] as const,
+        mutationFn: (v: { id: string; body: PackagePublish }) =>
+            request<PackageVersion>(
+                api.POST('/api/v1/workflow-packages/{id}/versions', {
+                    params: { path: { id: v.id } },
+                    body: v.body,
+                })
+            ),
+        onSuccess: (version, v) => {
+            queryClient.setQueryData(
+                packageKeys.detail(v.id),
+                (pkg: WorkflowPackage | undefined) =>
+                    pkg && {
+                        ...pkg,
+                        latestVersion: version.version,
+                        updatedAt: version.createdAt,
+                    }
+            );
+            return Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.detail(v.id),
+                    exact: true,
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.versions(v.id),
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.content(v.id),
+                    exact: true,
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.exploreLists(),
+                }),
+            ]);
+        },
+    });
 
-/** A new package of the caller's from a version, connections mapped by name. */
-export function installPackage(
-    id: string,
-    version: number | undefined,
-    connections: Record<string, string>
-): Promise<ApiResult<PackageInstall>> {
-    return send(
-        api.POST('/api/v1/workflow-packages/{id}/install', {
-            params: { path: { id } },
-            body: { version, connections },
-        })
-    );
-}
+/**
+ * A new package of the caller's from a version of the package `id`
+ * (absent: the latest), connections mapped by name. The new one is kept as
+ * the server answered it; the caller's list and the source (one more
+ * install) are asked again.
+ */
+export const installPackageMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'install'] as const,
+        mutationFn: (v: {
+            id: string;
+            version?: number;
+            connections: Record<string, string>;
+        }) =>
+            request<PackageInstall>(
+                api.POST('/api/v1/workflow-packages/{id}/install', {
+                    params: { path: { id: v.id } },
+                    body: { version: v.version, connections: v.connections },
+                })
+            ),
+        onSuccess: (installed, v) => {
+            queryClient.setQueryData(
+                packageKeys.detail(installed.package.id),
+                installed.package
+            );
+            return Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.mine(),
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: packageKeys.detail(v.id),
+                    exact: true,
+                }),
+            ]);
+        },
+    });
 
-/** The caller leaves a package shared with them. */
-export function unsharePackage(
-    id: string,
-    userId: string
-): Promise<ApiResult<unknown>> {
-    return send(
-        api.DELETE('/api/v1/workflow-packages/{id}/shares/{userId}', {
-            params: { path: { id, userId } },
-        })
-    );
-}
+/** The caller (`userId`) leaves a package shared with them. */
+export const leavePackageMutation = (queryClient: QueryClient) =>
+    mutationOptions({
+        mutationKey: [...packageKeys.all, 'leave'] as const,
+        mutationFn: (v: { id: string; userId: string }) =>
+            request(
+                api.DELETE('/api/v1/workflow-packages/{id}/shares/{userId}', {
+                    params: { path: { id: v.id, userId: v.userId } },
+                })
+            ),
+        onSuccess: (_, v) => gonePackage(queryClient, v.id),
+    });

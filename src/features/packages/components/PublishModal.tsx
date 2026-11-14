@@ -15,7 +15,7 @@ import FieldError, { errorId } from '@shared/ui/FieldError';
 import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/TextArea';
-import { publishVersion } from '@features/packages/api/packages';
+import { publishPackageVersionMutation } from '@features/packages/api/packages';
 import { workflowQuery } from '@features/packages/api/workflows';
 
 const FIELDS = ['workflows', 'changelog'] as const;
@@ -101,7 +101,8 @@ function PublishForm(props: {
     // eslint-disable-next-line solid/reactivity
     const [chosen, setChosen] = createSignal(props.workflows.map((w) => w.id));
     const [changelog, setChangelog] = createSignal('');
-    const { busy, errors, run } = createSubmit(FIELDS);
+    const { busy, errors, mutation } = createSubmit(FIELDS);
+    const publishing = mutation(publishPackageVersionMutation);
     const [unchanged, setUnchanged] = createSignal(false);
 
     // Their programs: what each calls. One read each, shared with their
@@ -122,12 +123,11 @@ function PublishForm(props: {
     async function publish(e: Event) {
         e.preventDefault();
         if (busy() || missing().length > 0 || chosen().length === 0) return;
-        await run(
-            () =>
-                publishVersion(props.pkg.id, {
-                    workflows: chosen(),
-                    changelog: changelog(),
-                }),
+        await publishing.run(
+            {
+                id: props.pkg.id,
+                body: { workflows: chosen(), changelog: changelog() },
+            },
             (version) => {
                 setUnchanged(false);
                 props.onPublished(version);

@@ -1,12 +1,7 @@
 import { createEffect, createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { useQueryClient } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
-import type {
-    PackageVersion,
-    WorkflowPackage,
-    WorkflowSummary,
-} from '@shared/api/types';
+import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
@@ -15,12 +10,11 @@ import Select from '@shared/ui/Select';
 import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {
-    deletePackage,
-    packageKeys,
+    deletePackageMutation,
     packageSharesQuery,
-    savePackage,
     sharePackageMutation,
     unsharePackageMutation,
+    updatePackageMutation,
 } from '@features/packages/api/packages';
 import PackageEditorModal from './PackageEditorModal';
 import PublishModal from './PublishModal';
@@ -37,74 +31,34 @@ const ERROR_FIELD = 'package-error-workflow';
 export default function PackageSettings(props: {
     pkg: WorkflowPackage;
     workflows: WorkflowSummary[];
-    onSaved: (pkg: WorkflowPackage) => void;
 }) {
     const t = useLocalizer('workflows');
     const tp = useLocalizer('packages');
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const [editing, setEditing] = createSignal(false);
     const [publishing, setPublishing] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const { busy, errors, run } = createSubmit(['errorWorkflow']);
+    const { busy, errors, mutation } = createSubmit(['errorWorkflow']);
+    const updating = mutation(updatePackageMutation);
     // A failed delete shows in its dialog, which stays open.
     const removal = createSubmit();
+    const removing = removal.mutation(deletePackageMutation);
     // The choice starts from the package's, and follows it once saved.
     const [errorWorkflow, setErrorWorkflow] = createSignal('');
     createEffect(() => setErrorWorkflow(props.pkg.errorWorkflow ?? ''));
 
     async function saveErrorWorkflow(e: Event) {
         e.preventDefault();
-        await run(
-            () =>
-                savePackage(props.pkg, {
-                    errorWorkflow: errorWorkflow() || null,
-                }),
-            (pkg) => props.onSaved(pkg)
-        );
+        await updating.run({
+            pkg: props.pkg,
+            patch: { errorWorkflow: errorWorkflow() || null },
+        });
     }
 
     function remove() {
-        return removal.run(
-            () => deletePackage(props.pkg.id),
-            () => {
-                // Until step 9's mutation: all about it dropped.
-                queryClient.removeQueries({
-                    queryKey: packageKeys.detail(props.pkg.id),
-                });
-                void queryClient.invalidateQueries({
-                    queryKey: packageKeys.mine(),
-                });
-                setDeleting(false);
-                navigate('/packages');
-            }
-        );
-    }
-
-    // Until step 9's mutation: the new version shows at once; its list, the
-    // latest content and Explore are asked again. The content of published
-    // versions does not change, so it is left alone (exact keys).
-    function published(v: PackageVersion) {
-        setPublishing(false);
-        const id = props.pkg.id;
-        props.onSaved({
-            ...props.pkg,
-            latestVersion: v.version,
-            updatedAt: v.createdAt,
-        });
-        void queryClient.invalidateQueries({
-            queryKey: packageKeys.detail(id),
-            exact: true,
-        });
-        void queryClient.invalidateQueries({
-            queryKey: packageKeys.versions(id),
-        });
-        void queryClient.invalidateQueries({
-            queryKey: packageKeys.content(id),
-            exact: true,
-        });
-        void queryClient.invalidateQueries({
-            queryKey: packageKeys.exploreLists(),
+        return removing.run(props.pkg.id, () => {
+            setDeleting(false);
+            navigate('/packages');
         });
     }
 
@@ -148,12 +102,9 @@ export default function PackageSettings(props: {
                 </p>
             </SettingsCard>
 
-            <TagsEditor pkg={props.pkg} onSaved={(p) => props.onSaved(p)} />
+            <TagsEditor pkg={props.pkg} />
 
-            <VisibilityEditor
-                pkg={props.pkg}
-                onSaved={(p) => props.onSaved(p)}
-            />
+            <VisibilityEditor pkg={props.pkg} />
 
             <SettingsCard
                 title={t('settings.errors', 'When a run fails')}
@@ -276,17 +227,14 @@ export default function PackageSettings(props: {
                 open={editing()}
                 pkg={props.pkg}
                 onClose={() => setEditing(false)}
-                onSaved={(saved) => {
-                    setEditing(false);
-                    props.onSaved(saved);
-                }}
+                onSaved={() => setEditing(false)}
             />
             <PublishModal
                 open={publishing()}
                 pkg={props.pkg}
                 workflows={props.workflows}
                 onClose={() => setPublishing(false)}
-                onPublished={published}
+                onPublished={() => setPublishing(false)}
             />
             <ConfirmDialog
                 open={deleting()}

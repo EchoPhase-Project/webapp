@@ -7,7 +7,10 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Modal from '@shared/ui/Modal';
-import { createPackage, savePackage } from '@features/packages/api/packages';
+import {
+    createPackageMutation,
+    updatePackageMutation,
+} from '@features/packages/api/packages';
 
 const FIELDS = ['name', 'summary', 'readme'] as const;
 const inputId = (field: string) => `package-${field}`;
@@ -57,7 +60,9 @@ function PackageForm(props: {
     const [summary, setSummary] = createSignal(props.pkg?.summary ?? '');
     const [readme, setReadme] = createSignal(props.pkg?.readme ?? '');
     /* eslint-enable solid/reactivity */
-    const { busy, errors, run } = createSubmit(FIELDS);
+    const { busy, errors, mutation } = createSubmit(FIELDS);
+    const creating = mutation(createPackageMutation);
+    const updating = mutation(updatePackageMutation);
 
     async function save(e: Event) {
         e.preventDefault();
@@ -68,14 +73,10 @@ function PackageForm(props: {
             readme: readme(),
         };
         const pkg = props.pkg;
-        await run(
-            () =>
-                // The rest (tags, visibility, error workflow) as it is.
-                pkg
-                    ? savePackage(pkg, about)
-                    : createPackage({ ...about, visibility: 'Private' }),
-            (saved) => props.onSaved(saved)
-        );
+        const onSaved = (saved: WorkflowPackage) => props.onSaved(saved);
+        // The rest (tags, visibility, error workflow) as it is.
+        if (pkg) await updating.run({ pkg, patch: about }, onSaved);
+        else await creating.run({ ...about, visibility: 'Private' }, onSaved);
     }
 
     return (

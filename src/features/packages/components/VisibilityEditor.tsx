@@ -6,29 +6,27 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import RadioGroup from '@shared/ui/RadioGroup';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { savePackage } from '@features/packages/api/packages';
+import { updatePackageMutation } from '@features/packages/api/packages';
 import VisibilityBadge from './VisibilityBadge';
 
 const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
 
 /** Who sees a package: one of three, saved on its own. */
-export default function VisibilityEditor(props: {
-    pkg: WorkflowPackage;
-    onSaved: (pkg: WorkflowPackage) => void;
-}) {
+export default function VisibilityEditor(props: { pkg: WorkflowPackage }) {
     const t = useLocalizer('packages');
     const tw = useLocalizer('workflows');
     const [visibility, setVisibility] =
         createSignal<PackageVisibility>('Private');
     createEffect(() => setVisibility(props.pkg.visibility));
-    const { busy, errors, run } = createSubmit(['visibility']);
+    const { busy, errors, mutation } = createSubmit(['visibility']);
+    const updating = mutation(updatePackageMutation);
 
     async function save(e: Event) {
         e.preventDefault();
-        await run(
-            () => savePackage(props.pkg, { visibility: visibility() }),
-            (pkg) => props.onSaved(pkg)
-        );
+        await updating.run({
+            pkg: props.pkg,
+            patch: { visibility: visibility() },
+        });
     }
 
     return (

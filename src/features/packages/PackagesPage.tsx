@@ -1,6 +1,6 @@
 import { createSignal, For, Match, Show, Switch } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { useQuery, useQueryClient } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
@@ -11,7 +11,7 @@ import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
-import { myPackagesQuery, packageKeys } from './api/packages';
+import { myPackagesQuery } from './api/packages';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageEditorModal from './components/PackageEditorModal';
 import PackageOrigin from './components/PackageOrigin';
@@ -25,7 +25,6 @@ import './workflows.scss';
  * from Explore), and the packages others shared with them.
  */
 export default function PackagesPage() {
-    const queryClient = useQueryClient();
     const t = useLocalizer('workflows');
     const navigate = useNavigate();
 
@@ -193,11 +192,6 @@ export default function PackagesPage() {
                 open={creating()}
                 onClose={() => setCreating(false)}
                 onSaved={(p) => {
-                    // Until step 9's createPackageMutation: the cache by hand.
-                    queryClient.setQueryData(packageKeys.detail(p.id), p);
-                    void queryClient.invalidateQueries({
-                        queryKey: packageKeys.mine(),
-                    });
                     setCreating(false);
                     navigate(packagePath(p.id));
                 }}

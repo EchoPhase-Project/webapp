@@ -6,7 +6,7 @@ import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { savePackage } from '@features/packages/api/packages';
+import { updatePackageMutation } from '@features/packages/api/packages';
 import { tagClass } from '@features/packages/tags';
 
 const FIELD = 'package-tags-input';
@@ -25,15 +25,13 @@ const normalizeTag = (text: string) =>
  * A package's tags as capsules: Enter or a comma adds what is typed, the
  * cross on one removes it; saved together.
  */
-export default function TagsEditor(props: {
-    pkg: WorkflowPackage;
-    onSaved: (pkg: WorkflowPackage) => void;
-}) {
+export default function TagsEditor(props: { pkg: WorkflowPackage }) {
     const t = useLocalizer('workflows');
     const [tags, setTags] = createSignal<string[]>([]);
     createEffect(() => setTags([...props.pkg.tags]));
     const [draft, setDraft] = createSignal('');
-    const { busy, errors, run } = createSubmit(['tags']);
+    const { busy, errors, mutation } = createSubmit(['tags']);
+    const updating = mutation(updatePackageMutation);
 
     const changed = () => tags().join(',') !== props.pkg.tags.join(',');
 
@@ -47,10 +45,7 @@ export default function TagsEditor(props: {
     async function save(e: Event) {
         e.preventDefault();
         add();
-        await run(
-            () => savePackage(props.pkg, { tags: tags() }),
-            (pkg) => props.onSaved(pkg)
-        );
+        await updating.run({ pkg: props.pkg, patch: { tags: tags() } });
     }
 
     return (

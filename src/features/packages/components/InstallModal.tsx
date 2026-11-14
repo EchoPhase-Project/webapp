@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
-import { useQuery, useQueryClient } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import type {
     ConnectionSummary,
     PackageConnection,
@@ -15,7 +15,7 @@ import Select from '@shared/ui/Select';
 import Modal from '@shared/ui/Modal';
 import { createSubmit } from '@shared/api/submit';
 import { myConnectionsQuery } from '@features/packages/api/connections';
-import { installPackage, packageKeys } from '@features/packages/api/packages';
+import { installPackageMutation } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 
 const inputId = (field: string) => `package-install-${field}`;
@@ -91,11 +91,11 @@ function InstallForm(props: {
     onInstalled: (install: PackageInstall) => void;
 }) {
     const t = useLocalizer('packages');
-    const queryClient = useQueryClient();
     const connections = useQuery(() => myConnectionsQuery());
     const mine = () => connections.data ?? [];
     const [chosen, setChosen] = createSignal<Record<string, string>>({});
-    const { busy, errors, run } = createSubmit();
+    const { busy, errors, mutation } = createSubmit();
+    const installing = mutation(installPackageMutation);
 
     // Until the user picks, the same-named connection (or none).
     const choiceOf = (needed: PackageConnection) =>
@@ -109,25 +109,13 @@ function InstallForm(props: {
             const choice = choiceOf(needed);
             if (choice) connections[needed.name] = choice;
         }
-        await run(
-            () =>
-                installPackage(
-                    props.packageId,
-                    props.content.version,
-                    connections
-                ),
-            (installed) => {
-                // Until step 9's mutation: a new package of the caller's,
-                // and one more install of this one.
-                void queryClient.invalidateQueries({
-                    queryKey: packageKeys.mine(),
-                });
-                void queryClient.invalidateQueries({
-                    queryKey: packageKeys.detail(props.packageId),
-                    exact: true,
-                });
-                props.onInstalled(installed);
-            }
+        await installing.run(
+            {
+                id: props.packageId,
+                version: props.content.version,
+                connections,
+            },
+            (installed) => props.onInstalled(installed)
         );
     }
 
