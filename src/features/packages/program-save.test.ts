@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
-import { createRoot } from 'solid-js';
 import type { Workflow } from '@shared/api/types';
 import { fakeApi, json } from '@shared/testing/fake-api';
+import { withSession } from '@shared/testing/render-page';
 import { workflow } from '@features/packages/fixtures';
 import { useProgramSave } from './program-save';
 
@@ -16,7 +16,7 @@ describe('useProgramSave', () => {
             'PUT /api/v1/workflows/w1': () => json(200, saved),
         });
         const onChange = vi.fn();
-        const program = createRoot(() =>
+        const program = withSession(() =>
             useProgramSave<Hook>(() => w, onChange)
         );
         const hook = w.webhooks[0];
@@ -44,7 +44,7 @@ describe('useProgramSave', () => {
                 json(400, { code: 'Invalid', message: 'Bad program.' }),
         });
         const onChange = vi.fn();
-        const program = createRoot(() =>
+        const program = withSession(() =>
             useProgramSave<Hook, Hook | 'new'>(() => w, onChange)
         );
         program.setEditing('new');

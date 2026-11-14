@@ -2,6 +2,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { SessionProvider } from '@shared/api/session-provider';
+import { freshSession } from '@shared/testing/render-page';
 import ShareList, { type Sharee } from './ShareList';
 
 type Share = { user: Sharee; canEdit: boolean };
@@ -36,22 +38,25 @@ function renderList(card = false) {
         people = people.filter((p) => p.user.id !== userId);
         return Promise.resolve({ ok: true as const, data: null });
     });
+    freshSession();
     const { container } = render(() => (
         <I18nProvider>
-            <ShareList
-                card={card}
-                of="n1"
-                id="s"
-                title="Shared with"
-                empty="Nobody yet."
-                removeLabel={(name) => `Stop sharing with ${name}`}
-                list={list}
-                share={share}
-                unshare={unshare}
-                detail={(s) => (
-                    <span>{s.canEdit ? 'can edit' : 'can read'}</span>
-                )}
-            />
+            <SessionProvider>
+                <ShareList
+                    card={card}
+                    of="n1"
+                    id="s"
+                    title="Shared with"
+                    empty="Nobody yet."
+                    removeLabel={(name) => `Stop sharing with ${name}`}
+                    list={list}
+                    share={share}
+                    unshare={unshare}
+                    detail={(s) => (
+                        <span>{s.canEdit ? 'can edit' : 'can read'}</span>
+                    )}
+                />
+            </SessionProvider>
         </I18nProvider>
     ));
     return { container, list, share, unshare };

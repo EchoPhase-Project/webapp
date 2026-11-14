@@ -26,6 +26,26 @@ export const freshSession = () =>
     });
 
 /**
+ * Makes a hook (`make`) the way a component would be made: in a fresh
+ * session (freshSession), under its QueryClient. For helpers tested without
+ * a page (createSubmit, useProgramSave); what `make` returns comes back.
+ */
+export function withSession<T>(make: () => T): T {
+    freshSession();
+    const made: { value?: T } = {};
+    render(() => (
+        <SessionProvider>
+            {(() => {
+                made.value = make();
+                return null;
+            })()}
+        </SessionProvider>
+    ));
+    if (!('value' in made)) throw new Error('withSession: make did not run');
+    return made.value as T;
+}
+
+/**
  * A memory router made anew with each session, as the app's: it starts
  * where the session does (after signing in, at `next`), or where `history`
  * is now.
