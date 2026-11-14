@@ -103,7 +103,8 @@ export const logoutMutation = () =>
 /**
  * Who is signed in, read through Query and interpreted once. `user()`:
  * undefined while loading, null when signed out; a failed check is
- * `authError()`, not "signed out" (the outage screen covers it).
+ * `authError()`, not "signed out" (requireAuth: the outage screen covers it,
+ * or a plain server error shows "Try again").
  */
 export function useAuth() {
     const me = useQuery(meQuery);
