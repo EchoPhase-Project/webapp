@@ -277,3 +277,12 @@
   display: inline-flex;
   gap: 2px;
 }
+
+// Why a row's switch failed: a line of its own under the row.
+.workflows-item-errors {
+  flex-basis: 100%;
+
+  .error-summary {
+    text-align: start;
+  }
+}

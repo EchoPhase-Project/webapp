@@ -235,6 +235,11 @@ contract. Do not write a response type manually in `types.ts`.
   call.
 - If an action must not show errors, use `pending(work)`. It only sets
   `busy`.
+- If each row of a list saves on its own, use `runFor(key, call, onOk)` with
+  the ID of the row as the key. `busy(key)` and `errors(key)` then apply only
+  to that row. `busy()` is true if a save is in progress. Thus, one row that
+  saves or fails does not stop the other rows. Refer to
+  `PackageWorkflowList.tsx`.
 - A page that needs a session has `auth: true` in `src/app/pages.ts`.
   `Router.tsx` then adds `requireAuth`. Parts of a page use `SignedIn` and
   `SignedOut`.

@@ -1,6 +1,6 @@
-import { createSignal, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
-import { groupErrors, type FormErrors } from '@shared/api/errors';
+import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -10,7 +10,10 @@ import Switch from '@shared/ui/Switch';
 import { getWorkflow, setActive } from '@features/packages/api';
 import { packagePath } from '@features/packages/package-nav';
 
-/** A package's workflows: on or off, which handles errors. */
+/**
+ * A package's workflows: on or off, which handles errors. A switch that
+ * fails shows why in its own row.
+ */
 export default function PackageWorkflowList(props: {
     pkg: WorkflowPackage;
     workflows: WorkflowSummary[];
@@ -19,31 +22,26 @@ export default function PackageWorkflowList(props: {
 }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
-    const [errors, setErrors] = createSignal<FormErrors>({});
-    const [busy, setBusy] = createSignal<string | null>(null);
+    const { busy, errors, runFor } = createSubmit();
 
-    // The list has no programs: the switch fetches the workflow, then saves it.
-    async function toggle(item: WorkflowSummary, active: boolean) {
-        setBusy(item.id);
-        try {
-            const current = await getWorkflow(item.id);
-            const result = current.ok
-                ? await setActive(current.data, active)
-                : current;
-            if (!result.ok) {
-                setErrors(groupErrors(result.errors, []));
-                return;
-            }
-            setErrors({});
-            props.onChange({ ...item, active, version: result.data.version });
-        } finally {
-            setBusy(null);
-        }
+    // The list has no programs: the switch fetches the workflow, then saves
+    // it. Each row saves on its own: the other switches stay usable.
+    function toggle(item: WorkflowSummary, active: boolean) {
+        return runFor(
+            item.id,
+            async () => {
+                const current = await getWorkflow(item.id);
+                return current.ok
+                    ? await setActive(current.data, active)
+                    : current;
+            },
+            (saved) =>
+                props.onChange({ ...item, active, version: saved.version })
+        );
     }
 
     return (
         <>
-            <ErrorSummary errors={errors()} />
             <Show
                 when={props.workflows.length > 0}
                 fallback={
@@ -88,10 +86,21 @@ export default function PackageWorkflowList(props: {
                                 </span>
                                 <Switch
                                     checked={item.active}
-                                    disabled={busy() === item.id}
+                                    disabled={busy(item.id)}
                                     label={t('active', 'Run on triggers')}
                                     onChange={(on) => void toggle(item, on)}
                                 />
+                                <Show
+                                    when={
+                                        Object.keys(errors(item.id)).length > 0
+                                    }
+                                >
+                                    <div class="workflows-item-errors">
+                                        <ErrorSummary
+                                            errors={errors(item.id)}
+                                        />
+                                    </div>
+                                </Show>
                             </li>
                         )}
                     </For>

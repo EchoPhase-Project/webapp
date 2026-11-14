@@ -70,6 +70,8 @@ and the tests are successful.
 - To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`:
   `run(call, onOk)` sets `busy` and shows the errors. Do not write the
   `setBusy` and `groupErrors` steps again.
+- If each row of a list saves on its own, use `runFor(key, call, onOk)`.
+  `busy(key)` and `errors(key)` then apply only to that row.
 
 ### UI and styles
 

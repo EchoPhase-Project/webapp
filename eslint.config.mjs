@@ -69,11 +69,11 @@ export default defineConfig([
             // TypeScript checks undefined names itself; the core rule does not
             // know types such as EventListener (typescript-eslint's advice).
             'no-undef': 'off',
-            // createSubmit's run() and pending() call their functions at
+            // createSubmit's run(), runFor() and pending() call their functions at
             // once, from the event handler that called them.
             'solid/reactivity': [
                 'error',
-                { customReactiveFunctions: ['run', 'pending'] },
+                { customReactiveFunctions: ['run', 'runFor', 'pending'] },
             ],
             '@typescript-eslint/no-unused-vars': [
                 'error',

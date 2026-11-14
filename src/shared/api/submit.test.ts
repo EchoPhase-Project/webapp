@@ -94,4 +94,63 @@ describe('createSubmit', () => {
         expect(submit.busy()).toBe(false);
         expect(submit.errors()[FORM]).toHaveLength(1);
     });
+
+    describe('runFor', () => {
+        const later = <T>() => {
+            let resolve: (r: ApiResult<T>) => void = () => {};
+            const promise = new Promise<ApiResult<T>>((r) => (resolve = r));
+            return { promise, resolve };
+        };
+
+        it('is busy by key: one key that ends leaves the other busy', async () => {
+            const submit = inRoot(() => createSubmit());
+            const a = later<null>();
+            const b = later<null>();
+
+            const doneA = submit.runFor('a', () => a.promise);
+            const doneB = submit.runFor('b', () => b.promise);
+            expect(submit.busy('a')).toBe(true);
+            expect(submit.busy('b')).toBe(true);
+            expect(submit.busy()).toBe(true);
+
+            a.resolve({ ok: true, data: null });
+            expect(await doneA).toBe(true);
+            expect(submit.busy('a')).toBe(false);
+            expect(submit.busy('b')).toBe(true);
+            expect(submit.busy()).toBe(true);
+
+            b.resolve({ ok: true, data: null });
+            await doneB;
+            expect(submit.busy('b')).toBe(false);
+            expect(submit.busy()).toBe(false);
+        });
+
+        it('keeps errors by key: a success of one does not clear the other', async () => {
+            const submit = inRoot(() => createSubmit());
+            await submit.runFor('a', () =>
+                answer({
+                    ok: false,
+                    errors: [{ code: 'Conflict', message: 'changed' }],
+                })
+            );
+            await submit.runFor('b', () => answer({ ok: true, data: 1 }));
+
+            expect(submit.errors('a')[FORM]?.[0]?.code).toBe('Conflict');
+            expect(submit.errors('b')).toEqual({});
+            // Neither the form's own errors nor its busy flag.
+            expect(submit.errors()).toEqual({});
+
+            await submit.runFor('a', () => answer({ ok: true, data: 2 }));
+            expect(submit.errors('a')).toEqual({});
+        });
+
+        it('is no longer busy for the key after a call that throws', async () => {
+            const submit = inRoot(() => createSubmit());
+            await expect(
+                submit.runFor('a', () => Promise.reject(new Error('aborted')))
+            ).rejects.toThrow('aborted');
+            expect(submit.busy('a')).toBe(false);
+            expect(submit.busy()).toBe(false);
+        });
+    });
 });
