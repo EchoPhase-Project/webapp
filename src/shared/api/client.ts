@@ -6,6 +6,27 @@ import { watchedFetch } from './outage-watch';
 
 const Safe = new Set(['GET', 'HEAD', 'OPTIONS']);
 
+let tagger: ((request: Request) => void) | undefined;
+
+/**
+ * Hands each request to `tag` the moment it enters the client, before any
+ * other middleware: they are awaited in turn, so by the time a later one
+ * runs, the session may have changed (session-provider marks each request
+ * with the session that sent it). One tagger; a new one replaces it.
+ */
+export function setRequestTagger(tag: (request: Request) => void) {
+    tagger = tag;
+}
+
+// First in the chain: openapi-fetch calls the first onRequest synchronously,
+// in the same tick as api.GET(…).
+const tagging: Middleware = {
+    onRequest({ request }) {
+        tagger?.(request);
+        return request;
+    },
+};
+
 /**
  * The CSRF token: the server hands it out on sign-in (a response header),
  * and every request that changes something sends it back.
@@ -68,7 +89,7 @@ export const api = createClient<paths>({
     credentials: 'include',
     fetch: (request) => watchedFetch(request),
 });
-api.use(csrf, sessionEnd);
+api.use(tagging, csrf, sessionEnd);
 
 export const NetworkError: ErrorItem = {
     code: 'network_error',

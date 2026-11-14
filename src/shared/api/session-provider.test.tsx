@@ -183,6 +183,29 @@ describe('a client per session', () => {
         ]);
     });
 
+    it('marks a request with its session as it starts, before a replace in the same tick', async () => {
+        const slow = later();
+        fakeApi({
+            ...meAs(() => anna),
+            'GET /api/v1/sessions': () => slow.response,
+        });
+        renderPage(() => <Who />);
+        await waitFor(() => expect(who()).toBe('Anna'));
+
+        // No tick between the start and the replace: the other middlewares
+        // (CSRF, the 401 watch) have not run yet.
+        const annasCall = send(api.GET('/api/v1/sessions'));
+        startSession(boris, '/');
+        const borisSession = sessionClient();
+
+        slow.answer(json(401));
+        await annasCall;
+        await ticks();
+
+        expect(sessionClient()).toBe(borisSession);
+        expect(who()).toBe('Boris');
+    });
+
     it('rebuilds once and redirects once for five 401s at a time', async () => {
         fakeApi({
             ...meAs(() => anna),

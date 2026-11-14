@@ -14,7 +14,7 @@ import {
     type QueryClient,
     type QueryKey,
 } from '@tanstack/solid-query';
-import { api, onUnauthorized } from './client';
+import { onUnauthorized, setRequestTagger } from './client';
 import { CsrfService } from './csrf';
 import { authKeys, isMeKey } from './auth-keys';
 import { createAppQueryClient } from './query-client';
@@ -112,15 +112,12 @@ export function endSession(
     if (!options.fromTab) tabs.post({ type: 'signed-out' });
 }
 
-// Each request remembers the session that sent it. A middleware of its own
-// here, not in client.ts: client.ts is the lower layer and must not import this.
+// Each request remembers the session that sent it, marked as it enters the
+// client (before the other middlewares, which are awaited): a request
+// started right before a replace keeps its own session. The tagger lives
+// here: client.ts is the lower layer and must not import this.
 const sentBy = new WeakMap<Request, Session>();
-api.use({
-    onRequest({ request }) {
-        sentBy.set(request, current());
-        return request;
-    },
-});
+setRequestTagger((request) => sentBy.set(request, current()));
 
 // Only a 401 of a request this session sent ends it: a slow request of the
 // previous user, answered after the next one signed in, is no news.
