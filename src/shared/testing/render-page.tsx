@@ -1,4 +1,4 @@
-import type { JSX } from 'solid-js';
+import { untrack, type JSX } from 'solid-js';
 import { render } from '@solidjs/testing-library';
 import {
     MemoryRouter,
@@ -36,7 +36,9 @@ export function withSession<T>(make: () => T): T {
     render(() => (
         <SessionProvider>
             {(() => {
-                made.value = make();
+                // Untracked, as a component is made: what `make` reads must
+                // not make it again (a new hook, the old one dropped).
+                made.value = untrack(make);
                 return null;
             })()}
         </SessionProvider>

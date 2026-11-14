@@ -224,11 +224,17 @@ contract. Do not write a response type manually in `types.ts`.
 - To send a file, make the body with `multipart({ File: file })`. The
   contract types a multipart body as an object of strings. Thus, `multipart`
   keeps the only cast in one location.
-- If a list comes one page at a time, use `createPagedList(fetchPage)` from
-  `@shared/lib/paged-list`. It adds the pages to the list. It ignores the
-  answers to calls from before a `reset()`. The ref `watchEnd` gets the next
-  page when the end of the list comes into view. Thus, a page does not keep a
-  cursor or a stale-answer guard of its own.
+- If a list comes one page at a time, use `createPagedList(describe)` from
+  `@shared/lib/paged-list`. `describe` gives the `…InfiniteQuery` description
+  from the `api.ts` file of the feature, with `cursorPages`. The helper adds
+  the pages to the list. A new search is a new key, and Query cancels the
+  request for the old key. The ref `watchEnd` gets the next page when the end
+  of the list comes into view. Thus, a page does not keep a cursor or a
+  stale-answer guard of its own.
+- If a new item comes at the top of such a list, use `refreshHead`. If one
+  item changes or goes away, use `patchItem` or `removeItem`. Do not
+  invalidate the list for these changes. An invalidation fetches all the
+  loaded pages again, one after the other.
 - To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
   `run(call, onOk)` sets `busy`, sends the call, and groups the errors. If
   the call is successful, `run` clears the errors and gives the data to

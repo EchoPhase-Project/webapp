@@ -5,7 +5,7 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/TextArea';
-import { runWorkflow } from '@features/packages/api';
+import { runWorkflowMutation } from '@features/packages/api/runs';
 
 const inputId = 'workflow-run-input';
 
@@ -16,13 +16,16 @@ const inputId = 'workflow-run-input';
  */
 export default function RunDialog(props: {
     workflowId: string;
+    /** Its package: the new run shows in the package's runs too. */
+    packageId: string;
     open: boolean;
     onClose: () => void;
     onStarted: () => void;
 }) {
     const t = useLocalizer('workflows');
     const [input, setInput] = createSignal('');
-    const { busy, errors, setErrors, run } = createSubmit();
+    const { busy, errors, setErrors, mutation } = createSubmit();
+    const starting = mutation(runWorkflowMutation);
 
     async function start(e: Event) {
         e.preventDefault();
@@ -47,8 +50,8 @@ export default function RunDialog(props: {
                 return;
             }
         }
-        await run(
-            () => runWorkflow(props.workflowId, value),
+        await starting.run(
+            { id: props.workflowId, packageId: props.packageId, input: value },
             () => {
                 setInput('');
                 props.onStarted();

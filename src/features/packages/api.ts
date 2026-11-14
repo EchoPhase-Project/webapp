@@ -1,4 +1,5 @@
 import {
+    infiniteQueryOptions,
     mutationOptions,
     queryOptions,
     type QueryClient,
@@ -12,8 +13,6 @@ import {
     type ApiResult,
 } from '@shared/api/client';
 import type {
-    BlockRunDetails,
-    BlockRunPage,
     ConnectionSummary,
     PackageContent,
     PackageInput,
@@ -22,20 +21,23 @@ import type {
     PackageShare,
     PackageTag,
     PackageVersion,
-    RunStarted,
     Workflow,
     WorkflowImport,
     WorkflowPackage,
     WorkflowSummary,
     WorkflowVersion,
 } from '@shared/api/types';
+import { cursorPages } from '@shared/lib/paged-list';
 
 // Packages: the caller's own (their workflows live in them), and the
 // published ones everyone reads in Explore.
 
-// Only the shares are on Query so far; the rest moves in steps 8 and 9.
+// Only the shares and Explore are on Query so far; the rest moves in steps
+// 8 and 9.
 export const packageKeys = {
     all: ['packages'] as const,
+    explore: (q: string, tag: string) =>
+        [...packageKeys.all, 'explore', { q, tag }] as const,
     detail: (id: string) => [...packageKeys.all, 'detail', id] as const,
     shares: (id: string) => [...packageKeys.detail(id), 'shares'] as const,
 };
@@ -86,40 +88,32 @@ export const unsharePackageMutation = (queryClient: QueryClient, id: string) =>
             }),
     });
 
-/** A page of public packages and the cursor of the next (null: the last). */
-export interface ExplorePage {
-    items: WorkflowPackage[];
-    next: string | null;
-}
-
-/** Public packages, most installed first, a page at a time; `q` searches name and summary. */
-export async function explorePackages(
-    q?: string,
-    tag?: string,
-    cursor?: string
-): Promise<ApiResult<ExplorePage>> {
-    const result = await send(
-        api.GET('/api/v1/workflow-packages/explore', {
-            params: {
-                query: {
-                    q: q || undefined,
-                    tag: tag || undefined,
-                    cursor,
-                    limit: 30,
-                },
-            },
-        })
-    );
-    return result.ok
-        ? {
-              ok: true,
-              data: {
-                  items: result.data.data,
-                  next: result.data.nextCursor ?? null,
-              },
-          }
-        : result;
-}
+/**
+ * Public packages, most installed first, a page at a time; `q` searches
+ * name and summary, `tag` filters. Empty and absent are one search (one
+ * cache entry).
+ */
+export const explorePackagesInfiniteQuery = (q = '', tag = '') =>
+    infiniteQueryOptions({
+        queryKey: packageKeys.explore(q, tag),
+        queryFn: async ({ pageParam, signal }) => {
+            const page = await request(
+                api.GET('/api/v1/workflow-packages/explore', {
+                    params: {
+                        query: {
+                            q: q || undefined,
+                            tag: tag || undefined,
+                            cursor: pageParam,
+                            limit: 30,
+                        },
+                    },
+                    signal,
+                })
+            );
+            return { items: page.data, next: page.nextCursor ?? null };
+        },
+        ...cursorPages,
+    });
 
 /** The tags of public packages, most used first, those starting with `q`. */
 export async function exploreTags(q: string): Promise<PackageTag[]> {
@@ -243,18 +237,6 @@ export function installPackage(
     );
 }
 
-/** The runs of all its workflows, newest first. */
-export function listPackageRuns(
-    id: string,
-    cursor?: string
-): Promise<ApiResult<BlockRunPage>> {
-    return send(
-        api.GET('/api/v1/workflow-packages/{id}/runs', {
-            params: { path: { id }, query: { limit: 20, cursor } },
-        })
-    );
-}
-
 /** The caller leaves a package shared with them. */
 export function unsharePackage(
     id: string,
@@ -317,36 +299,6 @@ export const setActive = (workflow: Workflow, active: boolean) =>
 export function deleteWorkflow(id: string): Promise<ApiResult<unknown>> {
     return send(
         api.DELETE('/api/v1/workflows/{id}', { params: { path: { id } } })
-    );
-}
-
-/** A run now, active or not, with this input (a JSON value). */
-export function runWorkflow(
-    id: string,
-    input?: unknown
-): Promise<ApiResult<RunStarted>> {
-    return send(
-        api.POST('/api/v1/workflows/{id}/runs', {
-            params: { path: { id } },
-            body: { input },
-        })
-    );
-}
-
-export function listWorkflowRuns(
-    id: string,
-    cursor?: string
-): Promise<ApiResult<BlockRunPage>> {
-    return send(
-        api.GET('/api/v1/workflows/{id}/runs', {
-            params: { path: { id }, query: { limit: 20, cursor } },
-        })
-    );
-}
-
-export function getRun(runId: string): Promise<ApiResult<BlockRunDetails>> {
-    return send(
-        api.GET('/api/v1/blocks/runs/{runId}', { params: { path: { runId } } })
     );
 }
 

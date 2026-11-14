@@ -1,22 +1,21 @@
-import { createEffect, createSignal, on, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
+import LoadError from '@shared/ui/LoadError';
 import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
-import { explorePackages } from './api';
+import { explorePackagesInfiniteQuery } from './api';
 import PackageCard from './components/PackageCard';
 import PackageSearch, { parseQuery, queryOf } from './components/PackageSearch';
 import './packages.scss';
 
 /** Published packages, everyone's public ones: to read and install. The caller's own are in Packages. */
 export default function ExplorePage() {
-    const { isAuthenticated } = useAuth();
     const t = useLocalizer('packages');
     const [params, setParams] = useSearchParams<{ tag?: string }>();
 
@@ -49,19 +48,10 @@ export default function ExplorePage() {
     const pickTag = (picked: string) =>
         onSearch(queryOf(picked, parseQuery(query()).words), true);
 
-    const packages = createPagedList(async (cursor) => {
-        const result = await explorePackages(search(), tag(), cursor);
-        return result.ok ? result.data : null;
-    });
-
-    // A newer list (another tab, search or tag) makes older answers stale.
-    createEffect(
-        on(
-            () => (isAuthenticated() ? [search(), tag()] : false),
-            (key) => {
-                if (key) void packages.reset();
-            }
-        )
+    // Another search or tag is another list: the request for the old one
+    // is cancelled.
+    const packages = createPagedList(() =>
+        explorePackagesInfiniteQuery(search(), tag())
     );
 
     return (
@@ -82,6 +72,16 @@ export default function ExplorePage() {
             />
 
             <PackageSearch value={query()} onInput={onSearch} />
+
+            <Show when={packages.error()}>
+                {(error) => (
+                    <LoadError
+                        error={error()}
+                        busy={packages.retrying()}
+                        onRetry={packages.retry}
+                    />
+                )}
+            </Show>
 
             <Show
                 when={packages.items().length > 0}

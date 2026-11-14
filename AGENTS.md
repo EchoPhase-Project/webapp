@@ -65,8 +65,11 @@ and the tests are successful.
 - If a call can fail and the page needs a value, use
   `dataOr(result, fallback)`. To send a file, use `multipart(fields)`. Do not
   write `as unknown as` for a body.
-- If a list comes one page at a time, use `createPagedList(fetchPage)` from
-  `shared/lib/paged-list.ts`.
+- If a list comes one page at a time, use `createPagedList(describe)` from
+  `shared/lib/paged-list.ts`. Write the `…InfiniteQuery` description in the
+  `api.ts` file of the feature, with `cursorPages`.
+- To show a new item in such a list, use `refreshHead`. To change or remove
+  one item, use `patchItem` or `removeItem`. Do not invalidate the list.
 - To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`:
   `run(call, onOk)` sets `busy` and shows the errors. Do not write the
   `setBusy` and `groupErrors` steps again.

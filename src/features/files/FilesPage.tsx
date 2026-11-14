@@ -1,7 +1,6 @@
-import { createRenderEffect, createSignal, on, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -10,14 +9,18 @@ import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
+import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
-import { deleteFile, listFiles, PAGE_SIZE, uploadFile } from './api';
+import {
+    deleteFileMutation,
+    filesInfiniteQuery,
+    uploadFileMutation,
+} from './api';
 import FilesTable from './components/FilesTable';
 import './files.scss';
 
 /** The signed-in user's files: upload, download, delete. */
 export default function FilesPage() {
-    const { isAuthenticated } = useAuth();
     const t = useLocalizer('files');
 
     usePageMeta(() => ({
@@ -28,47 +31,21 @@ export default function FilesPage() {
         ),
     }));
 
-    const files = createPagedList(async (after) => {
-        const page = await listFiles(after);
-        // A full last page: there may be more after it, after its last file.
-        return {
-            items: page,
-            next: page.length === PAGE_SIZE ? (page.at(-1)?.id ?? null) : null,
-        };
-    });
-    const { busy, errors, run } = createSubmit();
+    const files = createPagedList(() => filesInfiniteQuery());
+    const uploads = createSubmit();
+    const uploading = uploads.mutation(uploadFileMutation);
     // A failed delete shows in its dialog, which stays open.
     const removal = createSubmit();
+    const deletion = removal.mutation(deleteFileMutation);
     // The file whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<StoredFile | null>(null);
 
-    createRenderEffect(
-        on(isAuthenticated, (signedIn) => {
-            if (signedIn) void files.reset({ keep: true });
-        })
-    );
-
-    async function upload(file: File) {
-        await run(
-            () => uploadFile(file),
-            (stored) => {
-                // Oldest first: a new file is the last one, once all are shown.
-                if (!files.more())
-                    files.setItems((current) => [...current, stored]);
-            }
-        );
+    function upload(file: File) {
+        return uploading.run({ file });
     }
 
     function remove(file: StoredFile) {
-        return removal.run(
-            () => deleteFile(file.id),
-            () => {
-                setDeleting(null);
-                files.setItems((current) =>
-                    current.filter((f) => f.id !== file.id)
-                );
-            }
-        );
+        return deletion.run(file.id, () => setDeleting(null));
     }
 
     function cancelDelete() {
@@ -87,18 +64,31 @@ export default function FilesPage() {
                 )}
                 docs="files"
                 actions={
-                    <FilePicker busy={busy()} onPick={(f) => void upload(f)}>
+                    <FilePicker
+                        busy={uploads.busy()}
+                        onPick={(f) => void upload(f)}
+                    >
                         <IconUpload />
                         {t('ui.upload', 'Upload')}
                     </FilePicker>
                 }
             />
 
-            <ErrorSummary errors={errors()} />
+            <ErrorSummary errors={uploads.errors()} />
+
+            <Show when={files.error()}>
+                {(error) => (
+                    <LoadError
+                        error={error()}
+                        busy={files.retrying()}
+                        onRetry={files.retry}
+                    />
+                )}
+            </Show>
 
             <FilesTable
                 files={files.items()}
-                busy={busy() || removal.busy()}
+                busy={uploads.busy() || removal.busy()}
                 onDelete={setDeleting}
             />
 

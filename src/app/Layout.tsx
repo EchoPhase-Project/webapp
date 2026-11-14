@@ -1,6 +1,7 @@
 import { Component, createEffect, on, onCleanup, Show } from 'solid-js';
 import type { ParentProps } from 'solid-js';
 import { A, useLocation } from '@solidjs/router';
+import { useQueryClient } from '@tanstack/solid-query';
 import { NavBuilder } from '@shared/nav/nav-builder';
 import { Header } from '@shared/ui/Header';
 import RealtimeNotices from '@features/realtime/RealtimeNotices';
@@ -8,7 +9,7 @@ import { useRealtime } from '@features/realtime/realtime-provider';
 import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { notesChanged } from '@features/notes/notes-changes';
-import { runsChanged } from '@features/packages/run-changes';
+import { followRunEvents } from '@features/packages/run-events';
 import { useAuth } from '@shared/api/auth';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
@@ -21,6 +22,7 @@ import '@shared/styles/global.scss';
 const Layout: Component<ParentProps> = (props) => {
     const nav = useNav();
     const realtime = useRealtime();
+    const queryClient = useQueryClient();
     const { isAuthenticated, user } = useAuth();
     const { t } = useI18n();
     // A note shared with the user shows up in an open list at once.
@@ -31,9 +33,9 @@ const Layout: Component<ParentProps> = (props) => {
             if (kind === 'note_shared') notesChanged();
         })
     );
-    // A run started or ended: an open run list fetches again.
-    onCleanup(realtime.subscribe('block_run.started', () => runsChanged()));
-    onCleanup(realtime.subscribe('block_run.completed', () => runsChanged()));
+    // A run started: merged on top of the open run lists; a run done:
+    // patched in place from the event.
+    onCleanup(followRunEvents(realtime, queryClient));
     const location = useLocation();
     // The sign-in page stands alone: nowhere to go before signing in.
     const showNav = () => location.pathname !== '/auth';

@@ -286,6 +286,7 @@ export default function WorkflowDetails(props: {
 
                     <RunDialog
                         workflowId={w().id}
+                        packageId={props.packageId}
                         open={running()}
                         onClose={() => setRunning(false)}
                         onStarted={() => {
