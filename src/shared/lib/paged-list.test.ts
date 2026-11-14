@@ -9,6 +9,7 @@ import { withSession } from '@shared/testing/render-page';
 import {
     createPagedList,
     cursorPages,
+    appendItem,
     mergeHead,
     patchItem,
     refreshHead,
@@ -252,6 +253,28 @@ describe('patchItem and removeItem', () => {
     });
 });
 
+describe('appendItem', () => {
+    const key = ['items', 'list', { q: '' }];
+
+    it('adds to the last page once all are loaded, not before', () => {
+        withSession(() => null);
+        const client = sessionClient();
+        const partial = data([item('a')], [item('b')]);
+        partial.pages[1] = { ...partial.pages[1], next: 'c2' };
+        client.setQueryData(key, partial);
+        appendItem(client, key, item('c'));
+        expect(client.getQueryData(key)).toBe(partial);
+
+        client.setQueryData(key, data([item('a')], [item('b')]));
+        appendItem(client, key, item('c'));
+        expect(
+            client
+                .getQueryData<CursorListData<Item>>(key)
+                ?.pages.map((p) => p.items.map(id))
+        ).toEqual([['a'], ['b', 'c']]);
+    });
+});
+
 describe('refreshHead', () => {
     it("fetches the first page through fetchQuery (the head key, the list's key in the context) and merges it", async () => {
         const { calls, describe } = pages();
@@ -301,5 +324,29 @@ describe('refreshHead', () => {
         await waitFor(() => expect(calls).toHaveLength(2));
         await refreshHead(client, describe(), id); // next page on its way
         expect(calls).toHaveLength(2);
+    });
+});
+
+// Read as text, not imported: shared does not import features.
+const listPages = import.meta.glob<string>(
+    [
+        '/src/features/packages/ExplorePage.tsx',
+        '/src/features/packages/components/RunList.tsx',
+        '/src/features/files/FilesPage.tsx',
+    ],
+    { query: '?raw', import: 'default', eager: true }
+);
+
+describe('the pages with a paged list', () => {
+    it('take its description from their api.ts: no api or request of their own', () => {
+        const sources = Object.values(listPages);
+        expect(sources).toHaveLength(3);
+        for (const source of sources) {
+            expect(source).toContain('createPagedList(');
+            expect(source).not.toContain('@shared/api/client');
+            expect(source).not.toMatch(
+                /import\s*\{[^}]*\b(api|request)\b[^}]*\}/
+            );
+        }
     });
 });

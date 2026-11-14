@@ -63,6 +63,33 @@ describe('ExplorePage', () => {
         );
     });
 
+    it('cancels the request for the old search and starts the new one', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            // The first search never answers: it is still out when the
+            // second starts.
+            'GET /api/v1/workflow-packages/explore': (request) =>
+                new URL(request.url).searchParams.get('q') === 'raid'
+                    ? page([pkg({ id: 'p2', name: 'Raid bot' })])
+                    : new Promise<Response>(() => {}),
+        });
+        const explore = () =>
+            api.calls('GET /api/v1/workflow-packages/explore');
+
+        renderPage(() => <ExplorePage />);
+        await waitFor(() => expect(explore()).toHaveLength(1));
+        fireEvent.input(screen.getByLabelText('Search packages'), {
+            target: { value: 'raid' },
+        });
+
+        expect(
+            await screen.findByRole('link', { name: 'Raid bot' })
+        ).toBeTruthy();
+        expect(explore()).toHaveLength(2);
+        expect(explore()[0].signal.aborted).toBe(true);
+        expect(new URL(explore()[1].url).searchParams.get('cursor')).toBeNull();
+    });
+
     it('filters by a tag picked on a card', async () => {
         const api = fakeApi({
             ...signedIn,

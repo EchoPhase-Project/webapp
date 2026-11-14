@@ -111,5 +111,26 @@ describe('FilesPage', () => {
             expect(screen.queryByText('report.zip')).toBeNull()
         );
         expect(api.calls('DELETE /api/v1/files/f1')).toHaveLength(1);
+        // Taken out of the list held: the list is not asked for again.
+        expect(api.calls('GET /api/v1/files')).toHaveLength(1);
+    });
+
+    it('puts an uploaded file at the end of the list, with no list request', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            'GET /api/v1/files': () => json(200, [file('f1', 'report.zip')]),
+            'POST /api/v1/files': () => json(201, file('f2', 'notes.txt', 5)),
+        });
+
+        renderPage(() => <FilesPage />);
+        await screen.findByText('report.zip');
+        pick(new File(['hello'], 'notes.txt', { type: 'text/plain' }));
+
+        await screen.findByText('notes.txt');
+        const names = Array.from(
+            document.querySelectorAll('table.files a[download]')
+        ).map((a) => a.textContent);
+        expect(names).toEqual(['report.zip', 'notes.txt']);
+        expect(api.calls('GET /api/v1/files')).toHaveLength(1);
     });
 });
