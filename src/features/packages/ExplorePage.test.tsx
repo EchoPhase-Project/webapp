@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { sessionClient } from '@shared/api/session-provider';
+import { packageKeys } from './api';
 import ExplorePage from './ExplorePage';
 import { parseQuery, queryOf } from './components/PackageSearch';
 import { pkg } from './fixtures';
@@ -86,7 +88,15 @@ describe('ExplorePage', () => {
             await screen.findByRole('link', { name: 'Raid bot' })
         ).toBeTruthy();
         expect(explore()).toHaveLength(2);
-        expect(explore()[0].signal.aborted).toBe(true);
+        // The old search's query was cancelled (back to idle, no data). Not
+        // `explore()[0].signal.aborted`: in Node a Request follows its signal
+        // through a WeakRef, and once the controller is collected the abort
+        // never reaches the Request, so that check is flaky.
+        const old = sessionClient()
+            .getQueryCache()
+            .find({ queryKey: packageKeys.explore('', ''), exact: true });
+        expect(old?.state.fetchStatus).toBe('idle');
+        expect(old?.state.data).toBeUndefined();
         expect(new URL(explore()[1].url).searchParams.get('cursor')).toBeNull();
     });
 
