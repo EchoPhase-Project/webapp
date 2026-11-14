@@ -13,7 +13,8 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import FieldError, { errorId } from '@shared/ui/FieldError';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/TextArea';
-import { getWorkflow, publishVersion } from '@features/packages/api';
+import { publishVersion } from '@features/packages/api/packages';
+import { getWorkflow } from '@features/packages/api/workflows';
 
 const FIELDS = ['workflows', 'changelog'] as const;
 const inputId = (field: string) => `package-publish-${field}`;

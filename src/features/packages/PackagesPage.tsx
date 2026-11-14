@@ -10,7 +10,7 @@ import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
-import { myPackages } from './api';
+import { myPackages } from './api/packages';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageEditorModal from './components/PackageEditorModal';
 import PackageOrigin from './components/PackageOrigin';

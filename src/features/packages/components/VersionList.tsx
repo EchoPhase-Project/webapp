@@ -9,7 +9,7 @@ import {
     listWorkflowVersions,
     restoreWorkflowVersion,
     workflowExportUrl,
-} from '@features/packages/api';
+} from '@features/packages/api/workflows';
 
 /**
  * Its saved versions, newest first: one per change of the program. An old

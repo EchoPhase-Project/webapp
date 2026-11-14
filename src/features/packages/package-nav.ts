@@ -10,7 +10,7 @@ import {
 } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { usePageSection } from '@shared/nav/page-section';
-import { getPackage } from './api';
+import { getPackage } from './api/packages';
 
 /** A package's own pages: its workflows (and each workflow's page), its runs, its settings. */
 export const packagePath = (id: string, section?: 'runs' | 'settings') =>

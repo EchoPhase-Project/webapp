@@ -7,7 +7,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Modal from '@shared/ui/Modal';
-import { createPackage, savePackage } from '@features/packages/api';
+import { createPackage, savePackage } from '@features/packages/api/packages';
 
 const FIELDS = ['name', 'summary', 'readme'] as const;
 const inputId = (field: string) => `package-${field}`;

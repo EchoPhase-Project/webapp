@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
-import { saveWorkflow } from '@features/packages/api';
+import { saveWorkflow } from '@features/packages/api/workflows';
 import { removeBlock, type Program } from '@features/packages/program-edit';
 
 /**

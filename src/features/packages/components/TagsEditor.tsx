@@ -6,7 +6,7 @@ import Button from '@shared/ui/Button';
 import FieldError from '@shared/ui/FieldError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
-import { savePackage } from '@features/packages/api';
+import { savePackage } from '@features/packages/api/packages';
 import { tagClass } from '@features/packages/tags';
 
 const FIELD = 'package-tags-input';

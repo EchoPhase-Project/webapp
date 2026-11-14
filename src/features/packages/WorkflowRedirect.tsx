@@ -1,6 +1,6 @@
 import { createEffect } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
-import { getWorkflow } from './api';
+import { getWorkflow } from './api/workflows';
 import { packagePath } from './package-nav';
 
 /**

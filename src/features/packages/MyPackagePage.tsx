@@ -8,7 +8,7 @@ import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
 import { NavTabs } from '@shared/ui/Tabs';
-import { listWorkflows } from './api';
+import { listWorkflows } from './api/workflows';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageOrigin from './components/PackageOrigin';
 import PackageSettings from './components/PackageSettings';

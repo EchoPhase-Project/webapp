@@ -7,7 +7,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Switch from '@shared/ui/Switch';
-import { getWorkflow, setActive } from '@features/packages/api';
+import { getWorkflow, setActive } from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';
 
 /**

@@ -8,7 +8,7 @@ import {
 import { IconSearch, IconX } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import { exploreTags } from '@features/packages/api';
+import { exploreTags } from '@features/packages/api/packages';
 
 /** What a search line asks for: a tag (`tag:name`, the last one wins) and words. */
 export function parseQuery(text: string): { tag: string; words: string } {

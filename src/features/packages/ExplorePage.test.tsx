@@ -4,7 +4,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { sessionClient } from '@shared/api/session-provider';
-import { packageKeys } from './api';
+import { packageKeys } from './api/packages';
 import ExplorePage from './ExplorePage';
 import { parseQuery, queryOf } from './components/PackageSearch';
 import { pkg } from './fixtures';

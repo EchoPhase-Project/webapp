@@ -9,7 +9,7 @@ import EmptyState from '@shared/ui/EmptyState';
 import LoadError from '@shared/ui/LoadError';
 import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
-import { explorePackagesInfiniteQuery } from './api';
+import { explorePackagesInfiniteQuery } from './api/packages';
 import PackageCard from './components/PackageCard';
 import PackageSearch, { parseQuery, queryOf } from './components/PackageSearch';
 import './packages.scss';

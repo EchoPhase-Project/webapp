@@ -3,7 +3,7 @@ import { useNavigate } from '@solidjs/router';
 import type { ErrorItem } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import FilePicker from '@shared/ui/FilePicker';
-import { importWorkflow } from '@features/packages/api';
+import { importWorkflow } from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';
 
 /**

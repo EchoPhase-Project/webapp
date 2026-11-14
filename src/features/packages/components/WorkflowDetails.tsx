@@ -34,7 +34,7 @@ import {
     getWorkflow,
     setActive,
     workflowExportUrl,
-} from '@features/packages/api';
+} from '@features/packages/api/workflows';
 import {
     packagePath,
     usePackage,

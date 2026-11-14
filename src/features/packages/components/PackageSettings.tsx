@@ -15,7 +15,7 @@ import {
     savePackage,
     sharePackageMutation,
     unsharePackageMutation,
-} from '@features/packages/api';
+} from '@features/packages/api/packages';
 import PackageEditorModal from './PackageEditorModal';
 import PublishModal from './PublishModal';
 import TagsEditor from './TagsEditor';

@@ -18,7 +18,7 @@ import {
     getPackage,
     listPackageVersions,
     unsharePackage,
-} from '@features/packages/api';
+} from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 import { tagClass } from '@features/packages/tags';
 import InstallModal from './InstallModal';

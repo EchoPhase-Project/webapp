@@ -12,7 +12,7 @@ import ErrorSummary from '@shared/ui/ErrorSummary';
 import Select from '@shared/ui/Select';
 import Modal from '@shared/ui/Modal';
 import { createSubmit } from '@shared/api/submit';
-import { installPackage, myConnections } from '@features/packages/api';
+import { installPackage, myConnections } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 
 const inputId = (field: string) => `package-install-${field}`;
