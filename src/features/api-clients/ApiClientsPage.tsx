@@ -1,15 +1,16 @@
-import { createResource, createSignal, Show } from 'solid-js';
+import { createSignal, Match, Show, Switch } from 'solid-js';
+import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import PageHeader from '@shared/ui/PageHeader';
 import type { ApiClient } from '@shared/api/types';
-import { deleteApiClient, listApiClients } from './api';
+import { apiClientsQuery, deleteApiClientMutation } from './api';
 import ApiClientForm from './components/ApiClientForm';
 import ApiClientsTable from './components/ApiClientsTable';
 import SecretNotice from './components/SecretNotice';
@@ -17,7 +18,6 @@ import './api-clients.scss';
 
 /** The signed-in user's API clients: the list, a new one in a dialog. */
 export default function ApiClientsPage() {
-    const { isAuthenticated } = useAuth();
     const t = useLocalizer('api-clients');
 
     usePageMeta(() => ({
@@ -28,31 +28,22 @@ export default function ApiClientsPage() {
         ),
     }));
 
-    const [clients, { refetch }] = createResource(
-        isAuthenticated,
-        listApiClients
-    );
+    const clients = useQuery(() => apiClientsQuery());
     const [creating, setCreating] = createSignal(false);
     const [secret, setSecret] = createSignal<string | null>(null);
-    const { busy, errors, setErrors, run } = createSubmit();
+    const { busy, errors, setErrors, mutation } = createSubmit();
+    const deleteClient = mutation(deleteApiClientMutation);
     // The client whose deletion waits for a yes.
     const [deleting, setDeleting] = createSignal<ApiClient | null>(null);
 
     function created(value: string) {
         setCreating(false);
         setSecret(value);
-        void refetch();
     }
 
     // A failure shows in the dialog, which stays open.
     function remove(client: ApiClient) {
-        return run(
-            () => deleteApiClient(client.Id),
-            async () => {
-                setDeleting(null);
-                await refetch();
-            }
-        );
+        return deleteClient.run(client.Id, () => setDeleting(null));
     }
 
     function cancel() {
@@ -86,11 +77,24 @@ export default function ApiClientsPage() {
                 )}
             </Show>
 
-            <ApiClientsTable
-                clients={clients() ?? []}
-                busy={busy()}
-                onDelete={setDeleting}
-            />
+            <Switch>
+                <Match when={clients.isError && clients.error}>
+                    {(error) => (
+                        <LoadError
+                            error={error()}
+                            busy={clients.isFetching}
+                            onRetry={() => clients.refetch()}
+                        />
+                    )}
+                </Match>
+                <Match when={clients.isSuccess}>
+                    <ApiClientsTable
+                        clients={clients.data ?? []}
+                        busy={busy()}
+                        onDelete={setDeleting}
+                    />
+                </Match>
+            </Switch>
 
             <Modal
                 open={creating()}

@@ -72,8 +72,25 @@ describe('ApiClientsPage', () => {
             false
         );
         expect(await screen.findByText('bot')).toBeTruthy();
+        expect(api.calls('GET /api/v1/api-clients')).toHaveLength(2);
         const [create] = api.calls('POST /api/v1/api-clients');
         expect(await create.json()).toEqual({ name: 'bot', expiresAt: null });
+    });
+});
+
+describe('ApiClientsPage list', () => {
+    it('shows a failed list as an error, not as an empty list', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () =>
+                json(500, { code: 'TestBroken', message: 'Try later.' }),
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        const alert = await screen.findByRole('alert');
+        expect(alert.textContent).toBe('Try later.');
+        expect(screen.queryByText('No API clients')).toBeNull();
+        expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy();
     });
 });
 
@@ -128,6 +145,8 @@ describe('ApiClientsPage delete', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
         expect(await screen.findByText('No API clients')).toBeTruthy();
         expect(api.calls('DELETE /api/v1/api-clients/c1')).toHaveLength(1);
+        // The list asked once more, after the deletion.
+        expect(api.calls('GET /api/v1/api-clients')).toHaveLength(2);
     });
 
     it('shows a refused delete in the dialog, which stays open', async () => {

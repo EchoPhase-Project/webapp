@@ -5,7 +5,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Field from '@shared/ui/Field';
-import { createApiClient } from '@features/api-clients/api';
+import { createApiClientMutation } from '@features/api-clients/api';
 
 const FIELDS = ['name', 'expiresAt'] as const;
 const inputId = (field: string) => `api-client-${field}`;
@@ -18,16 +18,16 @@ export default function ApiClientForm(props: {
     const [name, setName] = createSignal('');
     // datetime-local value: the browser's local time, converted on submit.
     const [expiresAt, setExpiresAt] = createSignal('');
-    const { busy, errors, run } = createSubmit(FIELDS);
+    const { busy, errors, mutation } = createSubmit(FIELDS);
+    const createClient = mutation(createApiClientMutation);
 
     async function create(e: Event) {
         e.preventDefault();
-        await run(
-            () =>
-                createApiClient({
-                    name: name(),
-                    expiresAt: DateHelper.fromLocalInput(expiresAt()),
-                }),
+        await createClient.run(
+            {
+                name: name(),
+                expiresAt: DateHelper.fromLocalInput(expiresAt()),
+            },
             (client) => {
                 setName('');
                 setExpiresAt('');
