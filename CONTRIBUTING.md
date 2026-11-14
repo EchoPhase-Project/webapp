@@ -229,8 +229,13 @@ contract. Do not write a response type manually in `types.ts`.
   request for the old key. The ref `watchEnd` gets the next page when the end
   of the list comes into view. Thus, a page does not keep a cursor or a
   stale-answer guard of its own.
-- If a new item comes at the top of such a list, use `refreshHead`. If one
-  item changes or goes away, use `patchItem` or `removeItem`. Do not
+- If such a list shows the newest item first (for example, runs), use
+  `refreshHead` for a new item. `refreshHead` gets the first page again and
+  puts the new item at the top.
+- If such a list shows the oldest item first (for example, files), use
+  `appendItem` for a new item. The new item goes at the end of the list, and
+  the first page does not contain it.
+- If one item changes or goes away, use `patchItem` or `removeItem`. Do not
   invalidate the list for these changes. An invalidation fetches all the
   loaded pages again, one after the other.
 - To save a form, use `createSubmit(fields)` from `@shared/api/submit`.
