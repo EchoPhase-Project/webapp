@@ -105,4 +105,30 @@ describe('AuthPage', () => {
             document.getElementById('register-username-error')?.textContent
         ).toBe('That username is taken.');
     });
+
+    it('opens ?next= in a new session once signed in', async () => {
+        let signedIn = false;
+        fakeApi({
+            'GET /api/v1/auth/me': () =>
+                signedIn
+                    ? json(200, user())
+                    : json(401, { code: 'Unauthorized', message: 'no' }),
+            'GET /api/v1/roles/me': () => json(200, []),
+            'POST /api/v1/auth/login': () => {
+                signedIn = true;
+                return new Response(null, { status: 204 });
+            },
+        });
+        const { history } = renderPage(
+            () => <AuthPage />,
+            '/auth?next=%2Ffiles%3Fview%3Dgrid'
+        );
+
+        const form = await loginForm();
+        fireEvent.click(
+            await within(form).findByRole('button', { name: 'Log in' })
+        );
+
+        await waitFor(() => expect(history.get()).toBe('/files?view=grid'));
+    });
 });

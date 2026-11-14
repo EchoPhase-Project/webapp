@@ -43,12 +43,11 @@ export function SessionMemoryRouter(props: {
 }
 
 /**
- * A page with the providers every page has, as the route of `path` in a
- * memory router (so useNavigate and useSearchParams work); with `pattern`
- * (e.g. "/packages/:id"), useParams reads it too. The session is reset
- * first (freshSession); `history` and `otherTab` come back with the render.
+ * Routes with the providers every page has, in a memory router that starts
+ * at `path`. The session is reset first (freshSession); `history` and
+ * `otherTab` come back with the render.
  */
-export function renderPage(page: () => JSX.Element, path = '/', pattern = '*') {
+export function renderRoutes(routes: () => JSX.Element, path = '/') {
     const { otherTab } = freshSession();
     const history = createMemoryHistory();
     history.set({ value: path });
@@ -59,11 +58,23 @@ export function renderPage(page: () => JSX.Element, path = '/', pattern = '*') {
             <I18nProvider>
                 <SessionProvider>
                     <SessionMemoryRouter history={history}>
-                        <Route path={pattern} component={() => page()} />
+                        {routes()}
                     </SessionMemoryRouter>
                 </SessionProvider>
             </I18nProvider>
         </RootMetaContext.Provider>
     ));
     return { ...rendered, history, otherTab };
+}
+
+/**
+ * A page with the providers every page has, as the route of `path` in a
+ * memory router (so useNavigate and useSearchParams work); with `pattern`
+ * (e.g. "/packages/:id"), useParams reads it too. See renderRoutes.
+ */
+export function renderPage(page: () => JSX.Element, path = '/', pattern = '*') {
+    return renderRoutes(
+        () => <Route path={pattern} component={() => page()} />,
+        path
+    );
 }
