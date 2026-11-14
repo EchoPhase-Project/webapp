@@ -1,19 +1,23 @@
-import { createResource, createSignal, For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
+import { useQuery } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow, WorkflowVersion } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import LoadError from '@shared/ui/LoadError';
 import {
-    listWorkflowVersions,
     restoreWorkflowVersion,
     workflowExportUrl,
+    workflowVersionsQuery,
 } from '@features/packages/api/workflows';
 
 /**
  * Its saved versions, newest first: one per change of the program. An old
  * one can be exported, or restored: as a new version on top, history kept.
+ * A save of the workflow (`onRestored` here, its other editors elsewhere)
+ * asks the list again.
  */
 export default function VersionList(props: {
     workflow: Workflow;
@@ -21,10 +25,7 @@ export default function VersionList(props: {
 }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
-    const [versions, { refetch }] = createResource(
-        () => [props.workflow.id, props.workflow.version] as const,
-        ([id]) => listWorkflowVersions(id)
-    );
+    const versions = useQuery(() => workflowVersionsQuery(props.workflow.id));
     const [restoring, setRestoring] = createSignal<WorkflowVersion | null>(
         null
     );
@@ -43,7 +44,6 @@ export default function VersionList(props: {
             (workflow) => {
                 setRestoring(null);
                 props.onRestored(workflow);
-                void refetch();
             }
         );
     }
@@ -55,8 +55,17 @@ export default function VersionList(props: {
 
     return (
         <>
+            <Show when={versions.isError && versions.error}>
+                {(error) => (
+                    <LoadError
+                        error={error()}
+                        busy={versions.isFetching}
+                        onRetry={() => versions.refetch()}
+                    />
+                )}
+            </Show>
             <ol class="workflow-versions">
-                <For each={versions()}>
+                <For each={versions.data}>
                     {(v) => (
                         <li>
                             <span class="workflow-version-head">

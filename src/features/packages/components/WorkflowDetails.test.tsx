@@ -300,6 +300,13 @@ describe('WorkflowDetails', () => {
                 .calls('POST /api/v1/workflows/w1/versions/2/restore')[0]
                 .json()
         ).toEqual({ currentVersion: 3 });
+        // The restored workflow shows at once; its versions are asked again.
+        expect(await screen.findByText('v4')).toBeTruthy();
+        await waitFor(() =>
+            expect(api.calls('GET /api/v1/workflows/w1/versions')).toHaveLength(
+                2
+            )
+        );
     });
 
     it('shows a refused restore in the dialog, which stays open', async () => {
@@ -348,5 +355,21 @@ describe('WorkflowDetails', () => {
         expect(items.at(-1)?.label).toBe('Guild tools');
         // The overview is current only on itself.
         expect(items[0].end).toBe(true);
+    });
+
+    it('shows a failed read with a retry, and one it cannot find as gone', async () => {
+        let answer = () =>
+            json(500, { code: 'TestBroken', message: 'Try later.' });
+        fakeApi(routes({ 'GET /api/v1/workflows/w1': () => answer() }));
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+
+        expect((await screen.findByRole('alert')).textContent).toBe(
+            'Try later.'
+        );
+        expect(screen.queryByText(/does not exist/)).toBeNull();
+
+        answer = () => json(404, { code: 'NotFound', message: 'Not found.' });
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+        expect(await screen.findByText(/does not exist/)).toBeTruthy();
     });
 });

@@ -1,5 +1,6 @@
 import { For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
+import { useQueryClient } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -7,7 +8,11 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import Switch from '@shared/ui/Switch';
-import { getWorkflow, setActive } from '@features/packages/api/workflows';
+import {
+    setActive,
+    workflowKeys,
+    workflowQuery,
+} from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';
 
 /**
@@ -22,21 +27,28 @@ export default function PackageWorkflowList(props: {
 }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
+    const queryClient = useQueryClient();
     const { busy, errors, runFor } = createSubmit();
 
-    // The list has no programs: the switch fetches the workflow, then saves
-    // it. Each row saves on its own: the other switches stay usable.
+    // The list has no programs: the switch fetches the workflow (always
+    // anew: it is saved over the version read), then saves it. Each row
+    // saves on its own: the other switches stay usable.
     function toggle(item: WorkflowSummary, active: boolean) {
         return runFor(
             item.id,
-            async () => {
-                const current = await getWorkflow(item.id);
-                return current.ok
-                    ? await setActive(current.data, active)
-                    : current;
-            },
-            (saved) =>
-                props.onChange({ ...item, active, version: saved.version })
+            async () =>
+                setActive(
+                    await queryClient.fetchQuery({
+                        ...workflowQuery(item.id),
+                        staleTime: 0,
+                    }),
+                    active
+                ),
+            (saved) => {
+                // Until step 9's mutation: its page shows it as saved.
+                queryClient.setQueryData(workflowKeys.detail(saved.id), saved);
+                props.onChange({ ...item, active, version: saved.version });
+            }
         );
     }
 

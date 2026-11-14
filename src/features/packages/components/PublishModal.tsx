@@ -1,4 +1,5 @@
-import { createResource, createSignal, For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
+import { useQueries } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import type {
     PackageVersion,
@@ -11,10 +12,11 @@ import Button from '@shared/ui/Button';
 import Checkbox from '@shared/ui/Checkbox';
 import ErrorSummary from '@shared/ui/ErrorSummary';
 import FieldError, { errorId } from '@shared/ui/FieldError';
+import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/TextArea';
 import { publishVersion } from '@features/packages/api/packages';
-import { getWorkflow } from '@features/packages/api/workflows';
+import { workflowQuery } from '@features/packages/api/workflows';
 
 const FIELDS = ['workflows', 'changelog'] as const;
 const inputId = (field: string) => `package-publish-${field}`;
@@ -102,16 +104,15 @@ function PublishForm(props: {
     const { busy, errors, run } = createSubmit(FIELDS);
     const [unchanged, setUnchanged] = createSignal(false);
 
-    // Their programs: what each calls.
-    const [programs] = createResource(
-        () => props.workflows.map((w) => w.id),
-        async (ids) => {
-            const results = await Promise.all(ids.map(getWorkflow));
-            return results.flatMap((r) => (r.ok ? [r.data] : []));
-        }
-    );
+    // Their programs: what each calls. One read each, shared with their
+    // pages; until all are in, nothing is published.
+    const programs = useQueries(() => ({
+        queries: props.workflows.map((w) => workflowQuery(w.id)),
+    }));
+    const loaded = () => programs.flatMap((r) => (r.data ? [r.data] : []));
+    const failed = () => programs.filter((r) => r.isError);
     const missing = () =>
-        missingOf(chosen(), programs() ?? [], props.pkg.errorWorkflow);
+        missingOf(chosen(), loaded(), props.pkg.errorWorkflow);
 
     const toggle = (id: string, on: boolean) =>
         setChosen((list) =>
@@ -144,6 +145,17 @@ function PublishForm(props: {
     return (
         <form class="vert-form" onSubmit={(e) => void publish(e)} noValidate>
             <ErrorSummary errors={errors()} inputId={inputId} />
+            <Show when={failed()[0]?.error}>
+                {(error) => (
+                    <LoadError
+                        error={error()}
+                        busy={failed().some((r) => r.isFetching)}
+                        onRetry={() =>
+                            Promise.all(failed().map((r) => r.refetch()))
+                        }
+                    />
+                )}
+            </Show>
             <Show when={unchanged()}>
                 <p class="package-notice" role="alert">
                     {t(
@@ -252,7 +264,7 @@ function PublishForm(props: {
                     type="submit"
                     busy={busy()}
                     disabled={
-                        programs.loading ||
+                        programs.some((r) => !r.isSuccess) ||
                         missing().length > 0 ||
                         chosen().length === 0
                     }

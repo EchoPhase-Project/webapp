@@ -1,6 +1,7 @@
 import { createEffect } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
-import { getWorkflow } from './api/workflows';
+import { useQueryClient } from '@tanstack/solid-query';
+import { workflowQuery } from './api/workflows';
 import { packagePath } from './package-nav';
 
 /**
@@ -10,6 +11,7 @@ import { packagePath } from './package-nav';
 export default function WorkflowRedirect() {
     const params = useParams<{ id?: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     createEffect(() => {
         const id = params.id;
@@ -17,13 +19,13 @@ export default function WorkflowRedirect() {
             navigate('/packages', { replace: true });
             return;
         }
-        void getWorkflow(id).then((result) =>
-            navigate(
-                result.ok
-                    ? `${packagePath(result.data.packageId)}/${encodeURIComponent(id)}`
-                    : '/packages',
-                { replace: true }
-            )
+        void queryClient.fetchQuery(workflowQuery(id)).then(
+            (w) =>
+                navigate(
+                    `${packagePath(w.packageId)}/${encodeURIComponent(id)}`,
+                    { replace: true }
+                ),
+            () => navigate('/packages', { replace: true })
         );
     });
 

@@ -1,34 +1,53 @@
+import { queryOptions } from '@tanstack/solid-query';
 import {
     api,
-    dataOr,
     multipart,
+    request,
     send,
     type ApiResult,
 } from '@shared/api/client';
 import type {
     Workflow,
     WorkflowImport,
-    WorkflowSummary,
     WorkflowVersion,
 } from '@shared/api/types';
 
-// Workflows: always in one of the caller's packages.
+// Workflows: always in one of the caller's packages (the list of a
+// package's workflows is packageWorkflowsQuery, under its package). Reads
+// are on Query; the changes still on ApiResult functions move to mutations
+// in step 9.
 
-/** The workflows of one package, by name. */
-export async function listWorkflows(
-    packageId: string
-): Promise<WorkflowSummary[]> {
-    const result = await send(
-        api.GET('/api/v1/workflows', { params: { query: { packageId } } })
-    );
-    return dataOr(result, []);
-}
+export const workflowKeys = {
+    all: ['workflows'] as const,
+    detail: (id: string) => [...workflowKeys.all, 'detail', id] as const,
+    versions: (id: string) => [...workflowKeys.detail(id), 'versions'] as const,
+};
 
-export function getWorkflow(id: string): Promise<ApiResult<Workflow>> {
-    return send(
-        api.GET('/api/v1/workflows/{id}', { params: { path: { id } } })
-    );
-}
+/** One workflow with its program, webhooks and schedules. */
+export const workflowQuery = (id: string) =>
+    queryOptions({
+        queryKey: workflowKeys.detail(id),
+        queryFn: ({ signal }) =>
+            request<Workflow>(
+                api.GET('/api/v1/workflows/{id}', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
+
+/** Its saved versions, newest first: one per change of the program. */
+export const workflowVersionsQuery = (id: string) =>
+    queryOptions({
+        queryKey: workflowKeys.versions(id),
+        queryFn: ({ signal }) =>
+            request<WorkflowVersion[]>(
+                api.GET('/api/v1/workflows/{id}/versions', {
+                    params: { path: { id } },
+                    signal,
+                })
+            ),
+    });
 
 /** Saves the workflow as given (name, program, active), only over the version shown (409 otherwise). */
 export function saveWorkflow(
@@ -57,15 +76,6 @@ export function deleteWorkflow(id: string): Promise<ApiResult<unknown>> {
     return send(
         api.DELETE('/api/v1/workflows/{id}', { params: { path: { id } } })
     );
-}
-
-export async function listWorkflowVersions(
-    id: string
-): Promise<WorkflowVersion[]> {
-    const result = await send(
-        api.GET('/api/v1/workflows/{id}/versions', { params: { path: { id } } })
-    );
-    return dataOr(result, []);
 }
 
 /** Makes an old version current again, as a new one on top. */
