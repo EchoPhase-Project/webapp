@@ -4,9 +4,9 @@ import { createSubmit } from '@shared/api/submit';
 import type { User } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import Field from '@shared/ui/Field';
-import TimeZoneField from '@shared/ui/TimeZoneField';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import Field from '@shared/ui/forms/Field';
+import TimeZoneField from '@shared/ui/forms/TimeZoneField';
 
 const FIELDS = ['name', 'username', 'timeZone'] as const;
 const inputId = (field: string) => `profile-${field}`;

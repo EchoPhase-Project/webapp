@@ -27,7 +27,7 @@ import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import EmptyState from '@shared/ui/EmptyState';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
 import { NavTabs } from '@shared/ui/Tabs';

@@ -9,12 +9,12 @@ import type {
 } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import Checkbox from '@shared/ui/Checkbox';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import FieldError, { errorId } from '@shared/ui/FieldError';
+import Checkbox from '@shared/ui/forms/Checkbox';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import FieldError, { errorId } from '@shared/ui/forms/FieldError';
 import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
-import TextArea from '@shared/ui/TextArea';
+import TextArea from '@shared/ui/forms/TextArea';
 import { publishPackageVersionMutation } from '@features/packages/api/packages';
 import { workflowQuery } from '@features/packages/api/workflows';
 

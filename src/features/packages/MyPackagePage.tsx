@@ -7,7 +7,7 @@ import { isNotFound } from '@shared/api/client';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import BackLink from '@shared/ui/BackLink';
 import EmptyState from '@shared/ui/EmptyState';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
 import { NavTabs } from '@shared/ui/Tabs';

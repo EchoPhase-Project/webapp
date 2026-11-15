@@ -5,8 +5,8 @@ import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import Select from '@shared/ui/Select';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import Select from '@shared/ui/forms/Select';
 import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {

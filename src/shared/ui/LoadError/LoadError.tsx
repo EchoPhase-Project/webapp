@@ -2,7 +2,7 @@ import { ApiError, NetworkError } from '@shared/api/client';
 import { FORM } from '@shared/api/errors';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 
 /**
  * What a failed read (a query's error) shows instead of its data: the API's

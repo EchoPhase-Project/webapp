@@ -16,7 +16,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
-import Field from '@shared/ui/Field';
+import Field from '@shared/ui/forms/Field';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
 import { noteQuery, notesQuery } from './api';

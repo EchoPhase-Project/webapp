@@ -2,9 +2,9 @@ import { createSignal } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Modal from '@shared/ui/Modal';
-import TextArea from '@shared/ui/TextArea';
+import TextArea from '@shared/ui/forms/TextArea';
 import { runWorkflowMutation } from '@features/packages/api/runs';
 
 const inputId = 'workflow-run-input';

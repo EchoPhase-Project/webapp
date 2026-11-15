@@ -1,7 +1,7 @@
 import { For, type JSX } from 'solid-js';
 import type { ErrorItem } from '@shared/api/types';
 import FieldError, { errorId } from './FieldError';
-import { IconChevronDown } from './icons';
+import { IconChevronDown } from '@shared/ui/icons';
 import './forms.scss';
 
 type SelectProps<T extends string> = {

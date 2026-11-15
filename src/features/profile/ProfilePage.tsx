@@ -5,7 +5,7 @@ import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import PageHeader from '@shared/ui/PageHeader';
 import SettingsCard from '@shared/ui/SettingsCard';

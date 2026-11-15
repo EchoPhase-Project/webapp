@@ -9,7 +9,7 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { createDismiss } from '@shared/lib/dismiss';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import HeaderButton from '@shared/ui/HeaderButton';
 import RemoveButton from '@shared/ui/RemoveButton';
 import {

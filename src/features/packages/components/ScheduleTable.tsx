@@ -6,12 +6,12 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import Field from '@shared/ui/Field';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import Field from '@shared/ui/forms/Field';
 import Modal from '@shared/ui/Modal';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
-import TimeZoneField from '@shared/ui/TimeZoneField';
+import TimeZoneField from '@shared/ui/forms/TimeZoneField';
 import {
     addTrigger,
     setParams,

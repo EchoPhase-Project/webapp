@@ -4,11 +4,11 @@ import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createClipboard } from '@shared/lib/clipboard';
 import Button from '@shared/ui/Button';
-import Checkbox from '@shared/ui/Checkbox';
+import Checkbox from '@shared/ui/forms/Checkbox';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Modal from '@shared/ui/Modal';
-import RadioGroup from '@shared/ui/RadioGroup';
+import RadioGroup from '@shared/ui/forms/RadioGroup';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
 import {

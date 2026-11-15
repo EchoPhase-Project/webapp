@@ -2,8 +2,8 @@ import { createSignal } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import Field from '@shared/ui/Field';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import Field from '@shared/ui/forms/Field';
 import { changePasswordMutation } from '@features/profile/api';
 
 const FIELDS = ['currentPassword', 'newPassword', 'confirm'] as const;

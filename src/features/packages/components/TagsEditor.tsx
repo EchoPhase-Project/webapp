@@ -3,7 +3,7 @@ import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import FieldError from '@shared/ui/FieldError';
+import FieldError from '@shared/ui/forms/FieldError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { updatePackageMutation } from '@features/packages/api/packages';

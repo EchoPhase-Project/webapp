@@ -5,7 +5,7 @@ import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Switch from '@shared/ui/Switch';
 import { switchWorkflowMutation } from '@features/packages/api/workflows';
 import { packagePath } from '@features/packages/package-nav';

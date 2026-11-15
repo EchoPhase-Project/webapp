@@ -2,7 +2,7 @@ import { Show, type JSX } from 'solid-js';
 import type { FormErrors } from '@shared/api/errors';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 
 type CommonProps = {

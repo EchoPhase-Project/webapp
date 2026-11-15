@@ -7,7 +7,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createPagedList } from '@shared/lib/paged-list';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';

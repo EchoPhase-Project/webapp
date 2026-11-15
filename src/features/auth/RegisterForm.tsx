@@ -6,9 +6,9 @@ import { createSubmit } from '@shared/api/submit';
 import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
-import Field from '@shared/ui/Field';
+import Field from '@shared/ui/forms/Field';
 
 const FIELDS = ['name', 'username', 'password'] as const;
 const inputId = (field: string) => `register-${field}`;

@@ -9,8 +9,8 @@ import {
 import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
-import Field from '@shared/ui/Field';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import Field from '@shared/ui/forms/Field';
 import LoadError from '@shared/ui/LoadError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';

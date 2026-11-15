@@ -9,9 +9,9 @@ import type {
 } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
-import Select from '@shared/ui/Select';
+import Select from '@shared/ui/forms/Select';
 import Modal from '@shared/ui/Modal';
 import { createSubmit } from '@shared/api/submit';
 import { myConnectionsQuery } from '@features/packages/api/connections';

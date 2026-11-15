@@ -4,9 +4,9 @@ import { loginMutation } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
-import ErrorSummary from '@shared/ui/ErrorSummary';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
-import Field from '@shared/ui/Field';
+import Field from '@shared/ui/forms/Field';
 
 const FIELDS = ['username', 'password'] as const;
 const inputId = (field: string) => `login-${field}`;
