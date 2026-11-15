@@ -1,6 +1,6 @@
 import { createSignal, Show } from 'solid-js';
 import { contentUrl } from '@shared/api/files';
-import { avatarBackground } from '@shared/lib/avatar-gradient';
+import { avatarBackground } from './avatar-gradient';
 import './avatar.scss';
 
 /**
