@@ -37,13 +37,13 @@ CI runs the same checks. CI also builds the Docker image.
 
 ## How the code is organised
 
-| Folder                 | Contents                                                                                                                                     |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`             | Entry (`main.tsx`), `Root` (head), `Layout`, the page registry (`pages.ts`), routes and providers (`Router.tsx`), navigation, header, footer |
-| `src/features/<name>/` | One feature in each folder: its page, components, API calls, styles, and tests                                                               |
-| `src/shared/`          | The code that features share: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                               |
-| `src/dev/`             | Pages to try shared components (dev server only)                                                                                             |
-| `src/static/`          | Fonts, icons, and translations (`locales/`)                                                                                                  |
+| Folder                 | Contents                                                                                                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`             | Entry (`main.tsx`), `Root` (head), `Layout`, the page registry (`pages.ts`), routes and providers (`Router.tsx`), navigation; the header, footer, and brand tile in folders |
+| `src/features/<name>/` | One feature in each folder: its page, components, API calls, styles, and tests                                                                                              |
+| `src/shared/`          | The code that features share: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                                                              |
+| `src/dev/`             | Pages to try shared components (dev server only)                                                                                                                            |
+| `src/static/`          | Fonts, icons, and translations (`locales/`)                                                                                                                                 |
 
 Import through the aliases (`@app/…`, `@features/…`, `@shared/…`, `@dev/…`,
 `@static/…`). Do not use `../`. ESLint enforces these limits:
@@ -116,21 +116,29 @@ Before you write new markup, make pages from the components in
 
 ### Folders of the components
 
-- Each component has a folder with its name in `src/shared/ui`, for
-  example `Modal/`. The folder contains `Modal.tsx`, `modal.scss`,
+- If a component has its own stylesheet, give it a folder with its name.
+  For example, `src/shared/ui/Modal/` contains `Modal.tsx`, `modal.scss`,
   `Modal.test.tsx`, and `index.ts`. Thus, a component and its style and
   tests are in one location.
+- This rule applies to the components in `src/shared/ui` and to the parts of
+  the app in `src/app`. Thus, the header, the footer, and the brand tile are
+  in `src/app/Header/`, `src/app/Footer/`, and `src/app/BrandTile/`.
+- The skeleton files of the app stay flat in `src/app/`: `main.tsx`,
+  `Root.tsx`, `Router.tsx`, `Layout.tsx`, `pages.ts`, `nav-links.ts`,
+  `NotFound.tsx`, and their tests. They do not have their own stylesheets.
 - `index.ts` exports the default export and the named exports of the
   component. Thus, the import is `@shared/ui/Modal`, not
   `@shared/ui/Modal/Modal`.
+- If only one component uses a helper component, put the helper in the
+  folder of that component. For example, `LanguageDropdown.tsx` is in
+  `src/app/Header/`. Thus, the folder holds all the parts of the component.
 - If some components use one stylesheet, put them in a family folder with
   the stylesheet. The form controls and `forms.scss` are in
   `src/shared/ui/forms/`. Import them as `@shared/ui/forms/Field`.
 - A family folder does not have `index.ts` or a folder for each component.
   Each component in it is a file with its test adjacent to it.
 - `icons.ts` stays at the root of `src/shared/ui`.
-- If only the app uses a component, put it in `src/app/`. The header
-  (`Header`, `LanguageDropdown`) and `BrandTile` are in `src/app/`. Thus,
+- If only the app uses a component, put it in `src/app/`. Thus,
   `src/shared/ui` contains only components that features can use.
 
 ### Controls
@@ -414,7 +422,7 @@ add routes or sidebar links directly.
       English text, and a `group` if the page is in a sub-menu.
     - `public: true` if search engines must find the page.
 3. If the page is not in the sidebar, add a link to it in the footer
-   (`src/app/Footer.tsx`) or on another page.
+   (`src/app/Footer/Footer.tsx`) or on another page.
 4. Put the strings of the page in a `<page>.en.json` namespace.
 5. For a public page, add an `Allow:` line in `public/robots.txt`. The file is
    an allowlist: a page is private until it is in the list. `pages.test.ts`
