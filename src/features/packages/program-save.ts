@@ -24,10 +24,13 @@ export function useProgramSave<T extends { blockId: number }, E = T>(
         return updating.run({ workflow: workflow(), changes: { program } });
     }
 
-    /** Takes the trigger out of the program, then closes the question. */
+    /**
+     * Takes the trigger out of the program. The question closes only when
+     * it is saved; otherwise it stays open with the errors.
+     */
     async function remove(trigger: T) {
-        await save(removeBlock(workflow().program, trigger.blockId));
-        setDeleting(null);
+        if (await save(removeBlock(workflow().program, trigger.blockId)))
+            setDeleting(null);
     }
 
     return {

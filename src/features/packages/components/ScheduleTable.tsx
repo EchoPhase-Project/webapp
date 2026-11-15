@@ -75,7 +75,7 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                     {t('schedule.add', 'Add a schedule')}
                 </Button>
             </div>
-            <Show when={!editing()}>
+            <Show when={!editing() && !deleting()}>
                 <ErrorSummary errors={errors()} />
             </Show>
             <Table
@@ -158,6 +158,7 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                 title={t('schedule.delete_title', 'Delete this schedule?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
+                errors={errors()}
                 onConfirm={(schedule) => void remove(schedule)}
                 onCancel={() => setDeleting(null)}
             >

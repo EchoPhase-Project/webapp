@@ -56,4 +56,21 @@ describe('useProgramSave', () => {
         expect(program.editing()).toBe('new');
         expect(Object.values(program.errors()).flat()).not.toHaveLength(0);
     });
+
+    it('keeps the delete question open with the errors when the save fails', async () => {
+        const w = workflow() as unknown as Workflow;
+        fakeApi({
+            'PUT /api/v1/workflows/w1': () =>
+                json(409, { code: 'Conflict', message: 'Changed meanwhile.' }),
+        });
+        const program = withSession(() => useProgramSave<Hook>(() => w));
+        const hook = w.webhooks[0];
+        program.setDeleting(hook);
+
+        await program.remove(hook);
+
+        expect(program.deleting()).toBe(hook);
+        expect(Object.values(program.errors()).flat()).not.toHaveLength(0);
+        expect(program.busy()).toBe(false);
+    });
 });

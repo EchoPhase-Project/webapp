@@ -89,7 +89,9 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                     )}
                 </p>
             </div>
-            <ErrorSummary errors={errors()} />
+            <Show when={!deleting()}>
+                <ErrorSummary errors={errors()} />
+            </Show>
             <Table
                 data={props.workflow.webhooks}
                 headers={Object.values(column())}
@@ -256,6 +258,7 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                 title={t('webhook.delete_title', 'Delete this webhook?')}
                 confirm={t('ui.delete', 'Delete')}
                 busy={busy()}
+                errors={errors()}
                 onConfirm={(hook) => void remove(hook)}
                 onCancel={() => setDeleting(null)}
             >
