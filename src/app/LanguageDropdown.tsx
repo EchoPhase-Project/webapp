@@ -1,6 +1,6 @@
 import { createMemo } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { Dropdown } from './Dropdown';
+import { Dropdown } from '@shared/ui/Dropdown';
 
 export function LanguageDropdown(props: { returnUrl?: string }) {
     const { availableLocales, setLocale, currentLocale, t } = useI18n();

@@ -3,7 +3,7 @@ import type { ParentProps } from 'solid-js';
 import { A, useLocation } from '@solidjs/router';
 import { useQueryClient } from '@tanstack/solid-query';
 import { NavBuilder } from '@shared/nav/nav-builder';
-import { Header } from '@shared/ui/Header';
+import { Header } from './Header';
 import RealtimeNotices from '@features/realtime/RealtimeNotices';
 import { useRealtime } from '@features/realtime/realtime-provider';
 import NotificationBell from '@features/notifications/NotificationBell';

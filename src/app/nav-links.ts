@@ -4,7 +4,7 @@ import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
 import { pageSection } from '@shared/nav/page-section';
-import BrandTile from '@shared/ui/BrandTile';
+import BrandTile from './BrandTile';
 import { NAV_GROUPS, PAGES, type NavGroup, type Page } from './pages';
 
 /** Pages of this group go into the account menu at the bottom, not the middle. */

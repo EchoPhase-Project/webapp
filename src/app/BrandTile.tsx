@@ -1,4 +1,4 @@
-import BrandMark from './BrandMark';
+import BrandMark from '@shared/ui/BrandMark';
 import './brand-tile.scss';
 
 /**
