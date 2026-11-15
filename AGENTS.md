@@ -27,7 +27,7 @@ and the tests are successful.
 ## Layout
 
 - `src/app/`: the entry point, the layout, the routes (`Router.tsx`), the
-  navigation, and the footer.
+  navigation, the header, and the footer.
 - `src/features/<name>/`: one feature. A feature contains these items:
     - `XPage.tsx`. This file only assembles the page.
     - `components/`.
@@ -37,6 +37,12 @@ and the tests are successful.
     - Tests, adjacent to the code.
 - `src/shared/`: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`,
   `meta/`, `testing/`.
+- `src/shared/ui/<Name>/`: one shared component. The folder contains
+  `<Name>.tsx`, its `.scss`, its tests, and `index.ts`. `index.ts` exports
+  the component. Thus, the import is `@shared/ui/<Name>`.
+- `src/shared/ui/forms/`: the form controls and `forms.scss`, which they
+  share. Import them as `@shared/ui/forms/<Name>`.
+- `src/shared/ui/icons.ts`: all icons.
 - `src/dev/`: the component playground. It is only in the dev server.
 - `src/static/locales/`: the translations.
 
@@ -108,6 +114,11 @@ and the tests are successful.
   MarkdownEditor, Select, Checkbox, RadioGroup, Modal, ConfirmDialog, Card,
   SettingsCard, ShareList, RemoveButton, BackLink, Table, EmptyState,
   PageHeader, Switch, LoadError.
+- To add a shared component, add a folder `src/shared/ui/<Name>/` with
+  `index.ts`. If the component uses `forms.scss`, put it in
+  `src/shared/ui/forms/`.
+- If only the app uses a component, put it in `src/app/`. Do not put it in
+  `src/shared/ui`.
 - On a settings page, put each part in a `SettingsCard`. Do not make a
   `Card` with an `h2` for it.
 - Do not write `<button>`, `<select>`, `<textarea>`, or a checkbox or radio
