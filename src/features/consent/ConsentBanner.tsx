@@ -8,7 +8,7 @@ import {
     setConsent,
     setSettingsOpen,
     settingsOpen,
-} from '@shared/lib/consent';
+} from '@shared/consent/consent';
 import Button from '@shared/ui/Button';
 import './consent.scss';
 

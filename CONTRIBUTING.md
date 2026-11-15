@@ -41,7 +41,7 @@ CI runs the same checks. CI also builds the Docker image.
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/app/`             | Entry (`main.tsx`), `Root` (head), `Layout`, the page registry (`pages.ts`), routes and providers (`Router.tsx`), navigation; the header, footer, and brand tile in folders |
 | `src/features/<name>/` | One feature in each folder: its page, components, API calls, styles, and tests                                                                                              |
-| `src/shared/`          | The code that features share: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                                                              |
+| `src/shared/`          | The code that features share: `api/`, `consent/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                                                  |
 | `src/dev/`             | Pages to try shared components (dev server only)                                                                                                                            |
 | `src/static/`          | Fonts, icons, and translations (`locales/`)                                                                                                                                 |
 
@@ -400,8 +400,8 @@ source language. Translators write the other languages in Weblate.
 
 Code that collects data about visitors must not run without their consent.
 The optional services (Umami statistics, GlitchTip error reports) start and
-stop in `src/shared/lib/optional-services.ts`. They use the categories in
-`src/shared/lib/consent.ts`. A new optional service must have:
+stop in `src/shared/consent/optional-services.ts`. They use the categories in
+`src/shared/consent/consent.ts`. A new optional service must have:
 
 - A category in `consent.ts`.
 - A switch in the cookie settings (`features/consent/`).

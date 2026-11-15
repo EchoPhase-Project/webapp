@@ -47,13 +47,13 @@ build leaves them out.
 
 ### Layout of `src/`
 
-| Folder             | What                                                                                                                                           |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app/`             | entry (`main.tsx`), `Root` (head), `Layout`, routes and providers                                                                              |
-| `features/<name>/` | one feature each: its pages, components, styles and tests (`auth`, `home`, `sessions`, `api-clients`, `realtime`, `maintenance`)               |
-| `shared/`          | what features share: `api/` (typed client, auth, outage watch), `i18n/`, `theme/`, `nav/`, `ui/`, `lib/`, `styles/`, `testing/` (test helpers) |
-| `dev/`             | pages for trying out components, dev server only                                                                                               |
-| `static/`          | fonts, icons, and the translations (`locales/`, written by Weblate)                                                                            |
+| Folder             | What                                                                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`             | entry (`main.tsx`), `Root` (head), `Layout`, routes and providers                                                                                                                                        |
+| `features/<name>/` | one feature each: its pages, components, styles and tests (`auth`, `home`, `sessions`, `api-clients`, `realtime`, `maintenance`)                                                                         |
+| `shared/`          | what features share: `api/` (typed client, auth, outage watch), `i18n/`, `theme/`, `nav/`, `ui/`, `consent/` (optional services and the consent they need), `lib/`, `styles/`, `testing/` (test helpers) |
+| `dev/`             | pages for trying out components, dev server only                                                                                                                                                         |
+| `static/`          | fonts, icons, and the translations (`locales/`, written by Weblate)                                                                                                                                      |
 
 Inside a feature, `XPage.tsx` only puts the page together (title, layout);
 its parts are in `components/`, its API calls in `api.ts`, and logic worth

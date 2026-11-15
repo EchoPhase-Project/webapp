@@ -10,7 +10,7 @@ import {
     setSettingsOpen,
     settingsOpen,
     type Consent,
-} from '@shared/lib/consent';
+} from '@shared/consent/consent';
 import Button from '@shared/ui/Button';
 import Modal from '@shared/ui/Modal';
 import Switch from '@shared/ui/Switch';

@@ -36,8 +36,8 @@ and the tests are successful.
       entity.
     - `<name>.scss`.
     - Tests, adjacent to the code.
-- `src/shared/`: `api/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`,
-  `meta/`, `testing/`.
+- `src/shared/`: `api/`, `consent/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`,
+  `styles/`, `meta/`, `testing/`.
 - `src/shared/ui/<Name>/`: one shared component, in a folder. Thus, the
   import is `@shared/ui/<Name>`.
 - `src/shared/ui/forms/`: the form controls and `forms.scss`, which they
@@ -178,8 +178,8 @@ and the tests are successful.
 
 ### Privacy and public pages
 
-- Code that collects visitor data must go through `shared/lib/consent.ts` and
-  `optional-services.ts`.
+- Code that collects visitor data must go through `shared/consent/consent.ts`
+  and `shared/consent/optional-services.ts`.
 - If you add a public page, add an `Allow:` line for it in
   `public/robots.txt`.
 

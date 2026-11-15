@@ -4,7 +4,7 @@ import { IconBrandGithub } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
 import { outage } from '@shared/api/outage-watch';
-import { setSettingsOpen } from '@shared/lib/consent';
+import { setSettingsOpen } from '@shared/consent/consent';
 import BrandMark from '@shared/ui/BrandMark';
 import Button from '@shared/ui/Button';
 import './footer.scss';
