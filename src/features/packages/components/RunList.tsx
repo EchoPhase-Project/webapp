@@ -2,7 +2,7 @@ import { createSignal, For, Match, Show, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
-import { createPagedList } from '@shared/lib/paged-list';
+import { createPagedList } from '@shared/api/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import LoadError from '@shared/ui/LoadError';

@@ -5,7 +5,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { sessionClient } from '@shared/api/session-provider';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
-import type { CursorListData } from '@shared/lib/paged-list';
+import type { CursorListData } from '@shared/api/paged-list';
 import type { BlockRun } from '@shared/api/types';
 import {
     patchRunLists,

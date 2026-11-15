@@ -46,7 +46,7 @@ describe('the lint rules', { timeout: 60_000 }, () => {
 
     it('let shared code keep one (no user state there)', async () => {
         expect(
-            await rulesBroken(moduleSignal, 'src/shared/lib/paged-list.ts')
+            await rulesBroken(moduleSignal, 'src/shared/api/paged-list.ts')
         ).not.toContain('no-restricted-syntax');
     });
     it('stop a bare button in a feature', async () => {

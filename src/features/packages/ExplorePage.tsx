@@ -3,7 +3,7 @@ import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
-import { createPagedList } from '@shared/lib/paged-list';
+import { createPagedList } from '@shared/api/paged-list';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import LoadError from '@shared/ui/LoadError';

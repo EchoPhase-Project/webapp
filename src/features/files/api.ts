@@ -10,7 +10,7 @@ import {
     cursorPages,
     removeItem,
     type Page,
-} from '@shared/lib/paged-list';
+} from '@shared/api/paged-list';
 
 export { contentUrl } from '@shared/api/files';
 

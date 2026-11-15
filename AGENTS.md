@@ -81,7 +81,7 @@ and the tests are successful.
   description.
 - If a read fails, show `LoadError` in place of the data.
 - If a list comes one page at a time, use `createPagedList(describe)` from
-  `shared/lib/paged-list.ts`. Write the `…InfiniteQuery` description with
+  `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
 - If such a list shows the newest item first, use `refreshHead` for a new
   item. If it shows the oldest item first, use `appendItem` for a new item.

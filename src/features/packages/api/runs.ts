@@ -18,7 +18,7 @@ import {
     refreshHead,
     type CursorListOptions,
     type Page,
-} from '@shared/lib/paged-list';
+} from '@shared/api/paged-list';
 
 // Runs: of one workflow, or of all a package's workflows, newest first; and
 // one run's result.

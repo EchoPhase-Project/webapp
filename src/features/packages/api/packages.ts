@@ -17,7 +17,7 @@ import type {
     WorkflowPackage,
     WorkflowSummary,
 } from '@shared/api/types';
-import { cursorPages } from '@shared/lib/paged-list';
+import { cursorPages } from '@shared/api/paged-list';
 
 // Packages: the caller's own (their workflows live in them), and the
 // published ones everyone reads in Explore.

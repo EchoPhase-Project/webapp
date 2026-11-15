@@ -287,7 +287,7 @@ server contract. Do not write a response type manually in `types.ts`.
   `query.isError`. Do not use `!query.data` for the load state, because a
   query can have no data after an error.
 - If a list comes one page at a time, use `createPagedList(describe)` from
-  `@shared/lib/paged-list`. `describe` gives the `…InfiniteQuery` description
+  `@shared/api/paged-list`. `describe` gives the `…InfiniteQuery` description
   from the API file of the feature, with `cursorPages`. The helper adds
   the pages to the list. A new search is a new key, and Query cancels the
   request for the old key. The ref `watchEnd` gets the next page when the end

@@ -4,7 +4,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import { createPagedList } from '@shared/lib/paged-list';
+import { createPagedList } from '@shared/api/paged-list';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
