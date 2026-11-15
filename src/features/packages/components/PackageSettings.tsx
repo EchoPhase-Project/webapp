@@ -69,7 +69,7 @@ export default function PackageSettings(props: {
 
     const docs = (
         <A class="page-more" href="/docs/packages">
-            {t('settings.more', 'Read more')}
+            {t('ui.more', 'Read more')}
         </A>
     );
 

@@ -85,7 +85,6 @@
     "general": "General",
     "general_hint": "Its name, summary and README, as others read them.",
     "has_readme": "Has a README.",
-    "more": "Read more",
     "no_error_workflow": "None",
     "no_readme": "No README yet.",
     "no_summary": "No summary yet.",

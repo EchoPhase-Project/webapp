@@ -85,7 +85,6 @@
     "general": "Общее",
     "general_hint": "Название, описание и README, как их читают другие.",
     "has_readme": "README есть.",
-    "more": "Подробнее",
     "no_error_workflow": "Нет",
     "no_readme": "README пока нет.",
     "no_summary": "Описания пока нет.",
