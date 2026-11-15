@@ -1,7 +1,7 @@
 import { A } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Card from '@shared/ui/Card';
-import '@shared/ui/empty-state.scss';
+import '@shared/ui/EmptyState/empty-state.scss';
 
 const NotFound = () => {
     const { t } = useI18n();

@@ -1,7 +1,7 @@
 import { createEffect, createUniqueId, on, Show, type JSX } from 'solid-js';
 import { IconX } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
-import Button from './Button';
+import Button from '@shared/ui/Button';
 import './modal.scss';
 
 type ModalProps = {

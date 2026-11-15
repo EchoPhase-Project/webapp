@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import Button from './Button';
+import Button from '@shared/ui/Button';
 
 /**
  * A button that opens the file dialog and hands over the chosen file. The

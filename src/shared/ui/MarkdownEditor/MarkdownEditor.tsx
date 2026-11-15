@@ -1,10 +1,10 @@
 import { createSignal, Show, type JSX } from 'solid-js';
 import type { ErrorItem } from '@shared/api/types';
 import { useI18n } from '@shared/i18n/i18n-context';
-import FieldError from './FieldError';
-import Markdown from './Markdown';
-import Tabs, { tabPanelProps } from './Tabs';
-import TextArea from './TextArea';
+import FieldError from '@shared/ui/FieldError';
+import Markdown from '@shared/ui/Markdown';
+import Tabs, { tabPanelProps } from '@shared/ui/Tabs';
+import TextArea from '@shared/ui/TextArea';
 import './markdown-editor.scss';
 
 type Mode = 'write' | 'preview';

@@ -1,6 +1,6 @@
 import { For, Show, JSX, Component, ParentComponent } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
-import EmptyState from './EmptyState';
+import EmptyState from '@shared/ui/EmptyState';
 import './table.scss';
 
 type DataLabel = string;

@@ -8,12 +8,12 @@ import {
 } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
-import Button from './Button';
-import ErrorSummary from './ErrorSummary';
-import Field from './Field';
-import LoadError from './LoadError';
-import RemoveButton from './RemoveButton';
-import SettingsCard from './SettingsCard';
+import Button from '@shared/ui/Button';
+import ErrorSummary from '@shared/ui/ErrorSummary';
+import Field from '@shared/ui/Field';
+import LoadError from '@shared/ui/LoadError';
+import RemoveButton from '@shared/ui/RemoveButton';
+import SettingsCard from '@shared/ui/SettingsCard';
 import './share-list.scss';
 
 /** A person something is shared with, as the API describes them. */

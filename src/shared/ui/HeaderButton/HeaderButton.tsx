@@ -1,5 +1,5 @@
 import { splitProps, type JSX } from 'solid-js';
-import './header.scss';
+import './header-button.scss';
 
 type HeaderButtonProps = Omit<
     JSX.ButtonHTMLAttributes<HTMLButtonElement>,

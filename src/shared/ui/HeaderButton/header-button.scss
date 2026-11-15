@@ -1,0 +1,50 @@
+// An action of the top bar (HeaderButton: new note, notifications, theme): a
+// compact 32px square, an icon on the surface, a dot in the corner when
+// there is news.
+.header-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background-color: var(--surface);
+  cursor: pointer;
+  box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
+  transition: box-shadow var(--transition-speed) ease-in;
+
+  &:hover {
+    box-shadow: color-mix(in srgb, var(--shadow) 24%, transparent) 0 2px 8px 0;
+  }
+
+  &[aria-expanded='true'] {
+    color: var(--accent);
+  }
+}
+
+// There is news: a dot in the corner, as GitHub's, always the same size
+// (the count is in the label and in the open list), ringed in the
+// button's colour so it reads apart from the icon.
+.header-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+// The theme's sun or moon, the size of the other buttons' icons.
+.header-button .theme-toggle-icon {
+  width: 16px;
+  height: 16px;
+}
