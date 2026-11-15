@@ -38,6 +38,9 @@ and the tests are successful.
     - Tests, adjacent to the code.
 - `src/shared/`: `api/`, `consent/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`,
   `styles/`, `meta/`, `testing/`.
+- `src/shared/lib/`: helpers that have no domain. If a helper belongs to a
+  domain (the API layer, consent, one component), put it in the folder of
+  that domain.
 - `src/shared/ui/<Name>/`: one shared component, in a folder. Thus, the
   import is `@shared/ui/<Name>`.
 - `src/shared/ui/forms/`: the form controls and `forms.scss`, which they

@@ -55,6 +55,12 @@ Import through the aliases (`@app/…`, `@features/…`, `@shared/…`, `@dev/�
 - `dev` pages try only shared code.
 - `app` can import all code, because it connects the features.
 
+Put a shared helper in `src/shared/lib/` only if the helper has no domain.
+If a helper belongs to a domain, put it in the folder of that domain. For
+example, `paged-list.ts` is in `api/`, the consent code is in `consent/`, and
+the avatar gradient is in `ui/Avatar/`. Thus, the code of a domain stays in
+one folder, and `lib/` does not collect unrelated code.
+
 In a feature, `XPage.tsx` only assembles the page: title, header, layout. Put
 the parts of the page in `components/` and the API calls in `api.ts` (or
 `api/<entity>.ts`, refer to [The API](#the-api)). Put
