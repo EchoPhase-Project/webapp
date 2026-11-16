@@ -188,6 +188,10 @@ Before you write new markup, make pages from the components in
   logos. Feather has the style that is nearest to Tabler.
 - If you export an icon from `solid-icons`, write a comment in `icons.ts`. The
   comment tells which Tabler icons you examined.
+- Each export goes through `decorative` in `icons.ts`. Thus, each icon has
+  `aria-hidden="true"`, and a screen reader does not read it two times next
+  to its text.
+- Do not write `aria-hidden` on an icon. The icon has it already.
 - The icon size is the font size of the text around the icon. The line width
   is in `global.scss` (`.tabler-icon`). Do not set `size` or `stroke` in JSX.
 
@@ -229,6 +233,18 @@ Before you write new markup, make pages from the components in
 - Do not use colour as the only signal of a state, an error, or a link.
 - Use native elements (`button`, `a`, `dialog`) before custom elements. Use
   ARIA only where HTML does not have a solution.
+- If a control shows only an icon, give the name to the control. Use
+  `aria-label` on a `Button` with `variant="icon"`, and `label` on
+  `HeaderButton` and `RemoveButton`. The icon is hidden, so a screen reader
+  reads only the name of the control.
+- Each dialog has a title, and the title is its accessible name. `Modal`
+  connects its `title` with `aria-labelledby`. If you make a dialog without
+  `Modal`, give it `aria-labelledby` or `aria-label`. Without a name, a
+  screen reader cannot tell what the dialog is for.
+- Put each temporary message (a notice, "Copied", "Saved") in a live region:
+  `role="status"`, or `role="alert"` for an error. Keep the live region on
+  the page, and change only its text. A screen reader does not read a live
+  region that comes with its first message.
 - Animations have a `@media (prefers-reduced-motion: reduce)` block.
 - Examine your changes in the two themes and at the width of a phone.
 
@@ -441,6 +457,12 @@ The tests use Vitest. They are adjacent to the code (`*.test.ts`,
 `// @vitest-environment jsdom`. `src/shared/testing` contains the tools for
 page tests: `fakeApi()` answers API calls and records them. `renderPage()`
 renders a page with its providers.
+
+Each component test includes the axe check:
+`await expectNoA11yViolations()` from `src/shared/testing/axe.ts`. The check
+finds controls without names, fields without labels, and incorrect ARIA.
+The check does not examine colour contrast. jsdom does not paint, and
+`palette.test.ts` examines the contrast of the tokens.
 
 ```sh
 mise run test             # Vitest gets the extra arguments

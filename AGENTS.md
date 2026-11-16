@@ -166,6 +166,14 @@ and the tests are successful.
 - All fields must have labels.
 - Do not use colour as the only signal.
 - Animations must obey `prefers-reduced-motion`.
+- Icons are `aria-hidden="true"` by default (`decorative` in `icons.ts`).
+  Do not write `aria-hidden` on an icon.
+- If a control shows only an icon, give the name to the control:
+  `aria-label`, or the `label` of `HeaderButton` and `RemoveButton`.
+- Each dialog has a title as its accessible name. `Modal` does this.
+- Put temporary messages in a live region (`role="status"`, or
+  `role="alert"` for errors). Keep the region on the page. Change only its
+  text.
 
 ### Translations
 
@@ -190,6 +198,8 @@ and the tests are successful.
 
 - Start each component test with `// @vitest-environment jsdom`.
 - Use `fakeApi()` and `renderPage()` from `shared/testing`.
+- Each component test includes the axe check:
+  `await expectNoA11yViolations()` from `shared/testing/axe`.
 
 ## Commits
 
