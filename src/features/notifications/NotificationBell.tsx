@@ -1,4 +1,12 @@
-import { createEffect, createSignal, For, on, onCleanup, Show } from 'solid-js';
+import {
+    createEffect,
+    createSignal,
+    createUniqueId,
+    For,
+    on,
+    onCleanup,
+    Show,
+} from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { IconBell } from '@shared/ui/icons';
@@ -59,6 +67,9 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
     const deleteOne = acting.mutation(deleteNotificationMutation);
     const [open, setOpen] = createSignal(false);
     const [announcement, setAnnouncement] = createSignal('');
+    // The panel is a region, not a menu: the bell says it opens it with
+    // aria-expanded and aria-controls (aria-haspopup would promise a menu).
+    const panelId = createUniqueId();
     let root: HTMLDivElement | undefined;
 
     // The feed opened again after a drop: events may have been lost while
@@ -129,7 +140,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                 <HeaderButton
                     label={label()}
                     aria-expanded={open()}
-                    aria-haspopup="true"
+                    aria-controls={panelId}
                     onClick={() => setOpen((v) => !v)}
                 >
                     <IconBell />
@@ -144,6 +155,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
 
                 <Show when={open()}>
                     <div
+                        id={panelId}
                         class="notifications-panel card"
                         role="region"
                         aria-label={t('bell', 'Notifications')}

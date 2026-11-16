@@ -13,6 +13,8 @@ type ModalProps = {
     dismissible?: boolean;
     /** alertdialog: something that needs an answer or blocks everything. */
     role?: 'dialog' | 'alertdialog';
+    /** Id of the text that says what the dialog is about (a confirmation's question). */
+    describedBy?: string;
     /** On the dialog's card, e.g. "patterned". */
     class?: string;
     /** Wider than a form's dialog: for writing (a note). */
@@ -68,6 +70,7 @@ export default function Modal(props: ModalProps) {
             class={props.wide ? 'modal modal-wide' : 'modal'}
             role={props.role ?? 'dialog'}
             aria-labelledby={titleId}
+            aria-describedby={props.describedBy}
             // Escape: the owner decides, so its state stays the truth.
             onCancel={(e) => {
                 e.preventDefault();

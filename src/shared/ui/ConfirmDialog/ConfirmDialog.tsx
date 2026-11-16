@@ -1,4 +1,4 @@
-import { Show, type JSX } from 'solid-js';
+import { createUniqueId, Show, type JSX } from 'solid-js';
 import type { FormErrors } from '@shared/api/errors';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
@@ -44,6 +44,7 @@ type OpenProps = CommonProps & {
  */
 export default function ConfirmDialog<T>(props: ItemProps<T> | OpenProps) {
     const i18n = useI18n();
+    const textId = createUniqueId();
     const open = () => ('item' in props ? props.item != null : props.open);
     const body = (): JSX.Element => {
         const children = props.children;
@@ -64,12 +65,15 @@ export default function ConfirmDialog<T>(props: ItemProps<T> | OpenProps) {
             open={open()}
             title={props.title}
             role="alertdialog"
+            describedBy={textId}
             onClose={props.onCancel}
         >
             <Show when={props.errors}>
                 {(errors) => <ErrorSummary errors={errors()} />}
             </Show>
-            <div class="confirm-text">{body()}</div>
+            <div class="confirm-text" id={textId}>
+                {body()}
+            </div>
             <div class="actions-row actions-row--end">
                 <Button
                     variant="ghost"

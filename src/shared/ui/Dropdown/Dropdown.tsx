@@ -203,6 +203,8 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                 tabindex="0"
                 class="select"
                 aria-label={props.ariaLabel}
+                aria-haspopup="listbox"
+                aria-expanded={isOpen()}
                 // On hover: what it is for, and what is chosen (the button
                 // may show only a short label, such as "RU").
                 title={[props.ariaLabel, selectedOption()?.ariaLabel]
@@ -219,7 +221,7 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                     'min-width': `${selectedOption()?.label.length ?? 5}ch`,
                 }}
             >
-                <span class="noselect" aria-label={selectedOption()?.ariaLabel}>
+                <span class="noselect">
                     {selectedOption()?.label ?? 'Select'}
                 </span>
                 <i class="uil uil-arrow-down" />
@@ -240,6 +242,9 @@ export function Dropdown<T>(props: DropdownProps<T>) {
                                 tabindex="0"
                                 class="dropdown-item"
                                 aria-label={option.ariaLabel}
+                                aria-selected={
+                                    option.value === props.selectedValue
+                                }
                                 onClick={(e) => {
                                     e.preventDefault();
                                     props.onChange(option.value);
