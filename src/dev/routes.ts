@@ -53,6 +53,27 @@ export function devPages(): DevPage[] {
             component: lazy(() => import('./ComboboxPage')),
         },
         {
+            path: '/dev/markdown',
+            title: 'Markdown',
+            description:
+                'MarkdownEditor with its Write and Preview tabs, and Markdown on a sample of every element.',
+            component: lazy(() => import('./MarkdownPage')),
+        },
+        {
+            path: '/dev/dialogs',
+            title: 'Dialogs',
+            description:
+                'Modal (usual, wide, patterned, not dismissible) and ConfirmDialog with busy and errors.',
+            component: lazy(() => import('./DialogsPage')),
+        },
+        {
+            path: '/dev/popover',
+            title: 'Popover',
+            description:
+                'A non-modal panel under or beside its trigger, at the start or the end, auto or manual.',
+            component: lazy(() => import('./PopoverPage')),
+        },
+        {
             path: '/dev/table',
             title: 'Table',
             description: 'A table of webhooks with a status pill in a cell.',
