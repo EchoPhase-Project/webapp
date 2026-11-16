@@ -1,5 +1,6 @@
 import { createEffect, createSignal, onCleanup, For } from 'solid-js';
 import { createDismiss } from '@shared/lib/dismiss';
+import { matchOptions } from '@shared/lib/text-match';
 import './dropdown.scss';
 
 type DropdownOption<T> = {
@@ -7,53 +8,6 @@ type DropdownOption<T> = {
     label: string;
     ariaLabel?: string;
 };
-
-function levenshteinLimited(a: string, b: string, maxDist: number): number {
-    const lenA = a.length;
-    const lenB = b.length;
-
-    if (Math.abs(lenA - lenB) > maxDist) return maxDist + 1;
-
-    const dp = new Array<number>(lenB + 1);
-    for (let j = 0; j <= lenB; j++) {
-        dp[j] = j;
-    }
-
-    for (let i = 1; i <= lenA; i++) {
-        let prev = dp[0];
-        dp[0] = i;
-        let rowMin = dp[0];
-
-        for (let j = 1; j <= lenB; j++) {
-            const temp = dp[j];
-            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-
-            dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + cost);
-
-            prev = temp;
-
-            if (dp[j] < rowMin) {
-                rowMin = dp[j];
-            }
-        }
-
-        if (rowMin > maxDist) {
-            return maxDist + 1;
-        }
-    }
-
-    return dp[lenB];
-}
-
-function fuzzy(str: string, query: string): boolean {
-    let qi = 0;
-    for (let si = 0; si < str.length && qi < query.length; si++) {
-        if (str[si].toLowerCase() === query[qi].toLowerCase()) {
-            qi++;
-        }
-    }
-    return qi === query.length;
-}
 
 type DropdownProps<T> = {
     options: DropdownOption<T>[];
@@ -128,68 +82,12 @@ export function Dropdown<T>(props: DropdownProps<T>) {
         }
     };
 
-    enum MatchPriority {
-        None = -1,
-        Levenshtein = 0,
-        Fuzzy = 1,
-    }
-
-    type Match = {
-        option: DropdownOption<T>;
-        priority: MatchPriority;
-        levDist: number;
-    };
-
-    const filteredOptions = () => {
-        const q = searchTerm().trim().toLowerCase();
-        if (!q) return props.options;
-
-        const matches = props.options
-            .map((opt): Match | null => {
-                const fieldsToCheck = [
-                    opt.label.toLowerCase(),
-                    (opt.ariaLabel ?? '').toLowerCase(),
-                ];
-
-                let priority: MatchPriority = MatchPriority.None;
-                let levDist = Number.MAX_SAFE_INTEGER;
-
-                for (const field of fieldsToCheck) {
-                    if (fuzzy(field, q)) {
-                        priority = MatchPriority.Fuzzy;
-                        levDist = 0;
-                        break;
-                    } else {
-                        const levDistLimit = 2;
-                        const currentLevDist = levenshteinLimited(
-                            field,
-                            q,
-                            levDistLimit
-                        );
-                        if (
-                            currentLevDist <= levDistLimit &&
-                            (priority === MatchPriority.None ||
-                                currentLevDist < levDist)
-                        ) {
-                            priority = MatchPriority.Levenshtein;
-                            levDist = currentLevDist;
-                        }
-                    }
-                }
-
-                if (priority === MatchPriority.None) return null;
-
-                return { option: opt, priority, levDist };
-            })
-            .filter((m): m is Match => m !== null);
-
-        matches.sort((a, b) => {
-            if (a.priority !== b.priority) return b.priority - a.priority;
-            return a.levDist - b.levDist;
-        });
-
-        return matches.map((m) => m.option);
-    };
+    // Search both the short label and the full name.
+    const filteredOptions = () =>
+        matchOptions(props.options, searchTerm(), (opt) => [
+            opt.label,
+            opt.ariaLabel ?? '',
+        ]);
 
     return (
         <div
