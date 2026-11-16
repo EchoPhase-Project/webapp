@@ -283,6 +283,19 @@ Select the control for a choice from a list with these rules:
   `.consent-…`).
 - Do not apply styles to bare elements (`p`, `h1`, `header`) outside
   `global.scss`.
+- The frame of the app is an L. The bar (`Header`) goes across the top and
+  holds the logo, which is the link to Home. On desktop, the rail goes under
+  the bar.
+  On desktop, the bar stays at the top. The page starts at the right of the
+  rail.
+  The sizes of the frame are the tokens `--header-height` and
+  `--nav-collapsed`. Use these tokens for an offset. Do not write the values.
+  The offsets then stay correct if the frame changes.
+- If an element on a page is sticky, set `top` below the bar:
+  `calc(var(--header-height) + 16px)` on desktop. If you do not do this, the
+  bar covers the element.
+- The tab order is the skip link, the logo, the buttons of the bar, the
+  rail, and then the page. Keep this order in `Layout.tsx`.
 - Each SCSS file gets the modules `vars`, `comp` (`@include comp.media(…)`),
   `prefixes`, and `mix` automatically (`vite.config.ts`). Do not import them.
 - `mix` (`src/shared/styles/mixins.scss`) contains the rules that many

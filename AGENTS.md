@@ -213,6 +213,9 @@ and the tests are successful.
 - All stylesheets are global. Start each class name with the name of the
   component or the feature.
 - Do not apply styles to bare elements outside `global.scss`.
+- For an offset from the frame (the bar and the rail), use the tokens
+  `--header-height` and `--nav-collapsed`. Do not write the values.
+- If an element on a page is sticky, set `top` below the bar on desktop.
 - Use the `.patterned` background only for brand areas: the sign-in card,
   empty states, the outage screen, and the About page.
 
