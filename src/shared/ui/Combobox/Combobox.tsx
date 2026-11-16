@@ -39,6 +39,12 @@ export type ComboboxProps<T> = {
     placeholder?: string;
     /** Added to the root element, so the caller can dress the control. */
     class?: string;
+    /**
+     * Where an option's hint shows: under its label (the default, for long
+     * hints such as a time zone's place) or at the end of its line, quieter
+     * (for a short one such as a language's code).
+     */
+    hintPlacement?: 'below' | 'end';
     /** Select-only: shown on hover over the button. */
     title?: string;
     /** The id of the button or the input, so that a <label for> names it. */
@@ -460,6 +466,9 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                     ? 'combobox-list'
                     : 'combobox-popup combobox-list'
             }
+            classList={{
+                'combobox-list--hint-end': props.hintPlacement === 'end',
+            }}
             aria-label={props.label}
             aria-labelledby={props.labelledBy}
             // The focus stays on the button: a press on the list must not

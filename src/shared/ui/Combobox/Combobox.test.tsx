@@ -459,6 +459,44 @@ describe('Combobox', () => {
     });
 });
 
+describe('Combobox, hint placement', () => {
+    it('puts a short hint at the end of the line when asked', async () => {
+        render(() => (
+            <Combobox
+                options={[{ value: 'en', label: 'English', hint: 'EN' }]}
+                value="en"
+                onChange={() => {}}
+                label="Language"
+                hintPlacement="end"
+            />
+        ));
+        fireEvent.click(screen.getByRole('combobox'));
+        const list = screen.getByRole('listbox');
+        expect(list.classList.contains('combobox-list--hint-end')).toBe(true);
+        expect(
+            screen.getByRole('option', { name: 'English' }).textContent
+        ).toContain('EN');
+        await expectNoA11yViolations();
+    });
+
+    it('keeps the hint under the label by default', () => {
+        render(() => (
+            <Combobox
+                options={[{ value: 'en', label: 'English', hint: 'EN' }]}
+                value="en"
+                onChange={() => {}}
+                label="Language"
+            />
+        ));
+        fireEvent.click(screen.getByRole('combobox'));
+        expect(
+            screen
+                .getByRole('listbox')
+                .classList.contains('combobox-list--hint-end')
+        ).toBe(false);
+    });
+});
+
 describe('Combobox, editable', () => {
     const resultsText = (n: number) => `${n} results`;
 

@@ -37,6 +37,7 @@ export function LanguageSelect() {
             onChange={setLocale}
             label={label()}
             title={title()}
+            hintPlacement="end"
         />
     );
 }
