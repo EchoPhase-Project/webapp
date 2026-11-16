@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
 import Combobox from '@shared/ui/Combobox';
+import { timeZones } from '@shared/ui/forms/TimeZoneField';
 import { type ListOption } from '@shared/ui/Listbox';
 
 const languages: ListOption<string>[] = [
@@ -15,10 +16,40 @@ const workflows: ListOption<number>[] = Array.from({ length: 40 }, (_, i) => ({
     disabled: i === 4,
 }));
 
-/** Select-only Combobox: a short one with short labels, a long one. */
+// The browser's time zones, each with its city as a hint.
+const zoneOptions = (): ListOption<string>[] =>
+    timeZones().map((zone) => ({
+        value: zone,
+        label: zone,
+        hint: zone.split('/').at(-1)?.replaceAll('_', ' '),
+    }));
+
+const fruits: ListOption<string>[] = [
+    'Apple',
+    'Banana',
+    'Blueberry',
+    'Cherry',
+    'Grape',
+    'Mango',
+    'Orange',
+    'Pear',
+].map((label) => ({ value: label.toLowerCase(), label }));
+
+const resultsText = (count: number) =>
+    count === 1 ? '1 result' : `${count} results`;
+
+/**
+ * Select-only Combobox: a short one with short labels, a long one.
+ * Editable: the time zones, and a free text with suggestions.
+ */
 export default function ComboboxPage() {
     const [language, setLanguage] = createSignal<string | undefined>('en');
     const [workflow, setWorkflow] = createSignal<number | undefined>();
+    const zones = zoneOptions();
+    const [zone, setZone] = createSignal<string | undefined>(
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+    const [fruit, setFruit] = createSignal<string | undefined>();
 
     return (
         <div class="page-stack">
@@ -45,6 +76,39 @@ export default function ComboboxPage() {
                     placeholder="Choose a workflow"
                 />
                 <p>Selected: {workflow() ?? 'none'}</p>
+            </section>
+
+            <section>
+                <h2 id="dev-combobox-zone">Editable: time zones</h2>
+                <Combobox
+                    editable
+                    labelledBy="dev-combobox-zone"
+                    options={zones}
+                    value={zone()}
+                    onChange={setZone}
+                    placeholder="Type a city or a region"
+                    resultsText={resultsText}
+                    noResults="No time zone matches"
+                    moreResults="Type more letters to see the rest"
+                    maxResults={20}
+                />
+                <p>Selected: {zone() ?? 'none'}</p>
+            </section>
+
+            <section>
+                <h2 id="dev-combobox-custom">Editable: any text</h2>
+                <Combobox
+                    editable
+                    allowCustom
+                    labelledBy="dev-combobox-custom"
+                    options={fruits}
+                    value={fruit()}
+                    onChange={setFruit}
+                    placeholder="A fruit, or anything else"
+                    resultsText={resultsText}
+                    noResults="No suggestions; your text is kept"
+                />
+                <p>Value: {fruit() ?? 'none'}</p>
             </section>
 
             {/* Room below, so the long list can open downwards or upwards. */}

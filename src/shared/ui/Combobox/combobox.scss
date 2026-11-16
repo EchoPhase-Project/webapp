@@ -1,5 +1,6 @@
-// A select-only combobox: a button with the value and a chevron, and a
-// list that opens under it (or over it, data-drop-up). Selected options get
+// A combobox: a button with the value and a chevron (select-only), or an
+// input with a chevron (editable), and a popup list that opens under it
+// (or over it, data-drop-up). Selected options get
 // a check and bold text, the active one (the keyboard's place) an outline;
 // neither state rests on colour only. The caller's class on the root may
 // dress the button (as a header button, as a form field).
@@ -46,7 +47,7 @@
   }
 }
 
-.combobox-list {
+.combobox-popup {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
@@ -70,6 +71,51 @@
     top: auto;
     bottom: calc(100% + 4px);
   }
+
+  // Editable, with no options and no note to show.
+  &:empty {
+    display: none;
+  }
+}
+
+.combobox-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// "No results", "type more": a quiet line under the options.
+.combobox-note {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: normal;
+}
+
+// The editable input: the frame of a field, with room for the chevron.
+.combobox-field {
+  position: relative;
+  display: block;
+
+  .combobox-chevron {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -8px;
+    pointer-events: none;
+  }
+}
+
+.combobox-input {
+  @include mix.input-frame;
+
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 32px 4px 10px;
+  box-sizing: border-box;
+  font: inherit;
+  color: var(--text);
 }
 
 @keyframes combobox-open {
@@ -133,7 +179,7 @@
     transition: none;
   }
 
-  .combobox-list {
+  .combobox-popup {
     animation: none;
   }
 }
