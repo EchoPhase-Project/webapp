@@ -100,8 +100,8 @@ export default function ProfileForm(props: { user: User }) {
                 errors={errors().timeZone}
                 disabled={busy()}
                 value={timeZone()}
-                onInput={(e) => {
-                    setTimeZone(e.currentTarget.value);
+                onChange={(zone) => {
+                    setTimeZone(zone);
                     setSaved(false);
                 }}
             />

@@ -100,6 +100,24 @@
   }
 }
 
+// A Combobox as a form field (TimeZoneField): the full width, and the
+// height, padding and text of a .field.
+.field-combobox {
+  display: block;
+
+  .combobox-input {
+    padding: 10px 32px 10px 12px;
+    font-size: 0.9rem;
+    letter-spacing: 0.2px;
+  }
+}
+
+// A short note about a field, under it.
+.field-note {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
 // Errors: under their field, or (about the form as a whole) at its top.
 .errorlist {
   @include mix.plain-list(2px);

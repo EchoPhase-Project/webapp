@@ -171,6 +171,10 @@
     "new_package": "New package",
     "tags": "Tags",
     "time_zone": "Time zone",
+    "time_zones_unlisted": "This browser cannot list the time zones. To pick another zone, open this page in a newer browser.",
+    "results_count": "Found: {count}",
+    "no_results": "Nothing found",
+    "more_results": "Type more letters to see the rest.",
     "try_again": "Try again"
   }
 }

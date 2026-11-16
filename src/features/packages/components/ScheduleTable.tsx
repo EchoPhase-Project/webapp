@@ -226,10 +226,11 @@ function ScheduleForm(props: {
                     'Time zone (all its schedules)'
                 )}
                 showLabel
+                optional
                 placeholder={t('schedule.zone_yours', 'Yours')}
                 disabled={props.busy}
                 value={zone()}
-                onInput={(e) => setZone(e.currentTarget.value)}
+                onChange={setZone}
             />
             <Button type="submit" busy={props.busy} disabled={!cron().trim()}>
                 {t('settings.save', 'Save')}

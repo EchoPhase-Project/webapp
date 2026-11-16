@@ -182,9 +182,15 @@ describe('WorkflowDetails', () => {
         fireEvent.input(await screen.findByLabelText(/^Cron/), {
             target: { value: '0 9 * * 1-5' },
         });
-        fireEvent.input(screen.getByLabelText(/^Time zone/), {
-            target: { value: 'Europe/Chisinau' },
+        // The zone comes from the list: type part of it, pick it.
+        const zone = screen.getByRole<HTMLInputElement>('combobox', {
+            name: /^Time zone/,
         });
+        fireEvent.input(zone, { target: { value: 'chisinau' } });
+        fireEvent.click(
+            screen.getByRole('option', { name: 'Europe/Chisinau' })
+        );
+        expect(zone.value).toBe('Europe/Chisinau');
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
         await waitFor(() =>

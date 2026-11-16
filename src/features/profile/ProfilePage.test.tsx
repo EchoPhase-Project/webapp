@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, user } from '@shared/testing/fake-api';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { renderPage } from '@shared/testing/render-page';
 import ProfilePage from './ProfilePage';
 
@@ -95,5 +96,75 @@ describe('ProfilePage', () => {
             document.getElementById('profile-username-error')?.textContent
         ).toBe('That username is taken.');
         expect(screen.queryByText('Saved')).toBe(null);
+    });
+
+    it('sends the time zone picked from the list', async () => {
+        const api = fakeApi({
+            'GET /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: null })),
+            'GET /api/v1/roles/me': () => json(200, []),
+            'PATCH /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: null })),
+        });
+
+        renderPage(() => <ProfilePage />);
+
+        const zone = await screen.findByRole<HTMLInputElement>('combobox', {
+            name: 'Time zone',
+        });
+        zone.focus();
+        fireEvent.input(zone, { target: { value: 'berlin' } });
+        fireEvent.keyDown(zone, { key: 'ArrowDown' });
+        fireEvent.keyDown(zone, { key: 'Enter' });
+        expect(zone.value).toBe('Europe/Berlin');
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(await screen.findByText('Saved')).toBeTruthy();
+        const [patch] = api.calls('PATCH /api/v1/auth/me');
+        expect(await patch.json()).toEqual({
+            name: null,
+            username: null,
+            timeZone: 'Europe/Berlin',
+        });
+    });
+
+    it('shows a refused time zone under its field', async () => {
+        fakeApi({
+            'GET /api/v1/auth/me': () =>
+                json(200, user({ avatarFileId: null })),
+            'GET /api/v1/roles/me': () => json(200, []),
+            'PATCH /api/v1/auth/me': () =>
+                json(400, [
+                    {
+                        code: 'InvalidTimeZone',
+                        message: 'Unknown time zone.',
+                        field: 'timeZone',
+                    },
+                ]),
+        });
+
+        renderPage(() => <ProfilePage />);
+
+        const zone = await screen.findByRole<HTMLInputElement>('combobox', {
+            name: 'Time zone',
+        });
+        fireEvent.input(zone, { target: { value: 'chisinau' } });
+        fireEvent.click(
+            screen.getByRole('option', { name: 'Europe/Chisinau' })
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() =>
+            expect(zone.getAttribute('aria-invalid')).toBe('true')
+        );
+        expect(document.activeElement).toBe(zone);
+        expect(zone.getAttribute('aria-describedby')).toBe(
+            'profile-timeZone-error'
+        );
+        expect(
+            document.getElementById('profile-timeZone-error')?.textContent
+        ).toMatch(/^Unknown time zone/);
+        expect(screen.queryByText('Saved')).toBe(null);
+        await expectNoA11yViolations();
     });
 });

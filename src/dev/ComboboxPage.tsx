@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import Combobox from '@shared/ui/Combobox';
-import { timeZones } from '@shared/ui/forms/TimeZoneField';
+import TimeZoneField from '@shared/ui/forms/TimeZoneField';
 import { type ListOption } from '@shared/ui/Listbox';
 
 const languages: ListOption<string>[] = [
@@ -15,14 +15,6 @@ const workflows: ListOption<number>[] = Array.from({ length: 40 }, (_, i) => ({
     hint: i % 3 === 0 ? 'Runs on a schedule' : undefined,
     disabled: i === 4,
 }));
-
-// The browser's time zones, each with its city as a hint.
-const zoneOptions = (): ListOption<string>[] =>
-    timeZones().map((zone) => ({
-        value: zone,
-        label: zone,
-        hint: zone.split('/').at(-1)?.replaceAll('_', ' '),
-    }));
 
 const fruits: ListOption<string>[] = [
     'Apple',
@@ -40,13 +32,13 @@ const resultsText = (count: number) =>
 
 /**
  * Select-only Combobox: a short one with short labels, a long one.
- * Editable: the time zones, and a free text with suggestions.
+ * Editable: the time zones (TimeZoneField), and a free text with
+ * suggestions.
  */
 export default function ComboboxPage() {
     const [language, setLanguage] = createSignal<string | undefined>('en');
     const [workflow, setWorkflow] = createSignal<number | undefined>();
-    const zones = zoneOptions();
-    const [zone, setZone] = createSignal<string | undefined>(
+    const [zone, setZone] = createSignal(
         Intl.DateTimeFormat().resolvedOptions().timeZone
     );
     const [fruit, setFruit] = createSignal<string | undefined>();
@@ -79,20 +71,18 @@ export default function ComboboxPage() {
             </section>
 
             <section>
-                <h2 id="dev-combobox-zone">Editable: time zones</h2>
-                <Combobox
-                    editable
-                    labelledBy="dev-combobox-zone"
-                    options={zones}
+                <h2>Editable: TimeZoneField</h2>
+                <TimeZoneField
+                    id="dev-combobox-zone"
+                    name="timeZone"
+                    label="Time zone"
+                    showLabel
+                    optional
+                    placeholder="Type a city, a region or an offset"
                     value={zone()}
                     onChange={setZone}
-                    placeholder="Type a city or a region"
-                    resultsText={resultsText}
-                    noResults="No time zone matches"
-                    moreResults="Type more letters to see the rest"
-                    maxResults={20}
                 />
-                <p>Selected: {zone() ?? 'none'}</p>
+                <p>Selected: {zone() || 'none'}</p>
             </section>
 
             <section>
