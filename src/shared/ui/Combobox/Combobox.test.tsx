@@ -80,7 +80,7 @@ describe('Combobox', () => {
     });
 
     describe('the name of the button', () => {
-        it('shows the short label and names the full one', async () => {
+        it('shows the short label and names both', async () => {
             render(() => (
                 <Combobox
                     label="Language"
@@ -90,7 +90,7 @@ describe('Combobox', () => {
                 />
             ));
             const button = screen.getByRole('combobox', {
-                name: 'Language: Română',
+                name: 'Language: Română (RO)',
             });
             expect(button.querySelector('.combobox-value')?.textContent).toBe(
                 'RO'
@@ -102,7 +102,7 @@ describe('Combobox', () => {
             await expectNoA11yViolations();
         });
 
-        it('adds the full label to a visible label', async () => {
+        it('adds both labels to a visible label', async () => {
             render(() => (
                 <>
                     <span id="lang">Language</span>
@@ -115,9 +115,14 @@ describe('Combobox', () => {
                 </>
             ));
             expect(
-                screen.getByRole('combobox', { name: 'Language Русский' })
+                screen.getByRole('combobox', { name: 'Language Русский (RU)' })
             ).toBeTruthy();
             await expectNoA11yViolations();
+        });
+
+        it('has no brackets without a short label', () => {
+            const { button } = renderCombobox('banana');
+            expect(button.getAttribute('aria-label')).toBe('Fruit: Banana');
         });
 
         it('is the label alone while nothing is selected', () => {

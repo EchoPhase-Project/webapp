@@ -393,8 +393,13 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
         explicit = false;
     }
 
-    // The name of an option on the button.
-    const fullLabel = (option: ListOption<T>) => option.label;
+    // WCAG 2.5.3 (Label in Name): the name holds the visible text, so a
+    // short label shows in brackets after the full one: "Language: Română
+    // (RO)". A voice user can say what they see.
+    const fullLabel = (option: ListOption<T>) =>
+        option.short && option.short !== option.label
+            ? `${option.label} (${option.short})`
+            : option.label;
     const buttonLabel = () => {
         const option = selected();
         if (props.label === undefined) return undefined;
