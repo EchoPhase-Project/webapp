@@ -138,7 +138,7 @@ Before you write new markup, make pages from the components in
   component. Thus, the import is `@shared/ui/Modal`, not
   `@shared/ui/Modal/Modal`.
 - If only one component uses a helper component, put the helper in the
-  folder of that component. For example, `LanguageDropdown.tsx` is in
+  folder of that component. For example, `LanguageSelect.tsx` is in
   `src/app/Header/`. Thus, the folder holds all the parts of the component.
 - If some components use one stylesheet, put them in a family folder with
   the stylesheet. The form controls and `forms.scss` are in

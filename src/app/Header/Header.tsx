@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js';
-import { LanguageDropdown } from './LanguageDropdown';
+import { LanguageSelect } from './LanguageSelect';
 import { ThemeToggle } from '@shared/theme/ThemeToggle';
 import './header.scss';
 
@@ -9,7 +9,7 @@ export function Header(props: { actions?: JSX.Element }) {
         <header class="header">
             {props.actions}
             <ThemeToggle />
-            <LanguageDropdown />
+            <LanguageSelect />
         </header>
     );
 }

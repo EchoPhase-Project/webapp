@@ -4,7 +4,7 @@ import { screen } from '@solidjs/testing-library';
 import { renderPage } from '@shared/testing/render-page';
 import { ThemeProvider } from '@shared/theme/theme-context';
 import { ThemeToggle } from '@shared/theme/ThemeToggle';
-import { LanguageDropdown } from './LanguageDropdown';
+import { LanguageSelect } from './LanguageSelect';
 
 describe('header buttons', () => {
     it('say on hover what they do, as notes and notifications do', async () => {
@@ -19,7 +19,7 @@ describe('header buttons', () => {
         renderPage(() => (
             <ThemeProvider>
                 <ThemeToggle />
-                <LanguageDropdown />
+                <LanguageSelect />
             </ThemeProvider>
         ));
 
@@ -27,9 +27,11 @@ describe('header buttons', () => {
             name: 'Switch to dark theme',
         });
         expect(theme.getAttribute('title')).toBe('Switch to dark theme');
-        const language = await screen.findByRole('button', {
-            name: 'Select language',
+        const language = await screen.findByRole('combobox', {
+            name: /^Select language: /,
         });
-        expect(language.getAttribute('title')).toMatch(/^Select language: \S+/);
+        expect(language.getAttribute('title')).toBe(
+            language.getAttribute('aria-label')
+        );
     });
 });

@@ -39,6 +39,8 @@ export type ComboboxProps<T> = {
     placeholder?: string;
     /** Added to the root element, so the caller can dress the control. */
     class?: string;
+    /** Select-only: shown on hover over the button. */
+    title?: string;
     /**
      * An input that filters the options as the user types (WAI-ARIA's
      * editable combobox with list autocomplete), instead of a button.
@@ -509,6 +511,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                             }
                             aria-label={buttonLabel()}
                             aria-labelledby={buttonLabelledBy()}
+                            title={props.title}
                             onClick={() => (open() ? close() : openList())}
                             onKeyDown={onKeyDown}
                             onKeyUp={onKeyUp}
