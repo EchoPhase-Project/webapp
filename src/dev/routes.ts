@@ -88,6 +88,19 @@ export function devPages(): DevPage[] {
             component: lazy(() => import('./ShareListPage')),
         },
         {
+            path: '/dev/content',
+            title: 'Avatar and BrandMark',
+            description:
+                'Avatars in each size with their gradients, and the brand mark.',
+            component: lazy(() => import('./ContentPage')),
+        },
+        {
+            path: '/dev/icons',
+            title: 'Icons',
+            description: 'Every icon that icons.ts exports, with its name.',
+            component: lazy(() => import('./IconsPage')),
+        },
+        {
             path: '/dev/table',
             title: 'Table',
             description: 'A table of webhooks with a status pill in a cell.',
