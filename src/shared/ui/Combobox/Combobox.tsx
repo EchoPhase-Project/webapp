@@ -14,7 +14,8 @@ import {
     indexOfValue,
     type ListOption,
 } from '@shared/ui/Listbox';
-import { createPopupPlacement } from './popup';
+import { createPopupPlacement, type PopupAlign } from './popup';
+export type { PopupAlign } from './popup';
 import './combobox.scss';
 
 /** How many matches of a typed query an editable Combobox shows at most. */
@@ -45,6 +46,12 @@ export type ComboboxProps<T> = {
      * (for a short one such as a language's code).
      */
     hintPlacement?: 'below' | 'end';
+    /**
+     * Which edge of the button or the input the list lines up with: the
+     * start (the default) or the end, e.g. for a control at the end of a
+     * bar.
+     */
+    align?: PopupAlign;
     /** Select-only: shown on hover over the button. */
     title?: string;
     /** The id of the button or the input, so that a <label for> names it. */
@@ -151,7 +158,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     const dropUp = createPopupPlacement(
         () => anchor,
         () => popup,
-        open
+        open,
+        () => props.align ?? 'start'
     );
     createDismiss(() => root, open, close);
     // A disabled control keeps no list open.
@@ -525,6 +533,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
             classList={{ 'combobox--editable': !!props.editable }}
             data-open={open()}
             data-drop-up={dropUp()}
+            data-align={props.align ?? 'start'}
             onFocusOut={onFocusOut}
         >
             <Show

@@ -497,6 +497,158 @@ describe('Combobox, hint placement', () => {
     });
 });
 
+describe('Combobox, top layer', () => {
+    // jsdom has no Popover API: these tests give it one.
+    const proto = HTMLElement.prototype as unknown as {
+        showPopover?: () => void;
+        hidePopover?: () => void;
+    };
+    let show = vi.fn<() => void>();
+    let hide = vi.fn<() => void>();
+    // The anchor's box; the list is 300 px high.
+    let anchorTop = 68;
+
+    beforeEach(() => {
+        show = vi.fn<() => void>();
+        hide = vi.fn<() => void>();
+        proto.showPopover = show;
+        proto.hidePopover = hide;
+        anchorTop = 68;
+        vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
+        vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000);
+        vi.spyOn(
+            HTMLElement.prototype,
+            'getBoundingClientRect'
+        ).mockImplementation(function (this: HTMLElement) {
+            if (this.classList.contains('combobox-popup'))
+                return { top: 0, bottom: 300, height: 300 } as DOMRect;
+            return {
+                top: anchorTop,
+                bottom: anchorTop + 32,
+                height: 32,
+                left: 600,
+                right: 720,
+                width: 120,
+            } as DOMRect;
+        });
+    });
+    afterEach(() => {
+        delete proto.showPopover;
+        delete proto.hidePopover;
+        vi.restoreAllMocks();
+    });
+
+    // jsdom hides a [popover] that the stub did not really show.
+    const shownList = () => screen.getByRole('listbox', { hidden: true });
+
+    function renderAligned(align?: 'start' | 'end') {
+        render(() => (
+            <Combobox
+                label="Fruit"
+                options={fruits}
+                value="apple"
+                onChange={() => {}}
+                align={align}
+            />
+        ));
+        return screen.getByRole('combobox');
+    }
+
+    it('shows the list in the top layer while open', async () => {
+        const button = renderAligned();
+        fireEvent.click(button);
+        const list = shownList();
+        expect(list.getAttribute('popover')).toBe('manual');
+        expect(show).toHaveBeenCalledTimes(1);
+        expect(show.mock.contexts[0]).toBe(list);
+        // It stays in its place: the root holds it, and the button
+        // points at it.
+        expect(button.closest('.combobox')?.contains(list)).toBe(true);
+        expect(button.getAttribute('aria-controls')).toBe(list.id);
+        await expectNoA11yViolations();
+
+        fireEvent.keyDown(button, { key: 'Escape' });
+        expect(hide).toHaveBeenCalledTimes(1);
+        expect(hide.mock.contexts[0]).toBe(list);
+        expect(screen.queryByRole('listbox', { hidden: true })).toBeNull();
+    });
+
+    it('puts the list under the anchor at its start edge', () => {
+        const button = renderAligned();
+        fireEvent.click(button);
+        const style = shownList().style;
+        expect(style.position).toBe('fixed');
+        expect(style.top).toBe('104px');
+        expect(style.bottom).toBe('auto');
+        expect(style.left).toBe('600px');
+        expect(style.right).toBe('auto');
+        expect(style.getPropertyValue('--combobox-anchor-width')).toBe('120px');
+    });
+
+    it('lines up the right edges with align="end"', () => {
+        const button = renderAligned('end');
+        expect(button.closest('.combobox')?.getAttribute('data-align')).toBe(
+            'end'
+        );
+        fireEvent.click(button);
+        const style = shownList().style;
+        expect(style.left).toBe('auto');
+        expect(style.right).toBe('280px');
+    });
+
+    it('opens above when it does not fit below, and follows on scroll', () => {
+        anchorTop = 700;
+        const button = renderAligned();
+        fireEvent.click(button);
+        const style = shownList().style;
+        expect(button.closest('.combobox')?.getAttribute('data-drop-up')).toBe(
+            'true'
+        );
+        expect(style.top).toBe('auto');
+        expect(style.bottom).toBe('104px');
+
+        anchorTop = 200;
+        fireEvent.scroll(window);
+        expect(style.top).toBe('236px');
+        expect(style.bottom).toBe('auto');
+    });
+
+    it('shows the editable popup in the top layer', () => {
+        render(() => (
+            <Combobox
+                editable
+                label="Fruit"
+                options={fruits}
+                value={undefined}
+                onChange={() => {}}
+            />
+        ));
+        const input = screen.getByRole('combobox');
+        fireEvent.click(input);
+        const popup = document.querySelector('div.combobox-popup');
+        expect(popup?.getAttribute('popover')).toBe('manual');
+        expect(show.mock.contexts[0]).toBe(popup);
+        expect((popup as HTMLElement).style.left).toBe('600px');
+
+        fireEvent.keyDown(input, { key: 'Escape' });
+        expect(hide.mock.contexts[0]).toBe(popup);
+    });
+
+    it('keeps the stylesheet placement without the API', () => {
+        delete proto.showPopover;
+        delete proto.hidePopover;
+        const button = renderAligned('end');
+        expect(() => fireEvent.click(button)).not.toThrow();
+        const list = shownList();
+        expect(list.style.position).toBe('');
+        expect(list.style.left).toBe('');
+        expect(() =>
+            fireEvent.keyDown(button, { key: 'Escape' })
+        ).not.toThrow();
+        expect(listbox()).toBeNull();
+    });
+});
+
 describe('Combobox, editable', () => {
     const resultsText = (n: number) => `${n} results`;
 

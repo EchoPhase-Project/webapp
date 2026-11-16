@@ -38,6 +38,7 @@ export function LanguageSelect() {
             label={label()}
             title={title()}
             hintPlacement="end"
+            align="end"
         />
     );
 }
