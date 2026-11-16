@@ -106,18 +106,6 @@ export function devPages(): DevPage[] {
             description: 'A table of webhooks with a status pill in a cell.',
             component: lazy(() => import('./TablePage')),
         },
-        {
-            path: '/dev/spin',
-            title: 'Spin',
-            description: 'An experiment: a card that tilts under the pointer.',
-            component: lazy(() => import('./SpinPage')),
-        },
-        {
-            path: '/dev/drag',
-            title: 'Drag',
-            description: 'An experiment: an element that the pointer drags.',
-            component: lazy(() => import('./DragPage')),
-        },
     ];
     return pages;
 }

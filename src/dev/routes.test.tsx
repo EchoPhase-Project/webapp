@@ -8,10 +8,6 @@ import { fakeApi } from '@shared/testing/fake-api';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import { DEV_INDEX, devPages, devRoutes } from './routes';
 
-// The pages that try out shared components; the old experiments (spin,
-// drag) only have to render.
-const experiments = new Set(['/dev/spin', '/dev/drag']);
-
 // The first import of a page (and its Vite transform) can take seconds.
 const loading = { timeout: 10_000 };
 
@@ -97,7 +93,7 @@ describe('the dev playground', () => {
             // The back link, the header, and the page's own content.
             const frame = document.querySelector('.dev-page');
             expect(frame?.children.length).toBeGreaterThan(2);
-            if (!experiments.has(path)) await expectNoA11yViolations();
+            await expectNoA11yViolations();
             expect(api.requests.map((r) => r.url)).toEqual([]);
         },
         15_000
