@@ -8,6 +8,7 @@
     "create": "Create"
   },
   "secret": "Secret (shown once, copy it now):",
+  "secret_created": "Client created. Copy the secret now: it is shown only once.",
   "columns": {
     "expires": "Expires",
     "last_used": "Last used",

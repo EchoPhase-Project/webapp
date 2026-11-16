@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { fireEvent, screen } from '@solidjs/testing-library';
+import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { expectNoA11yViolations } from '@shared/testing/axe';
@@ -60,6 +60,9 @@ describe('ApiClientsPage', () => {
         });
 
         renderPage(() => <ApiClientsPage />);
+        // The live region is there, empty, before the secret comes.
+        const status = await screen.findByRole('status');
+        expect(status.textContent).toBe('');
         fireEvent.click(
             await screen.findByRole('button', { name: 'New client' })
         );
@@ -68,7 +71,20 @@ describe('ApiClientsPage', () => {
         });
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
-        expect(await screen.findByText('s3cr3t')).toBeTruthy();
+        const shown = await screen.findByText('s3cr3t');
+        // Announced: a short message, never the secret itself, which stays
+        // plain, visible text for the user to read when they move to it.
+        expect(status.textContent).toBe(
+            'Client created. Copy the secret now: it is shown only once.'
+        );
+        expect(status.textContent).not.toContain('s3cr3t');
+        expect(status.contains(shown)).toBe(false);
+        expect(
+            shown.closest('[aria-live], [role="status"], [role="alert"]')
+        ).toBeNull();
+        expect(shown.closest('[aria-hidden="true"], [hidden]')).toBeNull();
+        expect(shown.closest('.visually-hidden')).toBeNull();
+        expect(shown.hasAttribute('aria-label')).toBe(false);
         expect(document.querySelector('dialog')?.hasAttribute('open')).toBe(
             false
         );
@@ -77,6 +93,43 @@ describe('ApiClientsPage', () => {
         const [create] = api.calls('POST /api/v1/api-clients');
         expect(await create.json()).toEqual({ name: 'bot', expiresAt: null });
         await expectNoA11yViolations();
+    });
+});
+
+describe('ApiClientsPage secret', () => {
+    it('announces "Copied" in the same region, without the secret', async () => {
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: () => Promise.resolve() },
+        });
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () => json(200, []),
+            'POST /api/v1/api-clients': () =>
+                json(200, { clientId: 'c1', clientSecret: 's3cr3t' }),
+        });
+        renderPage(() => <ApiClientsPage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'New client' })
+        );
+        fireEvent.input(await screen.findByLabelText('Name'), {
+            target: { value: 'bot' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await screen.findByText('s3cr3t');
+
+        const status = screen.getByRole('status');
+        fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+        await waitFor(() => expect(status.textContent).toBe('Copied'));
+        expect(screen.getByText('s3cr3t')).toBeTruthy();
+
+        // Done hides the secret; the region stays on the page, empty.
+        fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+        expect(screen.queryByText('s3cr3t')).toBeNull();
+        expect(screen.getByRole('status')).toBe(status);
+        expect(status.textContent).toBe('');
+        await expectNoA11yViolations();
+        Reflect.deleteProperty(navigator, 'clipboard');
     });
 });
 

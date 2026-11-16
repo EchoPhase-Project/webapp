@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { pageSection } from '@shared/nav/page-section';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { pkg, workflow } from '@features/packages/fixtures';
 import WorkflowDetails from './WorkflowDetails';
 
@@ -117,7 +118,18 @@ describe('WorkflowDetails', () => {
         fireEvent.click(
             screen.getByRole('button', { name: 'Show the secret' })
         );
-        expect(screen.getByText('a-secret-of-sixteen')).toBeTruthy();
+        const shown = screen.getByText('a-secret-of-sixteen');
+        // The secret is plain text in its cell, outside every live region:
+        // the status region only ever says "Copied".
+        const regions = screen.getAllByRole('status');
+        for (const region of regions) {
+            expect(region.textContent).not.toContain('a-secret-of-sixteen');
+            expect(region.contains(shown)).toBe(false);
+        }
+        expect(
+            shown.closest('[aria-live], [role="status"], [role="alert"]')
+        ).toBeNull();
+        expect(shown.closest('[aria-hidden="true"], [hidden]')).toBeNull();
 
         fireEvent.click(
             screen.getByRole('button', { name: 'Edit the webhook' })
@@ -142,6 +154,16 @@ describe('WorkflowDetails', () => {
         expect(params.respond).toBe('OnFinish');
         expect(params.secret).not.toBe('a-secret-of-sixteen');
         expect((params.secret ?? '').length).toBeGreaterThanOrEqual(16);
+
+        // After the save, the secret (here the saved workflow's) is shown in
+        // its cell, and no live region reads it.
+        const after = await screen.findByText('a-secret-of-sixteen');
+        for (const region of screen.getAllByRole('status'))
+            expect(region.textContent).not.toContain('a-secret-of-sixteen');
+        expect(
+            after.closest('[aria-live], [role="status"], [role="alert"]')
+        ).toBeNull();
+        await expectNoA11yViolations();
     });
 
     it('adds a schedule that starts where the other triggers do', async () => {

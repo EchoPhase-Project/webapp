@@ -1,4 +1,4 @@
-import { createSignal, Match, Show, Switch } from 'solid-js';
+import { createSignal, Match, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
@@ -68,14 +68,7 @@ export default function ApiClientsPage() {
                 }
             />
 
-            <Show when={secret()}>
-                {(value) => (
-                    <SecretNotice
-                        secret={value()}
-                        onDismiss={() => setSecret(null)}
-                    />
-                )}
-            </Show>
+            <SecretNotice secret={secret()} onDismiss={() => setSecret(null)} />
 
             <Switch>
                 <Match when={clients.isError && clients.error}>
