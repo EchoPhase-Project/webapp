@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { sessionClient } from '@shared/api/session-provider';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { packageKeys } from './api/packages';
 import ExplorePage from './ExplorePage';
 import { parseQuery, queryOf } from './components/PackageSearch';
@@ -39,6 +40,7 @@ describe('ExplorePage', () => {
         expect(screen.getByText('Lists the guilds of a bot.')).toBeTruthy();
         expect(screen.getByText('Pings raiders.')).toBeTruthy();
         expect(screen.getAllByText('7 installs')).toHaveLength(2);
+        await expectNoA11yViolations();
     });
 
     it('loads the next page with the cursor of the last', async () => {

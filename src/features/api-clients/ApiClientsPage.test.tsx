@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { fireEvent, screen } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import ApiClientsPage from './ApiClientsPage';
 
 describe('ApiClientsPage', () => {
@@ -75,6 +76,7 @@ describe('ApiClientsPage', () => {
         expect(api.calls('GET /api/v1/api-clients')).toHaveLength(2);
         const [create] = api.calls('POST /api/v1/api-clients');
         expect(await create.json()).toEqual({ name: 'bot', expiresAt: null });
+        await expectNoA11yViolations();
     });
 });
 

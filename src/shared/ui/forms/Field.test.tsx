@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import Field from './Field';
 
 const Icon = (props: { class?: string }) => (
@@ -9,7 +10,7 @@ const Icon = (props: { class?: string }) => (
 );
 
 describe('Field', () => {
-    it('labels the input, shows the hint as placeholder, and the icon', () => {
+    it('labels the input, shows the hint as placeholder, and the icon', async () => {
         render(() => (
             <I18nProvider>
                 <Field id="f-name" name="name" label="Name" icon={Icon} />
@@ -21,6 +22,7 @@ describe('Field', () => {
         expect(screen.getByTestId('icon').getAttribute('class')).toBe(
             'field-icon'
         );
+        await expectNoA11yViolations();
     });
 
     it('puts the errors right under the input and points the input at them', () => {

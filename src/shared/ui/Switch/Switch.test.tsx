@@ -2,10 +2,11 @@
 import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import Switch from './Switch';
 
 describe('Switch', () => {
-    it('follows its owner: on when the owner says so, back when it does not', () => {
+    it('follows its owner: on when the owner says so, back when it does not', async () => {
         const [on, setOn] = createSignal(false);
         let accept = true;
         render(() => (
@@ -24,5 +25,6 @@ describe('Switch', () => {
         accept = false;
         fireEvent.click(box);
         expect(box.checked).toBe(true);
+        await expectNoA11yViolations();
     });
 });

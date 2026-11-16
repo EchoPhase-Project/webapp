@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import SettingsCard from './SettingsCard';
 
 describe('SettingsCard', () => {
-    it('is a section with its title, description and content, and no footer', () => {
+    it('is a section with its title, description and content, and no footer', async () => {
         const { container } = render(() => (
             <SettingsCard title="Details" description="What others see.">
                 <p>Body</p>
@@ -16,9 +17,10 @@ describe('SettingsCard', () => {
         expect(screen.getByText('What others see.')).toBeTruthy();
         expect(screen.getByText('Body')).toBeTruthy();
         expect(container.querySelector('.settings-card-footer')).toBeNull();
+        await expectNoA11yViolations();
     });
 
-    it('is a form when it submits, its action in the footer', () => {
+    it('is a form when it submits, its action in the footer', async () => {
         const onSubmit = vi.fn((e: SubmitEvent) => e.preventDefault());
         const { container } = render(() => (
             <SettingsCard
@@ -37,5 +39,6 @@ describe('SettingsCard', () => {
         ).toBe('It cannot be undone.');
         fireEvent.click(screen.getByRole('button', { name: 'Go' }));
         expect(onSubmit).toHaveBeenCalledOnce();
+        await expectNoA11yViolations();
     });
 });

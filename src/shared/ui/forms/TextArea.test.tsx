@@ -2,10 +2,11 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import TextArea from './TextArea';
 
 describe('TextArea', () => {
-    it('labels the text area for screen readers and passes its attributes on', () => {
+    it('labels the text area for screen readers and passes its attributes on', async () => {
         render(() => (
             <I18nProvider>
                 <TextArea id="t-body" name="body" label="Body" rows={4} />
@@ -18,6 +19,7 @@ describe('TextArea', () => {
         expect(area.className).toBe('field-textarea');
         expect(area.getAttribute('aria-invalid')).toBe('false');
         expect(screen.getByText('Body').className).toBe('visually-hidden');
+        await expectNoA11yViolations();
     });
 
     it('shows the label above it and the errors right under it', () => {

@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { sessionClient } from '@shared/api/session-provider';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { noteKeys, notesQuery } from './api';
 import NotesPage from './NotesPage';
 
@@ -46,6 +47,7 @@ describe('NotesPage', () => {
         expect(await screen.findByText('Groceries')).toBeTruthy();
         expect(screen.getAllByText('milk bread')).toHaveLength(2);
         expect(screen.getByText(/from Bob/)).toBeTruthy();
+        await expectNoA11yViolations();
     });
 
     it('writes a new note and previews its Markdown', async () => {
@@ -73,6 +75,8 @@ describe('NotesPage', () => {
         fireEvent.click(screen.getByRole('tab', { name: 'Preview' }));
         expect(screen.getByRole('heading', { name: 'Big' })).toBeTruthy();
         expect(screen.getByText('<b>raw</b>')).toBeTruthy();
+        // The dialog with its editor, in preview.
+        await expectNoA11yViolations();
 
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 

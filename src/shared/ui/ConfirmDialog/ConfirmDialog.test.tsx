@@ -3,10 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import ConfirmDialog from './ConfirmDialog';
 
 describe('ConfirmDialog', () => {
-    it('starts on Cancel and acts only on the red button', () => {
+    it('starts on Cancel and acts only on the red button', async () => {
         const onConfirm = vi.fn();
         const onCancel = vi.fn();
         render(() => (
@@ -26,6 +27,12 @@ describe('ConfirmDialog', () => {
         expect(document.querySelector('dialog')!.getAttribute('role')).toBe(
             'alertdialog'
         );
+        // Named by its title, described by its question.
+        const dialog = screen.getByRole('alertdialog', { name: 'Delete it?' });
+        const text = document.getElementById(
+            dialog.getAttribute('aria-describedby') ?? ''
+        );
+        expect(text?.textContent).toBe('It is gone for good.');
         expect(document.activeElement?.textContent).toBe('Cancel');
 
         fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -34,6 +41,7 @@ describe('ConfirmDialog', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
         expect(onConfirm).toHaveBeenCalledOnce();
+        await expectNoA11yViolations();
     });
 
     it('given an item, is open while there is one and hands it on', () => {

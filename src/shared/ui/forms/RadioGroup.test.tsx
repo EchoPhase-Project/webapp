@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import RadioGroup from './RadioGroup';
 
 type Seen = 'Private' | 'Public';
@@ -26,7 +27,7 @@ function renderGroup(disabled = false) {
 }
 
 describe('RadioGroup', () => {
-    it('names the group by its legend and each radio by its label', () => {
+    it('names the group by its legend and each radio by its label', async () => {
         renderGroup();
         const group = screen.getByRole('group', { name: 'Who sees it' });
         expect(group.id).toBe('seen');
@@ -36,6 +37,7 @@ describe('RadioGroup', () => {
             screen.getByRole<HTMLInputElement>('radio', { name: /Private/ })
                 .checked
         ).toBe(true);
+        await expectNoA11yViolations();
     });
 
     it('chooses the option clicked, its card included', () => {

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import AuthPage from './AuthPage';
 
 const signedOut = {
@@ -50,6 +51,7 @@ describe('AuthPage', () => {
             username: 'dusty',
             password: 'nope',
         });
+        await expectNoA11yViolations();
     });
 
     it('signs in and leaves the form once the user is known', async () => {
@@ -104,6 +106,7 @@ describe('AuthPage', () => {
         expect(
             document.getElementById('register-username-error')?.textContent
         ).toBe('That username is taken.');
+        await expectNoA11yViolations();
     });
 
     it('opens ?next= in a new session once signed in', async () => {

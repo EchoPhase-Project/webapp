@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { MemoryRouter, Route } from '@solidjs/router';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import Tabs, { NavTabs, tabPanelProps } from './Tabs';
 
 type Tab = 'write' | 'preview' | 'help';
@@ -34,7 +35,7 @@ function renderTabs() {
 const tabNamed = (name: string) => screen.getByRole('tab', { name });
 
 describe('Tabs', () => {
-    it('names the list, marks the selected tab and ties the panel to it', () => {
+    it('names the list, marks the selected tab and ties the panel to it', async () => {
         renderTabs();
         expect(screen.getByRole('tablist', { name: 'Text' })).toBeTruthy();
         expect(tabNamed('Write').getAttribute('aria-selected')).toBe('true');
@@ -47,6 +48,7 @@ describe('Tabs', () => {
         fireEvent.click(tabNamed('Preview'));
         expect(tabNamed('Preview').getAttribute('aria-selected')).toBe('true');
         expect(screen.getByRole('tabpanel', { name: 'Preview' })).toBe(panel);
+        await expectNoA11yViolations();
     });
 
     it('keeps only the selected tab in the Tab order', () => {

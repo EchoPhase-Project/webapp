@@ -4,6 +4,7 @@ import { createSignal } from 'solid-js';
 import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import NotificationBell, { type NotificationFeed } from './NotificationBell';
 
 const INBOX = 'GET /api/v1/notifications';
@@ -101,6 +102,7 @@ describe('NotificationBell', () => {
         ).toBe('Deployed');
         expect(titles()[0]).toBe('Deployed');
         expect(api.calls(INBOX)).toHaveLength(1);
+        await expectNoA11yViolations();
     });
 
     it('does not add a notification it holds already', async () => {

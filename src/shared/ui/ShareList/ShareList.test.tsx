@@ -11,6 +11,7 @@ import { I18nProvider } from '@shared/i18n/i18n-context';
 import { SessionProvider } from '@shared/api/session-provider';
 import { fakeApi, json } from '@shared/testing/fake-api';
 import { freshSession } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import ShareList, { type Sharee } from './ShareList';
 
 type Share = { user: Sharee; canEdit: boolean };
@@ -113,6 +114,7 @@ describe('ShareList', () => {
         expect(screen.getByText('@ann')).toBeTruthy();
         expect(screen.getByText('can edit')).toBeTruthy();
         expect(server.calls(LIST)).toHaveLength(1);
+        await expectNoA11yViolations();
 
         fireEvent.click(
             screen.getByRole('button', { name: 'Stop sharing with Ann' })

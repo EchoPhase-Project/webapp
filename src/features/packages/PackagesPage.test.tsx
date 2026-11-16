@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { sessionClient } from '@shared/api/session-provider';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { packageKeys } from './api/packages';
 import { pkg } from './fixtures';
 import PackagesPage from './PackagesPage';
@@ -49,6 +50,7 @@ describe('PackagesPage', () => {
         expect(
             screen.getByRole('link', { name: 'From Ann' }).getAttribute('href')
         ).toBe('/explore/p3');
+        await expectNoA11yViolations();
     });
 
     it('offers Explore when there are none', async () => {
@@ -64,6 +66,7 @@ describe('PackagesPage', () => {
                 await screen.findByRole('link', { name: 'Find one in Explore' })
             ).getAttribute('href')
         ).toBe('/explore');
+        await expectNoA11yViolations();
     });
 
     it('shows a failed read with a retry, not “no packages”', async () => {
@@ -119,6 +122,7 @@ describe('PackagesPage', () => {
         expect(
             screen.getAllByText('You have a package of that name.').length
         ).toBeGreaterThan(0);
+        await expectNoA11yViolations();
     });
 
     it('creates a package, keeps it and opens it', async () => {

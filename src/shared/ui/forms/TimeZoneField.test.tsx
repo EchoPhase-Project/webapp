@@ -2,10 +2,11 @@
 import { render, screen } from '@solidjs/testing-library';
 import { describe, expect, it } from 'vitest';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import TimeZoneField, { timeZones } from './TimeZoneField';
 
 describe('TimeZoneField', () => {
-    it('suggests the browser’s zones for its labelled input', () => {
+    it('suggests the browser’s zones for its labelled input', async () => {
         render(() => (
             <I18nProvider>
                 <TimeZoneField
@@ -27,5 +28,6 @@ describe('TimeZoneField', () => {
             timeZones().length
         );
         expect(timeZones()).toContain('Europe/Chisinau');
+        await expectNoA11yViolations();
     });
 });

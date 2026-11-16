@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import Checkbox from './Checkbox';
 
 function renderBox() {
@@ -22,7 +23,7 @@ function renderBox() {
 }
 
 describe('Checkbox', () => {
-    it('is named by its label and ticked by a click anywhere on the card', () => {
+    it('is named by its label and ticked by a click anywhere on the card', async () => {
         const on = renderBox();
         const box = screen.getByRole<HTMLInputElement>('checkbox', {
             name: /Daily report/,
@@ -35,6 +36,7 @@ describe('Checkbox', () => {
 
         fireEvent.click(box);
         expect(on()).toBe(false);
+        await expectNoA11yViolations();
     });
 
     it('can be shown but not changed', () => {

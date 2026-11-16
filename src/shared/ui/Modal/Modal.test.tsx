@@ -2,10 +2,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import Modal from './Modal';
 
 describe('Modal', () => {
-    it('cannot be dismissed when it says so: no close button, Escape ignored', () => {
+    it('cannot be dismissed when it says so: no close button, Escape ignored', async () => {
         const onClose = vi.fn();
         render(() => (
             <I18nProvider>
@@ -25,9 +26,10 @@ describe('Modal', () => {
         fireEvent(dialog, new Event('cancel', { cancelable: true }));
         fireEvent.click(dialog);
         expect(onClose).not.toHaveBeenCalled();
+        await expectNoA11yViolations();
     });
 
-    it('closes on Escape and a click beside it otherwise', () => {
+    it('closes on Escape and a click beside it otherwise', async () => {
         const onClose = vi.fn();
         render(() => (
             <I18nProvider>
@@ -42,5 +44,6 @@ describe('Modal', () => {
         fireEvent(dialog, new Event('cancel', { cancelable: true }));
         fireEvent.click(dialog);
         expect(onClose).toHaveBeenCalledTimes(2);
+        await expectNoA11yViolations();
     });
 });
