@@ -1,0 +1,13 @@
+// A [popover] has the browser's look: inset 0, an auto margin, a border, a
+// padding and the system colours. Without specificity (:where), so that the
+// caller's class gives the look.
+:where(.popover) {
+  inset: auto;
+  z-index: 50;
+  margin: 0;
+  padding: 0;
+  border: none;
+  overflow: visible;
+  color: inherit;
+  background: none;
+}
