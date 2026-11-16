@@ -124,7 +124,7 @@ export default function PackageSearch(props: {
     return (
         <div class="packages-search-wrap" role="search">
             <div class="field field--compact packages-search">
-                <IconSearch class="field-icon" aria-hidden="true" />
+                <IconSearch class="field-icon" />
                 <label class="visually-hidden" for="packages-search">
                     {t('search', 'Search packages')}
                 </label>
@@ -168,7 +168,7 @@ export default function PackageSearch(props: {
                             input?.focus();
                         }}
                     >
-                        <IconX aria-hidden="true" />
+                        <IconX />
                     </Button>
                 </Show>
             </div>

@@ -128,7 +128,7 @@ function GroupButton(props: {
 function SectionContent(props: { section: NavSection }) {
     return (
         <>
-            <i class="nav-icon" aria-hidden="true">
+            <i class="nav-icon">
                 <props.section.icon />
             </i>
             <span class="link-text">{props.section.label}</span>
@@ -242,7 +242,7 @@ export function DesktopNav(props: { nav: NavModel }) {
                                     class="nav-link"
                                     onDone={close}
                                 >
-                                    <i class="nav-icon" aria-hidden="true">
+                                    <i class="nav-icon">
                                         <Show when={login().icon}>
                                             {(Icon) => (
                                                 <Dynamic component={Icon()} />

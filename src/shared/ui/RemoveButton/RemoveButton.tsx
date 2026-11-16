@@ -22,7 +22,7 @@ export default function RemoveButton(props: {
             disabled={props.disabled}
             onClick={() => props.onClick()}
         >
-            <IconX aria-hidden="true" />
+            <IconX />
         </Button>
     );
 }

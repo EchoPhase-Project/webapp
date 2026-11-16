@@ -60,7 +60,7 @@ export default function Select<T extends string>(props: SelectProps<T>) {
                         )}
                     </For>
                 </select>
-                <IconChevronDown class="select-arrow" aria-hidden="true" />
+                <IconChevronDown class="select-arrow" />
             </div>
             <FieldError for={props.id} errors={props.errors} />
         </div>

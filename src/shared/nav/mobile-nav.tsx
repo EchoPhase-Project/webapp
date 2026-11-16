@@ -66,7 +66,7 @@ function DrawerGroup(props: {
                 onClick={() => props.onToggle()}
             >
                 {props.content}
-                <IconChevronDown class="drawer-chevron" aria-hidden="true" />
+                <IconChevronDown class="drawer-chevron" />
             </button>
             <ul id={id} class="drawer-sublist" hidden={!props.open}>
                 <For each={props.items}>
@@ -89,7 +89,7 @@ function DrawerGroup(props: {
 
 function SectionIcon(props: { section: NavSection | NavItem }) {
     return (
-        <i class="nav-icon" aria-hidden="true">
+        <i class="nav-icon">
             <Show when={props.section.icon}>
                 {(Icon) => <Dynamic component={Icon()} />}
             </Show>
@@ -349,7 +349,7 @@ export function MobileNav(props: { nav: NavModel }) {
                             aria-haspopup="dialog"
                             onClick={() => setOpen(true)}
                         >
-                            <i class="nav-icon" aria-hidden="true">
+                            <i class="nav-icon">
                                 <IconDots />
                             </i>
                             <span class="mobile-nav-label">

@@ -16,7 +16,7 @@ export default function VisibilityBadge(props: {
     const t = useLocalizer('packages');
     return (
         <span class="visibility-badge">
-            <Dynamic component={ICONS[props.visibility]} aria-hidden="true" />
+            <Dynamic component={ICONS[props.visibility]} />
             {t(`visibility.${props.visibility}`, props.visibility)}
         </span>
     );

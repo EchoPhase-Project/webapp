@@ -39,7 +39,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
             <span class="note-card-meta muted">
                 <Show when={props.note.access !== 'Owner'}>
                     <span>
-                        <IconUsers aria-hidden="true" />{' '}
+                        <IconUsers />{' '}
                         {t('card.from', 'from {name}', {
                             name: props.note.owner.name,
                         })}
@@ -48,7 +48,7 @@ export default function NoteCard(props: { note: Note; onOpen: () => void }) {
                 <Show when={props.note.remindAt}>
                     {(at) => (
                         <span>
-                            <IconClock aria-hidden="true" /> {date(at())}
+                            <IconClock /> {date(at())}
                         </span>
                     )}
                 </Show>

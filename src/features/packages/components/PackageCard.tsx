@@ -60,22 +60,20 @@ export default function PackageCard(props: {
             <span class="package-card-meta muted">
                 <span>{props.pkg.owner.name}</span>
                 <span>
-                    <IconDownload aria-hidden="true" />{' '}
+                    <IconDownload />{' '}
                     {t('card.installs', '{count} installs', {
                         count: props.pkg.installs,
                     })}
                 </span>
                 <Show when={props.pkg.visibility === 'Private'}>
                     <span>
-                        <IconLock aria-hidden="true" />{' '}
-                        {t('visibility.Private', 'Private')}
+                        <IconLock /> {t('visibility.Private', 'Private')}
                     </span>
                 </Show>
                 <Show when={props.pkg.access !== 'Owner'}>
                     <Show when={props.pkg.visibility !== 'Public'}>
                         <span>
-                            <IconUsers aria-hidden="true" />{' '}
-                            {t('card.shared', 'Shared with you')}
+                            <IconUsers /> {t('card.shared', 'Shared with you')}
                         </span>
                     </Show>
                 </Show>

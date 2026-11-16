@@ -9,7 +9,7 @@ import './back-link.scss';
 export default function BackLink(props: { href: string; label: string }) {
     return (
         <A href={props.href} class="back-link">
-            <IconArrowLeft aria-hidden="true" /> {props.label}
+            <IconArrowLeft /> {props.label}
         </A>
     );
 }

@@ -69,7 +69,7 @@ export function NavItemContent(props: { item: NavItem }) {
     return (
         <>
             <Show when={props.item.icon}>
-                <i class="submenu-icon" aria-hidden="true">
+                <i class="submenu-icon">
                     <Dynamic component={props.item.icon} />
                 </i>
             </Show>
