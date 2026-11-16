@@ -1,18 +1,9 @@
-import {
-    createEffect,
-    createSignal,
-    createUniqueId,
-    For,
-    onCleanup,
-    onMount,
-    Show,
-    type JSX,
-} from 'solid-js';
+import { createSignal, createUniqueId, For, Show, type JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { useLocation } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { createDismiss } from '@shared/lib/dismiss';
 import Avatar from '@shared/ui/Avatar';
+import Popover from '@shared/ui/Popover';
 import type { NavItem, NavModel, NavSection } from './nav-link';
 import NavScroll from './nav-scroll';
 import {
@@ -25,41 +16,37 @@ import './navbar.scss';
 
 /** The space between the sidebar and a flyout, and from the window's edge. */
 const GAP = 8;
+/** A flyout starts this much above its button: its first item is level with it. */
+const LIFT = -6;
 
 /**
  * A group's (or the account's) list, beside the sidebar level with its
- * button. Fixed, so the scrolling middle does not clip it; moved up when it
- * would run past the bottom of the window (the account's, at the bottom).
+ * button: a Popover in the top layer, so the scrolling middle does not clip
+ * it, moved up when it would run past the bottom of the window (the
+ * account's, at the bottom). A press outside it and Escape close it.
  */
 function Flyout(props: {
     id: string;
     label: string;
-    anchor: HTMLElement;
+    open: boolean;
+    onClose: () => void;
+    anchor: () => HTMLElement | undefined;
     items: NavItem[];
     onDone: () => void;
     header?: JSX.Element;
 }) {
-    let list: HTMLDivElement | undefined;
-    const [style, setStyle] = createSignal<JSX.CSSProperties>({
-        visibility: 'hidden',
-    });
-
-    onMount(() => {
-        const nav = props.anchor.closest('nav')?.getBoundingClientRect();
-        const at = props.anchor.getBoundingClientRect();
-        const height = list?.offsetHeight ?? 0;
-        const top = Math.max(
-            GAP,
-            Math.min(at.top - 6, window.innerHeight - GAP - height)
-        );
-        setStyle({
-            top: `${top}px`,
-            left: `${(nav?.right ?? at.right) + GAP}px`,
-        });
-    });
-
     return (
-        <div ref={list} id={props.id} class="nav-flyout" style={style()}>
+        <Popover
+            open={props.open}
+            onClose={() => props.onClose()}
+            anchor={props.anchor}
+            box={() => props.anchor()?.closest('nav') ?? undefined}
+            side="right"
+            gap={GAP}
+            offset={LIFT}
+            id={props.id}
+            class="nav-flyout"
+        >
             {props.header}
             <ul class="nav-flyout-list" aria-label={props.label}>
                 <For each={props.items}>
@@ -76,7 +63,7 @@ function Flyout(props: {
                     )}
                 </For>
             </ul>
-        </div>
+        </Popover>
     );
 }
 
@@ -87,6 +74,8 @@ function GroupButton(props: {
     /** One of its pages is the current one: marked like a current link. */
     current?: boolean;
     onToggle: () => void;
+    /** The flyout closed by itself (a press outside, Escape). */
+    onClose: () => void;
     onDone: () => void;
     class?: string;
     content: JSX.Element;
@@ -109,18 +98,16 @@ function GroupButton(props: {
                 {props.content}
                 <BurgerLines class="nav-item-burger" open={props.open} />
             </button>
-            <Show when={props.open && button}>
-                {(anchor) => (
-                    <Flyout
-                        id={id}
-                        label={props.section.label}
-                        anchor={anchor()}
-                        items={props.section.items ?? []}
-                        onDone={props.onDone}
-                        header={props.header}
-                    />
-                )}
-            </Show>
+            <Flyout
+                id={id}
+                label={props.section.label}
+                open={props.open}
+                onClose={() => props.onClose()}
+                anchor={() => button}
+                items={props.section.items ?? []}
+                onDone={props.onDone}
+                header={props.header}
+            />
         </>
     );
 }
@@ -142,7 +129,8 @@ function SectionContent(props: { section: NavSection }) {
  * Three parts: home on top, the sections in the middle (scrolling when they
  * do not fit), the account or signing in at the bottom. A list opens beside
  * the rail, one at a time, and closes when the pointer leaves, on Escape, a
- * click elsewhere, a scroll of the middle, or once a link is followed.
+ * press elsewhere, a scroll of the middle, or once a link is followed. It
+ * follows the rail when the window changes size.
  */
 export function DesktopNav(props: { nav: NavModel }) {
     const { t } = useI18n();
@@ -155,17 +143,10 @@ export function DesktopNav(props: { nav: NavModel }) {
     const toggle = (key: string) =>
         setOpen((current) => (current === key ? null : key));
 
-    createDismiss(
-        () => nav,
-        () => open() !== null,
-        close
-    );
-    // A resize moves the rail: the open list closes too.
-    createEffect(() => {
-        if (!open()) return;
-        window.addEventListener('resize', close);
-        onCleanup(() => window.removeEventListener('resize', close));
-    });
+    // A flyout that closed by itself closes only its own list: another
+    // group's may have opened with the same press.
+    const closeOnly = (key: string) =>
+        setOpen((current) => (current === key ? null : current));
 
     const ACCOUNT = '\u0000account';
 
@@ -219,6 +200,7 @@ export function DesktopNav(props: { nav: NavModel }) {
                                             location.pathname
                                         )}
                                         onToggle={() => toggle(section.label)}
+                                        onClose={() => closeOnly(section.label)}
                                         onDone={close}
                                         content={
                                             <SectionContent section={section} />
@@ -275,6 +257,7 @@ export function DesktopNav(props: { nav: NavModel }) {
                                     location.pathname
                                 )}
                                 onToggle={() => toggle(ACCOUNT)}
+                                onClose={() => closeOnly(ACCOUNT)}
                                 onDone={close}
                                 content={
                                     <>

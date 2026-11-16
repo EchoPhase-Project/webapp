@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, screen } from '@solidjs/testing-library';
 import { IconCompass, IconFolder, IconNotes, IconUser } from '@shared/ui/icons';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import type { NavModel } from './nav-link';
 import { DesktopNav } from './desktop-nav';
 import { MobileNav } from './mobile-nav';
@@ -72,6 +73,76 @@ describe('DesktopNav', () => {
         ).toBe('/files');
         fireEvent.keyDown(document, { key: 'Escape' });
         expect(screen.queryByRole('link', { name: /Files/ })).toBeNull();
+    });
+
+    it('closes a list on a press outside it, and on its button', async () => {
+        renderPage(() => <DesktopNav nav={model()} />);
+        const group = screen.getByRole('button', { name: 'Workspace' });
+
+        fireEvent.click(group);
+        await expectNoA11yViolations();
+        fireEvent.pointerDown(document.body);
+        expect(screen.queryByRole('link', { name: /Files/ })).toBeNull();
+        expect(group.getAttribute('aria-expanded')).toBe('false');
+
+        fireEvent.click(group);
+        fireEvent.pointerDown(group);
+        fireEvent.click(group);
+        expect(screen.queryByRole('link', { name: /Files/ })).toBeNull();
+    });
+
+    it('opens a list in the top layer, right of the rail, level with its button', () => {
+        const proto = HTMLElement.prototype as unknown as {
+            showPopover?: () => void;
+            hidePopover?: () => void;
+        };
+        const show = vi.fn<() => void>();
+        proto.showPopover = show;
+        proto.hidePopover = vi.fn();
+        vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(800);
+        vi.spyOn(
+            HTMLElement.prototype,
+            'getBoundingClientRect'
+        ).mockImplementation(function (this: HTMLElement) {
+            if (this.tagName === 'NAV')
+                return { top: 0, bottom: 800, left: 0, right: 64 } as DOMRect;
+            if (this.classList.contains('nav-flyout'))
+                return { top: 0, bottom: 120, height: 120 } as DOMRect;
+            return {
+                top: 200,
+                bottom: 240,
+                left: 0,
+                right: 64,
+                width: 64,
+            } as DOMRect;
+        });
+        try {
+            renderPage(() => <DesktopNav nav={model()} />);
+            fireEvent.click(screen.getByRole('button', { name: 'Workspace' }));
+            const flyout = document.querySelector<HTMLElement>('.nav-flyout');
+            expect(flyout?.getAttribute('popover')).toBe('auto');
+            expect(show.mock.contexts[0]).toBe(flyout);
+            expect(flyout?.style.left).toBe('72px');
+            expect(flyout?.style.top).toBe('194px');
+
+            // Another list opens with the press that closed the first.
+            const account = screen.getByRole('button', { name: /Dusty/ });
+            fireEvent.pointerDown(account);
+            fireEvent.click(account);
+            const closed = new Event('toggle');
+            Object.defineProperty(closed, 'newState', { value: 'closed' });
+            flyout?.dispatchEvent(closed);
+            expect(account.getAttribute('aria-expanded')).toBe('true');
+            expect(
+                screen
+                    .getByRole('button', { name: 'Workspace' })
+                    .getAttribute('aria-expanded')
+            ).toBe('false');
+        } finally {
+            delete proto.showPopover;
+            delete proto.hidePopover;
+            vi.restoreAllMocks();
+        }
     });
 
     it('keeps the account at the bottom: name, @username, its pages and signing out', () => {
