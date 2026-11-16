@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { CsrfService } from '@shared/api/csrf';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import SessionsPage from './SessionsPage';
 
 const firefox =
@@ -119,5 +120,43 @@ describe('SessionsPage', () => {
             expect(otherTab.received).toEqual([{ type: 'signed-out' }])
         );
         expect(api.calls('DELETE /api/v1/sessions')).toHaveLength(1);
+    });
+
+    it('shows rows of bars while the list loads, then the sessions', async () => {
+        let answer: () => void = () => {};
+        const arrived = new Promise<void>((ok) => (answer = ok));
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/sessions': async () => {
+                await arrived;
+                return json(200, {
+                    data: [{ id: 's1', deviceId: firefox }],
+                    hasMore: false,
+                });
+            },
+        });
+
+        renderPage(() => <SessionsPage />);
+
+        // The header is static: it stays a real heading that takes the focus.
+        expect(
+            await screen.findByRole('heading', {
+                level: 1,
+                name: 'Active sessions',
+            })
+        ).toBeTruthy();
+        await waitFor(() =>
+            expect(document.querySelectorAll('tbody tr')).toHaveLength(3)
+        );
+        expect(document.querySelector('td .skeleton-text')).not.toBeNull();
+        expect(screen.queryByText('No active sessions')).toBeNull();
+        expect(screen.getByRole('status').textContent).toBe('Loading…');
+        await expectNoA11yViolations();
+
+        answer();
+        expect(await screen.findByText('Firefox on Linux')).toBeTruthy();
+        expect(document.querySelectorAll('tbody tr')).toHaveLength(1);
+        expect(document.querySelector('.skeleton-text')).toBeNull();
+        expect(screen.getByRole('status').textContent).toBe('');
     });
 });

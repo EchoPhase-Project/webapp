@@ -8,6 +8,7 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
+import { SkeletonScope } from '@shared/ui/Skeleton';
 import {
     revokeAllSessionsMutation,
     revokeSessionMutation,
@@ -81,12 +82,15 @@ export default function SessionsPage() {
                         />
                     )}
                 </Match>
-                <Match when={sessions.isSuccess}>
-                    <SessionsTable
-                        sessions={sessions.data ?? []}
-                        busy={isLoading()}
-                        onRevoke={(id) => void revoke(id)}
-                    />
+                {/* While the list loads, the table shows rows of bars. */}
+                <Match when={sessions.isPending || sessions.isSuccess}>
+                    <SkeletonScope when={sessions.isPending}>
+                        <SessionsTable
+                            sessions={sessions.data ?? []}
+                            busy={isLoading()}
+                            onRevoke={(id) => void revoke(id)}
+                        />
+                    </SkeletonScope>
                 </Match>
             </Switch>
 
