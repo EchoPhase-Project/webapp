@@ -444,6 +444,18 @@ describe('Combobox', () => {
         });
     });
 
+    it('opens on the selected option when clicked', () => {
+        const scroll = vi.fn();
+        Element.prototype.scrollIntoView = scroll;
+        try {
+            const { button } = renderCombobox('cherry');
+            fireEvent.click(button);
+            expect(scroll.mock.contexts.at(-1)).toBe(option('Cherry'));
+        } finally {
+            Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+        }
+    });
+
     describe('placement', () => {
         let buttonBottom = 100;
         const rect = (top: number, height: number) =>
@@ -1054,6 +1066,25 @@ describe('Combobox, editable', () => {
             expect(
                 option('Blueberry').classList.contains('combobox-option--keys')
             ).toBe(true);
+        });
+
+        it('a click opens on the selected option, which is not active', () => {
+            const scroll = vi.fn();
+            Element.prototype.scrollIntoView = scroll;
+            try {
+                const { input } = renderEditable('cherry');
+                fireEvent.click(input);
+                expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+                expect(scroll).toHaveBeenLastCalledWith({ block: 'nearest' });
+                expect(scroll.mock.contexts.at(-1)).toBe(option('Cherry'));
+                // An emptied query shows all options and the selected one.
+                type(input, 'b');
+                scroll.mockClear();
+                type(input, '');
+                expect(scroll.mock.contexts.at(-1)).toBe(option('Cherry'));
+            } finally {
+                Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+            }
         });
 
         it('a click outside closes', () => {

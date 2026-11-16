@@ -172,6 +172,15 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     createEffect(() => {
         if (open() && list.active() >= 0) list.scrollActiveIntoView();
     });
+    // A list that opens (or shows all options again) with no active option,
+    // e.g. after a click in the input, still shows the selected one.
+    createEffect(
+        on([open, query], ([isOpen, q]) => {
+            if (isOpen && !q && list.active() < 0) {
+                list.scrollIntoView(selectedIndex());
+            }
+        })
+    );
 
     // Editable: the text the input shows while the user does not type.
     const restingText = () => {

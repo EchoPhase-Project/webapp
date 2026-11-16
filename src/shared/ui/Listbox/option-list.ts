@@ -68,6 +68,8 @@ export type OptionList = {
     typing: () => boolean;
     /** Scrolls the active option into the visible part of its list. */
     scrollActiveIntoView: () => void;
+    /** Scrolls the option at `index` into the visible part of its list. */
+    scrollIntoView: (index: number) => void;
 };
 
 /**
@@ -161,9 +163,8 @@ export function createOptionList<T>(
         return undefined;
     }
 
-    function scrollActiveIntoView() {
-        const index = active();
-        if (index < 0) return;
+    function scrollIntoView(index: number) {
+        if (index < 0 || index >= options().length) return;
         const el = document.getElementById(optionId(index));
         // jsdom has no layout and no scrollIntoView.
         if (el && typeof el.scrollIntoView === 'function') {
@@ -186,7 +187,8 @@ export function createOptionList<T>(
         move,
         typeAhead,
         typing: () => buffer !== '',
-        scrollActiveIntoView,
+        scrollActiveIntoView: () => scrollIntoView(active()),
+        scrollIntoView,
     };
 }
 
