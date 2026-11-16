@@ -14,11 +14,11 @@ import { useAuth } from '@shared/api/auth';
 import { createSubmit } from '@shared/api/submit';
 import type { AppNotification, NotificationInbox } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
-import { createDismiss } from '@shared/lib/dismiss';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import HeaderButton from '@shared/ui/HeaderButton';
+import Popover from '@shared/ui/Popover';
 import RemoveButton from '@shared/ui/RemoveButton';
 import {
     deleteNotificationMutation,
@@ -70,7 +70,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
     // The panel is a region, not a menu: the bell says it opens it with
     // aria-expanded and aria-controls (aria-haspopup would promise a menu).
     const panelId = createUniqueId();
-    let root: HTMLDivElement | undefined;
+    let bell: HTMLButtonElement | undefined;
 
     // The feed opened again after a drop: events may have been lost while
     // it was down, so the inbox is checked with the server.
@@ -112,13 +112,6 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
     // eslint-disable-next-line solid/reactivity
     onCleanup(props.feed.subscribe('notification.created', onCreated));
 
-    // Closes on a click elsewhere and on Escape.
-    createDismiss(
-        () => root,
-        open,
-        () => setOpen(false)
-    );
-
     function openItem(n: AppNotification) {
         if (!n.read) void markRead.run(n.id);
         if (n.link) {
@@ -136,8 +129,9 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
 
     return (
         <Show when={isAuthenticated()}>
-            <div class="notifications" ref={root}>
+            <div class="notifications">
                 <HeaderButton
+                    ref={bell}
                     label={label()}
                     aria-expanded={open()}
                     aria-controls={panelId}
@@ -153,87 +147,90 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                     {announcement()}
                 </span>
 
-                <Show when={open()}>
-                    <div
-                        id={panelId}
-                        class="notifications-panel card"
-                        role="region"
-                        aria-label={t('bell', 'Notifications')}
-                    >
-                        <div class="notifications-head">
-                            <h2>
-                                {t('bell', 'Notifications')}
-                                <Show when={unread() > 0}>
-                                    <span class="notifications-count">
-                                        {t('unread_count', '{count} new', {
-                                            count: unread(),
-                                        })}
-                                    </span>
-                                </Show>
-                            </h2>
+                {/* Under the bell, at its end edge. A press elsewhere and
+                    Escape close it (light dismiss). */}
+                <Popover
+                    open={open()}
+                    onClose={() => setOpen(false)}
+                    anchor={() => bell}
+                    align="end"
+                    gap={8}
+                    id={panelId}
+                    class="notifications-panel card"
+                    role="region"
+                    label={t('bell', 'Notifications')}
+                >
+                    <div class="notifications-head">
+                        <h2>
+                            {t('bell', 'Notifications')}
                             <Show when={unread() > 0}>
-                                <Button
-                                    variant="ghost"
-                                    busy={acting.busy()}
-                                    onClick={() => void markAllRead.run()}
-                                >
-                                    {t('read_all', 'Mark all read')}
-                                </Button>
+                                <span class="notifications-count">
+                                    {t('unread_count', '{count} new', {
+                                        count: unread(),
+                                    })}
+                                </span>
                             </Show>
-                        </div>
-                        <ErrorSummary errors={acting.errors()} />
-                        <Show
-                            when={items().length > 0}
-                            fallback={
-                                <p class="muted notifications-empty">
-                                    {t('empty', 'Nothing new.')}
-                                </p>
-                            }
-                        >
-                            <ul class="notifications-list">
-                                <For each={items()}>
-                                    {(n) => {
-                                        const words = () => wordingOf(n, t);
-                                        return (
-                                            <li classList={{ unread: !n.read }}>
-                                                {/* eslint-disable-next-line no-restricted-syntax -- an item of the list that opens what it is about, not an action button */}
-                                                <button
-                                                    type="button"
-                                                    class="notification-item"
-                                                    onClick={() =>
-                                                        void openItem(n)
-                                                    }
-                                                >
-                                                    <span class="notification-title">
-                                                        {words().title}
-                                                    </span>
-                                                    <Show when={words().body}>
-                                                        <span class="notification-body">
-                                                            {words().body}
-                                                        </span>
-                                                    </Show>
-                                                    <span class="notification-time muted">
-                                                        {date(n.createdAt)}
-                                                    </span>
-                                                </button>
-                                                <RemoveButton
-                                                    label={t(
-                                                        'delete',
-                                                        'Delete notification'
-                                                    )}
-                                                    disabled={acting.busy()}
-                                                    onClick={() =>
-                                                        void deleteOne.run(n.id)
-                                                    }
-                                                />
-                                            </li>
-                                        );
-                                    }}
-                                </For>
-                            </ul>
+                        </h2>
+                        <Show when={unread() > 0}>
+                            <Button
+                                variant="ghost"
+                                busy={acting.busy()}
+                                onClick={() => void markAllRead.run()}
+                            >
+                                {t('read_all', 'Mark all read')}
+                            </Button>
                         </Show>
                     </div>
-                </Show>
+                    <ErrorSummary errors={acting.errors()} />
+                    <Show
+                        when={items().length > 0}
+                        fallback={
+                            <p class="muted notifications-empty">
+                                {t('empty', 'Nothing new.')}
+                            </p>
+                        }
+                    >
+                        <ul class="notifications-list">
+                            <For each={items()}>
+                                {(n) => {
+                                    const words = () => wordingOf(n, t);
+                                    return (
+                                        <li classList={{ unread: !n.read }}>
+                                            {/* eslint-disable-next-line no-restricted-syntax -- an item of the list that opens what it is about, not an action button */}
+                                            <button
+                                                type="button"
+                                                class="notification-item"
+                                                onClick={() => void openItem(n)}
+                                            >
+                                                <span class="notification-title">
+                                                    {words().title}
+                                                </span>
+                                                <Show when={words().body}>
+                                                    <span class="notification-body">
+                                                        {words().body}
+                                                    </span>
+                                                </Show>
+                                                <span class="notification-time muted">
+                                                    {date(n.createdAt)}
+                                                </span>
+                                            </button>
+                                            <RemoveButton
+                                                label={t(
+                                                    'delete',
+                                                    'Delete notification'
+                                                )}
+                                                disabled={acting.busy()}
+                                                onClick={() =>
+                                                    void deleteOne.run(n.id)
+                                                }
+                                            />
+                                        </li>
+                                    );
+                                }}
+                            </For>
+                        </ul>
+                    </Show>
+                </Popover>
             </div>
         </Show>
     );

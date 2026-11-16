@@ -308,6 +308,73 @@ describe('NotificationBell', () => {
         expect(api.calls('DELETE /api/v1/notifications/a1')).toHaveLength(1);
     });
 
+    it('closes the panel on a press outside, on Escape, and on the bell', async () => {
+        fakeApi({
+            ...signedIn,
+            [INBOX]: () => json(200, { items: [item()], unread: 1 }),
+        });
+        renderPage(() => <NotificationBell feed={feed().value} />);
+        const bell = await screen.findByRole('button', {
+            name: 'Notifications (1 unread)',
+        });
+        const panel = () =>
+            screen.queryByRole('region', { name: 'Notifications' });
+
+        fireEvent.click(bell);
+        expect(panel()).not.toBeNull();
+        expect(bell.getAttribute('aria-expanded')).toBe('true');
+        expect(bell.getAttribute('aria-controls')).toBe(panel()?.id);
+        fireEvent.pointerDown(document.body);
+        expect(panel()).toBeNull();
+        expect(bell.getAttribute('aria-expanded')).toBe('false');
+
+        fireEvent.click(bell);
+        screen.getByRole('button', { name: 'Mark all read' }).focus();
+        fireEvent.keyDown(document.activeElement ?? document, {
+            key: 'Escape',
+        });
+        expect(panel()).toBeNull();
+        expect(document.activeElement).toBe(bell);
+
+        fireEvent.click(bell);
+        fireEvent.pointerDown(bell);
+        fireEvent.click(bell);
+        expect(panel()).toBeNull();
+    });
+
+    it('opens the panel in the top layer and follows the light dismiss', async () => {
+        const proto = HTMLElement.prototype as unknown as {
+            showPopover?: () => void;
+            hidePopover?: () => void;
+        };
+        const show = vi.fn<() => void>();
+        proto.showPopover = show;
+        proto.hidePopover = vi.fn();
+        try {
+            fakeApi({
+                ...signedIn,
+                [INBOX]: () => json(200, { items: [item()], unread: 1 }),
+            });
+            renderPage(() => <NotificationBell feed={feed().value} />);
+            const bell = await screen.findByRole('button', {
+                name: 'Notifications (1 unread)',
+            });
+            fireEvent.click(bell);
+            const panel = document.querySelector('.notifications-panel');
+            expect(panel?.getAttribute('popover')).toBe('auto');
+            expect(show.mock.contexts[0]).toBe(panel);
+
+            const closed = new Event('toggle');
+            Object.defineProperty(closed, 'newState', { value: 'closed' });
+            panel?.dispatchEvent(closed);
+            expect(document.querySelector('.notifications-panel')).toBeNull();
+            expect(bell.getAttribute('aria-expanded')).toBe('false');
+        } finally {
+            delete proto.showPopover;
+            delete proto.hidePopover;
+        }
+    });
+
     it('asks nothing while nobody is signed in', async () => {
         const api = fakeApi({
             'GET /api/v1/auth/me': () => json(401),

@@ -3,12 +3,9 @@
   display: flex;
 }
 
-// Hangs from the bell, over the page.
+// Hangs from the bell, over the page: Popover puts it in the top layer and
+// places it.
 .notifications-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 50;
   width: min(24rem, calc(100vw - 32px));
   max-height: min(32rem, 70vh);
   display: flex;
