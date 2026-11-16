@@ -60,14 +60,17 @@
    DESKTOP NAV  (sidebar, widens while hovered, ≥768 px)
 ───────────────────────────────────────────────────────────────────────────── */
 
-// After Codewars: a rail of icons on its own solid surface that widens while
-// hovered (or while the keyboard is in it) to show the labels. Three parts:
-// home on top, the sections in the middle (scrolling, scrollbar hidden), the
-// account at the bottom. The icons keep their place; only the width and the
-// labels' opacity change. Sizes in px: the page's font grows with the
-// window, the rail should not.
+// After Codewars: a rail of icons that widens while hovered (or while the
+// keyboard is in it) to show the labels. It is the upright arm of the app's
+// frame (an L): under the bar, which holds the logo in the corner, in the
+// bar's colour, with a line along its inner edge as the bar has along its
+// bottom. Two parts: the sections (scrolling, scrollbar hidden), the account
+// at the bottom. The icons keep their place; only the width and the labels'
+// opacity change. Wide, it lies over the page, never under the bar. Sizes in
+// px: the page's font grows with the window, the rail should not. Its width
+// collapsed (--nav-collapsed) is a token: the page and the bar's corner
+// keep the same room.
 .navbar--desktop {
-  --nav-collapsed: 60px;
   --nav-expanded: 232px;
   --nav-pad: 10px;
   --nav-link-h: 40px;
@@ -78,20 +81,24 @@
     (var(--nav-collapsed) - 2 * var(--nav-pad) - var(--nav-icon)) / 2
   );
 
+  // The line along the rail's inner edge, continuing the bar's.
+  --nav-edge: 1px 0 0 0 var(--border);
+
   position: fixed;
-  top: 0;
+  top: var(--header-height);
   left: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: var(--nav-collapsed);
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   padding: var(--nav-pad);
   box-sizing: border-box;
   font-size: 14px;
   background-color: var(--surface);
-  box-shadow: color-mix(in srgb, var(--shadow) 8%, transparent) 1px 0 0 0;
+  box-shadow: var(--nav-edge);
   transition:
     width 200ms ease,
     box-shadow 200ms ease;
@@ -103,7 +110,9 @@
   &:has(:focus-visible),
   &:has(.nav-link[aria-expanded='true']) {
     width: var(--nav-expanded);
-    box-shadow: color-mix(in srgb, var(--shadow) 16%, transparent) 8px 0 24px 0;
+    box-shadow:
+      var(--nav-edge),
+      color-mix(in srgb, var(--shadow) 16%, transparent) 8px 0 24px 0;
 
     .link-text,
     .nav-item-burger {
@@ -111,7 +120,6 @@
     }
   }
 
-  .nav-top,
   .nav-bottom {
     flex: none;
   }
@@ -205,27 +213,6 @@
 
     .nav-icon {
       color: var(--accent);
-    }
-  }
-
-  // The brand at the top: its tile, a little apart from the sections.
-  .nav-home {
-    padding: 0 6px;
-    color: var(--text);
-    font-size: 15px;
-
-    &:hover,
-    &:focus-visible,
-    &.nav-current {
-      background-color: transparent;
-    }
-
-    .nav-icon {
-      font-size: 28px;
-    }
-
-    .link-text {
-      font-weight: 700;
     }
   }
 

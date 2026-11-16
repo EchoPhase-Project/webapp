@@ -14,6 +14,11 @@
 .docs-nav {
   position: sticky;
   top: 16px;
+
+  // Under the app's bar, which stays at the top on desktop.
+  @include comp.media('min-width: 768px') {
+    top: calc(var(--header-height) + 16px);
+  }
   display: grid;
   gap: 4px;
   font-size: 0.9rem;

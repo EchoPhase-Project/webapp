@@ -18,7 +18,8 @@
 
 .legal-toc {
   position: sticky;
-  top: 20px;
+  // Under the app's bar, which stays at the top on desktop.
+  top: calc(var(--header-height) + 20px);
   font-size: 0.85rem;
 
   @include comp.media('max-width: 991px') {

@@ -36,6 +36,7 @@ export interface NavAccount {
  * in). Both the desktop sidebar and the mobile drawer draw it.
  */
 export interface NavModel {
+    /** The mobile bar and drawer draw it; on desktop the app's bar holds it. */
     home: NavSection;
     sections: NavSection[];
     /** Null while signed out (or still loading). */

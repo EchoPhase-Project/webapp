@@ -45,12 +45,12 @@ describe('DesktopNav', () => {
         logout.mockReset();
     });
 
-    it('has home on top, pages as real links, a group as a button', () => {
+    it('leaves home to the bar; pages are real links, a group a button', () => {
         renderPage(() => <DesktopNav nav={model()} />);
 
-        expect(
-            screen.getByRole('link', { name: /Home/ }).getAttribute('href')
-        ).toBe('/');
+        // The logo is in the app's bar, over the rail: not in the rail.
+        expect(screen.queryByRole('link', { name: /Home/ })).toBeNull();
+        expect(screen.queryByText('logo')).toBeNull();
         expect(
             screen.getByRole('link', { name: 'Explore' }).getAttribute('href')
         ).toBe('/explore');

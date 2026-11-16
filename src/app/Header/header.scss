@@ -1,5 +1,68 @@
-// The app's top bar (Header): the language picker beside the header
-// buttons, and signing in on phones. The buttons' own look is HeaderButton's.
+// The app's top bar (Header): the logo in its left cell, the header buttons
+// at its end, the language picker beside them, and signing in on phones.
+// The buttons' own look is HeaderButton's.
+
+// Flat, in the rail's colour, across the whole window. On desktop it stays
+// at the top while the window scrolls, over the page and over the rail's
+// shadow. On phones it scrolls away, as before. Its bottom line runs the
+// whole width, or, beside the rail, from the rail's edge on: the corner
+// cell has no line, so bar and rail read as one shape (an L).
+.header {
+  z-index: 30;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--header-height);
+  padding: 0 12px 0 0;
+  box-sizing: border-box;
+  background-color: var(--surface);
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background-color: var(--border);
+    pointer-events: none;
+  }
+
+  @include comp.media('min-width: 768px') {
+    position: sticky;
+    top: 0;
+
+    &--rail::after {
+      left: var(--nav-collapsed);
+    }
+  }
+}
+
+// The left cell: as wide as the rail, so the logo stands over its icons.
+.header-brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-collapsed);
+  height: 100%;
+}
+
+// The way home: the brand tile alone; its name ("Home") is its label.
+.header-home {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 28px;
+  text-decoration: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 // The language picker (a select-only Combobox): its button has the size,
 // shape, and shadow of the HeaderButtons beside it, and shows the code.

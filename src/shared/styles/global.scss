@@ -38,6 +38,14 @@
   outline-offset: 2px;
 }
 
+// On desktop the bar stays at the top: an anchor, scrollIntoView, or a
+// heading that takes the focus must not slide under it.
+html {
+  @include comp.media('min-width: 768px') {
+    scroll-padding-top: var(--header-height);
+  }
+}
+
 body,
 html {
   margin: 0;
@@ -141,8 +149,9 @@ a {
   }
 }
 
-// The page: header, content, footer; the content grows, so the footer stays
-// at the bottom of the window on a short page.
+// The app: the bar across the top, then the page (content and footer); the
+// content grows, so the footer stays at the bottom of the window on a short
+// page. Beside the rail (desktop, not /auth) the page keeps clear of it.
 .container {
   display: flex;
   flex-direction: column;
@@ -150,11 +159,23 @@ a {
   min-height: 100dvh;
 }
 
+.container-page {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+
+  @include comp.media('min-width: 768px') {
+    .container--rail > & {
+      padding-left: var(--nav-collapsed);
+    }
+  }
+}
+
 main {
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
-  padding: 0 6.5em;
+  padding: 1.5em 2.5em 0;
   gap: 2em;
   width: 100%;
   max-width: 85em;

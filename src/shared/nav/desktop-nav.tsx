@@ -126,8 +126,9 @@ function SectionContent(props: { section: NavSection }) {
 /**
  * The sidebar on desktop (≥768px), after Codewars: a rail of icons that
  * widens while hovered (or while the keyboard is in it) to show the labels.
- * Three parts: home on top, the sections in the middle (scrolling when they
- * do not fit), the account or signing in at the bottom. A list opens beside
+ * It starts under the app's bar, which holds home (the logo) in its corner,
+ * so the model's `home` is not drawn here. Two parts: the sections
+ * (scrolling when they do not fit), the account or signing in at the bottom. A list opens beside
  * the rail, one at a time, and closes when the pointer leaves, on Escape, a
  * press elsewhere, a scroll of the middle, or once a link is followed. It
  * follows the rail when the window changes size.
@@ -160,16 +161,6 @@ export function DesktopNav(props: { nav: NavModel }) {
                 if (!nav?.contains(e.relatedTarget as Node | null)) close();
             }}
         >
-            <div class="nav-top">
-                <NavEntry
-                    item={props.nav.home}
-                    class="nav-link nav-home"
-                    onDone={close}
-                >
-                    <SectionContent section={props.nav.home} />
-                </NavEntry>
-            </div>
-
             <NavScroll class="nav-middle" onScroll={close}>
                 <ul class="navbar-nav">
                     <For each={props.nav.sections}>

@@ -17,6 +17,12 @@
   --font-mono: #{vars.$font-mono};
   --transition-speed: #{vars.$transition-speed};
 
+  // The frame of the app (an L): the bar across the top and the rail of
+  // icons under it on desktop. In px: the page's font grows with the window,
+  // the frame does not. The bar's left cell (the logo) is as wide as the rail.
+  --header-height: 56px;
+  --nav-collapsed: 60px;
+
   // As the dark theme, mirrored: the page, then light grey surfaces on it
   // (navigation, cards, header buttons, forms), and white fields set into
   // them; a hovered, open or current item a step darker than a surface

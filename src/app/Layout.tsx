@@ -63,17 +63,17 @@ const Layout: Component<ParentProps> = (props) => {
         focusHeading();
     });
 
+    // The frame (an L): the bar across the top with the logo, the rail under
+    // it on desktop. Tab order: the skip link, the logo and the bar's
+    // buttons, the rail, then the page.
     return (
-        <div class="container">
+        <div class="container" classList={{ 'container--rail': showNav() }}>
             <a class="skip-link" href="#main">
                 {t('nav.skip', 'Skip to content')}
             </a>
 
-            <Show when={showNav()}>
-                <NavBuilder nav={nav()} />
-            </Show>
-
             <Header
+                rail={showNav()}
                 actions={
                     <>
                         <Show when={isAuthenticated()}>
@@ -90,14 +90,21 @@ const Layout: Component<ParentProps> = (props) => {
                 }
             />
 
-            <main id="main" tabIndex={-1}>
-                <PageLoading state={loading}>
-                    {/* A page that throws takes only itself down. */}
-                    <PageErrorBoundary>{props.children}</PageErrorBoundary>
-                </PageLoading>
-            </main>
+            <Show when={showNav()}>
+                <NavBuilder nav={nav()} />
+            </Show>
 
-            <Footer />
+            {/* The page beside the rail: main and the footer, clear of it. */}
+            <div class="container-page">
+                <main id="main" tabIndex={-1}>
+                    <PageLoading state={loading}>
+                        {/* A page that throws takes only itself down. */}
+                        <PageErrorBoundary>{props.children}</PageErrorBoundary>
+                    </PageLoading>
+                </main>
+
+                <Footer />
+            </div>
 
             <RealtimeNotices />
 
