@@ -12,6 +12,7 @@ import { IconCheck, IconChevronDown } from '@shared/ui/icons';
 import {
     createOptionList,
     indexOfValue,
+    type ActiveBy,
     type ListOption,
 } from '@shared/ui/Listbox';
 import { createPopupPlacement, type PopupAlign } from './popup';
@@ -190,12 +191,13 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
         setOpen(false);
     }
 
-    // Opens the list; the active option is the selected one, or the first
-    // enabled one, unless `index` says another.
-    function openList(index?: number) {
+    // Opens the list by the keys or the pointer; the active option is the
+    // selected one, or the first enabled one, unless `index` says another.
+    function openList(by: ActiveBy, index?: number) {
         const chosen = selectedIndex();
         list.setActive(
-            index ?? (list.enabled(chosen) ? chosen : list.firstEnabled())
+            index ?? (list.enabled(chosen) ? chosen : list.firstEnabled()),
+            by
         );
         setOpen(true);
     }
@@ -250,7 +252,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
             case ' ':
                 if (e.key === ' ' && list.typing()) break;
                 e.preventDefault();
-                openList();
+                openList('keys');
                 return;
             case 'ArrowDown':
             case 'ArrowUp':
@@ -258,21 +260,21 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                 // Alt+Down and Alt+Up open the list on the selected option
                 // as well; Alt+Up does nothing while it is closed.
                 if (e.altKey && e.key === 'ArrowUp') return;
-                openList();
+                openList('keys');
                 return;
             case 'Home':
                 e.preventDefault();
-                openList(list.firstEnabled());
+                openList('keys', list.firstEnabled());
                 return;
             case 'End':
                 e.preventDefault();
-                openList(-1);
+                openList('keys', -1);
                 list.move('End');
                 return;
         }
         if (e.key.length === 1 && !e.altKey) {
             e.preventDefault();
-            openList();
+            openList('keys');
             list.typeAhead(e.key);
         }
     }
@@ -339,13 +341,13 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                     // Alt+Down opens with no active option; Alt+Up does
                     // nothing while closed.
                     if (e.altKey) {
-                        if (e.key === 'ArrowDown') openList(-1);
+                        if (e.key === 'ArrowDown') openList('keys', -1);
                         return;
                     }
                     explicit = true;
-                    if (selectedIndex() >= 0) openList();
+                    if (selectedIndex() >= 0) openList('keys');
                     else {
-                        openList(-1);
+                        openList('keys', -1);
                         list.move(e.key);
                     }
                     return;
@@ -404,7 +406,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     function onInput(e: InputEvent & { currentTarget: HTMLInputElement }) {
         setText(e.currentTarget.value);
         setFiltering(true);
-        list.setActive(-1);
+        list.setActive(-1, 'keys');
         explicit = false;
         setOpen(true);
     }
@@ -429,7 +431,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
 
     function onOptionHover(index: number) {
         if (!list.enabled(index)) return;
-        list.setActive(index);
+        list.setActive(index, 'pointer');
         explicit = false;
     }
 
@@ -491,6 +493,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                         class="combobox-option"
                         classList={{
                             'combobox-option--active': list.active() === i(),
+                            'combobox-option--keys':
+                                list.active() === i() && list.activeByKeys(),
                         }}
                         aria-selected={isSelected(option)}
                         aria-disabled={option.disabled ? true : undefined}
@@ -559,7 +563,9 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                             classList={{ invalid: !!props.invalid }}
                             disabled={props.disabled}
                             title={props.title}
-                            onClick={() => (open() ? close() : openList())}
+                            onClick={() =>
+                                open() ? close() : openList('pointer')
+                            }
                             onKeyDown={onKeyDown}
                             onKeyUp={onKeyUp}
                         >
@@ -616,7 +622,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                         onInput={onInput}
                         onKeyDown={onInputKeyDown}
                         onClick={() => {
-                            if (!open()) openList(-1);
+                            if (!open()) openList('pointer', -1);
                         }}
                     />
                     <IconChevronDown class="combobox-chevron" size={16} />

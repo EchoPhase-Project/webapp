@@ -3,10 +3,10 @@
 // (or over it, data-drop-up), at its start edge (or its end, data-align).
 // Where the browser has the Popover API, the popup is in the top layer
 // while open and popup.ts gives it fixed coordinates; the rules below place
-// it only without the API. Selected options get
-// a check and bold text, the active one (the keyboard's place) an outline;
-// neither state rests on colour only. The caller's class on the root may
-// dress the button (as a header button, as a form field).
+// it only without the API. Selected options get a check and bold text, the
+// active one a background, and an outline as well when the keyboard made it
+// active; neither state rests on colour only. The caller's class on the root
+// may dress the button (as a header button, as a form field).
 .combobox {
   position: relative;
   display: inline-block;
@@ -170,9 +170,13 @@
   }
 }
 
-// Hover makes an option active, so one style serves the mouse and the keys.
+// Hover makes an option active, so the background serves the mouse and the
+// keys; the outline marks only an option that the keyboard made active.
 .combobox-option--active {
   background: var(--hover);
+}
+
+.combobox-option--keys {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
 }

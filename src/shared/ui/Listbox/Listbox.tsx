@@ -46,6 +46,9 @@ export type ListboxProps<T> = ListboxSingle<T> | ListboxMultiple<T>;
  */
 export default function Listbox<T>(props: ListboxProps<T>) {
     const list = createOptionList(() => props.options);
+    // A press of the pointer gives the focus: the option it makes active
+    // gets no outline (only the keyboard's does).
+    let pressed = false;
 
     const selected = (value: T) =>
         props.multiple
@@ -100,6 +103,7 @@ export default function Listbox<T>(props: ListboxProps<T>) {
     }
 
     function onKeyDown(e: KeyboardEvent) {
+        pressed = false;
         if (e.altKey) return;
         const ctrl = e.ctrlKey || e.metaKey;
         if (props.multiple && ctrl && e.key.toLowerCase() === 'a') {
@@ -137,17 +141,20 @@ export default function Listbox<T>(props: ListboxProps<T>) {
     // With one choice the active option is the selected one; otherwise
     // the list keeps its active option, or starts at the first selected.
     function onFocus() {
+        const by = pressed ? 'pointer' : 'keys';
+        pressed = false;
         const chosen = selectedIndex();
-        if (!props.multiple && chosen >= 0) list.setActive(chosen);
+        if (!props.multiple && chosen >= 0) list.setActive(chosen, by);
         else if (!list.enabled(list.active())) {
-            list.setActive(chosen >= 0 ? chosen : list.firstEnabled());
+            list.setActive(chosen >= 0 ? chosen : list.firstEnabled(), by);
         }
         list.scrollActiveIntoView();
     }
 
     function onClick(index: number) {
+        pressed = false;
         if (!list.enabled(index)) return;
-        list.setActive(index);
+        list.setActive(index, 'pointer');
         choose(index);
     }
 
@@ -163,6 +170,7 @@ export default function Listbox<T>(props: ListboxProps<T>) {
             aria-activedescendant={list.activeId()}
             onKeyDown={onKeyDown}
             onFocus={onFocus}
+            onMouseDown={() => (pressed = true)}
         >
             <For each={props.options}>
                 {(option, i) => (
@@ -172,6 +180,8 @@ export default function Listbox<T>(props: ListboxProps<T>) {
                         class="listbox-option"
                         classList={{
                             'listbox-option--active': list.active() === i(),
+                            'listbox-option--keys':
+                                list.active() === i() && list.activeByKeys(),
                         }}
                         aria-selected={selected(option.value)}
                         aria-disabled={option.disabled ? true : undefined}

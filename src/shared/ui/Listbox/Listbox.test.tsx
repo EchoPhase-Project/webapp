@@ -277,6 +277,50 @@ describe('Listbox', () => {
         });
     });
 
+    describe('the outline of the active option', () => {
+        const keys = (name: string) =>
+            option(name).classList.contains('listbox-option--keys');
+        const anyKeys = () =>
+            document.querySelector('.listbox-option--keys') !== null;
+
+        it('shows for the keyboard: focus by Tab, the arrows', () => {
+            const { list } = renderSingle('banana');
+            list.focus();
+            expect(keys('Banana')).toBe(true);
+            key(list, 'ArrowDown');
+            expect(keys('Blueberry')).toBe(true);
+            expect(keys('Banana')).toBe(false);
+        });
+
+        it('does not show after a click; the next arrow brings it back', () => {
+            const { list } = renderSingle('banana');
+            // A press gives the focus before the click.
+            fireEvent.mouseDown(option('Cherry'));
+            list.focus();
+            expect(active(list)).toBe('Banana');
+            expect(anyKeys()).toBe(false);
+            fireEvent.click(option('Cherry'));
+            expect(active(list)).toBe('Cherry');
+            expect(
+                option('Cherry').classList.contains('listbox-option--active')
+            ).toBe(true);
+            expect(anyKeys()).toBe(false);
+            key(list, 'ArrowUp');
+            expect(keys('Blueberry')).toBe(true);
+        });
+
+        it('does not show after a click with more than one choice', () => {
+            const { list } = renderMultiple();
+            list.focus();
+            fireEvent.mouseDown(option('Banana'));
+            fireEvent.click(option('Banana'));
+            expect(active(list)).toBe('Banana');
+            expect(anyKeys()).toBe(false);
+            key(list, 'End');
+            expect(keys('Cherry')).toBe(true);
+        });
+    });
+
     it('scrolls the active option into view', () => {
         const scroll = vi.fn();
         Element.prototype.scrollIntoView = scroll;

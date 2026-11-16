@@ -19,6 +19,13 @@ export type ListOption<T> = {
 
 /** How long typed letters stay together as one search (type-ahead). */
 export const TYPE_AHEAD_MS = 500;
+/**
+ * What made an option active: the keyboard (the arrows, Home, End, the
+ * pages, type-ahead, a key that opens a list) or the pointer (hover, a
+ * click). Only the keyboard's active option gets an outline.
+ */
+export type ActiveBy = 'keys' | 'pointer';
+
 /** How far PageUp and PageDown move. */
 const PAGE = 10;
 
@@ -36,8 +43,10 @@ export type OptionList = {
     active: Accessor<number>;
     /** The id of the active option, for aria-activedescendant. */
     activeId: Accessor<string | undefined>;
-    /** Makes the option at `index` active (-1: none). */
-    setActive: (index: number) => void;
+    /** Makes the option at `index` active (-1: none), by the keys or the pointer. */
+    setActive: (index: number, by: ActiveBy) => void;
+    /** Whether the keyboard made the active option active (not the pointer). */
+    activeByKeys: Accessor<boolean>;
     /** Whether the option at `index` exists and is not disabled. */
     enabled: (index: number) => boolean;
     /** The first enabled option, or -1 if there is none. */
@@ -71,6 +80,11 @@ export function createOptionList<T>(
     const id = createUniqueId();
     const optionId = (index: number) => `${id}-option-${index}`;
     const [raw, setRaw] = createSignal(-1);
+    const [by, setBy] = createSignal<ActiveBy>('keys');
+    const setActive = (index: number, how: ActiveBy) => {
+        setRaw(index);
+        setBy(how);
+    };
     const active = () => {
         const i = raw();
         return i >= 0 && i < options().length ? i : -1;
@@ -116,7 +130,7 @@ export function createOptionList<T>(
         const to = moves[key];
         if (!to) return undefined;
         const index = to();
-        if (index >= 0) setRaw(index);
+        if (index >= 0) setActive(index, 'keys');
         return active();
     }
 
@@ -140,7 +154,7 @@ export function createOptionList<T>(
             const i = (start + k) % count;
             const label = options()[i]?.label.toLocaleLowerCase() ?? '';
             if (enabled(i) && label.startsWith(query)) {
-                setRaw(i);
+                setActive(i, 'keys');
                 return i;
             }
         }
@@ -165,7 +179,8 @@ export function createOptionList<T>(
             const index = active();
             return index < 0 ? undefined : optionId(index);
         },
-        setActive: setRaw,
+        setActive,
+        activeByKeys: () => by() === 'keys',
         enabled,
         firstEnabled: () => seek(0, 1),
         move,

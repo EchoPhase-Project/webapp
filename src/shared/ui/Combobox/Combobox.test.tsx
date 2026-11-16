@@ -411,6 +411,39 @@ describe('Combobox', () => {
         }
     });
 
+    describe('the outline of the active option', () => {
+        const keys = (name: string) =>
+            option(name).classList.contains('combobox-option--keys');
+        const anyKeys = () =>
+            document.querySelector('.combobox-option--keys') !== null;
+
+        it('shows when a key opens the list and moves in it', () => {
+            const { button } = renderCombobox('apple');
+            key(button, 'Enter');
+            expect(keys('Apple')).toBe(true);
+            key(button, 'ArrowDown');
+            expect(keys('Banana')).toBe(true);
+            expect(keys('Apple')).toBe(false);
+        });
+
+        it('does not show for a click or hover; an arrow brings it back', () => {
+            const { button } = renderCombobox('apple');
+            fireEvent.click(button);
+            expect(active(button)).toBe('Apple');
+            expect(anyKeys()).toBe(false);
+            fireEvent.mouseEnter(option('Blueberry'));
+            expect(active(button)).toBe('Blueberry');
+            expect(
+                option('Blueberry').classList.contains(
+                    'combobox-option--active'
+                )
+            ).toBe(true);
+            expect(anyKeys()).toBe(false);
+            key(button, 'ArrowDown');
+            expect(keys('Cherry')).toBe(true);
+        });
+    });
+
     describe('placement', () => {
         let buttonBottom = 100;
         const rect = (top: number, height: number) =>
@@ -1009,6 +1042,18 @@ describe('Combobox, editable', () => {
             expect(input.value).toBe('Cherry');
             expect(listbox()).toBeNull();
             expect(document.activeElement).toBe(input);
+        });
+
+        it('hover and a click give no outline; an arrow does', () => {
+            const { input } = renderEditable('apple');
+            fireEvent.click(input);
+            fireEvent.mouseEnter(option('Banana'));
+            expect(active(input)).toBe('Banana');
+            expect(document.querySelector('.combobox-option--keys')).toBeNull();
+            key(input, 'ArrowDown');
+            expect(
+                option('Blueberry').classList.contains('combobox-option--keys')
+            ).toBe(true);
         });
 
         it('a click outside closes', () => {

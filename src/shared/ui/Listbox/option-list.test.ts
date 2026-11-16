@@ -34,7 +34,7 @@ describe('createOptionList', () => {
         expect(list.optionId(0)).toContain(list.id);
         expect(list.active()).toBe(-1);
         expect(list.activeId()).toBeUndefined();
-        list.setActive(1);
+        list.setActive(1, 'keys');
         expect(list.activeId()).toBe(list.optionId(1));
     });
 
@@ -73,7 +73,7 @@ describe('createOptionList', () => {
         const options = Array.from({ length: 25 }, (_, i) => option(`O${i}`));
         options[10] = option('O10', true);
         const list = listOf(options);
-        list.setActive(0);
+        list.setActive(0, 'keys');
         expect(list.move('PageDown')).toBe(9);
         expect(list.move('PageDown')).toBe(19);
         expect(list.move('PageDown')).toBe(24);
@@ -84,7 +84,7 @@ describe('createOptionList', () => {
 
     it('forgets an active index that the options no longer have', () => {
         const list = listOf([option('A')]);
-        list.setActive(3);
+        list.setActive(3, 'keys');
         expect(list.active()).toBe(-1);
     });
 });

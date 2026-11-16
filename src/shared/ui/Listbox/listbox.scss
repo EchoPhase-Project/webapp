@@ -1,7 +1,7 @@
 // A list of options that is always in view: a framed field with a scroll
 // of its own. Selected options get a check and bold text, the active one
-// (the keyboard's place) an outline while the list has the focus; neither
-// state rests on colour only.
+// a background while the list has the focus, and an outline as well when the
+// keyboard made it active; neither state rests on colour only.
 .listbox {
   margin: 0;
   padding: 4px;
@@ -48,6 +48,11 @@
 
 .listbox:focus .listbox-option--active {
   background: var(--hover);
+}
+
+// The outline marks the keyboard's place only: after a click, the clicked
+// option has the background alone, and the next key brings the outline back.
+.listbox:focus .listbox-option--keys {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
 }
