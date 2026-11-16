@@ -1,4 +1,4 @@
-import { defineConfig, type PluginOption } from 'vite';
+import { defineConfig, loadEnv, type PluginOption } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { compression } from 'vite-plugin-compression2';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -7,7 +7,16 @@ import path from 'node:path';
 // Where `vite` (dev) sends /api, the realtime gateway socket included.
 const apiTarget = process.env.API_TARGET ?? 'http://localhost:8080';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
+    // The developer aids (the /dev playground, the Query devtools, error
+    // details): in the dev server, and in a build with VITE_DEV_TOOLS=true
+    // (the dev cluster's `dev:deploy --dev-tools`). A literal in each module
+    // that reads it, so a usual build drops the code and its chunks: an
+    // exported constant would not (Rolldown keeps the chunks of dynamic
+    // imports that only an imported false makes dead).
+    const devTools =
+        command === 'serve' ||
+        loadEnv(mode, process.cwd(), 'VITE_').VITE_DEV_TOOLS === 'true';
     const plugins: PluginOption[] = [
         solidPlugin(),
         // .gz next to each asset for nginx's gzip_static, so it does not
@@ -37,6 +46,7 @@ export default defineConfig(({ mode }) => {
             __APP_VERSION__: JSON.stringify(
                 process.env.ECHOPHASE_VERSION || '0.0.0-local'
             ),
+            'import.meta.env.DEV_TOOLS': JSON.stringify(devTools),
         },
         resolve: {
             // The aliases (@app, @shared...) are tsconfig.json's paths.

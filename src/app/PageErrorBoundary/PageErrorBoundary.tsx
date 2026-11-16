@@ -19,7 +19,7 @@ export function isChunkLoadError(error: unknown): boolean {
 }
 
 type PageErrorBoundaryProps = ParentProps<{
-    /** Shows the error's message and stack: in development only. */
+    /** Shows the error's message and stack: with the dev tools only. */
     details?: boolean;
 }>;
 
@@ -35,7 +35,7 @@ export default function PageErrorBoundary(props: PageErrorBoundaryProps) {
                 <PageError
                     error={error}
                     reset={reset}
-                    details={props.details ?? import.meta.env.DEV}
+                    details={props.details ?? import.meta.env.DEV_TOOLS}
                 />
             )}
         >

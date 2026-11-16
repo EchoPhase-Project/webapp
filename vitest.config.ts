@@ -4,8 +4,11 @@ import solidPlugin from 'vite-plugin-solid';
 // Separate from vite.config.ts: compression and the bundle report have no
 // place in a test run.
 export default defineConfig({
-    // As vite.config.ts defines it for a build without ECHOPHASE_VERSION.
-    define: { __APP_VERSION__: JSON.stringify('0.0.0-local') },
+    // As vite.config.ts defines them for a usual build.
+    define: {
+        __APP_VERSION__: JSON.stringify('0.0.0-local'),
+        'import.meta.env.DEV_TOOLS': 'false',
+    },
     plugins: [solidPlugin()],
     resolve: {
         tsconfigPaths: true,

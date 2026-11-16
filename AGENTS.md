@@ -46,8 +46,9 @@ and the tests are successful.
 - `src/shared/ui/forms/`: the form controls and `forms.scss`, which they
   share. Import them as `@shared/ui/forms/<Name>`.
 - `src/shared/ui/icons.ts`: all icons.
-- `src/dev/`: the component playground (`/dev`). It is only in the dev
-  server. The list of its pages is in `src/dev/routes.ts`.
+- `src/dev/`: the component playground (`/dev`). It is in the dev server
+  and in a build with `VITE_DEV_TOOLS=true`. The list of its pages is in
+  `src/dev/routes.ts`.
 - `src/static/locales/`: the translations.
 
 ## Rules
@@ -59,6 +60,15 @@ and the tests are successful.
 - A feature imports only `shared` and its own files.
 - `shared` does not import features or `app`.
 - ESLint enforces these rules.
+
+### Developer aids
+
+- Put a developer aid behind `import.meta.env.DEV_TOOLS`. Do not read
+  `import.meta.env.DEV` directly. ESLint enforces this rule.
+- `DEV_TOOLS` is true in the dev server and in a build with
+  `VITE_DEV_TOOLS=true`. It controls the `/dev` pages, the Query devtools,
+  and the error details.
+- `mise run check` fails if the usual build contains these aids.
 
 ### Solid
 

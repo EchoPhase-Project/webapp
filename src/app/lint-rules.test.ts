@@ -25,6 +25,12 @@ export const [open, setOpen] = createSignal(false);
 const bareButton = `export const Go = () => <button type="button">Go</button>;
 `;
 
+const devAid = `export const extra = import.meta.env.DEV ? 1 : 0;
+`;
+
+const devToolsAid = `export const extra = import.meta.env.DEV_TOOLS ? 1 : 0;
+`;
+
 describe('the lint rules', { timeout: 60_000 }, () => {
     it('stop a component that calls the API', async () => {
         expect(
@@ -63,5 +69,22 @@ describe('the lint rules', { timeout: 60_000 }, () => {
             expect(await rulesBroken(bareButton, file), file).not.toContain(
                 'no-restricted-syntax'
             );
+    });
+
+    it('stop a developer aid behind DEV, in shared/ui too', async () => {
+        for (const file of [
+            'src/app/Router.tsx',
+            'src/features/notes/NotesPage.tsx',
+            'src/shared/ui/Button/Button.tsx',
+        ])
+            expect(await rulesBroken(devAid, file), file).toContain(
+                'no-restricted-syntax'
+            );
+    });
+
+    it('let it go behind DEV_TOOLS', async () => {
+        expect(
+            await rulesBroken(devToolsAid, 'src/app/Router.tsx')
+        ).not.toContain('no-restricted-syntax');
     });
 });

@@ -25,7 +25,10 @@ The dev server does not have `/config.json`. Thus, visit statistics and error
 reports stay off while you work.
 
 Pages to try components are at `/dev/*` (`src/dev/`). The page `/dev` shows a
-list of all these pages. A build does not include them.
+list of all these pages. A usual build does not include them. A build with
+`VITE_DEV_TOOLS=true` includes them and the TanStack Query devtools. The dev
+cluster uses this build if you deploy it with `dev:deploy --dev-tools` (refer
+to [deploy](https://github.com/EchoPhase-Project/deploy)).
 
 Before you open a pull request, run:
 
@@ -42,7 +45,7 @@ CI runs the same checks. CI also builds the Docker image.
 | `src/app/`             | Entry (`main.tsx`), `Root` (head), `Layout`, the page registry (`pages.ts`), routes and providers (`Router.tsx`), navigation; the header, footer, and brand tile in folders |
 | `src/features/<name>/` | One feature in each folder: its page, components, API calls, styles, and tests                                                                                              |
 | `src/shared/`          | The code that features share: `api/`, `consent/`, `i18n/`, `ui/`, `nav/`, `theme/`, `lib/`, `styles/`, `meta/`, `testing/`                                                  |
-| `src/dev/`             | Pages to try shared components (dev server only)                                                                                                                            |
+| `src/dev/`             | Pages to try shared components (dev server and `VITE_DEV_TOOLS` builds only)                                                                                                |
 | `src/static/`          | Fonts, icons, and translations (`locales/`)                                                                                                                                 |
 
 Import through the aliases (`@app/…`, `@features/…`, `@shared/…`, `@dev/…`,
@@ -100,6 +103,15 @@ stylesheet, `<feature>.scss`.
       (`ui.copied`).
     - `matchOptions(options, query, fields)` (`text-match.ts`): the options
       that agree with a typed text, also if the text has small errors.
+- Put a developer aid (a page, a panel, or details for a developer) behind
+  `import.meta.env.DEV_TOOLS`. Do not read `import.meta.env.DEV` directly.
+  `DEV_TOOLS` is true in the dev server and in a build with
+  `VITE_DEV_TOOLS=true`, for example the dev cluster. Thus, one switch
+  controls all aids in a build. `vite.config.ts` replaces `DEV_TOOLS` with
+  `true` or `false` in each module. Thus, Rollup removes the aids and their
+  chunks from the usual build. Do not copy `DEV_TOOLS` to an exported
+  constant, because then Rollup keeps the chunks. ESLint enforces the rule,
+  and `mise run check` examines `dist/` for the aids.
 
 ## UI
 

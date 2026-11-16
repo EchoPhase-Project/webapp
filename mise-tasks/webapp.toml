@@ -25,7 +25,7 @@ depends = ["contract:pull"]
 run = "OPENAPI=artifacts/openapi.json npm run gen:api"
 
 [check]
-description = "Contract types up to date, type check, lint, formatting, tests, build"
+description = "Contract types up to date, type check, lint, formatting, tests, build without dev tools"
 depends = ["contract:pull"]
 run = [
   "OPENAPI=artifacts/openapi.json npm run check:api",
@@ -34,6 +34,7 @@ run = [
   "npm run format:check",
   "npm test",
   "npm run build",
+  "scripts/check-no-dev-tools.sh",
 ]
 
 [test]

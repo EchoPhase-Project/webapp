@@ -20,17 +20,17 @@ const routes = [
         path: page.path,
         component: page.auth ? requireAuth(page.component) : page.component,
     })),
-    ...(import.meta.env.DEV ? devRoutes() : []),
+    ...(import.meta.env.DEV_TOOLS ? devRoutes() : []),
     {
         path: '*404',
         component: lazyPage(() => import('./NotFound')),
     },
 ];
 
-// The query cache of the session, in development only (a chunk of its own).
-const QueryDevtools = import.meta.env.DEV
+// The query cache of the session, with the dev tools only (a chunk of its own).
+const QueryDevtools = import.meta.env.DEV_TOOLS
     ? lazy(() =>
-          import('@tanstack/solid-query-devtools').then((m) => ({
+          import('@tanstack/solid-query-devtools/production').then((m) => ({
               default: m.SolidQueryDevtools,
           }))
       )

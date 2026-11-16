@@ -9,6 +9,9 @@ COPY . .
 # The image tag: error reports name it as their release. Not VERSION, the
 # same name as the server's argument (where VERSION meant MSBuild's Version).
 ARG ECHOPHASE_VERSION=0.0.0-local
+# true adds the developer aids (/dev pages, the Query devtools): only for the
+# dev cluster (dev:deploy --dev-tools in deploy). CI and releases keep false.
+ARG VITE_DEV_TOOLS=false
 RUN npm run build
 
 FROM nginx:alpine

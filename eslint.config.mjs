@@ -65,6 +65,15 @@ const moduleState = ['createSignal', 'createStore'].map((name) => ({
     selector: `:matches(Program, Program > ExportNamedDeclaration) > VariableDeclaration > VariableDeclarator > CallExpression.init[callee.name="${name}"]`,
     message: `No ${name} at the top of a feature module: keep user state in Query, in a component, or in sessionScoped from @shared/api/session-provider.`,
 }));
+// One switch for the developer aids (the /dev playground, the Query
+// devtools, error details): import.meta.env.DEV_TOOLS, which vite.config.ts
+// defines. DEV leaves them out of a dev cluster's build with VITE_DEV_TOOLS.
+const devTools = {
+    selector:
+        'MemberExpression[object.object.type="MetaProperty"][object.property.name="env"][property.name=/^(DEV|VITE_DEV_TOOLS)$/]',
+    message:
+        'Put a developer aid behind import.meta.env.DEV_TOOLS (the dev server, or a build with VITE_DEV_TOOLS=true).',
+};
 const features = fs.readdirSync('src/features');
 
 export default defineConfig([
@@ -104,7 +113,7 @@ export default defineConfig([
                 'error',
                 { patterns: [noParent, iconLibraries] },
             ],
-            'no-restricted-syntax': ['error', ...ownControls],
+            'no-restricted-syntax': ['error', ...ownControls, devTools],
             '@typescript-eslint/no-restricted-imports': [
                 'error',
                 { patterns: [apiLayer] },
@@ -115,7 +124,12 @@ export default defineConfig([
     {
         files: ['src/features/**'],
         rules: {
-            'no-restricted-syntax': ['error', ...ownControls, ...moduleState],
+            'no-restricted-syntax': [
+                'error',
+                ...ownControls,
+                ...moduleState,
+                devTools,
+            ],
         },
     },
 
@@ -141,7 +155,7 @@ export default defineConfig([
             'src/shared/nav/**',
             'src/**/*.test.{ts,tsx}',
         ],
-        rules: { 'no-restricted-syntax': 'off' },
+        rules: { 'no-restricted-syntax': ['error', devTools] },
     },
 
     {

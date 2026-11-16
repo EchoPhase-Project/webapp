@@ -7,8 +7,8 @@ export type DevPage = {
     /** One line on the index (/dev) and under the page's title. */
     description: string;
     /**
-     * lazy(() => import('./XPage')): only the dev server loads it. The
-     * index gets the list of pages as a prop.
+     * lazy(() => import('./XPage')): only the dev server and a build with
+     * the dev tools load it. The index gets the list of pages as a prop.
      */
     component: Component<{ pages: readonly DevPage[] }> & {
         preload: () => Promise<unknown>;
@@ -122,9 +122,10 @@ export function devPages(): DevPage[] {
 export const DEV_INDEX = '/dev';
 
 /**
- * Pages for trying out components, under /dev. Only `vite` (dev mode) has
- * them: the router asks for them behind `import.meta.env.DEV`, which a
- * build replaces with false, so neither this module nor the pages ship.
+ * Pages for trying out components, under /dev. Only `vite` (dev mode) and a
+ * build with VITE_DEV_TOOLS=true have them: the router asks for them behind
+ * `import.meta.env.DEV_TOOLS`, which a usual build replaces with false, so
+ * neither this module nor the pages ship.
  * Each page shows in a frame (DevFrame): its header and a link back to the
  * index. The frame and the pages do not import this module (they get what
  * they need as props): Rollup would keep the list, and with it each page's
