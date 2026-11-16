@@ -125,6 +125,8 @@ Before you write new markup, make pages from the components in
 | `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                              |
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
 | `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
+| `SkeletonScope`, `SkeletonText`, `SkeletonBlock`      | A part of a page whose data loads: the shared components in it show bars in the shape of their content. `SkeletonText` and `SkeletonBlock` are bars for markup of your own                    |
+| `PageSkeleton`                                        | The rough shape of a page (`header`, `table`, `cards`, `list`, `settings`, `detail`, `document`). `lazyPage` shows it while the page code loads                                               |
 
 Each shared component has a page in `src/dev/`. The page shows the variants
 and the states of the component. If you add a shared component, show it on a
@@ -383,6 +385,21 @@ server contract. Do not write a response type manually in `types.ts`.
   first answer stops the page and shows the fallback. A new key (a new search,
   another item) then replaces the shown page with the fallback.
   `PageLoading` shows the load of the page code without `<Suspense>`.
+- To show that data loads, wrap the part of the page in `SkeletonScope`
+  with `when={query.isPending}`. Shared components then show their loading
+  form. Thus, the page keeps its shape, and the content does not jump when
+  the data comes.
+- Show the content in the scope while the query is pending or successful.
+  Show `LoadError` outside the scope for an error. The loading form needs
+  the components on the page, and an error is not a load.
+- Keep a static `PageHeader` outside the scope. The scope makes its part
+  inert, and the layout cannot move the focus to an inert `h1`.
+- The scope hides its part from screen readers and announces one
+  "Loading…" for it. Thus, a screen reader does not read the bars.
+- If a shared component shows data, give it a loading form under
+  `useSkeleton()`. Do not give it a `loading` prop. The scope makes the
+  part inert and announces the load, and a prop does not do these steps.
+  `SessionsPage` is the example.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `@shared/api/paged-list`. `describe` gives the `…InfiniteQuery` description
   from the API file of the feature, with `cursorPages`. The helper adds
@@ -516,8 +533,14 @@ add routes or sidebar links directly.
     - `path` and `component`, with
       `lazyPage(() => import('@features/<name>/XPage'))`. Do not use `lazy`.
       `lazyPage` tells the layout that the page code is on its way. Thus, the
-      layout shows the loading bar and moves the focus when the page is
-      ready.
+      layout announces the load and moves the focus when the page is ready.
+    - The `skeleton` option of `lazyPage`: the shape that the page shows
+      while its code loads, for example
+      `lazyPage(() => import('…'), { skeleton: 'table' })`. Select the form
+      that agrees with the content of the page: `table`, `cards`, `list`,
+      `settings`, `detail`, or `document`. The default is `header`. The
+      shape comes after 200 ms. Thus, a fast load shows nothing, and a slow
+      load does not show an empty page.
     - `auth: true` if the page needs a session.
     - `nav` if the page shows in the sidebar: an icon, an i18n key with its
       English text, and a `group` if the page is in a sub-menu.

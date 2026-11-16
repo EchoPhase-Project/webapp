@@ -91,6 +91,17 @@ and the tests are successful.
   `<Suspense>` in a page or around a page.
 - In `src/app/pages.ts`, load each page with `lazyPage(() => import(...))`.
   Do not use `lazy`.
+- Give `lazyPage` the `skeleton` option that agrees with the page:
+  `table`, `cards`, `list`, `settings`, `detail`, or `document`. The default
+  is `header`.
+- To show that data loads, wrap the part of the page in `SkeletonScope`
+  with `when={query.isPending}`. Shared components then show their loading
+  form.
+- Show the part in the scope while the query is pending or successful.
+  Show `LoadError` outside the scope. Keep a static `PageHeader` outside the
+  scope. `SessionsPage` is the example.
+- If a shared component shows data, give it a loading form under
+  `useSkeleton()`. Do not give it a `loading` prop.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
@@ -124,7 +135,8 @@ and the tests are successful.
   Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
-  BackLink, Table, EmptyState, PageHeader, Switch, LoadError.
+  BackLink, Table, EmptyState, PageHeader, Switch, LoadError,
+  SkeletonScope, SkeletonText, SkeletonBlock, PageSkeleton.
 - If you add a shared component, show it on a page in `src/dev/`. If you
   make a new page, add one entry for it to the list in `src/dev/routes.ts`.
 - A non-modal panel (a menu, a list, a notifications panel) opens with
