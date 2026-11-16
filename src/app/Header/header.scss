@@ -31,7 +31,7 @@
 // The list is wide enough for the languages' names. It opens at the
 // button's end edge (the header's end): align="end" in LanguageSelect.
 .header-language .combobox-popup {
-  min-width: max(11rem, var(--combobox-anchor-width, 100%));
+  min-width: max(11rem, var(--popover-anchor-width, 100%));
 }
 
 // Signing in from the header: only on phones, where the sidebar's is not.

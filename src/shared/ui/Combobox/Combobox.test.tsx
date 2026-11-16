@@ -627,7 +627,7 @@ describe('Combobox, top layer', () => {
         expect(style.bottom).toBe('auto');
         expect(style.left).toBe('600px');
         expect(style.right).toBe('auto');
-        expect(style.getPropertyValue('--combobox-anchor-width')).toBe('120px');
+        expect(style.getPropertyValue('--popover-anchor-width')).toBe('120px');
     });
 
     it('lines up the right edges with align="end"', () => {

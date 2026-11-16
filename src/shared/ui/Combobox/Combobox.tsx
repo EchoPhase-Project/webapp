@@ -15,8 +15,7 @@ import {
     type ActiveBy,
     type ListOption,
 } from '@shared/ui/Listbox';
-import { createPopupPlacement, type PopupAlign } from './popup';
-export type { PopupAlign } from './popup';
+import { createPopover, type PopoverAlign } from '@shared/ui/Popover';
 import './combobox.scss';
 
 /** How many matches of a typed query an editable Combobox shows at most. */
@@ -52,7 +51,7 @@ export type ComboboxProps<T> = {
      * start (the default) or the end, e.g. for a control at the end of a
      * bar.
      */
-    align?: PopupAlign;
+    align?: PopoverAlign;
     /** Select-only: shown on hover over the button. */
     title?: string;
     /** The id of the button or the input, so that a <label for> names it. */
@@ -156,12 +155,17 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     // listbox is not valid); "no results" is a note beside it.
     const listShown = () => open() && shown().length > 0;
 
-    const dropUp = createPopupPlacement(
-        () => anchor,
-        () => popup,
+    // The list goes into the top layer, under (or over) the button or the
+    // input. Manual: the keys and createDismiss close it, not the browser.
+    // Without the Popover API, combobox.scss places it.
+    const { up: dropUp } = createPopover({
+        panel: () => popup,
+        anchor: () => anchor,
         open,
-        () => props.align ?? 'start'
-    );
+        mode: () => 'manual',
+        placement: () => ({ align: props.align ?? 'start' }),
+        fallback: 'stylesheet',
+    });
     createDismiss(() => root, open, close);
     // A disabled control keeps no list open.
     createEffect(() => {
