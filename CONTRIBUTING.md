@@ -97,30 +97,32 @@ stylesheet, `<feature>.scss`.
       outside and on Escape.
     - `createClipboard()`: a copy button with a "Copied" state
       (`ui.copied`).
+    - `matchOptions(options, query, fields)` (`text-match.ts`): the options
+      that agree with a typed text, also if the text has small errors.
 
 ## UI
 
 Before you write new markup, make pages from the components in
 `src/shared/ui`:
 
-| Component                                             | Purpose                                                                                                                                                                                     |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action), `link` (an action in a sentence) |
-| `HeaderButton`                                        | The square icon buttons in the top bar (new note, notifications, theme)                                                                                                                     |
-| `Tabs`, `NavTabs`                                     | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern. `NavTabs` are links to the parts of a page                                               |
-| `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                      |
-| `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                            |
-| `Listbox`                                             | A list of options that is always visible, for one choice or more than one, with the keyboard of the WAI-ARIA listbox pattern                                                                |
-| `Combobox`                                            | A button that opens a list of options for one short choice (the language), with the keyboard of the WAI-ARIA select-only combobox pattern                                                   |
-| `TimeZoneField`                                       | A field for an IANA time zone: an editable `Combobox` with the zones of the browser. It accepts only a zone from the list                                                                   |
-| `TextArea`, `MarkdownEditor`                          | Text of more than one line, with its label and errors. `MarkdownEditor` adds the Write and Preview tabs                                                                                     |
-| `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                             |
-| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                        |
-| `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                   |
-| `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                               |
-| `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                            |
-| `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                     |
-| `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                            |
+| Component                                             | Purpose                                                                                                                                                                                       |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action), `link` (an action in a sentence)   |
+| `HeaderButton`                                        | The square icon buttons in the top bar (new note, notifications, theme)                                                                                                                       |
+| `Tabs`, `NavTabs`                                     | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern. `NavTabs` are links to the parts of a page                                                 |
+| `Field`, `Select`, `FieldError`, `ErrorSummary`       | Form fields with their labels and errors, connected for screen readers                                                                                                                        |
+| `Checkbox`, `RadioGroup`                              | Options in a form, as cards. The form sends them                                                                                                                                              |
+| `Listbox`                                             | A list of options that is always visible, for one choice or more than one, with the keyboard of the WAI-ARIA listbox pattern                                                                  |
+| `Combobox`                                            | A button that opens a list of options for one short choice (the language), with the keyboard of the WAI-ARIA select-only combobox pattern. With `editable`, an input that filters a long list |
+| `TimeZoneField`                                       | A field for an IANA time zone: an editable `Combobox` with the zones of the browser. It accepts only a zone from the list                                                                     |
+| `TextArea`, `MarkdownEditor`                          | Text of more than one line, with its label and errors. `MarkdownEditor` adds the Write and Preview tabs                                                                                       |
+| `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                               |
+| `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                          |
+| `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                     |
+| `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                                 |
+| `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                              |
+| `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
+| `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
 
 ### Folders of the components
 
@@ -173,6 +175,36 @@ Before you write new markup, make pages from the components in
 - If the action of a `ConfirmDialog` can fail, give the errors to `errors`.
   Close the dialog only in `onOk`. Thus, the user sees why the action failed
   and can try again.
+
+### List controls
+
+Select the control for a choice from a list with these rules:
+
+| The choice                                  | The control                                     | Example                        |
+| ------------------------------------------- | ----------------------------------------------- | ------------------------------ |
+| A usual choice in a form                    | The native `Select` (`@shared/ui/forms/Select`) | The fields of a form           |
+| A short choice with its own look, no typing | `Combobox`                                      | `LanguageSelect` in the header |
+| A long list with a search                   | `Combobox` with `editable`                      | `TimeZoneField`                |
+| A list that is always visible               | `Listbox` (`multiple` for more than one)        | The page `/dev/listbox`        |
+
+- Use the native `Select` for a usual choice in a form. A phone shows its
+  own picker for it, and the app does not have to make one.
+- Use `Combobox` only if the choice needs its own look, as in the header.
+  The native `Select` is easier to use on a phone.
+- Use an editable `Combobox` for a list that is too long to scroll. The user
+  types some letters, and the list shows only the options that agree.
+- Give an editable `Combobox` the texts `resultsText`, `noResults`, and
+  `moreResults` from `ui.*` keys. The component has no text of its own, and
+  each list uses the same words. Refer to `forms/TimeZoneField.tsx`.
+- Do not write a list control of your own. Use `createOptionList` from
+  `@shared/ui/Listbox` for a new control. It has the keys, the type-ahead,
+  and the option ids that `Listbox` and `Combobox` use. Thus, all lists
+  have one keyboard behaviour.
+- To find options that agree with a typed text, use `matchOptions` from
+  `@shared/lib/text-match`. Do not give it empty fields. An empty field is
+  near each query of one or two letters, and then each option agrees.
+- If the user selects the selected value again, `Listbox` and `Combobox` do
+  not call `onChange`. Thus, the caller does not have to compare the values.
 
 ### Icons
 

@@ -117,6 +117,23 @@ and the tests are successful.
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Card, SettingsCard, ShareList, RemoveButton, BackLink,
   Table, EmptyState, PageHeader, Switch, LoadError.
+- Select the list control for a choice with these rules:
+    - For a usual choice in a form, use the native `Select`
+      (`@shared/ui/forms/Select`).
+    - For a short choice with its own look and no text input, use
+      `Combobox`. An example is `LanguageSelect` in the header.
+    - For a long list with a search, use `Combobox` with `editable`. An
+      example is `TimeZoneField`.
+    - For a list that is always visible, use `Listbox`. It accepts one
+      choice or more than one choice (`multiple`).
+- Give an editable `Combobox` the texts `resultsText`, `noResults`, and
+  `moreResults` from `ui.*` keys.
+- Do not write a list control of your own. For the keys and the option ids,
+  use `createOptionList` from `@shared/ui/Listbox`.
+- To find options that agree with a typed text, use `matchOptions` from
+  `@shared/lib/text-match`. Do not give it empty fields.
+- If the user selects the selected value again, `Listbox` and `Combobox` do
+  not call `onChange`.
 - If a component has its own stylesheet, give it a folder `<Name>/`. The
   folder contains `<Name>.tsx`, its `.scss`, its tests, and `index.ts`. This
   rule applies to `src/shared/ui` and to `src/app`.
