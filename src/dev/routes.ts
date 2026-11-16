@@ -74,6 +74,20 @@ export function devPages(): DevPage[] {
             component: lazy(() => import('./PopoverPage')),
         },
         {
+            path: '/dev/surfaces',
+            title: 'Surfaces',
+            description:
+                'Card, SettingsCard, EmptyState, LoadError, PageHeader, BackLink and Masonry.',
+            component: lazy(() => import('./SurfacesPage')),
+        },
+        {
+            path: '/dev/share-list',
+            title: 'ShareList',
+            description:
+                'Whom something is shared with, on fake data in memory: as a card and as a section.',
+            component: lazy(() => import('./ShareListPage')),
+        },
+        {
             path: '/dev/table',
             title: 'Table',
             description: 'A table of webhooks with a status pill in a cell.',
