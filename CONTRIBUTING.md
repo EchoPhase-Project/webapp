@@ -245,6 +245,10 @@ Before you write new markup, make pages from the components in
   `role="status"`, or `role="alert"` for an error. Keep the live region on
   the page, and change only its text. A screen reader does not read a live
   region that comes with its first message.
+- Do not put a secret or a token in a live region. Announce a short
+  message, and keep the value as normal text next to it. A screen reader
+  reads a live region aloud at once, and persons near the user can hear the
+  value.
 - Animations have a `@media (prefers-reduced-motion: reduce)` block.
 - Examine your changes in the two themes and at the width of a phone.
 

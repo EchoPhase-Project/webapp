@@ -174,6 +174,8 @@ and the tests are successful.
 - Put temporary messages in a live region (`role="status"`, or
   `role="alert"` for errors). Keep the region on the page. Change only its
   text.
+- Do not put a secret or a token in a live region. Announce a short
+  message, and keep the value as normal text next to it.
 
 ### Translations
 
