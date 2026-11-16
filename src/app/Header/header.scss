@@ -33,7 +33,25 @@
 
     &--rail::after {
       left: var(--nav-collapsed);
+      transition: left 200ms ease;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
     }
+  }
+}
+
+// While the rail is wide (the same three cases as in navbar.scss), the line
+// starts at its wide edge, moving with it: the L keeps its shape. Three
+// separate selectors: :has() cannot hold another :has(), and one selector
+// the browser does not take would drop the whole rule.
+@include comp.media('min-width: 768px') {
+  .container:has(.navbar--desktop:hover) .header--rail::after,
+  .container:has(.navbar--desktop :focus-visible) .header--rail::after,
+  .container:has(.navbar--desktop .nav-link[aria-expanded='true'])
+    .header--rail::after {
+    left: var(--nav-expanded);
   }
 }
 
@@ -65,7 +83,7 @@
 }
 
 // The language picker (a select-only Combobox): its button has the size,
-// shape, and shadow of the HeaderButtons beside it, and shows the code.
+// shape, and flat look of the HeaderButtons beside it, and shows the code.
 .header-language .combobox-button {
   gap: 4px;
   min-height: 0;
@@ -74,12 +92,13 @@
   border: none;
   font-size: 0.8rem;
   font-weight: 600;
-  background-color: var(--surface);
-  box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
-  transition: box-shadow var(--transition-speed) ease-in;
+  background-color: transparent;
+  box-shadow: none;
+  transition: background-color var(--transition-speed) ease-in;
 
-  &:hover {
-    box-shadow: color-mix(in srgb, var(--shadow) 24%, transparent) 0 2px 8px 0;
+  &:hover,
+  &[aria-expanded='true'] {
+    background-color: var(--hover);
   }
 
   &[aria-expanded='true'] {

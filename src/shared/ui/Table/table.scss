@@ -15,7 +15,7 @@ table {
     box-shadow: color-mix(in srgb, var(--shadow) 18%, transparent) 0 4px 12px 0;
   }
 
-  @include comp.media('max-width: 768px') {
+  @include comp.media('max-width: 767.98px') {
     display: block;
   }
 }
@@ -66,7 +66,7 @@ td a {
   }
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 767.98px) {
   thead,
   th,
   td,
@@ -125,7 +125,7 @@ td a {
 }
 
 // Loading: on a phone a bar takes part of the line beside its label.
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 767.98px) {
   .table-skeleton-row td > .skeleton-text {
     max-width: 50%;
   }

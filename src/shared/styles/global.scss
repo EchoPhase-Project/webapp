@@ -182,7 +182,7 @@ main {
   margin-right: auto;
   margin-left: auto;
   box-sizing: border-box;
-  @include comp.media('max-width: 768px') {
+  @include comp.media('max-width: 767.98px') {
     padding: 5em 2em;
   }
 }

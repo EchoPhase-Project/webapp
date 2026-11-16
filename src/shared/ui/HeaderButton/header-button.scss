@@ -1,6 +1,7 @@
 // An action of the top bar (HeaderButton: new note, notifications, theme): a
-// compact 32px square, an icon on the surface, a dot in the corner when
-// there is news.
+// compact 32px square, a flat icon on the bar (the bar is the surface), the
+// hover colour under the pointer and while its panel is open, a dot in the
+// corner when there is news.
 .header-button {
   position: relative;
   display: inline-flex;
@@ -15,17 +16,21 @@
   font: inherit;
   font-size: 15px;
   color: var(--text);
-  background-color: var(--surface);
+  background-color: transparent;
   cursor: pointer;
-  box-shadow: color-mix(in srgb, var(--shadow) 14%, transparent) 0 1px 4px 0;
-  transition: box-shadow var(--transition-speed) ease-in;
+  transition: background-color var(--transition-speed) ease-in;
 
-  &:hover {
-    box-shadow: color-mix(in srgb, var(--shadow) 24%, transparent) 0 2px 8px 0;
+  &:hover,
+  &[aria-expanded='true'] {
+    background-color: var(--hover);
   }
 
   &[aria-expanded='true'] {
     color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
