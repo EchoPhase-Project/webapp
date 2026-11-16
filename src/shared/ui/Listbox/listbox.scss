@@ -76,7 +76,8 @@
 }
 
 .listbox-hint {
-  font-size: 0.8rem;
+  // In em: it follows the option's text when a caller makes the list smaller.
+  font-size: 0.8em;
   color: var(--text-muted);
 }
 
