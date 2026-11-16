@@ -1,0 +1,131 @@
+// The playground's own layout (dev only, not in a build): samples side by
+// side on cards, one column on a phone.
+
+.dev-page h2 {
+  margin: 0;
+}
+
+.dev-section {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+
+  > .muted {
+    margin: 0;
+  }
+}
+
+.dev-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.dev-grid--wide {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+}
+
+.dev-sample {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-width: 0;
+}
+
+.dev-sample-title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dev-log {
+  min-height: 1.2em;
+  margin: 0;
+}
+
+.dev-index {
+  @include mix.plain-list(12px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+}
+
+.dev-index-item {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+
+.dev-index-link {
+  font-weight: 600;
+}
+
+// A sample's row of things that wrap (avatars, buttons).
+.dev-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.dev-icons {
+  @include mix.plain-list(8px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+}
+
+.dev-icon {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  code {
+    overflow: hidden;
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+  }
+}
+
+.dev-popover-panel {
+  display: grid;
+  gap: 8px;
+  width: min(260px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-raised);
+  box-shadow: color-mix(in srgb, var(--shadow) 25%, transparent) 0 7px 18px 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.dev-masonry-card p {
+  margin: 0;
+}
+
+.dev-brand {
+  color: var(--accent);
+}
+
+.dev-brand--tile {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  color: var(--on-primary);
+  background: var(--primary);
+}
+
+.dev-plain {
+  @include mix.plain-list(8px);
+}

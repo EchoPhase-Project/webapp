@@ -45,8 +45,6 @@ export default function ComboboxPage() {
 
     return (
         <div class="page-stack">
-            <h1>Combobox</h1>
-
             <section>
                 <h2>Short labels</h2>
                 <Combobox

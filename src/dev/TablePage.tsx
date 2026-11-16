@@ -67,8 +67,6 @@ export default function WebhooksPage() {
 
     return (
         <div class="webhooks-container">
-            <h1>Webhooks Management</h1>
-
             <Table
                 data={webhooks}
                 headers={headers}

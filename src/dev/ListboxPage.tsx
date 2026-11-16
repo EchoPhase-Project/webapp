@@ -23,8 +23,6 @@ export default function ListboxPage() {
 
     return (
         <div class="page-stack">
-            <h1>Listbox</h1>
-
             <section>
                 <h2 id="dev-listbox-single">One choice</h2>
                 <Listbox
