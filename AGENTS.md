@@ -115,8 +115,15 @@ and the tests are successful.
 - Before you write new markup, use the components in `src/shared/ui`:
   Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
-  ConfirmDialog, Card, SettingsCard, ShareList, RemoveButton, BackLink,
-  Table, EmptyState, PageHeader, Switch, LoadError.
+  ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
+  BackLink, Table, EmptyState, PageHeader, Switch, LoadError.
+- A non-modal panel (a menu, a list, a notifications panel) opens with
+  `Popover`. A modal opens with `Modal`.
+- The trigger of a `Popover` belongs to the caller. It changes `open` and
+  sets `aria-expanded` and `aria-controls`. Give `onClose`, and set `open`
+  to false in it.
+- If a control must have its own panel, use `createPopover` from
+  `@shared/ui/Popover`.
 - Select the list control for a choice with these rules:
     - For a usual choice in a form, use the native `Select`
       (`@shared/ui/forms/Select`).
@@ -157,7 +164,8 @@ and the tests are successful.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.
 - Before you write a debounce, a click-outside close, or a copy button, use
   the helper in `src/shared/lib`: `createDebounced`, `createDismiss`,
-  `createClipboard`.
+  `createClipboard`. If a `Popover` can close the panel, do not use
+  `createDismiss`.
 - Each page starts with `PageHeader`.
 - Each page sets its title and description with
   `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".

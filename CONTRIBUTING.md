@@ -94,7 +94,8 @@ stylesheet, `<feature>.scss`.
 - Use the helpers in `src/shared/lib` before you write the same logic again:
     - `createDebounced(ms)`: a search that waits for a pause in typing.
     - `createDismiss(ref, isOpen, close)`: a popup that closes on a click
-      outside and on Escape.
+      outside and on Escape. Use it only for a panel that `Popover` does not
+      close, for example the list of `Combobox`.
     - `createClipboard()`: a copy button with a "Copied" state
       (`ui.copied`).
     - `matchOptions(options, query, fields)` (`text-match.ts`): the options
@@ -117,6 +118,7 @@ Before you write new markup, make pages from the components in
 | `TimeZoneField`                                       | A field for an IANA time zone: an editable `Combobox` with the zones of the browser. It accepts only a zone from the list                                                                     |
 | `TextArea`, `MarkdownEditor`                          | Text of more than one line, with its label and errors. `MarkdownEditor` adds the Write and Preview tabs                                                                                       |
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                               |
+| `Popover`                                             | A panel that is not modal, next to its trigger: a menu, a list, the notifications. It shows in the top layer of the browser. A click outside and Escape close it                              |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                          |
 | `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                     |
 | `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                                 |
@@ -175,6 +177,25 @@ Before you write new markup, make pages from the components in
 - If the action of a `ConfirmDialog` can fail, give the errors to `errors`.
   Close the dialog only in `onOk`. Thus, the user sees why the action failed
   and can try again.
+
+### Panels
+
+- A non-modal panel (a menu, a list, a notifications panel) opens with
+  `Popover`. A modal opens with `Modal`.
+- The browser puts a `Popover` in its top layer and closes it on a click
+  outside and on Escape. A `Modal` makes the rest of the page inert and
+  keeps the focus in the dialog.
+- The trigger of a `Popover` belongs to the caller. The trigger changes
+  `open` and sets `aria-expanded` and `aria-controls`.
+- Give `onClose` to each `Popover`, and set `open` to false in it. The
+  browser can close the panel, and `onClose` keeps the state of the trigger
+  correct.
+- Do not write a second `open` change for a click on the trigger.
+  `Popover` makes sure that a click on the trigger of an open panel closes
+  it.
+- If a control must have its own panel, use `createPopover` from
+  `@shared/ui/Popover`. `Combobox` uses it in the `manual` mode, because
+  its keys close its list.
 
 ### List controls
 
