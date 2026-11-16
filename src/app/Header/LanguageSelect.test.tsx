@@ -54,12 +54,15 @@ describe('LanguageSelect', () => {
     it('lists the languages by their own names', async () => {
         const button = await renderSelect();
         fireEvent.click(button);
-        const names = screen
-            .getAllByRole('option')
-            .map((o) => o.textContent?.trim());
-        expect(names).toEqual(
-            expect.arrayContaining(['English', 'Română', 'Русский'])
-        );
+        // Each option is named by its native name and shows its code below.
+        for (const [name, code] of [
+            ['English', 'EN'],
+            ['Română', 'RO'],
+            ['Русский', 'RU'],
+        ]) {
+            const option = screen.getByRole('option', { name });
+            expect(option.textContent).toContain(code);
+        }
         await expectNoA11yViolations();
     });
 

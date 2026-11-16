@@ -15,6 +15,8 @@ export function LanguageSelect() {
             value: code,
             label: nativeName,
             short: code.toUpperCase(),
+            // The code under the name, as on the button.
+            hint: code.toUpperCase(),
         }))
     );
 
