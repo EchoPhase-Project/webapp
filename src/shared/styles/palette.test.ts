@@ -81,6 +81,7 @@ describe.each([
             'hover',
             'border',
             'shadow',
+            'skeleton',
         ])
             expect(t[name], name).toMatch(/^#[0-9a-f]{6}$/i);
     });
@@ -139,6 +140,15 @@ describe.each([
                     contrast(t[name], over(surface)),
                     `${name} over the pattern on ${surface}`
                 ).toBeGreaterThanOrEqual(min);
+    });
+
+    // Not text: the bars only need to stand apart from what they sit on.
+    it('the bars of a loading form show on every surface', () => {
+        for (const surface of surfaces)
+            expect(
+                contrast(t.skeleton, t[surface]),
+                `skeleton on ${surface}`
+            ).toBeGreaterThanOrEqual(1.25);
     });
 
     it('a hovered menu item stays readable', () => {

@@ -69,3 +69,12 @@
   gap: 8px;
   margin-left: auto;
 }
+
+// Loading: the action keeps its room but does not show.
+.settings-card-actions--loading {
+  visibility: hidden;
+}
+
+.settings-card-head h2 .skeleton-text {
+  width: 10em;
+}

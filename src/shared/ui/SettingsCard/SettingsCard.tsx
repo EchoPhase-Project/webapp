@@ -1,5 +1,6 @@
 import { Show, type JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
+import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
 import './settings-card.scss';
 
 /**
@@ -8,6 +9,11 @@ import './settings-card.scss';
  * hint on the left and its action on the right, always in the same place.
  * With `onSubmit` it is a form and the action submits it. `danger` marks
  * what cannot be undone.
+ *
+ * Its loading form (in a `SkeletonScope` that loads) keeps the frame, the
+ * title and the hint, shows bars in place of an empty title, the
+ * description and the content, and keeps the room of the actions without
+ * showing them.
  */
 export default function SettingsCard(props: {
     title: JSX.Element;
@@ -19,6 +25,7 @@ export default function SettingsCard(props: {
     danger?: boolean;
     onSubmit?: (e: SubmitEvent) => void;
 }) {
+    const loading = useSkeleton();
     return (
         <Dynamic
             component={props.onSubmit ? 'form' : 'section'}
@@ -29,18 +36,42 @@ export default function SettingsCard(props: {
         >
             <div class="settings-card-body">
                 <div class="settings-card-head">
-                    <h2>{props.title}</h2>
-                    {props.badge}
+                    <h2>
+                        {props.title ||
+                            (loading() && <SkeletonText width="10em" />)}
+                    </h2>
+                    <Show when={!loading()}>{props.badge}</Show>
                 </div>
-                <Show when={props.description}>
-                    <p class="settings-card-description">{props.description}</p>
+                <Show
+                    when={!loading()}
+                    fallback={
+                        <>
+                            <p class="settings-card-description">
+                                <SkeletonText width="70%" />
+                            </p>
+                            <SkeletonText lines={3} />
+                        </>
+                    }
+                >
+                    <Show when={props.description}>
+                        <p class="settings-card-description">
+                            {props.description}
+                        </p>
+                    </Show>
+                    {props.children}
                 </Show>
-                {props.children}
             </div>
             <Show when={props.hint || props.actions}>
                 <div class="settings-card-footer">
                     <span class="settings-card-hint">{props.hint}</span>
-                    <span class="settings-card-actions">{props.actions}</span>
+                    <span
+                        class="settings-card-actions"
+                        classList={{
+                            'settings-card-actions--loading': loading(),
+                        }}
+                    >
+                        {props.actions}
+                    </span>
                 </div>
             </Show>
         </Dynamic>

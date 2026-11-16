@@ -120,3 +120,10 @@ td a {
     }
   }
 }
+
+// Loading: on a phone a bar takes part of the line beside its label.
+@media only screen and (max-width: 768px) {
+  .table-skeleton-row td > .skeleton-text {
+    max-width: 50%;
+  }
+}

@@ -129,3 +129,10 @@
 .dev-plain {
   @include mix.plain-list(8px);
 }
+
+// A bar in a large heading: it takes the line height of the text.
+.dev-skeleton-large {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}

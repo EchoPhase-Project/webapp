@@ -2,6 +2,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { expectNoA11yViolations } from '@shared/testing/axe';
+import { I18nProvider } from '@shared/i18n/i18n-context';
+import { SkeletonScope } from '@shared/ui/Skeleton';
 import SettingsCard from './SettingsCard';
 
 describe('SettingsCard', () => {
@@ -39,6 +41,34 @@ describe('SettingsCard', () => {
         ).toBe('It cannot be undone.');
         fireEvent.click(screen.getByRole('button', { name: 'Go' }));
         expect(onSubmit).toHaveBeenCalledOnce();
+        await expectNoA11yViolations();
+    });
+
+    it('keeps its frame and title while it loads, bars for the rest', async () => {
+        const { container } = render(() => (
+            <I18nProvider>
+                <SkeletonScope when>
+                    <SettingsCard
+                        title="Details"
+                        description="What others see."
+                        actions={<button type="button">Save</button>}
+                    >
+                        <p>Body</p>
+                    </SettingsCard>
+                </SkeletonScope>
+            </I18nProvider>
+        ));
+        expect(
+            screen.getByRole('heading', { name: 'Details', hidden: true })
+        ).toBeTruthy();
+        expect(screen.queryByText('Body')).toBeNull();
+        expect(screen.queryByText('What others see.')).toBeNull();
+        expect(
+            container.querySelectorAll('.settings-card-body .skeleton-text')
+        ).toHaveLength(2);
+        expect(
+            container.querySelector('.settings-card-actions--loading')
+        ).not.toBeNull();
         await expectNoA11yViolations();
     });
 });

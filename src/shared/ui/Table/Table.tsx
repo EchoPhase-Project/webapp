@@ -1,6 +1,7 @@
-import { For, Show, JSX, Component, ParentComponent } from 'solid-js';
+import { For, Index, Show, JSX, Component, ParentComponent } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
+import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
 import './table.scss';
 
 type DataLabel = string;
@@ -66,12 +67,20 @@ type TableProps<T> = {
     /** Renders one row (usually a <Row>) for an item. */
     render: (props: RowFactoryProps<T>) => JSX.Element;
     tableProps?: JSX.HTMLAttributes<HTMLTableElement>;
+    /** Rows of bars in the loading form (3 by default). */
+    skeletonRows?: number;
 };
 
+/**
+ * Items in rows under a header row; below 768px each row is a card. Its
+ * loading form (in a `SkeletonScope` that loads) is the same table with
+ * rows of bars, one bar for each column, and never the empty text.
+ */
 export function Table<T>(props: TableProps<T>) {
+    const loading = useSkeleton();
     return (
         <Show
-            when={props.data.length > 0}
+            when={props.data.length > 0 || loading()}
             fallback={
                 <EmptyState>
                     <props.placeholder />
@@ -87,11 +96,43 @@ export function Table<T>(props: TableProps<T>) {
                     </tr>
                 </thead>
                 <tbody>
-                    <For each={props.data}>
-                        {(item) => props.render({ item })}
-                    </For>
+                    <Show
+                        when={!loading()}
+                        fallback={
+                            <SkeletonRows
+                                headers={props.headers}
+                                rows={props.skeletonRows ?? 3}
+                            />
+                        }
+                    >
+                        <For each={props.data}>
+                            {(item) => props.render({ item })}
+                        </For>
+                    </Show>
                 </tbody>
             </table>
         </Show>
+    );
+}
+
+/** Rows of bars, with the labels that the phone layout shows. */
+function SkeletonRows(props: { headers: DataLabel[]; rows: number }) {
+    return (
+        <Index each={Array.from({ length: props.rows })}>
+            {(_, row) => (
+                <tr class="row table-skeleton-row">
+                    <For each={props.headers}>
+                        {(header, column) => (
+                            <td data-label={header}>
+                                <SkeletonText
+                                    // Rows of different lengths, as real text.
+                                    width={`${[80, 60, 70][(row + column()) % 3]}%`}
+                                />
+                            </td>
+                        )}
+                    </For>
+                </tr>
+            )}
+        </Index>
     );
 }

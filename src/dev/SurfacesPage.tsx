@@ -9,6 +9,7 @@ import LoadError from '@shared/ui/LoadError';
 import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
 import SettingsCard from '@shared/ui/SettingsCard';
+import { SkeletonScope } from '@shared/ui/Skeleton';
 import { DevGrid, DevLog, DevSample, DevSection } from './DevKit';
 
 const apiError = new ApiError(
@@ -167,6 +168,25 @@ export default function SurfacesPage() {
                         />
                     </div>
                 </Card>
+            </DevSection>
+
+            <DevSection
+                title="Loading forms"
+                note="In a SkeletonScope that loads, Card, SettingsCard and PageHeader keep their frame and show bars for what is not there yet. Each one, with a switch, is on /dev/skeleton."
+            >
+                <SkeletonScope when>
+                    <DevGrid>
+                        <Card>
+                            <p>Content</p>
+                        </Card>
+                        <SettingsCard
+                            title="Details"
+                            actions={<Button>Save</Button>}
+                        >
+                            <p>Content</p>
+                        </SettingsCard>
+                    </DevGrid>
+                </SkeletonScope>
             </DevSection>
 
             <DevSection

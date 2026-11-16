@@ -1,0 +1,13 @@
+// The shape of a page whose code loads: the shared components in their
+// loading form; only the grids are its own.
+.page-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 16px;
+}
+
+.page-skeleton-document {
+  display: grid;
+  gap: 1em;
+  max-width: 70ch;
+}

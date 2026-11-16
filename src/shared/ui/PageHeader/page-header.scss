@@ -55,3 +55,13 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+
+// Loading: the bars take the width a text would; the actions keep their
+// room but do not show.
+.page-header--loading .page-header-text {
+  width: min(100%, 62ch);
+}
+
+.page-actions--loading {
+  visibility: hidden;
+}

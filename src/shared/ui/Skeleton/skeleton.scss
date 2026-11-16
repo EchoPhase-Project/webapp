@@ -1,0 +1,68 @@
+// The scope adds no box: its children lay out as if it was not there.
+.skeleton-scope {
+  display: contents;
+}
+
+// Bars as tall as a line of the text around them (1lh), the bar itself a
+// little lower than the letters, so lines of bars keep the text's rhythm.
+.skeleton-text {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+}
+
+.skeleton-line {
+  display: block;
+  height: 1.5em;
+  height: 1lh;
+
+  &::before {
+    content: '';
+    display: block;
+    height: 0.75em;
+    margin-top: calc((1.5em - 0.75em) / 2);
+    margin-top: calc((1lh - 0.75em) / 2);
+    border-radius: 4px;
+    background: var(--skeleton);
+    animation: skeleton-pulse 1.6s ease-in-out infinite alternate;
+  }
+}
+
+// The last of more lines is shorter, as the end of a paragraph.
+.skeleton-text:not(.skeleton-text--single) .skeleton-line:last-child::before {
+  width: var(--skeleton-last, 60%);
+}
+
+.skeleton-text--single .skeleton-line::before {
+  width: var(--skeleton-last, 100%);
+}
+
+.skeleton-block {
+  display: block;
+  flex: none;
+  border-radius: 8px;
+  background: var(--skeleton);
+  animation: skeleton-pulse 1.6s ease-in-out infinite alternate;
+}
+
+.skeleton-block--round {
+  border-radius: 50%;
+}
+
+@keyframes skeleton-pulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.5;
+  }
+}
+
+// No motion: still bars.
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line::before,
+  .skeleton-block {
+    animation: none;
+  }
+}

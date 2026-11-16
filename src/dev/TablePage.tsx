@@ -2,6 +2,7 @@ import { createSignal } from 'solid-js';
 import { useDateFormat } from '@shared/lib/date-format';
 import Button from '@shared/ui/Button';
 import RemoveButton from '@shared/ui/RemoveButton';
+import { SkeletonScope } from '@shared/ui/Skeleton';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import { IconPencil } from '@shared/ui/icons';
 import { DevLog, DevSample, DevSection } from './DevKit';
@@ -185,6 +186,25 @@ export default function TablePage() {
                         )}
                     />
                 </DevSample>
+            </DevSection>
+
+            <DevSection
+                title="Loading"
+                note="In a SkeletonScope that loads, Table keeps its header row and shows rows of bars in the same columns (cards on a phone), never the placeholder. More states on /dev/skeleton."
+            >
+                <SkeletonScope when>
+                    <Table
+                        data={[] as Hook[]}
+                        headers={['Address', 'Note']}
+                        placeholder={() => <>No webhooks.</>}
+                        render={({ item: hook }) => (
+                            <Row>
+                                <Cell label="Address" text={hook.url} />
+                                <Cell label="Note" text={hook.note} />
+                            </Row>
+                        )}
+                    />
+                </SkeletonScope>
             </DevSection>
         </>
     );

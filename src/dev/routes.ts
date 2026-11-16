@@ -107,6 +107,13 @@ export function devPages(): DevPage[] {
                 'Table as the features use it: a status pill, times, row actions, a long cell, the empty text and the phone layout.',
             component: lazy(() => import('./TablePage')),
         },
+        {
+            path: '/dev/skeleton',
+            title: 'Skeleton',
+            description:
+                'SkeletonScope with a switch: PageHeader, Table, Card and SettingsCard in their loading form, SkeletonText, and the shapes of pages while their code loads.',
+            component: lazy(() => import('./SkeletonPage')),
+        },
     ];
     return pages;
 }
