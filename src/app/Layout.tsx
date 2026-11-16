@@ -110,13 +110,14 @@ const Layout: Component<ParentProps> = (props) => {
 };
 
 // A page renders a moment after its code is in (or after the user is
-// known): look for its heading for up to 30 frames. Not while a dialog has
-// the focus.
+// known): look for its heading for up to 30 frames. A heading in a part
+// that still loads (SkeletonScope: inert) cannot take the focus yet. Not
+// while a dialog has the focus.
 function focusHeading(tries = 30) {
     requestAnimationFrame(() => {
         if (document.activeElement?.closest('dialog[open]')) return;
         const heading = document.querySelector<HTMLElement>('main h1');
-        if (!heading) {
+        if (!heading || heading.closest('[inert]')) {
             if (tries > 0) focusHeading(tries - 1);
             return;
         }

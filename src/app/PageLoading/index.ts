@@ -4,4 +4,8 @@ export {
     lazyPage,
     SHOW_AFTER_MS,
 } from './PageLoading';
-export type { LazyPage, PageLoadingState } from './PageLoading';
+export type {
+    LazyPage,
+    LazyPageOptions,
+    PageLoadingState,
+} from './PageLoading';

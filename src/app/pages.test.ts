@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+// (The route skeletons import shared components, and the router with them.)
 import { describe, expect, it } from 'vitest';
 // From the project root (Vite resolves a leading / there).
 import robots from '/public/robots.txt?raw';

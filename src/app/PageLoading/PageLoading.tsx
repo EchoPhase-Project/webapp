@@ -6,16 +6,17 @@ import {
     lazy,
     on,
     onCleanup,
+    Show,
     useContext,
 } from 'solid-js';
 import type { Accessor, Component, ParentProps } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
-import './page-loading.scss';
+import PageSkeleton, { type PageSkeletonForm } from '@shared/ui/PageSkeleton';
 
 /** Marks a page's code as on its way; the function returned marks it done. */
 type Track = (load: Promise<unknown>) => () => void;
 
-const PageLoadingContext = createContext<Track>();
+const PageLoadingContext = createContext<PageLoadingState>();
 
 /** A wait shorter than this shows nothing: a fast load does not flash. */
 export const SHOW_AFTER_MS = 200;
@@ -24,7 +25,7 @@ export interface PageLoadingState {
     track: Track;
     /** A page's code is loading now. */
     pending: Accessor<boolean>;
-    /** It has been loading for longer than the delay: the sign is on. */
+    /** It has been loading for longer than the delay: the shape shows. */
     shown: Accessor<boolean>;
 }
 
@@ -64,9 +65,9 @@ export function createPageLoading(delay = SHOW_AFTER_MS): PageLoadingState {
 }
 
 /**
- * A thin bar at the top of the window while a page's code loads, and
- * "Loading…" for screen readers. The page in it stays as it is: data that
- * loads inside a page shows with the page's own `isPending`.
+ * "Loading…" for screen readers while a page's code loads; the page itself
+ * (lazyPage) shows its shape in its place. The page in it stays as it is:
+ * data that loads inside a page shows with the page's own `isPending`.
  */
 export default function PageLoading(
     props: ParentProps<{ state: PageLoadingState }>
@@ -76,12 +77,8 @@ export default function PageLoading(
         <PageLoadingContext.Provider
             // The same state for the life of the layout.
             // eslint-disable-next-line solid/reactivity
-            value={props.state.track}
+            value={props.state}
         >
-            <div
-                class="page-loading"
-                classList={{ 'page-loading--shown': props.state.shown() }}
-            />
             {/* Stays on the page; only its text changes. */}
             <p class="visually-hidden" role="status">
                 {props.state.shown() ? t('ui.loading', 'Loading…') : ''}
@@ -96,13 +93,24 @@ export type LazyPage<P extends object> = Component<P> & {
     preload: () => Promise<unknown>;
 };
 
+export interface LazyPageOptions {
+    /**
+     * The shape of the page while its code loads (after the delay), made of
+     * the shared components in their loading form: 'header' (the default),
+     * 'table', 'cards', 'list', 'settings', 'detail' or 'document'.
+     */
+    skeleton?: PageSkeletonForm;
+}
+
 /**
- * `lazy(load)` for a page of the router: while its code loads, the layout
- * shows the sign (PageLoading). There is no <Suspense> for this: a query's
- * `data` is a Solid resource and would suspend the page too.
+ * `lazy(load)` for a page of the router: while its code loads, it shows its
+ * shape (PageSkeleton) after the delay, and the layout says "Loading…"
+ * (PageLoading). There is no <Suspense> for this: a query's `data` is a
+ * Solid resource and would suspend the page too.
  */
 export function lazyPage<P extends object>(
-    load: () => Promise<{ default: Component<P> }>
+    load: () => Promise<{ default: Component<P> }>,
+    options: LazyPageOptions = {}
 ): LazyPage<P> {
     const Page = lazy(load);
     let loaded = false;
@@ -118,9 +126,26 @@ export function lazyPage<P extends object>(
         return loading;
     };
     const Wrapped = (props: P) => {
-        const track = useContext(PageLoadingContext);
-        if (!loaded && track) onCleanup(track(preload()));
-        return createComponent(Page, props);
+        const state = useContext(PageLoadingContext);
+        // Code already in (preloaded, or seen before): no shape, no count.
+        const waiting = !loaded && state;
+        const [ready, setReady] = createSignal(!waiting);
+        if (waiting) {
+            const loading = preload();
+            loading.then(
+                () => setReady(true),
+                () => {}
+            );
+            onCleanup(waiting.track(loading));
+        }
+        return (
+            <>
+                <Show when={!ready() && state?.shown()}>
+                    <PageSkeleton form={options.skeleton ?? 'header'} />
+                </Show>
+                {createComponent(Page, props)}
+            </>
+        );
     };
     return Object.assign(Wrapped, { preload });
 }

@@ -21,12 +21,12 @@ import { fakeApi, json } from '@shared/testing/fake-api';
 import { freshSession } from '@shared/testing/render-page';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import Layout from '@app/Layout';
-import { lazyPage, SHOW_AFTER_MS } from './PageLoading';
+import { lazyPage, SHOW_AFTER_MS, type LazyPageOptions } from './PageLoading';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** A page module that comes when the test says so. */
-function slowModule(Page: Component) {
+function slowModule(Page: Component, options?: LazyPageOptions) {
     let resolve: () => void = () => {};
     let reject: (error: unknown) => void = () => {};
     const module = new Promise<{ default: Component }>((ok, fail) => {
@@ -34,7 +34,7 @@ function slowModule(Page: Component) {
         reject = fail;
     });
     return {
-        Lazy: lazyPage(() => module),
+        Lazy: lazyPage(() => module, options),
         resolve: () => resolve(),
         reject: (error: unknown) => reject(error),
     };
@@ -80,7 +80,8 @@ function renderLayout(routes: Record<string, Component>, path = '/') {
     return history;
 }
 
-const bar = () => document.querySelector('.page-loading');
+// The page's shape while its code loads, in <main>: the footer stays down.
+const skeleton = () => document.querySelector('main .page-skeleton');
 // The live region stays; only its text changes.
 const status = () =>
     document.querySelector('main > [role="status"]')?.textContent || undefined;
@@ -101,30 +102,36 @@ describe('PageLoading', () => {
     });
     afterEach(() => logged.mockRestore());
 
-    it('shows the sign for a slow page only after the delay', async () => {
+    it('shows the shape of a slow page only after the delay', async () => {
         const slow = slowModule(() => <h1>Slow page</h1>);
         const history = renderLayout({ '/': Home, '/slow': slow.Lazy });
         await screen.findByRole('heading', { name: 'Home' });
 
         history.set({ value: '/slow' });
         await wait(SHOW_AFTER_MS / 2);
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(false);
+        expect(skeleton()).toBeNull();
         expect(status()).toBeUndefined();
 
         await wait(SHOW_AFTER_MS);
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(true);
+        expect(skeleton()).not.toBeNull();
         expect(status()).toBe('Loading…');
         await expectNoA11yViolations();
 
+        // In the place of the page, out of reach while it loads.
+        const scope = skeleton()?.closest<HTMLElement>('.skeleton-scope');
+        expect(scope?.inert).toBe(true);
+        expect(scope?.getAttribute('aria-hidden')).toBe('true');
+        expect(
+            screen.queryByRole('heading', { level: 1, hidden: false })
+        ).toBeNull();
+
         slow.resolve();
         await screen.findByRole('heading', { name: 'Slow page' });
-        await waitFor(() =>
-            expect(bar()?.classList.contains('page-loading--shown')).toBe(false)
-        );
+        await waitFor(() => expect(skeleton()).toBeNull());
         expect(status()).toBeUndefined();
     });
 
-    it('never shows the sign for a fast page', async () => {
+    it('never shows the shape of a fast page', async () => {
         const fast = slowModule(() => <h1>Fast page</h1>);
         const history = renderLayout({ '/': Home, '/fast': fast.Lazy });
         await screen.findByRole('heading', { name: 'Home' });
@@ -134,8 +141,30 @@ describe('PageLoading', () => {
         fast.resolve();
         await screen.findByRole('heading', { name: 'Fast page' });
         await wait(SHOW_AFTER_MS * 1.5);
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(false);
+        expect(skeleton()).toBeNull();
         expect(status()).toBeUndefined();
+    });
+
+    it('shows the form that the page asks for', async () => {
+        const slow = slowModule(() => <h1>Slow page</h1>, {
+            skeleton: 'table',
+        });
+        renderLayout({ '/slow': slow.Lazy }, '/slow');
+        await wait(SHOW_AFTER_MS * 1.5);
+        const main = document.querySelector('main');
+        expect(main?.querySelector('.page-skeleton table')).not.toBeNull();
+        expect(
+            main?.querySelectorAll('.page-skeleton tbody tr').length
+        ).toBeGreaterThan(0);
+        // One "Loading…": the layout's, not one more from the shape.
+        expect(
+            [...document.querySelectorAll('main [role="status"]')].map(
+                (region) => region.textContent
+            )
+        ).toEqual(['Loading…']);
+        await expectNoA11yViolations();
+        slow.resolve();
+        await screen.findByRole('heading', { name: 'Slow page' });
     });
 
     it('focuses the heading of the new page once its code is in', async () => {
@@ -153,7 +182,7 @@ describe('PageLoading', () => {
         await waitFor(() => expect(document.activeElement).toBe(heading));
     });
 
-    it('leaves data loading to the page: no sign, the page stays', async () => {
+    it('leaves data loading to the page: no shape, the page stays', async () => {
         let answer: (value: string) => void = () => {};
         const Data = lazyPage(() =>
             Promise.resolve({
@@ -179,7 +208,7 @@ describe('PageLoading', () => {
         });
         await wait(SHOW_AFTER_MS * 1.5);
         expect(screen.getByText('waiting')).toBeTruthy();
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(false);
+        expect(skeleton()).toBeNull();
         expect(status()).toBeUndefined();
 
         answer('the data');
@@ -194,7 +223,7 @@ describe('PageLoading', () => {
         const gone = slowModule(() => <h1>Never</h1>);
         renderLayout({ '/gone': gone.Lazy }, '/gone');
         await wait(SHOW_AFTER_MS * 1.5);
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(true);
+        expect(skeleton()).not.toBeNull();
 
         gone.reject(
             new TypeError(
@@ -207,9 +236,7 @@ describe('PageLoading', () => {
                 name: 'A new version is available',
             })
         ).toBeTruthy();
-        await waitFor(() =>
-            expect(bar()?.classList.contains('page-loading--shown')).toBe(false)
-        );
+        await waitFor(() => expect(skeleton()).toBeNull());
         await expectNoA11yViolations();
     });
 
@@ -222,6 +249,6 @@ describe('PageLoading', () => {
             await screen.findByRole('heading', { name: 'Early page' })
         ).toBeTruthy();
         await wait(SHOW_AFTER_MS * 1.5);
-        expect(bar()?.classList.contains('page-loading--shown')).toBe(false);
+        expect(skeleton()).toBeNull();
     });
 });

@@ -62,22 +62,30 @@ export const PAGES: Page[] = [
     },
     {
         path: '/about',
-        component: lazyPage(() => import('@features/about/AboutPage')),
+        component: lazyPage(() => import('@features/about/AboutPage'), {
+            skeleton: 'detail',
+        }),
         public: true,
     },
     {
         path: '/terms',
-        component: lazyPage(() => import('@features/legal/TermsPage')),
+        component: lazyPage(() => import('@features/legal/TermsPage'), {
+            skeleton: 'document',
+        }),
         public: true,
     },
     {
         path: '/privacy',
-        component: lazyPage(() => import('@features/legal/PrivacyPage')),
+        component: lazyPage(() => import('@features/legal/PrivacyPage'), {
+            skeleton: 'document',
+        }),
         public: true,
     },
     {
         path: '/docs/:slug?',
-        component: lazyPage(() => import('@features/docs/DocsPage')),
+        component: lazyPage(() => import('@features/docs/DocsPage'), {
+            skeleton: 'document',
+        }),
         public: true,
     },
     {
@@ -86,7 +94,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/explore',
-        component: lazyPage(() => import('@features/packages/ExplorePage')),
+        component: lazyPage(() => import('@features/packages/ExplorePage'), {
+            skeleton: 'cards',
+        }),
         auth: true,
         nav: {
             icon: IconCompass,
@@ -100,7 +110,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/packages',
-        component: lazyPage(() => import('@features/packages/PackagesPage')),
+        component: lazyPage(() => import('@features/packages/PackagesPage'), {
+            skeleton: 'list',
+        }),
         auth: true,
         nav: {
             icon: IconPackage,
@@ -115,13 +127,17 @@ export const PAGES: Page[] = [
     {
         // :section: runs or settings; absent: its workflows.
         path: '/packages/:id/:section?',
-        component: lazyPage(() => import('@features/packages/MyPackagePage')),
+        component: lazyPage(() => import('@features/packages/MyPackagePage'), {
+            skeleton: 'detail',
+        }),
         auth: true,
     },
     {
         // :tab: webhooks, schedules, runs or versions; absent: its overview.
         path: '/packages/:packageId/workflows/:id/:tab?',
-        component: lazyPage(() => import('@features/packages/WorkflowPage')),
+        component: lazyPage(() => import('@features/packages/WorkflowPage'), {
+            skeleton: 'detail',
+        }),
         auth: true,
     },
     {
@@ -134,12 +150,16 @@ export const PAGES: Page[] = [
     },
     {
         path: '/explore/:id',
-        component: lazyPage(() => import('@features/packages/PackagePage')),
+        component: lazyPage(() => import('@features/packages/PackagePage'), {
+            skeleton: 'detail',
+        }),
         auth: true,
     },
     {
         path: '/notes',
-        component: lazyPage(() => import('@features/notes/NotesPage')),
+        component: lazyPage(() => import('@features/notes/NotesPage'), {
+            skeleton: 'cards',
+        }),
         auth: true,
         nav: {
             icon: IconNotes,
@@ -154,7 +174,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/files',
-        component: lazyPage(() => import('@features/files/FilesPage')),
+        component: lazyPage(() => import('@features/files/FilesPage'), {
+            skeleton: 'table',
+        }),
         auth: true,
         nav: {
             icon: IconFolder,
@@ -169,7 +191,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/profile',
-        component: lazyPage(() => import('@features/profile/ProfilePage')),
+        component: lazyPage(() => import('@features/profile/ProfilePage'), {
+            skeleton: 'settings',
+        }),
         auth: true,
         nav: {
             icon: IconUser,
@@ -184,7 +208,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/sessions',
-        component: lazyPage(() => import('@features/sessions/SessionsPage')),
+        component: lazyPage(() => import('@features/sessions/SessionsPage'), {
+            skeleton: 'table',
+        }),
         auth: true,
         nav: {
             icon: IconAdjustmentsHorizontal,
@@ -200,7 +226,8 @@ export const PAGES: Page[] = [
     {
         path: '/api-clients',
         component: lazyPage(
-            () => import('@features/api-clients/ApiClientsPage')
+            () => import('@features/api-clients/ApiClientsPage'),
+            { skeleton: 'table' }
         ),
         auth: true,
         nav: {
