@@ -14,5 +14,9 @@ export function devRoutes() {
             path: '/dev/listbox',
             component: lazy(() => import('./ListboxPage')),
         },
+        {
+            path: '/dev/combobox',
+            component: lazy(() => import('./ComboboxPage')),
+        },
     ];
 }
