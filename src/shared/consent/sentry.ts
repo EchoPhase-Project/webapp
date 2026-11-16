@@ -1,4 +1,4 @@
-import { close, init } from '@sentry/browser';
+import { captureException, close, init } from '@sentry/browser';
 import { API_VERSION, APP_VERSION } from './build-info';
 
 // Imported lazily by error-reporting.ts. Named imports, so the bundle keeps
@@ -21,4 +21,8 @@ export function startSentry(dsn: string, tunnel: string) {
 
 export function stopSentry() {
     void close();
+}
+
+export function reportToSentry(error: unknown) {
+    captureException(error);
 }

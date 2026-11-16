@@ -103,6 +103,14 @@
     "text": "There is nothing at this address. It may have moved, or the link may be mistyped.",
     "home": "Go to the home page"
   },
+  "page_error": {
+    "title": "Something went wrong",
+    "text": "This page stopped working because of an error. The rest of the app still works.",
+    "update_title": "A new version is available",
+    "update_text": "This page could not load because EchoPhase was updated. Reload the page to get the new version.",
+    "reload": "Reload the page",
+    "details": "Error details"
+  },
   "notice": {
     "reauth": {
       "title": "Connection needs attention",

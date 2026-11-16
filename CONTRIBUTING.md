@@ -371,6 +371,10 @@ server contract. Do not write a response type manually in `types.ts`.
 - If a read fails, show `LoadError` with the error of the query in place of
   the data. `LoadError` shows the text of the error and a button that tries
   again. Thus, a failed read never looks like an empty list.
+- Do not throw an error from a page to show a failed read. The layout
+  catches a page that throws in `PageErrorBoundary`, and shows a general
+  error page. This boundary is only for errors in the code. A failed read
+  must show the error of the query and a button that tries again.
 - Show the load state with `query.isPending` and the error with
   `query.isError`. Do not use `!query.data` for the load state, because a
   query can have no data after an error.

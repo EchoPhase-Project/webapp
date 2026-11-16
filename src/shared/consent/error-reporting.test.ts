@@ -1,11 +1,17 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { API_VERSION } from './build-info';
-import { ErrorsTunnel, startErrorReporting } from './error-reporting';
+import {
+    ErrorsTunnel,
+    reportError,
+    startErrorReporting,
+    stopErrorReporting,
+} from './error-reporting';
 
 const init = vi.fn();
 const close = vi.fn();
-vi.mock('@sentry/browser', () => ({ init, close }));
+const captureException = vi.fn();
+vi.mock('@sentry/browser', () => ({ init, close, captureException }));
 
 describe('startErrorReporting', () => {
     beforeEach(() => init.mockReset());
@@ -38,5 +44,26 @@ describe('startErrorReporting', () => {
             false
         );
         expect(init).not.toHaveBeenCalled();
+    });
+});
+
+describe('reportError', () => {
+    const dsn = () => Promise.resolve({ sentryDsn: 'http://key@host/2' });
+    beforeEach(() => captureException.mockReset());
+
+    it('sends nothing while reporting does not run', async () => {
+        await stopErrorReporting();
+        await reportError(new Error('boom'));
+        expect(captureException).not.toHaveBeenCalled();
+    });
+
+    it('sends each error once while reporting runs', async () => {
+        await startErrorReporting(dsn);
+        const error = new Error('boom');
+        await reportError(error);
+        await reportError(error);
+        expect(captureException).toHaveBeenCalledTimes(1);
+        expect(captureException).toHaveBeenCalledWith(error);
+        await stopErrorReporting();
     });
 });

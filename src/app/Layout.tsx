@@ -17,6 +17,7 @@ import ConsentBanner from '@features/consent/ConsentBanner';
 import ConsentSettings from '@features/consent/ConsentSettings';
 import { useNav } from './nav-links';
 import Footer from './Footer';
+import PageErrorBoundary from './PageErrorBoundary';
 import '@shared/styles/global.scss';
 
 const Layout: Component<ParentProps> = (props) => {
@@ -73,7 +74,8 @@ const Layout: Component<ParentProps> = (props) => {
             />
 
             <main id="main" tabIndex={-1}>
-                {props.children}
+                {/* A page that throws takes only itself down. */}
+                <PageErrorBoundary>{props.children}</PageErrorBoundary>
             </main>
 
             <Footer />

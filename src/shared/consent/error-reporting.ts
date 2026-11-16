@@ -31,3 +31,20 @@ export async function stopErrorReporting(): Promise<void> {
     const { stopSentry } = await import('./sentry');
     stopSentry();
 }
+
+const reported = new WeakSet<object>();
+
+/**
+ * Reports an error that the app caught itself (a page that threw, caught by
+ * PageErrorBoundary), so it never reaches the SDK's global handlers. Only
+ * while reporting runs (the visitor allowed it); each error object once.
+ */
+export async function reportError(error: unknown): Promise<void> {
+    if (!running) return;
+    if (typeof error === 'object' && error !== null) {
+        if (reported.has(error)) return;
+        reported.add(error);
+    }
+    const { reportToSentry } = await import('./sentry');
+    reportToSentry(error);
+}

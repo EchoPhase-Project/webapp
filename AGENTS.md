@@ -84,6 +84,9 @@ and the tests are successful.
 - If a description needs a different `staleTime`, set it in the
   description.
 - If a read fails, show `LoadError` in place of the data.
+- Do not throw an error from a page for a failed read. The layout catches
+  a page that throws in `PageErrorBoundary`. That boundary is only for
+  errors in the code.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
