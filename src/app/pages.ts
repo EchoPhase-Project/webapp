@@ -1,4 +1,4 @@
-import { lazy, type Component } from 'solid-js';
+import type { Component } from 'solid-js';
 import {
     IconAdjustmentsHorizontal,
     IconCompass,
@@ -8,6 +8,7 @@ import {
     IconPackage,
     IconUser,
 } from '@shared/ui/icons';
+import { lazyPage } from './PageLoading';
 
 /** A sidebar group: its entry opens a sub-menu of the pages in it. */
 export type NavGroup = 'workspace' | 'settings';
@@ -56,36 +57,36 @@ export const NAV_GROUPS: Record<NavGroup, Omit<PageNav, 'group'>> = {
 export const PAGES: Page[] = [
     {
         path: '/',
-        component: lazy(() => import('@features/home/HomePage')),
+        component: lazyPage(() => import('@features/home/HomePage')),
         public: true,
     },
     {
         path: '/about',
-        component: lazy(() => import('@features/about/AboutPage')),
+        component: lazyPage(() => import('@features/about/AboutPage')),
         public: true,
     },
     {
         path: '/terms',
-        component: lazy(() => import('@features/legal/TermsPage')),
+        component: lazyPage(() => import('@features/legal/TermsPage')),
         public: true,
     },
     {
         path: '/privacy',
-        component: lazy(() => import('@features/legal/PrivacyPage')),
+        component: lazyPage(() => import('@features/legal/PrivacyPage')),
         public: true,
     },
     {
         path: '/docs/:slug?',
-        component: lazy(() => import('@features/docs/DocsPage')),
+        component: lazyPage(() => import('@features/docs/DocsPage')),
         public: true,
     },
     {
         path: '/auth',
-        component: lazy(() => import('@features/auth/AuthPage')),
+        component: lazyPage(() => import('@features/auth/AuthPage')),
     },
     {
         path: '/explore',
-        component: lazy(() => import('@features/packages/ExplorePage')),
+        component: lazyPage(() => import('@features/packages/ExplorePage')),
         auth: true,
         nav: {
             icon: IconCompass,
@@ -99,7 +100,7 @@ export const PAGES: Page[] = [
     },
     {
         path: '/packages',
-        component: lazy(() => import('@features/packages/PackagesPage')),
+        component: lazyPage(() => import('@features/packages/PackagesPage')),
         auth: true,
         nav: {
             icon: IconPackage,
@@ -114,29 +115,31 @@ export const PAGES: Page[] = [
     {
         // :section: runs or settings; absent: its workflows.
         path: '/packages/:id/:section?',
-        component: lazy(() => import('@features/packages/MyPackagePage')),
+        component: lazyPage(() => import('@features/packages/MyPackagePage')),
         auth: true,
     },
     {
         // :tab: webhooks, schedules, runs or versions; absent: its overview.
         path: '/packages/:packageId/workflows/:id/:tab?',
-        component: lazy(() => import('@features/packages/WorkflowPage')),
+        component: lazyPage(() => import('@features/packages/WorkflowPage')),
         auth: true,
     },
     {
         // Addresses from before packages: to the workflow in its package.
         path: '/workflows/:id?',
-        component: lazy(() => import('@features/packages/WorkflowRedirect')),
+        component: lazyPage(
+            () => import('@features/packages/WorkflowRedirect')
+        ),
         auth: true,
     },
     {
         path: '/explore/:id',
-        component: lazy(() => import('@features/packages/PackagePage')),
+        component: lazyPage(() => import('@features/packages/PackagePage')),
         auth: true,
     },
     {
         path: '/notes',
-        component: lazy(() => import('@features/notes/NotesPage')),
+        component: lazyPage(() => import('@features/notes/NotesPage')),
         auth: true,
         nav: {
             icon: IconNotes,
@@ -151,7 +154,7 @@ export const PAGES: Page[] = [
     },
     {
         path: '/files',
-        component: lazy(() => import('@features/files/FilesPage')),
+        component: lazyPage(() => import('@features/files/FilesPage')),
         auth: true,
         nav: {
             icon: IconFolder,
@@ -166,7 +169,7 @@ export const PAGES: Page[] = [
     },
     {
         path: '/profile',
-        component: lazy(() => import('@features/profile/ProfilePage')),
+        component: lazyPage(() => import('@features/profile/ProfilePage')),
         auth: true,
         nav: {
             icon: IconUser,
@@ -181,7 +184,7 @@ export const PAGES: Page[] = [
     },
     {
         path: '/sessions',
-        component: lazy(() => import('@features/sessions/SessionsPage')),
+        component: lazyPage(() => import('@features/sessions/SessionsPage')),
         auth: true,
         nav: {
             icon: IconAdjustmentsHorizontal,
@@ -196,7 +199,9 @@ export const PAGES: Page[] = [
     },
     {
         path: '/api-clients',
-        component: lazy(() => import('@features/api-clients/ApiClientsPage')),
+        component: lazyPage(
+            () => import('@features/api-clients/ApiClientsPage')
+        ),
         auth: true,
         nav: {
             icon: IconAdjustmentsHorizontal,

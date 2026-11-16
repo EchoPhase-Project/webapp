@@ -1,4 +1,11 @@
-import { Component, createEffect, on, onCleanup, Show } from 'solid-js';
+import {
+    Component,
+    createEffect,
+    createSignal,
+    on,
+    onCleanup,
+    Show,
+} from 'solid-js';
 import type { ParentProps } from 'solid-js';
 import { A, useLocation } from '@solidjs/router';
 import { useQueryClient } from '@tanstack/solid-query';
@@ -18,6 +25,7 @@ import ConsentSettings from '@features/consent/ConsentSettings';
 import { useNav } from './nav-links';
 import Footer from './Footer';
 import PageErrorBoundary from './PageErrorBoundary';
+import PageLoading, { createPageLoading } from './PageLoading';
 import '@shared/styles/global.scss';
 
 const Layout: Component<ParentProps> = (props) => {
@@ -35,16 +43,25 @@ const Layout: Component<ParentProps> = (props) => {
     // The sign-in page stands alone: nowhere to go before signing in.
     const showNav = () => location.pathname !== '/auth';
 
+    const loading = createPageLoading();
+
     // After moving to another page, focus goes to its heading: otherwise it
     // stays on the link followed (often in the footer, which stays), and the
-    // next Tab goes on from there instead of into the new page.
+    // next Tab goes on from there instead of into the new page. A page whose
+    // code is still loading has no heading yet: wait for its code first.
+    const [focusWanted, setFocusWanted] = createSignal(false);
     createEffect(
         on(
             () => location.pathname,
-            () => focusHeading(),
+            () => setFocusWanted(true),
             { defer: true }
         )
     );
+    createEffect(() => {
+        if (!focusWanted() || loading.pending()) return;
+        setFocusWanted(false);
+        focusHeading();
+    });
 
     return (
         <div class="container">
@@ -74,8 +91,10 @@ const Layout: Component<ParentProps> = (props) => {
             />
 
             <main id="main" tabIndex={-1}>
-                {/* A page that throws takes only itself down. */}
-                <PageErrorBoundary>{props.children}</PageErrorBoundary>
+                <PageLoading state={loading}>
+                    {/* A page that throws takes only itself down. */}
+                    <PageErrorBoundary>{props.children}</PageErrorBoundary>
+                </PageLoading>
             </main>
 
             <Footer />
@@ -90,8 +109,9 @@ const Layout: Component<ParentProps> = (props) => {
     );
 };
 
-// A lazily loaded page renders a moment later: look for its heading for up
-// to a second. Not while a dialog has the focus.
+// A page renders a moment after its code is in (or after the user is
+// known): look for its heading for up to 30 frames. Not while a dialog has
+// the focus.
 function focusHeading(tries = 30) {
     requestAnimationFrame(() => {
         if (document.activeElement?.closest('dialog[open]')) return;

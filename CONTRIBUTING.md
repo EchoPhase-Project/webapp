@@ -378,6 +378,11 @@ server contract. Do not write a response type manually in `types.ts`.
 - Show the load state with `query.isPending` and the error with
   `query.isError`. Do not use `!query.data` for the load state, because a
   query can have no data after an error.
+- Do not put `<Suspense>` in a page or around a page. A query keeps its
+  `data` in a Solid resource. Under `<Suspense>`, a read of `data` before the
+  first answer stops the page and shows the fallback. A new key (a new search,
+  another item) then replaces the shown page with the fallback.
+  `PageLoading` shows the load of the page code without `<Suspense>`.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `@shared/api/paged-list`. `describe` gives the `…InfiniteQuery` description
   from the API file of the feature, with `cursorPages`. The helper adds
@@ -508,7 +513,11 @@ add routes or sidebar links directly.
 
 1. Make a feature folder with the page.
 2. Add an entry to `PAGES`:
-    - `path` and `component`, with `lazy(() => import('@features/<name>/XPage'))`.
+    - `path` and `component`, with
+      `lazyPage(() => import('@features/<name>/XPage'))`. Do not use `lazy`.
+      `lazyPage` tells the layout that the page code is on its way. Thus, the
+      layout shows the loading bar and moves the focus when the page is
+      ready.
     - `auth: true` if the page needs a session.
     - `nav` if the page shows in the sidebar: an icon, an i18n key with its
       English text, and a `group` if the page is in a sub-menu.

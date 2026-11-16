@@ -7,6 +7,7 @@ import { ThemeProvider } from '@shared/theme/theme-context';
 import { RealtimeProvider } from '@features/realtime/realtime-provider';
 import { devRoutes } from '@dev/routes';
 import { PAGES } from './pages';
+import { lazyPage } from './PageLoading';
 
 interface RouterComponentProps {
     base?: string;
@@ -22,7 +23,7 @@ const routes = [
     ...(import.meta.env.DEV ? devRoutes() : []),
     {
         path: '*404',
-        component: lazy(() => import('./NotFound')),
+        component: lazyPage(() => import('./NotFound')),
     },
 ];
 

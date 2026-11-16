@@ -91,6 +91,24 @@ describe('the source', () => {
                 expect(pattern.test(source), `${name} in ${file}`).toBe(false);
     });
 
+    it('has no <Suspense>: data shows its load with isPending', () => {
+        // A query's data would suspend the page (PageLoading/query-suspense.test.tsx).
+        const users = Object.entries(sources)
+            .filter(([, source]) =>
+                /import\s*{[^}]*\bSuspense\b[^}]*}\s*from\s*'solid-js'/.test(
+                    source
+                )
+            )
+            .map(([file]) => file);
+        expect(users).toEqual(['/src/app/PageLoading/query-suspense.test.tsx']);
+    });
+
+    it('loads the pages with lazyPage', () => {
+        const pages = sources['/src/app/pages.ts'] ?? '';
+        expect(pages).toContain('lazyPage(');
+        expect(/\blazy\(/.test(pages)).toBe(false);
+    });
+
     it('has createResource only for static documents', () => {
         const users = Object.entries(sources)
             .filter(([, source]) => /\bcreateResource\b/.test(source))

@@ -87,6 +87,10 @@ and the tests are successful.
 - Do not throw an error from a page for a failed read. The layout catches
   a page that throws in `PageErrorBoundary`. That boundary is only for
   errors in the code.
+- Show the load state of data with `query.isPending`. Do not put
+  `<Suspense>` in a page or around a page.
+- In `src/app/pages.ts`, load each page with `lazyPage(() => import(...))`.
+  Do not use `lazy`.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
