@@ -846,6 +846,56 @@ describe('Combobox, editable', () => {
         expect(screen.getByRole('combobox')).toBeTruthy();
     });
 
+    describe('onClear', () => {
+        function renderClearable(initial?: string) {
+            const [value, setValue] = createSignal<string | undefined>(initial);
+            const onClear = vi.fn(() => setValue(undefined));
+            const onChange = vi.fn((v: string) => setValue(v));
+            render(() => (
+                <>
+                    <Combobox
+                        editable
+                        label="Fruit"
+                        options={fruits}
+                        value={value()}
+                        onChange={onChange}
+                        onClear={onClear}
+                    />
+                    <button type="button">Elsewhere</button>
+                </>
+            ));
+            const input = screen.getByRole<HTMLInputElement>('combobox');
+            input.focus();
+            return { value, onClear, onChange, input };
+        }
+
+        it('an empty input clears the value when the user leaves it', () => {
+            const { input, value, onClear, onChange } =
+                renderClearable('apple');
+            type(input, '  ');
+            leave(input);
+            expect(onClear).toHaveBeenCalledTimes(1);
+            expect(onChange).not.toHaveBeenCalled();
+            expect(value()).toBeUndefined();
+            expect(input.value).toBe('');
+        });
+
+        it('two Escapes and Tab clear it as well', () => {
+            const { input, value } = renderClearable('apple');
+            key(input, 'Escape');
+            expect(input.value).toBe('');
+            tab(input);
+            expect(value()).toBeUndefined();
+        });
+
+        it('calls nothing while nothing is selected', () => {
+            const { input, onClear } = renderClearable();
+            type(input, '');
+            leave(input);
+            expect(onClear).not.toHaveBeenCalled();
+        });
+    });
+
     it('shows a new value from the caller', () => {
         const [value, setValue] = createSignal<string | undefined>('apple');
         render(() => (
@@ -860,5 +910,100 @@ describe('Combobox, editable', () => {
         const input = screen.getByRole<HTMLInputElement>('combobox');
         setValue('cherry');
         expect(input.value).toBe('Cherry');
+    });
+});
+
+describe('Combobox, form props', () => {
+    function renderInForm(editable: boolean, disabled = false) {
+        render(() => (
+            <>
+                <label id="fruit-label" for="fruit">
+                    Fruit
+                </label>
+                <Combobox
+                    editable={editable}
+                    id="fruit"
+                    name="fruit"
+                    labelledBy="fruit-label"
+                    options={fruits}
+                    value="apple"
+                    onChange={() => {}}
+                    invalid
+                    describedBy="fruit-error"
+                    disabled={disabled}
+                />
+                <ul id="fruit-error">
+                    <li>Pick a ripe one.</li>
+                </ul>
+            </>
+        ));
+        return screen.getByRole('combobox');
+    }
+
+    it.each([false, true])(
+        'gives the control an id, aria-invalid and aria-describedby (editable: %s)',
+        async (editable) => {
+            const control = renderInForm(editable);
+            expect(control.id).toBe('fruit');
+            expect(screen.getByLabelText(/^Fruit/)).toBe(control);
+            expect(control.getAttribute('aria-invalid')).toBe('true');
+            expect(control.getAttribute('aria-describedby')).toBe(
+                'fruit-error'
+            );
+            expect(control.classList.contains('invalid')).toBe(true);
+            await expectNoA11yViolations();
+        }
+    );
+
+    it('names the input in its form', () => {
+        const input = renderInForm(true);
+        expect(input.getAttribute('name')).toBe('fruit');
+        expect(input.getAttribute('spellcheck')).toBe('false');
+    });
+
+    it('has no aria-invalid while the value is fine', () => {
+        render(() => (
+            <Combobox
+                editable
+                label="Fruit"
+                options={fruits}
+                value="apple"
+                onChange={() => {}}
+            />
+        ));
+        const input = screen.getByRole('combobox');
+        expect(input.hasAttribute('aria-invalid')).toBe(false);
+        expect(input.hasAttribute('aria-describedby')).toBe(false);
+        expect(input.classList.contains('invalid')).toBe(false);
+    });
+
+    it.each([false, true])(
+        'a disabled control does not open (editable: %s)',
+        async (editable) => {
+            const control = renderInForm(editable, true);
+            expect((control as HTMLInputElement).disabled).toBe(true);
+            fireEvent.click(control);
+            key(control, 'ArrowDown');
+            expect(listbox()).toBeNull();
+            await expectNoA11yViolations();
+        }
+    );
+
+    it('closes its list when it becomes disabled', () => {
+        const [disabled, setDisabled] = createSignal(false);
+        render(() => (
+            <Combobox
+                label="Fruit"
+                options={fruits}
+                value="apple"
+                onChange={() => {}}
+                disabled={disabled()}
+            />
+        ));
+        const button = screen.getByRole('combobox');
+        fireEvent.click(button);
+        expect(listbox()).not.toBeNull();
+        setDisabled(true);
+        expect(listbox()).toBeNull();
     });
 });

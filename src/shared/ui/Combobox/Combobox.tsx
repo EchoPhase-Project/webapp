@@ -41,6 +41,16 @@ export type ComboboxProps<T> = {
     class?: string;
     /** Select-only: shown on hover over the button. */
     title?: string;
+    /** The id of the button or the input, so that a <label for> names it. */
+    id?: string;
+    /** Editable only: the name of the input in its form. */
+    name?: string;
+    /** The value is wrong (aria-invalid); the caller shows why. */
+    invalid?: boolean;
+    /** Ids of the elements that describe the control, e.g. its errors. */
+    describedBy?: string;
+    /** The control takes no input, and its list does not open. */
+    disabled?: boolean;
     /**
      * An input that filters the options as the user types (WAI-ARIA's
      * editable combobox with list autocomplete), instead of a button.
@@ -67,6 +77,12 @@ export type ComboboxProps<T> = {
     noResults?: string;
     /** Editable only: shown and announced when more matched than show. */
     moreResults?: string;
+    /**
+     * Editable only: runs when the user empties the input and leaves it
+     * while a value is selected; the caller then clears the value. Without
+     * it, an empty input goes back to the selected option's label.
+     */
+    onClear?: () => void;
 };
 
 /**
@@ -132,6 +148,10 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
         open
     );
     createDismiss(() => root, open, close);
+    // A disabled control keeps no list open.
+    createEffect(() => {
+        if (props.disabled) close();
+    });
 
     // The active option stays in view (the list has a scroll of its own).
     createEffect(() => {
@@ -182,7 +202,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     // Editable: what the text in the input means when the user leaves it
     // or presses Enter on no option. An option's label (case and spaces
     // around it do not matter) picks that option; another text is the value
-    // with allowCustom, and goes back to the selected label without it.
+    // with allowCustom, and goes back to the selected label without it. An
+    // empty text clears the value when the caller gives onClear.
     function commit() {
         const typed = text();
         const query = typed.trim().toLocaleLowerCase();
@@ -195,7 +216,10 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
             pick(match);
             return;
         }
-        if (props.allowCustom) {
+        if (!query && props.onClear) {
+            if (props.value !== undefined) props.onClear();
+            setText('');
+        } else if (props.allowCustom) {
             // allowCustom is there only when T is string.
             if (!Object.is(typed, props.value)) {
                 props.onChange(typed as NoInfer<T>);
@@ -511,6 +535,11 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                             }
                             aria-label={buttonLabel()}
                             aria-labelledby={buttonLabelledBy()}
+                            aria-invalid={props.invalid ? true : undefined}
+                            aria-describedby={props.describedBy}
+                            id={props.id}
+                            classList={{ invalid: !!props.invalid }}
+                            disabled={props.disabled}
                             title={props.title}
                             onClick={() => (open() ? close() : openList())}
                             onKeyDown={onKeyDown}
@@ -548,6 +577,11 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                         type="text"
                         role="combobox"
                         class="combobox-input"
+                        classList={{ invalid: !!props.invalid }}
+                        id={props.id}
+                        name={props.name}
+                        disabled={props.disabled}
+                        spellcheck={false}
                         autocomplete="off"
                         aria-autocomplete="list"
                         aria-expanded={listShown()}
@@ -557,6 +591,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                         }
                         aria-label={props.label}
                         aria-labelledby={props.labelledBy}
+                        aria-invalid={props.invalid ? true : undefined}
+                        aria-describedby={props.describedBy}
                         placeholder={props.placeholder}
                         value={text()}
                         onInput={onInput}

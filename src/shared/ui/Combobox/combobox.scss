@@ -29,6 +29,11 @@
     outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .combobox-value {
@@ -116,6 +121,16 @@
   box-sizing: border-box;
   font: inherit;
   color: var(--text);
+
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 @keyframes combobox-open {
