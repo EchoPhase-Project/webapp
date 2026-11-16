@@ -24,8 +24,8 @@ The dev server sends only `/api/` with the slash: `/api-clients` is a page.
 The dev server does not have `/config.json`. Thus, visit statistics and error
 reports stay off while you work.
 
-Pages to try components are at `/dev/*` (`src/dev/`). A build does not include
-them.
+Pages to try components are at `/dev/*` (`src/dev/`). The page `/dev` shows a
+list of all these pages. A build does not include them.
 
 Before you open a pull request, run:
 
@@ -125,6 +125,13 @@ Before you write new markup, make pages from the components in
 | `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                              |
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
 | `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
+
+Each shared component has a page in `src/dev/`. The page shows the variants
+and the states of the component. If you add a shared component, show it on a
+page in `src/dev/`. If you make a new page, add one entry for it to the list
+in `src/dev/routes.ts`. Thus, a person can examine the component in the
+browser without a real page that uses it. The list gives the path, the title,
+and the line on the index. The test renders each page from the list.
 
 ### Folders of the components
 

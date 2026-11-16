@@ -46,7 +46,8 @@ and the tests are successful.
 - `src/shared/ui/forms/`: the form controls and `forms.scss`, which they
   share. Import them as `@shared/ui/forms/<Name>`.
 - `src/shared/ui/icons.ts`: all icons.
-- `src/dev/`: the component playground. It is only in the dev server.
+- `src/dev/`: the component playground (`/dev`). It is only in the dev
+  server. The list of its pages is in `src/dev/routes.ts`.
 - `src/static/locales/`: the translations.
 
 ## Rules
@@ -117,6 +118,8 @@ and the tests are successful.
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
   BackLink, Table, EmptyState, PageHeader, Switch, LoadError.
+- If you add a shared component, show it on a page in `src/dev/`. If you
+  make a new page, add one entry for it to the list in `src/dev/routes.ts`.
 - A non-modal panel (a menu, a list, a notifications panel) opens with
   `Popover`. A modal opens with `Modal`.
 - The trigger of a `Popover` belongs to the caller. It changes `open` and
