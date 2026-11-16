@@ -13,12 +13,17 @@
 
 .skeleton-line {
   display: block;
+  // A bar takes the width it is given; it never makes its box wider (an
+  // em width does not count toward the box's own minimum width).
+  contain: inline-size;
   height: 1.5em;
   height: 1lh;
 
   &::before {
     content: '';
     display: block;
+    // A width in em (a title's "14em") never runs past a narrow box.
+    max-width: 100%;
     height: 0.75em;
     margin-top: calc((1.5em - 0.75em) / 2);
     margin-top: calc((1lh - 0.75em) / 2);

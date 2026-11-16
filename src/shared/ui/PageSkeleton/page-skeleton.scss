@@ -2,7 +2,7 @@
 // loading form; only the grids are its own.
 .page-skeleton-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: 16px;
 }
 
