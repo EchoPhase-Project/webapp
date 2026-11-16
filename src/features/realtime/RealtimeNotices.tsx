@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, For } from 'solid-js';
 import { IconX } from '@shared/ui/icons';
 import { useRealtimeEvent } from './realtime-provider';
 import { type RealtimeEvent } from './types';
@@ -53,26 +53,26 @@ export default function RealtimeNotices() {
     });
 
     return (
-        <Show when={notices().length > 0}>
-            <div class="notices" role="status" aria-live="polite">
-                <For each={notices()}>
-                    {(notice) => (
-                        <Card class="notice">
-                            <div class="notice-body">
-                                <strong>{notice.title}</strong>
-                                <p>{notice.text}</p>
-                            </div>
-                            <Button
-                                variant="icon"
-                                aria-label={i18n.t('notice.dismiss', 'Dismiss')}
-                                onClick={() => dismiss(notice.id)}
-                            >
-                                <IconX />
-                            </Button>
-                        </Card>
-                    )}
-                </For>
-            </div>
-        </Show>
+        // Always there, empty when there is nothing: a live region that
+        // comes with its first message is not announced.
+        <div class="notices" role="status" aria-live="polite">
+            <For each={notices()}>
+                {(notice) => (
+                    <Card class="notice">
+                        <div class="notice-body">
+                            <strong>{notice.title}</strong>
+                            <p>{notice.text}</p>
+                        </div>
+                        <Button
+                            variant="icon"
+                            aria-label={i18n.t('notice.dismiss', 'Dismiss')}
+                            onClick={() => dismiss(notice.id)}
+                        >
+                            <IconX />
+                        </Button>
+                    </Card>
+                )}
+            </For>
+        </div>
     );
 }

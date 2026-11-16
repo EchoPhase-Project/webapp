@@ -230,11 +230,10 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                     </Row>
                 )}
             />
-            <Show when={copied()}>
-                <span class="muted" role="status">
-                    {t('ui.copied', 'Copied')}
-                </span>
-            </Show>
+            {/* Always there: a live region that comes with its message is not announced. */}
+            <span class="muted" role="status">
+                {copied() ? t('ui.copied', 'Copied') : ''}
+            </span>
 
             <Modal
                 open={!!editing()}
