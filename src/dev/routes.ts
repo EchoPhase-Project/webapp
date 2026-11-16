@@ -25,6 +25,20 @@ let pages: DevPage[] | undefined;
 export function devPages(): DevPage[] {
     pages ??= [
         {
+            path: '/dev/buttons',
+            title: 'Buttons',
+            description:
+                'Button in every variant, busy and disabled; HeaderButton, RemoveButton, Switch, Tabs and NavTabs.',
+            component: lazy(() => import('./ButtonsPage')),
+        },
+        {
+            path: '/dev/forms',
+            title: 'Forms',
+            description:
+                'Field, TextArea, Select, Checkbox, RadioGroup, FieldError, ErrorSummary and FilePicker, with the errors on or off.',
+            component: lazy(() => import('./FormsPage')),
+        },
+        {
             path: '/dev/listbox',
             title: 'Listbox',
             description:
