@@ -103,7 +103,8 @@ export function devPages(): DevPage[] {
         {
             path: '/dev/table',
             title: 'Table',
-            description: 'A table of webhooks with a status pill in a cell.',
+            description:
+                'Table as the features use it: a status pill, times, row actions, a long cell, the empty text and the phone layout.',
             component: lazy(() => import('./TablePage')),
         },
     ];

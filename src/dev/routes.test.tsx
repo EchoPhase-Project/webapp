@@ -4,9 +4,14 @@ import { For } from 'solid-js';
 import { Route } from '@solidjs/router';
 import { screen } from '@solidjs/testing-library';
 import { renderRoutes } from '@shared/testing/render-page';
-import { fakeApi } from '@shared/testing/fake-api';
+import { fakeApi, signedIn } from '@shared/testing/fake-api';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import { DEV_INDEX, devPages, devRoutes } from './routes';
+
+// The reads of who is signed in, which any page may make.
+const signedInPaths = new Set(
+    Object.keys(signedIn).map((key) => key.split(' ')[1])
+);
 
 // The first import of a page (and its Vite transform) can take seconds.
 const loading = { timeout: 10_000 };
@@ -72,8 +77,10 @@ describe('the dev playground', () => {
     it.each(devPages().map((page) => [page.path, page] as const))(
         'renders %s',
         async (path, page) => {
-            // No page asks the server: an unknown route would answer 404.
-            const api = fakeApi({});
+            // No page asks the server for data. Who is signed in is the
+            // exception: useDateFormat() reads the profile's time zone, as
+            // in the app (where the header asks for it anyway).
+            const api = fakeApi(signedIn);
             vi.stubGlobal(
                 'ResizeObserver',
                 class {
@@ -94,7 +101,11 @@ describe('the dev playground', () => {
             const frame = document.querySelector('.dev-page');
             expect(frame?.children.length).toBeGreaterThan(2);
             await expectNoA11yViolations();
-            expect(api.requests.map((r) => r.url)).toEqual([]);
+            expect(
+                api.requests
+                    .map((r) => new URL(r.url).pathname)
+                    .filter((path) => !signedInPaths.has(path))
+            ).toEqual([]);
         },
         15_000
     );
