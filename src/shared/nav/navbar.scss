@@ -96,8 +96,12 @@
     width 200ms ease,
     box-shadow 200ms ease;
 
+  // Wide while the pointer or the keyboard is in it, and while one of its
+  // lists is open: a list in the top layer does not keep the rail's :hover
+  // in every browser, and it sits beside the wide rail.
   &:hover,
-  &:has(:focus-visible) {
+  &:has(:focus-visible),
+  &:has(.nav-link[aria-expanded='true']) {
     width: var(--nav-expanded);
     box-shadow: color-mix(in srgb, var(--shadow) 16%, transparent) 8px 0 24px 0;
 
