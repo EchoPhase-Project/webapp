@@ -114,9 +114,9 @@ and the tests are successful.
 
 - Before you write new markup, use the components in `src/shared/ui`:
   Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
-  MarkdownEditor, Select, Checkbox, RadioGroup, Modal, ConfirmDialog, Card,
-  SettingsCard, ShareList, RemoveButton, BackLink, Table, EmptyState,
-  PageHeader, Switch, LoadError.
+  MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Modal,
+  ConfirmDialog, Card, SettingsCard, ShareList, RemoveButton, BackLink,
+  Table, EmptyState, PageHeader, Switch, LoadError.
 - If a component has its own stylesheet, give it a folder `<Name>/`. The
   folder contains `<Name>.tsx`, its `.scss`, its tests, and `index.ts`. This
   rule applies to `src/shared/ui` and to `src/app`.

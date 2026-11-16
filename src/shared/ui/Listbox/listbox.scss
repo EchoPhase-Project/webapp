@@ -1,0 +1,82 @@
+// A list of options that is always in view: a framed field with a scroll
+// of its own. Selected options get a check and bold text, the active one
+// (the keyboard's place) an outline while the list has the focus; neither
+// state rests on colour only.
+.listbox {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--surface-raised);
+  color: var(--text);
+
+  &:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+.listbox-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+
+  &:hover {
+    background: var(--hover);
+  }
+
+  &[aria-selected='true'] .listbox-label {
+    font-weight: 600;
+  }
+
+  &[aria-disabled='true'] {
+    color: var(--text-muted);
+    cursor: not-allowed;
+
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.listbox:focus .listbox-option--active {
+  background: var(--hover);
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+// The check keeps its place on every option, so the labels line up.
+.listbox-check {
+  flex: none;
+  margin-top: 2px;
+  visibility: hidden;
+  color: var(--accent);
+
+  [aria-selected='true'] > & {
+    visibility: visible;
+  }
+}
+
+.listbox-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.listbox-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listbox-option {
+    transition: none;
+  }
+}

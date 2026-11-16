@@ -23,6 +23,7 @@ import {
     IconBox as TablerIconBox,
     IconBrandGithub as TablerIconBrandGithub,
     IconCaretRightFilled as TablerIconCaretRightFilled,
+    IconCheck as TablerIconCheck,
     IconChevronDown as TablerIconChevronDown,
     IconChevronUp as TablerIconChevronUp,
     IconClock as TablerIconClock,
@@ -101,6 +102,7 @@ export const IconBrandGithub = /* @__PURE__ */ decorative(
 export const IconCaretRightFilled = /* @__PURE__ */ decorative(
     TablerIconCaretRightFilled
 );
+export const IconCheck = /* @__PURE__ */ decorative(TablerIconCheck);
 export const IconChevronDown = /* @__PURE__ */ decorative(
     TablerIconChevronDown
 );

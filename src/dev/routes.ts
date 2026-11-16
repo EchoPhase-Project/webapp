@@ -10,5 +10,9 @@ export function devRoutes() {
         { path: '/dev/spin', component: lazy(() => import('./SpinPage')) },
         { path: '/dev/table', component: lazy(() => import('./TablePage')) },
         { path: '/dev/drag', component: lazy(() => import('./DragPage')) },
+        {
+            path: '/dev/listbox',
+            component: lazy(() => import('./ListboxPage')),
+        },
     ];
 }
