@@ -219,7 +219,7 @@ and the tests are successful.
 - Use the `.patterned` background only for brand areas: the sign-in card,
   empty states, the outage screen, and the About page.
 
-### Accessibility
+### a11y (accessibility)
 
 - The keyboard must get access to all controls.
 - The focus must be visible.
@@ -237,7 +237,7 @@ and the tests are successful.
 - Do not put a secret or a token in a live region. Announce a short
   message, and keep the value as normal text next to it.
 
-### Translations
+### i18n (translations)
 
 - Send each string that the user sees through i18n:
   `t('key', 'English fallback')`.

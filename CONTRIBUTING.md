@@ -313,7 +313,7 @@ Select the control for a choice from a list with these rules:
   brand areas: the sign-in card, empty states, the outage screen, the About
   page. Do not use it on tables, menus, or forms.
 
-### Accessibility
+### a11y (accessibility)
 
 - All interactive elements must operate with the keyboard and show their
   focus.
@@ -508,7 +508,7 @@ tree.
   `Router.tsx` then adds `requireAuth`. Parts of a page use `SignedIn` and
   `SignedOut`.
 
-## Translations
+## i18n (translations)
 
 Each string that the user sees comes from `src/static/locales/`.
 `<lang>.json` contains the strings for all of the site. `<page>.<lang>.json`
