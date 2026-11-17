@@ -1,5 +1,5 @@
 // An action of the top bar (HeaderButton: new note, notifications, theme): a
-// compact 32px square, a flat icon on the bar (the bar is the surface), the
+// 40px square with a 20px icon, as the rail's items, a flat icon on the bar (the bar is the surface), the
 // hover colour under the pointer and while its panel is open, a dot in the
 // corner when there is news.
 .header-button {
@@ -7,14 +7,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  height: 32px;
+  min-width: 40px;
+  height: 40px;
   padding: 0;
   box-sizing: border-box;
   border: none;
   border-radius: 8px;
   font: inherit;
-  font-size: 15px;
+  font-size: 20px;
   color: var(--text);
   background-color: transparent;
   cursor: pointer;
@@ -39,8 +39,8 @@
 // button's colour so it reads apart from the icon.
 .header-dot {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 8px;
+  right: 8px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -48,8 +48,9 @@
   box-shadow: 0 0 0 2px var(--surface);
 }
 
-// The theme's sun or moon, the size of the other buttons' icons.
+// The theme's sun or moon, the size of the other buttons' icons: 1em of
+// the button's font size, so it follows it.
 .header-button .theme-toggle-icon {
-  width: 16px;
-  height: 16px;
+  width: 1em;
+  height: 1em;
 }

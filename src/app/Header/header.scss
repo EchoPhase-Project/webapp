@@ -12,7 +12,7 @@
   justify-content: space-between;
   gap: 8px;
   height: var(--header-height);
-  padding: 0 12px 0 0;
+  padding: 0 8px 0 0;
   box-sizing: border-box;
   background-color: var(--surface);
 
@@ -87,10 +87,10 @@
 .header-language .combobox-button {
   gap: 4px;
   min-height: 0;
-  height: 32px;
-  padding: 0 8px;
+  height: 40px;
+  padding: 0 10px;
   border: none;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   background-color: transparent;
   box-shadow: none;

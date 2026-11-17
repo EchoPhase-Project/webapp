@@ -18,10 +18,14 @@
   --transition-speed: #{vars.$transition-speed};
 
   // The frame of the app (an L): the bar across the top and the rail of
-  // icons under it on desktop. In px: the page's font grows with the window,
-  // the frame does not. The bar's left cell (the logo) is as wide as the rail.
-  --header-height: 56px;
-  --nav-collapsed: 60px;
+  // icons under it on desktop. One size for both, so the corner is square
+  // and both parts read as one thickness: 40px buttons with 20px icons and
+  // 8px to the edge, in the bar and in the rail. In px: the page's font
+  // grows with the window, the frame does not. The bar's left cell (the
+  // logo) is as wide as the rail.
+  --frame-size: 56px;
+  --header-height: var(--frame-size);
+  --nav-collapsed: var(--frame-size);
   --nav-expanded: 232px;
 
   // As the dark theme, mirrored: the page, then light grey surfaces on it
