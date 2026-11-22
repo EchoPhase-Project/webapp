@@ -128,7 +128,7 @@ function PackageForm(props: {
                 maxLength={100000}
                 disabled={busy()}
                 value={readme()}
-                onInput={setReadme}
+                onChange={setReadme}
             />
 
             <div class="actions-row actions-row--end">

@@ -24,7 +24,8 @@ export default function MarkdownEditor(props: {
     /** After the tabs, on their line (a hint such as "Markdown works"). */
     aside?: JSX.Element;
     value: string;
-    onInput: (value: string) => void;
+    /** The new text on each keystroke (a control: the value, not the event). */
+    onChange: (value: string) => void;
     placeholder?: string;
     rows?: number;
     maxLength?: number;
@@ -86,7 +87,7 @@ export default function MarkdownEditor(props: {
                         maxLength={props.maxLength}
                         disabled={props.disabled}
                         value={props.value}
-                        onInput={(e) => props.onInput(e.currentTarget.value)}
+                        onInput={(e) => props.onChange(e.currentTarget.value)}
                     />
                 </Show>
             </div>

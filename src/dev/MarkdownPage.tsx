@@ -57,7 +57,7 @@ export default function MarkdownPage() {
                             aside={<span class="muted">Markdown works</span>}
                             rows={8}
                             value={text()}
-                            onInput={setText}
+                            onChange={setText}
                             errors={
                                 showErrors()
                                     ? [
@@ -78,7 +78,7 @@ export default function MarkdownPage() {
                             placeholder="Write something"
                             rows={4}
                             value={empty()}
-                            onInput={setEmpty}
+                            onChange={setEmpty}
                         />
                     </DevSample>
                     <DevSample title="Disabled">
@@ -87,7 +87,7 @@ export default function MarkdownPage() {
                             label="Notes"
                             rows={3}
                             value="Saving…"
-                            onInput={() => {}}
+                            onChange={() => {}}
                             disabled
                         />
                     </DevSample>

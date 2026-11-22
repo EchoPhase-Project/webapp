@@ -16,7 +16,7 @@ function renderEditor(errors?: ErrorItem[]) {
                 aside="Markdown works"
                 errors={errors}
                 value={text()}
-                onInput={setText}
+                onChange={setText}
             />
         </I18nProvider>
     ));

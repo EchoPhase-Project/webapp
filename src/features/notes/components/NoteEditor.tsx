@@ -116,7 +116,7 @@ export default function NoteEditor(props: {
                     maxLength={100000}
                     disabled={busy()}
                     value={body()}
-                    onInput={setBody}
+                    onChange={setBody}
                 />
 
                 <Show when={isOwner()}>
