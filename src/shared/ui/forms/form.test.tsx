@@ -404,6 +404,30 @@ describe('createForm state', () => {
         expect(form.values.name).toBe('bob');
         expect(form.dirty()).toBe(false);
     });
+
+    it('keeps an edit made during a save that changed initial', async () => {
+        const [entity, setEntity] = createSignal(saved());
+        const answer = later<Values>();
+        const { form, save } = withSession(() => {
+            const form = createForm({ id: 'during', initial: () => entity() });
+            const update = form.mutation(() =>
+                mutationOptions({
+                    mutationFn: (_sent: Values) => answer.promise,
+                    onSuccess: (value: Values) => setEntity(value),
+                })
+            );
+            return { form, save: form.onSubmit((v) => update.run(v)) };
+        });
+        form.set('name', 'Bob');
+        save();
+        // Another card's control, or a store write: not blocked by busy.
+        form.set('plan', 'team');
+        answer.ok({ ...saved(), name: 'bob' });
+        await waitFor(() => expect(form.done()).toBe(true));
+        expect(form.values.name).toBe('bob');
+        expect(form.values.plan).toBe('team');
+        expect(form.changed()).toEqual({ plan: 'team' });
+    });
 });
 
 describe('createForm helpers', () => {

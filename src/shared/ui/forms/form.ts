@@ -303,8 +303,19 @@ export function createForm<V extends FormValues>(options: FormOptions<V>) {
             void (async () => {
                 if (!(await send(snapshot))) return;
                 batch(() => {
-                    // The save put the saved value in the cache: show it.
-                    if (version !== seen) setValues(copyAll(untrack(base)));
+                    // The save put the saved value in the cache: a field
+                    // still at the value sent shows it (the server may
+                    // change it); a field edited since keeps the edit.
+                    if (version !== seen) {
+                        const saved = untrack(base);
+                        for (const name of names) {
+                            if (same(values[name], snapshot[name]))
+                                setValues(
+                                    name as never,
+                                    copy(saved[name]) as never
+                                );
+                        }
+                    }
                     setDone(true);
                 });
             })();
