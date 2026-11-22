@@ -64,3 +64,8 @@
     transition: none;
   }
 }
+
+// With errors (under the row): a ring in the danger colour round the track.
+.switch-row.invalid .switch {
+  box-shadow: 0 0 0 2px var(--danger);
+}

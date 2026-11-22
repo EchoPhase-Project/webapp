@@ -6,6 +6,8 @@ import './forms.scss';
 
 type SelectProps<T extends string> = {
     id: string;
+    /** The select's name in its form. */
+    name?: string;
     /** JSX for a name with more beside it (a connection and its provider). */
     label: JSX.Element;
     /** Above the select; otherwise for screen readers only. */
@@ -37,6 +39,7 @@ export default function Select<T extends string>(props: SelectProps<T>) {
             <div class="select-box">
                 <select
                     id={props.id}
+                    name={props.name}
                     class="select-input"
                     classList={{ invalid: invalid() }}
                     value={props.value}

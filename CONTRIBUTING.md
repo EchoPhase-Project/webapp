@@ -266,7 +266,7 @@ Select the control for a choice from a list with these rules:
   of argument.
 - Give each form control the errors of its field with the `errors` prop:
   `Field`, `TextArea`, `MarkdownEditor`, `Select`, `TimeZoneField`,
-  `Checkbox`, `RadioGroup`. The control shows the errors under it and sets
+  `Checkbox`, `RadioGroup`, `Switch`, `Combobox`. The control shows the errors under it and sets
   `aria-invalid` and `aria-describedby`. Thus, a screen reader reads the
   error with the control.
 

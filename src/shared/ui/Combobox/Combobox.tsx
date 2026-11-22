@@ -6,8 +6,10 @@ import {
     on,
     Show,
 } from 'solid-js';
+import type { ErrorItem } from '@shared/api/types';
 import { createDismiss } from '@shared/lib/dismiss';
 import { matchOptions } from '@shared/lib/text-match';
+import FieldError, { errorId } from '@shared/ui/forms/FieldError';
 import { IconCheck, IconChevronDown } from '@shared/ui/icons';
 import {
     createOptionList,
@@ -56,8 +58,13 @@ export type ComboboxProps<T> = {
     title?: string;
     /** The id of the button or the input, so that a <label for> names it. */
     id?: string;
-    /** Editable only: the name of the input in its form. */
+    /** The name of the input (editable) or the button in its form. */
     name?: string;
+    /**
+     * The server's errors about it, shown under it and wired as a Field's
+     * (aria-invalid, aria-describedby).
+     */
+    errors?: ErrorItem[];
     /** The value is wrong (aria-invalid); the caller shows why. */
     invalid?: boolean;
     /** Ids of the elements that describe the control, e.g. its errors. */
@@ -136,6 +143,14 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     const more = () => matched().length > shown().length;
 
     const list = createOptionList(shown);
+    // The base of the errors' id, when the caller gives no id.
+    const errorsFor = () => props.id ?? `${list.id}-control`;
+    const hasErrors = () => !!props.errors?.length;
+    const invalid = () => !!props.invalid || hasErrors();
+    const describedBy = () =>
+        [props.describedBy, hasErrors() ? errorId(errorsFor()) : undefined]
+            .filter(Boolean)
+            .join(' ') || undefined;
     let root: HTMLDivElement | undefined;
     let anchor: HTMLElement | undefined;
     let popup: HTMLElement | undefined;
@@ -544,124 +559,138 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     );
 
     return (
-        <div
-            ref={root}
-            class={props.class ? `combobox ${props.class}` : 'combobox'}
-            classList={{ 'combobox--editable': !!props.editable }}
-            data-open={open()}
-            data-drop-up={dropUp()}
-            data-align={props.align ?? 'start'}
-            onFocusOut={onFocusOut}
-        >
-            <Show
-                when={props.editable}
-                fallback={
-                    <>
-                        <button
-                            ref={(el) => (anchor = el)}
-                            type="button"
-                            role="combobox"
-                            class="combobox-button"
-                            aria-haspopup="listbox"
-                            aria-expanded={open()}
-                            aria-controls={open() ? list.id : undefined}
-                            aria-activedescendant={
-                                open() ? list.activeId() : undefined
-                            }
-                            aria-label={buttonLabel()}
-                            aria-labelledby={buttonLabelledBy()}
-                            aria-invalid={props.invalid ? true : undefined}
-                            aria-describedby={props.describedBy}
-                            id={props.id}
-                            classList={{ invalid: !!props.invalid }}
-                            disabled={props.disabled}
-                            title={props.title}
-                            onClick={() =>
-                                open() ? close() : openList('pointer')
-                            }
-                            onKeyDown={onKeyDown}
-                            onKeyUp={onKeyUp}
-                        >
-                            <span class="combobox-value">
-                                {selected()
-                                    ? (selected()?.short ?? selected()?.label)
-                                    : props.placeholder}
-                            </span>
-                            {/* The full label, for the name given by labelledBy. */}
-                            <Show
-                                when={
-                                    props.labelledBy !== undefined && selected()
-                                }
-                            >
-                                {(option) => (
-                                    <span id={valueId} class="visually-hidden">
-                                        {fullLabel(option())}
-                                    </span>
-                                )}
-                            </Show>
-                            <IconChevronDown
-                                class="combobox-chevron"
-                                size={16}
-                            />
-                        </button>
-                        <Show when={open()}>{options()}</Show>
-                    </>
-                }
+        <>
+            <div
+                ref={root}
+                class={props.class ? `combobox ${props.class}` : 'combobox'}
+                classList={{ 'combobox--editable': !!props.editable }}
+                data-open={open()}
+                data-drop-up={dropUp()}
+                data-align={props.align ?? 'start'}
+                onFocusOut={onFocusOut}
             >
-                <span class="combobox-field">
-                    <input
-                        ref={(el) => (anchor = el)}
-                        type="text"
-                        role="combobox"
-                        class="combobox-input"
-                        classList={{ invalid: !!props.invalid }}
-                        id={props.id}
-                        name={props.name}
-                        disabled={props.disabled}
-                        spellcheck={false}
-                        autocomplete="off"
-                        aria-autocomplete="list"
-                        aria-expanded={listShown()}
-                        aria-controls={listShown() ? list.id : undefined}
-                        aria-activedescendant={
-                            listShown() ? list.activeId() : undefined
-                        }
-                        aria-label={props.label}
-                        aria-labelledby={props.labelledBy}
-                        aria-invalid={props.invalid ? true : undefined}
-                        aria-describedby={props.describedBy}
-                        placeholder={props.placeholder}
-                        value={text()}
-                        onInput={onInput}
-                        onKeyDown={onInputKeyDown}
-                        onClick={() => {
-                            if (!open()) openList('pointer', -1);
-                        }}
-                    />
-                    <IconChevronDown class="combobox-chevron" size={16} />
-                </span>
-                <Show when={open()}>
-                    <div
-                        ref={(el) => (popup = el)}
-                        class="combobox-popup"
-                        // The focus stays in the input, as above.
-                        onMouseDown={(e) => e.preventDefault()}
-                    >
-                        <Show when={shown().length > 0}>{options()}</Show>
-                        <Show when={matched().length === 0 && props.noResults}>
-                            <p class="combobox-note">{props.noResults}</p>
-                        </Show>
-                        <Show when={more() && props.moreResults}>
-                            <p class="combobox-note">{props.moreResults}</p>
-                        </Show>
-                    </div>
-                </Show>
-                {/* Always on the page: a live region that appears with its
+                <Show
+                    when={props.editable}
+                    fallback={
+                        <>
+                            <button
+                                ref={(el) => (anchor = el)}
+                                type="button"
+                                role="combobox"
+                                class="combobox-button"
+                                aria-haspopup="listbox"
+                                aria-expanded={open()}
+                                aria-controls={open() ? list.id : undefined}
+                                aria-activedescendant={
+                                    open() ? list.activeId() : undefined
+                                }
+                                aria-label={buttonLabel()}
+                                aria-labelledby={buttonLabelledBy()}
+                                aria-invalid={invalid() ? true : undefined}
+                                aria-describedby={describedBy()}
+                                id={props.id}
+                                name={props.name}
+                                classList={{ invalid: invalid() }}
+                                disabled={props.disabled}
+                                title={props.title}
+                                onClick={() =>
+                                    open() ? close() : openList('pointer')
+                                }
+                                onKeyDown={onKeyDown}
+                                onKeyUp={onKeyUp}
+                            >
+                                <span class="combobox-value">
+                                    {selected()
+                                        ? (selected()?.short ??
+                                          selected()?.label)
+                                        : props.placeholder}
+                                </span>
+                                {/* The full label, for the name given by labelledBy. */}
+                                <Show
+                                    when={
+                                        props.labelledBy !== undefined &&
+                                        selected()
+                                    }
+                                >
+                                    {(option) => (
+                                        <span
+                                            id={valueId}
+                                            class="visually-hidden"
+                                        >
+                                            {fullLabel(option())}
+                                        </span>
+                                    )}
+                                </Show>
+                                <IconChevronDown
+                                    class="combobox-chevron"
+                                    size={16}
+                                />
+                            </button>
+                            <Show when={open()}>{options()}</Show>
+                        </>
+                    }
+                >
+                    <span class="combobox-field">
+                        <input
+                            ref={(el) => (anchor = el)}
+                            type="text"
+                            role="combobox"
+                            class="combobox-input"
+                            classList={{ invalid: invalid() }}
+                            id={props.id}
+                            name={props.name}
+                            disabled={props.disabled}
+                            spellcheck={false}
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-expanded={listShown()}
+                            aria-controls={listShown() ? list.id : undefined}
+                            aria-activedescendant={
+                                listShown() ? list.activeId() : undefined
+                            }
+                            aria-label={props.label}
+                            aria-labelledby={props.labelledBy}
+                            aria-invalid={invalid() ? true : undefined}
+                            aria-describedby={describedBy()}
+                            placeholder={props.placeholder}
+                            value={text()}
+                            onInput={onInput}
+                            onKeyDown={onInputKeyDown}
+                            onClick={() => {
+                                if (!open()) openList('pointer', -1);
+                            }}
+                        />
+                        <IconChevronDown class="combobox-chevron" size={16} />
+                    </span>
+                    <Show when={open()}>
+                        <div
+                            ref={(el) => (popup = el)}
+                            class="combobox-popup"
+                            // The focus stays in the input, as above.
+                            onMouseDown={(e) => e.preventDefault()}
+                        >
+                            <Show when={shown().length > 0}>{options()}</Show>
+                            <Show
+                                when={matched().length === 0 && props.noResults}
+                            >
+                                <p class="combobox-note">{props.noResults}</p>
+                            </Show>
+                            <Show when={more() && props.moreResults}>
+                                <p class="combobox-note">{props.moreResults}</p>
+                            </Show>
+                        </div>
+                    </Show>
+                    {/* Always on the page: a live region that appears with its
                     text is not read. */}
-                <span role="status" class="visually-hidden">
-                    {status()}
-                </span>
+                    <span role="status" class="visually-hidden">
+                        {status()}
+                    </span>
+                </Show>
+            </div>
+            {/* Made only with errors: FieldError needs the i18n context. */}
+            <Show when={hasErrors()}>
+                <FieldError for={errorsFor()} errors={props.errors} />
             </Show>
-        </div>
+        </>
     );
 }

@@ -5,6 +5,8 @@ import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import type { ErrorItem } from '@shared/api/types';
 import { expectNoA11yViolations } from '@shared/testing/axe';
+import { renderPage } from '@shared/testing/render-page';
+import { createForm } from './form';
 import Select from './Select';
 
 type Choice = '' | 'alerts' | 'cleanup';
@@ -68,5 +70,47 @@ describe('Select', () => {
         const list = document.getElementById(id ?? '');
         expect(list?.textContent).toBe('It needs a trigger.');
         expect(select.closest('.select-box')?.nextElementSibling).toBe(list);
+    });
+
+    it('takes a form binding: id, name, value and errors', () => {
+        renderPage(() => {
+            const form = createForm({
+                id: 'card',
+                initial: (): { workflow: Choice } => ({ workflow: 'alerts' }),
+            });
+            form.setErrors({
+                workflow: [
+                    {
+                        code: 'NoTrigger',
+                        message: 'It needs a trigger.',
+                        field: 'workflow',
+                    },
+                ],
+            });
+            return (
+                <>
+                    <Select
+                        {...form.control('workflow')}
+                        label="When a run fails"
+                        options={[
+                            { value: '', label: 'None' },
+                            { value: 'alerts', label: 'Alerts' },
+                        ]}
+                    />
+                </>
+            );
+        });
+        const select = screen.getByRole<HTMLSelectElement>('combobox', {
+            name: 'When a run fails',
+        });
+        expect(select.id).toBe('card-workflow');
+        expect(select.name).toBe('workflow');
+        expect(select.value).toBe('alerts');
+        expect(select.getAttribute('aria-describedby')).toBe(
+            'card-workflow-error'
+        );
+        expect(
+            document.getElementById('card-workflow-error')?.textContent
+        ).toBe('It needs a trigger.');
     });
 });

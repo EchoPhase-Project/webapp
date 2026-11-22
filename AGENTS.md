@@ -197,7 +197,7 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   give the value to `onChange`.
 - Give each form control the errors of its field with `errors`: `Field`,
   `TextArea`, `MarkdownEditor`, `Select`, `TimeZoneField`, `Checkbox`,
-  `RadioGroup`.
+  `RadioGroup`, `Switch`, `Combobox`.
 - If a component has its own stylesheet, give it a folder `<Name>/`. The
   folder contains `<Name>.tsx`, its `.scss`, its tests, and `index.ts`. This
   rule applies to `src/shared/ui` and to `src/app`.

@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSignal } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
 import { expectNoA11yViolations } from '@shared/testing/axe';
+import { renderPage } from '@shared/testing/render-page';
+import { createForm } from '@shared/ui/forms/form';
 import { TYPE_AHEAD_MS, type ListOption } from '@shared/ui/Listbox';
 import Combobox, { MAX_RESULTS } from './Combobox';
 
@@ -1272,4 +1274,56 @@ describe('Combobox, form props', () => {
         setDisabled(true);
         expect(listbox()).toBeNull();
     });
+
+    it.each([false, true])(
+        'shows the errors of a form binding under it, wired to the control (editable: %s)',
+        async (editable) => {
+            let clear = () => {};
+            renderPage(() => {
+                const form = createForm({
+                    id: 'order',
+                    initial: () => ({ fruit: 'apple' }),
+                });
+                form.setErrors({
+                    fruit: [
+                        {
+                            code: 'dev_example',
+                            message: 'Pick a ripe one.',
+                            field: 'fruit',
+                        },
+                    ],
+                });
+                clear = () => form.setErrors({});
+                return (
+                    <>
+                        <Combobox
+                            {...form.control('fruit')}
+                            editable={editable}
+                            label="Fruit"
+                            options={fruits}
+                            describedBy="fruit-note"
+                        />
+                        <p id="fruit-note">Only in season.</p>
+                    </>
+                );
+            });
+            const control = screen.getByRole('combobox');
+            expect(control.id).toBe('order-fruit');
+            expect(control.getAttribute('name')).toBe('fruit');
+            expect(control.getAttribute('aria-invalid')).toBe('true');
+            expect(control.classList.contains('invalid')).toBe(true);
+            expect(control.getAttribute('aria-describedby')).toBe(
+                'fruit-note order-fruit-error'
+            );
+            expect(
+                document.getElementById('order-fruit-error')?.textContent
+            ).toBe('Pick a ripe one.');
+            await expectNoA11yViolations();
+
+            clear();
+            expect(control.hasAttribute('aria-invalid')).toBe(false);
+            expect(control.getAttribute('aria-describedby')).toBe('fruit-note');
+            expect(document.getElementById('order-fruit-error')).toBeNull();
+        }
+    );
 });

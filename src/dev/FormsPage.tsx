@@ -12,6 +12,7 @@ import TextArea from '@shared/ui/forms/TextArea';
 import { createForm } from '@shared/ui/forms/form';
 import Button from '@shared/ui/Button';
 import FilePicker from '@shared/ui/FilePicker';
+import Combobox from '@shared/ui/Combobox';
 import Switch from '@shared/ui/Switch';
 import { IconLock, IconUser } from '@shared/ui/icons';
 import { DevGrid, DevLog, DevSample, DevSection } from './DevKit';
@@ -45,6 +46,16 @@ const regions = [
 ] as const;
 
 type Region = (typeof regions)[number]['value'];
+
+const sizes = [
+    { value: 's', label: 'Small' },
+    { value: 'm', label: 'Medium' },
+    { value: 'l', label: 'Large' },
+];
+
+const cities = ['Berlin', 'Chișinău', 'Lisbon', 'Oslo', 'Tokyo'].map(
+    (city) => ({ value: city, label: city })
+);
 
 type Signup = {
     userName: string;
@@ -173,6 +184,9 @@ export default function FormsPage() {
     const [terms, setTerms] = createSignal(false);
     const [news, setNews] = createSignal(true);
     const [plan, setPlan] = createSignal<Plan>('free');
+    const [alerts, setAlerts] = createSignal(false);
+    const [size, setSize] = createSignal<string | undefined>('m');
+    const [city, setCity] = createSignal<string | undefined>(undefined);
     const [log, setLog] = createSignal('');
     const [picking, setPicking] = createSignal(false);
 
@@ -385,6 +399,60 @@ export default function FormsPage() {
                             onChange={() => {}}
                             options={plans}
                             disabled
+                        />
+                    </DevSample>
+                </DevGrid>
+            </DevSection>
+
+            <DevSection
+                title="Switch and Combobox"
+                note="They take a form binding too: id, name and errors. The errors show under the control, wired with aria-invalid and aria-describedby."
+            >
+                <DevGrid>
+                    <DevSample title="Switch with errors">
+                        <Switch
+                            id="dev-forms-alerts"
+                            name="alerts"
+                            label="Email me when a run fails"
+                            description="At most one email an hour."
+                            checked={alerts()}
+                            onChange={setAlerts}
+                            errors={errs('Add an email address first.')}
+                        />
+                    </DevSample>
+                    <DevSample title="Combobox, select-only, with errors">
+                        <label id="dev-forms-size-label" class="field-label">
+                            Size
+                        </label>
+                        <Combobox
+                            id="dev-forms-size"
+                            name="size"
+                            labelledBy="dev-forms-size-label"
+                            options={sizes}
+                            value={size()}
+                            onChange={setSize}
+                            errors={errs('This size is sold out.')}
+                        />
+                    </DevSample>
+                    <DevSample title="Combobox, editable, with errors">
+                        <label
+                            id="dev-forms-city-label"
+                            for="dev-forms-city"
+                            class="field-label"
+                        >
+                            City
+                        </label>
+                        <Combobox
+                            editable
+                            id="dev-forms-city"
+                            name="city"
+                            labelledBy="dev-forms-city-label"
+                            options={cities}
+                            value={city()}
+                            onChange={setCity}
+                            placeholder="Type a city"
+                            noResults="Nothing found"
+                            errors={errs('We do not ship to this city.')}
                         />
                     </DevSample>
                 </DevGrid>
