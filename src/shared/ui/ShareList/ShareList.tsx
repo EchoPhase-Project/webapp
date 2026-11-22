@@ -1,4 +1,4 @@
-import { createSignal, For, Match, Show, Switch, type JSX } from 'solid-js';
+import { For, Match, Show, Switch, type JSX } from 'solid-js';
 import {
     useQuery,
     type MutationOptions,
@@ -11,6 +11,7 @@ import { useI18n } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
+import { createForm } from '@shared/ui/forms/form';
 import LoadError from '@shared/ui/LoadError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
@@ -70,26 +71,25 @@ export default function ShareList<
 >(props: ShareListProps<T, TKey, TShared, TUnshared>) {
     const i18n = useI18n();
     const shares = useQuery(() => props.query);
-    const [userName, setUserName] = createSignal('');
-    const { busy, errors, mutation } = createSubmit(['userName']);
+    const form = createForm({
+        id: () => props.id,
+        initial: () => ({ userName: '' }),
+    });
     // The descriptions are read in useMutation's tracked options: a change
     // (such as the note's "May edit") reaches the next call.
     // eslint-disable-next-line solid/reactivity
-    const sharing = mutation((queryClient) => props.share(queryClient));
+    const sharing = form.mutation((queryClient) => props.share(queryClient));
     // A failed removal shows above the people, apart from the form's errors.
     const removing = createSubmit();
     const unsharing = removing.mutation(
         // eslint-disable-next-line solid/reactivity
         (queryClient) => props.unshare(queryClient)
     );
-    const inputId = (field: string) => `${props.id}-${field}`;
 
-    async function add(e: Event) {
-        e.preventDefault();
-        const name = userName().trim();
-        if (!name) return;
-        await sharing.run(name, () => setUserName(''));
-    }
+    const add = form.onSubmit((v) => {
+        const name = v.userName.trim();
+        return !!name && sharing.run(name, () => form.reset());
+    });
 
     async function remove(userId: string) {
         await unsharing.run(userId);
@@ -113,7 +113,7 @@ export default function ShareList<
                             {props.detail?.(share)}
                             <RemoveButton
                                 label={props.removeLabel(share.user.name)}
-                                disabled={busy() || removing.busy()}
+                                disabled={form.busy() || removing.busy()}
                                 onClick={() => void remove(share.user.id)}
                             />
                         </li>
@@ -141,18 +141,13 @@ export default function ShareList<
 
     const fields = () => (
         <>
-            <ErrorSummary errors={errors()} inputId={inputId} />
+            <ErrorSummary {...form.summary} />
             <div class="share-list-input">
                 <Field
-                    id={inputId('userName')}
-                    name="userName"
+                    {...form.input('userName')}
                     label={i18n.t('ui.username', 'Username')}
                     type="text"
                     autocomplete="off"
-                    errors={errors().userName}
-                    disabled={busy()}
-                    value={userName()}
-                    onInput={(e) => setUserName(e.currentTarget.value)}
                 />
             </div>
             {props.options}
@@ -163,8 +158,8 @@ export default function ShareList<
         <Button
             type="submit"
             variant="ghost"
-            busy={busy()}
-            disabled={!userName().trim()}
+            busy={form.busy()}
+            disabled={!form.filled()}
         >
             {i18n.t('ui.share', 'Share')}
         </Button>
@@ -185,11 +180,7 @@ export default function ShareList<
                     </Show>
                     <ErrorSummary errors={removing.errors()} />
                     {people()}
-                    <form
-                        class="share-list-form"
-                        onSubmit={(e) => void add(e)}
-                        noValidate
-                    >
+                    <form class="share-list-form" onSubmit={add} noValidate>
                         {fields()}
                         {submit()}
                     </form>
@@ -199,7 +190,7 @@ export default function ShareList<
             <SettingsCard
                 title={props.title}
                 description={props.description}
-                onSubmit={(e) => void add(e)}
+                onSubmit={add}
                 actions={submit()}
             >
                 <ErrorSummary errors={removing.errors()} />
