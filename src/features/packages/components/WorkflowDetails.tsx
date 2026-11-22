@@ -146,16 +146,21 @@ export default function WorkflowDetails(props: {
         await updating.run({ workflow: w, changes: { active } });
     }
 
-    // A failure: called by another workflow, or the package's error workflow.
-    async function remove() {
-        try {
-            await removing.run(
-                { id: props.id, packageId: props.packageId },
-                () => navigate(packagePath(props.packageId))
-            );
-        } finally {
-            setDeleting(false);
-        }
+    // A failure (called by another workflow, or the package's error
+    // workflow) shows in the dialog, which stays open.
+    function remove() {
+        return removing.run(
+            { id: props.id, packageId: props.packageId },
+            () => {
+                setDeleting(false);
+                navigate(packagePath(props.packageId));
+            }
+        );
+    }
+
+    function cancelDelete() {
+        setDeleting(false);
+        setErrors({});
     }
 
     const back = () => (
@@ -208,7 +213,11 @@ export default function WorkflowDetails(props: {
                                     <Button
                                         variant="ghost-danger"
                                         disabled={busy()}
-                                        onClick={() => setDeleting(true)}
+                                        onClick={() => {
+                                            // The dialog shows only its own errors.
+                                            setErrors({});
+                                            setDeleting(true);
+                                        }}
                                     >
                                         {t('ui.delete', 'Delete')}
                                     </Button>
@@ -228,7 +237,9 @@ export default function WorkflowDetails(props: {
                                 )}
                             </p>
                         </Show>
-                        <ErrorSummary errors={errors()} />
+                        <Show when={!deleting()}>
+                            <ErrorSummary errors={errors()} />
+                        </Show>
 
                         <div class="workflow-controls">
                             <Switch
@@ -286,8 +297,9 @@ export default function WorkflowDetails(props: {
                             title={t('delete.title', 'Delete this workflow?')}
                             confirm={t('ui.delete', 'Delete')}
                             busy={busy()}
+                            errors={errors()}
                             onConfirm={() => void remove()}
-                            onCancel={() => setDeleting(false)}
+                            onCancel={cancelDelete}
                         >
                             {t(
                                 'delete.body',

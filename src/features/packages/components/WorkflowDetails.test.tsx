@@ -390,6 +390,31 @@ describe('WorkflowDetails', () => {
         expect(dialog.closest('dialog')?.hasAttribute('open')).toBe(true);
     });
 
+    it('shows a refused delete in its dialog, which stays open', async () => {
+        const api = fakeApi(
+            routes({
+                'DELETE /api/v1/workflows/w1': () =>
+                    json(409, {
+                        code: 'TestInUse',
+                        message: 'Another workflow calls it.',
+                    }),
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+
+        fireEvent.click(await screen.findByRole('button', { name: 'Delete' }));
+        const dialog = await screen.findByRole('alertdialog');
+        fireEvent.click(dialog.querySelector('.btn-danger') as HTMLElement);
+
+        const alert = await within(dialog).findByRole('alert');
+        expect(alert.textContent).toBe('Another workflow calls it.');
+        expect(document.activeElement).toBe(alert);
+        expect(dialog.closest('dialog')?.hasAttribute('open')).toBe(true);
+        expect(screen.getAllByRole('alert')).toHaveLength(1);
+        expect(api.calls('DELETE /api/v1/workflows/w1')).toHaveLength(1);
+        await expectNoA11yViolations();
+    });
+
     it('gives the navigation one group: its parts, then back to its package', async () => {
         fakeApi(routes());
         renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
