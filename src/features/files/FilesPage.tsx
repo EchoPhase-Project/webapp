@@ -1,15 +1,13 @@
-import { Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { createSubmit } from '@shared/api/submit';
 import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createPagedList } from '@shared/api/paged-list';
-import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
-import LoadError from '@shared/ui/LoadError';
+import Paginated from '@shared/ui/Paginated';
 import PageHeader from '@shared/ui/PageHeader';
 import {
     deleteFileMutation,
@@ -67,33 +65,15 @@ export default function FilesPage() {
 
             <ErrorSummary errors={uploads.errors()} />
 
-            <Show when={files.error()}>
-                {(error) => (
-                    <LoadError
-                        error={error()}
-                        busy={files.retrying()}
-                        onRetry={files.retry}
+            <Paginated list={files}>
+                {(items) => (
+                    <FilesTable
+                        files={items()}
+                        busy={uploads.busy() || deletion.busy()}
+                        onDelete={deletion.ask}
                     />
                 )}
-            </Show>
-
-            <FilesTable
-                files={files.items()}
-                busy={uploads.busy() || deletion.busy()}
-                onDelete={deletion.ask}
-            />
-
-            <Show when={files.more()}>
-                <div class="files-more">
-                    <Button
-                        variant="ghost"
-                        busy={files.loading()}
-                        onClick={() => files.loadMore()}
-                    >
-                        {t('ui.show_more', 'Show more')}
-                    </Button>
-                </div>
-            </Show>
+            </Paginated>
 
             <ConfirmDialog
                 {...deletion.dialog}

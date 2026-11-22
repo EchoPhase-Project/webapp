@@ -1,14 +1,12 @@
-import { createSignal, Show } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import { createPagedList } from '@shared/api/paged-list';
-import Button from '@shared/ui/Button';
-import EmptyState from '@shared/ui/EmptyState';
-import LoadError from '@shared/ui/LoadError';
 import Masonry from '@shared/ui/Masonry';
 import PageHeader from '@shared/ui/PageHeader';
+import Paginated, { paginatedItem } from '@shared/ui/Paginated';
 import { explorePackagesInfiniteQuery } from './api/packages';
 import PackageCard from './components/PackageCard';
 import PackageSearch, { parseQuery, queryOf } from './components/PackageSearch';
@@ -73,46 +71,21 @@ export default function ExplorePage() {
 
             <PackageSearch value={query()} onInput={onSearch} />
 
-            <Show when={packages.error()}>
-                {(error) => (
-                    <LoadError
-                        error={error()}
-                        busy={packages.retrying()}
-                        onRetry={packages.retry}
-                    />
-                )}
-            </Show>
-
-            <Show
-                when={packages.items().length > 0}
-                fallback={
-                    <Show when={packages.loaded()}>
-                        <EmptyState>
-                            {search() || tag()
-                                ? t('none_found', 'No packages match.')
-                                : t(
-                                      'empty',
-                                      'Nobody has published a package yet.'
-                                  )}
-                        </EmptyState>
-                    </Show>
+            <Paginated
+                list={packages}
+                auto
+                empty={
+                    search() || tag()
+                        ? t('none_found', 'No packages match.')
+                        : t('empty', 'Nobody has published a package yet.')
                 }
             >
-                <Masonry each={packages.items()}>
-                    {(pkg) => <PackageCard pkg={pkg} onTag={pickTag} />}
-                </Masonry>
-                <Show when={packages.more()}>
-                    <div class="packages-more" ref={packages.watchEnd}>
-                        <Button
-                            variant="ghost"
-                            busy={packages.loading()}
-                            onClick={() => packages.loadMore()}
-                        >
-                            {t('ui.show_more', 'Show more')}
-                        </Button>
-                    </div>
-                </Show>
-            </Show>
+                {(items) => (
+                    <Masonry each={items()} itemProps={paginatedItem}>
+                        {(pkg) => <PackageCard pkg={pkg} onTag={pickTag} />}
+                    </Masonry>
+                )}
+            </Paginated>
         </div>
     );
 }

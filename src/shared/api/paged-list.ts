@@ -1,4 +1,4 @@
-import { createMemo, onCleanup } from 'solid-js';
+import { createMemo } from 'solid-js';
 import {
     useInfiniteQuery,
     type GetNextPageParamFunction,
@@ -79,17 +79,6 @@ export function createPagedList<T>(describe: () => CursorListOptions<T>) {
         else void query.refetch();
     }
 
-    /** A ref: the next page comes as this element scrolls into view. */
-    function watchEnd(el: HTMLElement) {
-        if (typeof IntersectionObserver === 'undefined') return;
-        const observer = new IntersectionObserver(
-            (entries) => entries.some((e) => e.isIntersecting) && loadMore(),
-            { rootMargin: '400px' }
-        );
-        observer.observe(el);
-        onCleanup(() => observer.disconnect());
-    }
-
     return {
         key,
         /** The loaded pages, each its items, in order. */
@@ -105,7 +94,6 @@ export function createPagedList<T>(describe: () => CursorListOptions<T>) {
         retrying: () => query.isFetching,
         loadMore,
         retry,
-        watchEnd,
     };
 }
 

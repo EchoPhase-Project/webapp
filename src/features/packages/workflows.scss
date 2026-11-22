@@ -220,12 +220,6 @@
   background: var(--surface-raised);
 }
 
-.workflow-more {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
-}
-
 // A tab of a workflow's triggers: what it is and its action, then a table.
 .workflow-panel {
   display: grid;

@@ -3,6 +3,7 @@ import { formatBytes } from '@shared/lib/bytes';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import { Table, Cell, Row } from '@shared/ui/Table';
+import { paginatedItem } from '@shared/ui/Paginated';
 import RemoveButton from '@shared/ui/RemoveButton';
 import { contentUrl } from '@features/files/api';
 
@@ -43,7 +44,7 @@ export default function FilesTable(props: {
             placeholder={() => <>{t('empty', 'No files yet')}</>}
             tableProps={{ class: 'files' }}
             render={({ item: file }) => (
-                <Row>
+                <Row props={paginatedItem}>
                     <Cell label={column('name')} props={{ title: file.name }}>
                         <a href={contentUrl(file.id)} download={file.name}>
                             {file.name}

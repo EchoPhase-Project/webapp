@@ -1,11 +1,10 @@
-import { createSignal, For, Match, Show, Switch } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import { createPagedList } from '@shared/api/paged-list';
-import Button from '@shared/ui/Button';
-import EmptyState from '@shared/ui/EmptyState';
-import LoadError from '@shared/ui/LoadError';
+import Paginated, { paginatedItem } from '@shared/ui/Paginated';
+import QueryState from '@shared/ui/QueryState';
 import {
     runQuery,
     runsOfPackageInfiniteQuery,
@@ -45,33 +44,19 @@ export default function RunList(props: {
     const date = useDateFormat();
 
     return (
-        <>
-            <Show when={runs.error()}>
-                {(error) => (
-                    <LoadError
-                        error={error()}
-                        busy={runs.retrying()}
-                        onRetry={runs.retry}
-                    />
-                )}
-            </Show>
-            <Show
-                when={runs.items().length > 0}
-                fallback={
-                    <Show when={runs.loaded()}>
-                        <EmptyState>
-                            {t(
-                                'runs.empty',
-                                'No runs yet. Run it now, or turn it on for its triggers.'
-                            )}
-                        </EmptyState>
-                    </Show>
-                }
-            >
+        <Paginated
+            list={runs}
+            moreLabel={t('runs.more', 'Show older')}
+            empty={t(
+                'runs.empty',
+                'No runs yet. Run it now, or turn it on for its triggers.'
+            )}
+        >
+            {(items) => (
                 <ul class="workflow-runs">
-                    <For each={runs.items()}>
+                    <For each={items()}>
                         {(run) => (
-                            <li class="workflow-run">
+                            <li class="workflow-run" {...paginatedItem}>
                                 {/* eslint-disable-next-line no-restricted-syntax -- a whole row that opens the run's details, not an action button */}
                                 <button
                                     type="button"
@@ -122,8 +107,9 @@ export default function RunList(props: {
                                 </button>
                                 <Show when={open() === run.runId}>
                                     <div class="workflow-run-details">
-                                        <Switch
-                                            fallback={
+                                        <QueryState
+                                            query={details}
+                                            loading={
                                                 <p class="muted">
                                                     {t(
                                                         'ui.loading',
@@ -132,66 +118,35 @@ export default function RunList(props: {
                                                 </p>
                                             }
                                         >
-                                            <Match
-                                                when={
-                                                    details.isError &&
-                                                    details.error
-                                                }
-                                            >
-                                                {(error) => (
-                                                    <LoadError
-                                                        error={error()}
-                                                        busy={
-                                                            details.isFetching
-                                                        }
-                                                        onRetry={() =>
-                                                            details.refetch()
-                                                        }
-                                                    />
-                                                )}
-                                            </Match>
-                                            <Match when={details.data}>
-                                                {(d) => (
-                                                    <Show
-                                                        when={d().result}
-                                                        fallback={
-                                                            <p class="muted">
-                                                                {t(
-                                                                    'runs.no_result',
-                                                                    'Its result is no longer kept.'
-                                                                )}
-                                                            </p>
-                                                        }
-                                                    >
-                                                        <pre class="workflow-json">
-                                                            {JSON.stringify(
-                                                                d().result,
-                                                                null,
-                                                                2
+                                            {(d) => (
+                                                <Show
+                                                    when={d().result}
+                                                    fallback={
+                                                        <p class="muted">
+                                                            {t(
+                                                                'runs.no_result',
+                                                                'Its result is no longer kept.'
                                                             )}
-                                                        </pre>
-                                                    </Show>
-                                                )}
-                                            </Match>
-                                        </Switch>
+                                                        </p>
+                                                    }
+                                                >
+                                                    <pre class="workflow-json">
+                                                        {JSON.stringify(
+                                                            d().result,
+                                                            null,
+                                                            2
+                                                        )}
+                                                    </pre>
+                                                </Show>
+                                            )}
+                                        </QueryState>
                                     </div>
                                 </Show>
                             </li>
                         )}
                     </For>
                 </ul>
-                <Show when={runs.more()}>
-                    <div class="workflow-more">
-                        <Button
-                            variant="ghost"
-                            busy={runs.loading()}
-                            onClick={() => runs.loadMore()}
-                        >
-                            {t('runs.more', 'Show older')}
-                        </Button>
-                    </div>
-                </Show>
-            </Show>
-        </>
+            )}
+        </Paginated>
     );
 }
