@@ -34,11 +34,12 @@ jobs:
               run: mise run install
 
             # schema.d.ts must match the contract named in ./api-version (GHCR).
+            # COVERAGE=1: the tests of the check write the coverage report,
+            # so they run once. CI=true (set by GitHub) lints without a cache.
             - name: Check
               run: mise run check
-
-            - name: Coverage
-              run: mise run test:coverage
+              env:
+                  COVERAGE: '1'
 
             - name: Upload coverage to Codecov
               if: ${{ !cancelled() }}
