@@ -1,5 +1,6 @@
 import { createSignal, Show } from 'solid-js';
 import { IconCopy, IconEye, IconEyeOff, IconPencil } from '@shared/ui/icons';
+import type { FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createClipboard } from '@shared/lib/clipboard';
@@ -89,7 +90,7 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                     )}
                 </p>
             </div>
-            <Show when={!deleting()}>
+            <Show when={!editing() && !deleting()}>
                 <ErrorSummary errors={errors()} />
             </Show>
             <Table
@@ -245,6 +246,7 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                         <WebhookForm
                             hook={hook()}
                             busy={busy()}
+                            errors={errors()}
                             onSave={(respond, replace) =>
                                 void update(hook().blockId, respond, replace)
                             }
@@ -273,6 +275,7 @@ export default function WebhookTable(props: { workflow: Workflow }) {
 function WebhookForm(form: {
     hook: Webhook;
     busy: boolean;
+    errors: FormErrors;
     onSave: (respond: Respond, replace: boolean) => void;
 }) {
     const t = useLocalizer('workflows');
@@ -288,6 +291,7 @@ function WebhookForm(form: {
                 form.onSave(respond(), replace());
             }}
         >
+            <ErrorSummary errors={form.errors} />
             <RadioGroup
                 legend={t('webhook.respond_title', 'Answer')}
                 showLegend
