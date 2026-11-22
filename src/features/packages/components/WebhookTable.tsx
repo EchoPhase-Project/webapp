@@ -1,6 +1,5 @@
 import { createSignal, Show } from 'solid-js';
 import { IconCopy, IconEye, IconEyeOff, IconPencil } from '@shared/ui/icons';
-import type { FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createClipboard } from '@shared/lib/clipboard';
@@ -10,8 +9,10 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import RadioGroup from '@shared/ui/forms/RadioGroup';
+import { createForm } from '@shared/ui/forms/form';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
+import { updateWorkflowMutation } from '@features/packages/api/workflows';
 import {
     newSecret,
     paramsOf,
@@ -44,16 +45,8 @@ export default function WebhookTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const [shown, setShown] = createSignal<number | null>(null);
     const { copied, copy } = createClipboard();
-    const {
-        busy,
-        errors,
-        save,
-        remove,
-        editing,
-        setEditing,
-        setDeleting,
-        deleting,
-    } = useProgramSave<Webhook>(() => props.workflow);
+    const { busy, errors, remove, editing, setEditing, setDeleting, deleting } =
+        useProgramSave<Webhook>(() => props.workflow);
 
     const url = (hook: Webhook) => `${location.origin}${hook.path}`;
     const secret = (hook: Webhook) => {
@@ -61,16 +54,6 @@ export default function WebhookTable(props: { workflow: Workflow }) {
         return typeof value === 'string' ? value : '';
     };
     const respondText = (respond: Respond) => respondLabel(t, respond);
-
-    async function update(blockId: number, respond: Respond, replace: boolean) {
-        let program = setParams(props.workflow.program, blockId, { respond });
-        if (replace)
-            program = setParams(program, blockId, { secret: newSecret() });
-        if (await save(program)) {
-            if (replace) setShown(blockId);
-            setEditing(null);
-        }
-    }
 
     // Read in render: the namespace may arrive after the first one.
     const column = () => ({
@@ -244,12 +227,12 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                 <Show when={editing()}>
                     {(hook) => (
                         <WebhookForm
+                            workflow={props.workflow}
                             hook={hook()}
-                            busy={busy()}
-                            errors={errors()}
-                            onSave={(respond, replace) =>
-                                void update(hook().blockId, respond, replace)
-                            }
+                            onSaved={(replaced) => {
+                                if (replaced) setShown(hook().blockId);
+                                setEditing(null);
+                            }}
                         />
                     )}
                 </Show>
@@ -272,32 +255,36 @@ export default function WebhookTable(props: { workflow: Workflow }) {
     );
 }
 
-function WebhookForm(form: {
+/** One webhook's answer and secret; it saves the program and shows its errors. */
+function WebhookForm(props: {
+    workflow: Workflow;
     hook: Webhook;
-    busy: boolean;
-    errors: FormErrors;
-    onSave: (respond: Respond, replace: boolean) => void;
+    onSaved: (replaced: boolean) => void;
 }) {
     const t = useLocalizer('workflows');
-    // eslint-disable-next-line solid/reactivity
-    const [respond, setRespond] = createSignal<Respond>(form.hook.respond);
-    const [replace, setReplace] = createSignal(false);
+    const form = createForm({
+        id: 'webhook',
+        initial: () => ({ respond: props.hook.respond, replace: false }),
+    });
+    const updating = form.mutation(updateWorkflowMutation);
+    const save = form.onSubmit(({ respond, replace }) => {
+        const blockId = props.hook.blockId;
+        let program = setParams(props.workflow.program, blockId, { respond });
+        if (replace)
+            program = setParams(program, blockId, { secret: newSecret() });
+        return updating.run(
+            { workflow: props.workflow, changes: { program } },
+            () => props.onSaved(replace)
+        );
+    });
+
     return (
-        <form
-            class="vert-form"
-            noValidate
-            onSubmit={(e) => {
-                e.preventDefault();
-                form.onSave(respond(), replace());
-            }}
-        >
-            <ErrorSummary errors={form.errors} />
+        <form class="vert-form" noValidate onSubmit={save}>
+            <ErrorSummary {...form.summary} />
             <RadioGroup
+                {...form.control('respond')}
                 legend={t('webhook.respond_title', 'Answer')}
                 showLegend
-                name="respond"
-                value={respond()}
-                onChange={setRespond}
                 options={RESPONDS.map((option) => ({
                     value: option,
                     label: respondLabel(t, option),
@@ -305,15 +292,14 @@ function WebhookForm(form: {
                 }))}
             />
             <Checkbox
-                checked={replace()}
-                onChange={setReplace}
+                {...form.toggle('replace')}
                 label={t('webhook.replace', 'New secret')}
                 description={t(
                     'webhook.replace_short',
                     'The old one stops working at once.'
                 )}
             />
-            <Button type="submit" busy={form.busy}>
+            <Button type="submit" busy={form.busy()}>
                 {t('settings.save', 'Save')}
             </Button>
         </form>

@@ -1,6 +1,5 @@
-import { createSignal, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import { IconPencil, IconPlus } from '@shared/ui/icons';
-import type { FormErrors } from '@shared/api/errors';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -12,6 +11,8 @@ import Modal from '@shared/ui/Modal';
 import { Cell, Row, Table } from '@shared/ui/Table';
 import RemoveButton from '@shared/ui/RemoveButton';
 import TimeZoneField from '@shared/ui/forms/TimeZoneField';
+import { createForm } from '@shared/ui/forms/form';
+import { updateWorkflowMutation } from '@features/packages/api/workflows';
 import {
     addTrigger,
     setParams,
@@ -30,28 +31,8 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
     // Editing: null, closed; 'new', adding; a schedule, editing it.
-    const {
-        busy,
-        errors,
-        save,
-        remove,
-        editing,
-        setEditing,
-        setDeleting,
-        deleting,
-    } = useProgramSave<Schedule, Schedule | 'new'>(() => props.workflow);
-
-    async function submit(cron: string, zone: string) {
-        const target = editing();
-        let program = setTimeZone(props.workflow.program, zone);
-        program =
-            target === 'new'
-                ? addTrigger(program, 'ScheduleTrigger', { cron: cron.trim() })
-                : target
-                  ? setParams(program, target.blockId, { cron: cron.trim() })
-                  : program;
-        if (await save(program)) setEditing(null);
-    }
+    const { busy, errors, remove, editing, setEditing, setDeleting, deleting } =
+        useProgramSave<Schedule, Schedule | 'new'>(() => props.workflow);
 
     // Read in render: the namespace may arrive after the first one.
     const column = () => ({
@@ -138,17 +119,9 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                 <Show when={editing()}>
                     {(target) => (
                         <ScheduleForm
-                            cron={
-                                target() === 'new'
-                                    ? ''
-                                    : (target() as Schedule).cron
-                            }
-                            zone={
-                                props.workflow.program.settings.timeZone ?? ''
-                            }
-                            busy={busy()}
-                            errors={errors()}
-                            onSave={(cron, zone) => void submit(cron, zone)}
+                            workflow={props.workflow}
+                            target={target()}
+                            onSaved={() => setEditing(null)}
                         />
                     )}
                 </Show>
@@ -171,34 +144,39 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
     );
 }
 
+/** A new schedule or one to edit, and the zone of all; it saves the program. */
 function ScheduleForm(props: {
-    cron: string;
-    zone: string;
-    busy: boolean;
-    errors: FormErrors;
-    onSave: (cron: string, zone: string) => void;
+    workflow: Workflow;
+    target: Schedule | 'new';
+    onSaved: () => void;
 }) {
     const t = useLocalizer('workflows');
-    /* eslint-disable solid/reactivity */
-    const [cron, setCron] = createSignal(props.cron);
-    const [zone, setZone] = createSignal(props.zone);
-    /* eslint-enable solid/reactivity */
+    const form = createForm({
+        id: 'schedule',
+        initial: () => ({
+            cron: props.target === 'new' ? '' : props.target.cron,
+            zone: props.workflow.program.settings.timeZone ?? '',
+        }),
+    });
+    const updating = form.mutation(updateWorkflowMutation);
+    const save = form.onSubmit(({ cron, zone }) => {
+        const target = props.target;
+        let program = setTimeZone(props.workflow.program, zone);
+        program =
+            target === 'new'
+                ? addTrigger(program, 'ScheduleTrigger', { cron: cron.trim() })
+                : setParams(program, target.blockId, { cron: cron.trim() });
+        return updating.run(
+            { workflow: props.workflow, changes: { program } },
+            () => props.onSaved()
+        );
+    });
+
     return (
-        <form
-            class="vert-form"
-            noValidate
-            onSubmit={(e) => {
-                e.preventDefault();
-                props.onSave(cron(), zone());
-            }}
-        >
-            <ErrorSummary
-                errors={props.errors}
-                inputId={() => 'schedule-cron'}
-            />
+        <form class="vert-form" noValidate onSubmit={save}>
+            <ErrorSummary {...form.summary} />
             <Field
-                id="schedule-cron"
-                name="cron"
+                {...form.input('cron')}
                 label={t(
                     'schedule.cron_label',
                     'Cron (minute hour day month weekday)'
@@ -208,9 +186,6 @@ function ScheduleForm(props: {
                 spellcheck={false}
                 autocomplete="off"
                 placeholder="0 9 * * 1-5"
-                disabled={props.busy}
-                value={cron()}
-                onInput={(e) => setCron(e.currentTarget.value)}
             />
             <p class="muted package-hint">
                 {t(
@@ -219,8 +194,7 @@ function ScheduleForm(props: {
                 )}
             </p>
             <TimeZoneField
-                id="schedule-zone"
-                name="timeZone"
+                {...form.control('zone')}
                 label={t(
                     'schedule.zone_label',
                     'Time zone (all its schedules)'
@@ -228,11 +202,12 @@ function ScheduleForm(props: {
                 showLabel
                 optional
                 placeholder={t('schedule.zone_yours', 'Yours')}
-                disabled={props.busy}
-                value={zone()}
-                onChange={setZone}
             />
-            <Button type="submit" busy={props.busy} disabled={!cron().trim()}>
+            <Button
+                type="submit"
+                busy={form.busy()}
+                disabled={!form.values.cron.trim()}
+            >
                 {t('settings.save', 'Save')}
             </Button>
         </form>

@@ -9,7 +9,8 @@ import { removeBlock, type Program } from '@features/packages/program-edit';
  * program: each change saved as a new version, the trigger being edited
  * (`E`: the trigger, or e.g. 'new' for one being added) and the one asked
  * about before it is deleted. A save is kept in the cache as the workflow
- * (updateWorkflowMutation): its page shows it.
+ * (updateWorkflowMutation): its page shows it. An edit form saves on its
+ * own (createForm, the same description), so its errors show in its dialog.
  */
 export function useProgramSave<T extends { blockId: number }, E = T>(
     workflow: () => Workflow

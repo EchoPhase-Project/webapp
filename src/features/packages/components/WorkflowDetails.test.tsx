@@ -195,6 +195,39 @@ describe('WorkflowDetails', () => {
         await expectNoA11yViolations();
     });
 
+    it('shows a failed schedule save in its dialog, which stays open', async () => {
+        fakeApi(
+            routes({
+                'PUT /api/v1/workflows/w1': () =>
+                    json(409, {
+                        code: 'TestChanged',
+                        message: 'The workflow changed meanwhile.',
+                    }),
+            })
+        );
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="schedules" />
+        ));
+
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Add a schedule' })
+        );
+        const dialog = await screen.findByRole('dialog');
+        fireEvent.input(within(dialog).getByLabelText(/^Cron/), {
+            target: { value: '0 9 * * *' },
+        });
+        fireEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+        const alert = await within(dialog).findByRole('alert');
+        expect(alert.textContent).toBe('The workflow changed meanwhile.');
+        expect(screen.getAllByRole('alert')).toHaveLength(1);
+        expect(dialog.closest('dialog')?.hasAttribute('open')).toBe(true);
+        // The typed cron is still there, for another try.
+        expect(
+            within(dialog).getByLabelText<HTMLInputElement>(/^Cron/).value
+        ).toBe('0 9 * * *');
+    });
+
     it('adds a schedule that starts where the other triggers do', async () => {
         const api = fakeApi(
             routes({
