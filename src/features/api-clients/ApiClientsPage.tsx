@@ -1,14 +1,13 @@
-import { createSignal, Match, Show, Switch } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
-import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import PageHeader from '@shared/ui/PageHeader';
-import { SkeletonScope } from '@shared/ui/Skeleton';
+import QueryState from '@shared/ui/QueryState';
 import type { ApiClient } from '@shared/api/types';
 import { apiClientsQuery, deleteApiClientMutation } from './api';
 import ApiClientForm from './components/ApiClientForm';
@@ -61,26 +60,15 @@ export default function ApiClientsPage() {
 
             <SecretNotice secret={secret()} onDismiss={() => setSecret(null)} />
 
-            <Switch>
-                <Match when={clients.isError && clients.error}>
-                    {(error) => (
-                        <LoadError
-                            error={error()}
-                            busy={clients.isFetching}
-                            onRetry={() => clients.refetch()}
-                        />
-                    )}
-                </Match>
-                <Match when={clients.isPending || clients.isSuccess}>
-                    <SkeletonScope when={clients.isPending}>
-                        <ApiClientsTable
-                            clients={clients.data ?? []}
-                            busy={deletion.busy() || clients.isPending}
-                            onDelete={deletion.ask}
-                        />
-                    </SkeletonScope>
-                </Match>
-            </Switch>
+            <QueryState query={clients} placeholder={[]}>
+                {(list) => (
+                    <ApiClientsTable
+                        clients={list()}
+                        busy={deletion.busy() || clients.isPending}
+                        onDelete={deletion.ask}
+                    />
+                )}
+            </QueryState>
 
             <Modal
                 open={creating()}

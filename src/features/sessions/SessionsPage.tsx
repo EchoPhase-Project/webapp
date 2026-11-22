@@ -1,4 +1,3 @@
-import { Match, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
@@ -6,9 +5,8 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
-import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
-import { SkeletonScope } from '@shared/ui/Skeleton';
+import QueryState from '@shared/ui/QueryState';
 import {
     revokeAllSessionsMutation,
     revokeSessionMutation,
@@ -61,27 +59,16 @@ export default function SessionsPage() {
                 }
             />
             <ErrorSummary errors={one.errors()} />
-            <Switch>
-                <Match when={sessions.isError && sessions.error}>
-                    {(error) => (
-                        <LoadError
-                            error={error()}
-                            busy={sessions.isFetching}
-                            onRetry={() => sessions.refetch()}
-                        />
-                    )}
-                </Match>
-                {/* While the list loads, the table shows rows of bars. */}
-                <Match when={sessions.isPending || sessions.isSuccess}>
-                    <SkeletonScope when={sessions.isPending}>
-                        <SessionsTable
-                            sessions={sessions.data ?? []}
-                            busy={isLoading()}
-                            onRevoke={(id) => void revoke(id)}
-                        />
-                    </SkeletonScope>
-                </Match>
-            </Switch>
+            {/* While the list loads, the table shows rows of bars. */}
+            <QueryState query={sessions} placeholder={[]}>
+                {(list) => (
+                    <SessionsTable
+                        sessions={list()}
+                        busy={isLoading()}
+                        onRevoke={(id) => void revoke(id)}
+                    />
+                )}
+            </QueryState>
 
             <ConfirmDialog
                 {...all.dialog}

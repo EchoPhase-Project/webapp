@@ -1,12 +1,4 @@
-import {
-    createEffect,
-    createSignal,
-    Match,
-    on,
-    Show,
-    Switch as Branch,
-    type Component,
-} from 'solid-js';
+import { createEffect, createSignal, on, Show, type Component } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import {
@@ -18,7 +10,6 @@ import {
     IconHistory,
 } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { isNotFound } from '@shared/api/client';
 import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -26,10 +17,9 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
-import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
-import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
+import QueryState from '@shared/ui/QueryState';
 import { NavTabs } from '@shared/ui/Tabs';
 import Switch from '@shared/ui/Switch';
 import {
@@ -159,23 +149,17 @@ export default function WorkflowDetails(props: {
     );
 
     return (
-        <Branch
-            fallback={
-                <>
-                    {back()}
-                    <EmptyState>
-                        {t(
-                            'not_found',
-                            'This workflow does not exist, or it is not yours.'
-                        )}
-                    </EmptyState>
-                </>
-            }
-        >
-            <Match when={workflow.data}>
+        <div class="page-stack workflow-page">
+            {back()}
+            <QueryState
+                query={workflow}
+                notFound={t(
+                    'not_found',
+                    'This workflow does not exist, or it is not yours.'
+                )}
+            >
                 {(w) => (
-                    <div class="page-stack workflow-page">
-                        {back()}
+                    <>
                         <PageHeader
                             eyebrow={t('eyebrow', 'Workflows')}
                             title={w().name}
@@ -284,28 +268,9 @@ export default function WorkflowDetails(props: {
                                 'Its versions and schedules go with it; its webhooks stop answering. Past runs stay until they expire.'
                             )}
                         </ConfirmDialog>
-                    </div>
+                    </>
                 )}
-            </Match>
-            <Match when={workflow.isPending}>{null}</Match>
-            <Match
-                when={
-                    workflow.isError &&
-                    !isNotFound(workflow.error) &&
-                    workflow.error
-                }
-            >
-                {(error) => (
-                    <div class="page-stack">
-                        {back()}
-                        <LoadError
-                            error={error()}
-                            busy={workflow.isFetching}
-                            onRetry={() => workflow.refetch()}
-                        />
-                    </div>
-                )}
-            </Match>
-        </Branch>
+            </QueryState>
+        </div>
     );
 }

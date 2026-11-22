@@ -1,12 +1,4 @@
-import {
-    createEffect,
-    createSignal,
-    For,
-    Match,
-    on,
-    Show,
-    Switch,
-} from 'solid-js';
+import { createEffect, createSignal, For, on, Show } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
 import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { IconPlus, IconSearch } from '@shared/ui/icons';
@@ -15,10 +7,9 @@ import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import Button from '@shared/ui/Button';
-import EmptyState from '@shared/ui/EmptyState';
 import Field from '@shared/ui/forms/Field';
-import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
+import QueryState from '@shared/ui/QueryState';
 import { noteQuery, notesQuery } from './api';
 import NoteCard from './components/NoteCard';
 import NoteEditorModal from './components/NoteEditorModal';
@@ -94,34 +85,24 @@ export default function NotesPage() {
                 />
             </div>
 
-            <Switch>
-                <Match when={notes.isError && notes.error}>
-                    {(error) => (
-                        <LoadError
-                            error={error()}
-                            busy={notes.isFetching}
-                            onRetry={() => notes.refetch()}
-                        />
-                    )}
-                </Match>
-                <Match when={notes.isSuccess && notes.data.length === 0}>
-                    <EmptyState
-                        action={
-                            <Show when={!search()}>
-                                <Button onClick={() => setEditing(undefined)}>
-                                    {t('first', 'Write the first one')}
-                                </Button>
-                            </Show>
-                        }
-                    >
-                        {search()
-                            ? t('none_found', 'No notes match.')
-                            : t('empty', 'No notes yet.')}
-                    </EmptyState>
-                </Match>
-                <Match when={notes.isSuccess}>
+            <QueryState
+                query={notes}
+                empty={
+                    search()
+                        ? t('none_found', 'No notes match.')
+                        : t('empty', 'No notes yet.')
+                }
+                emptyAction={
+                    <Show when={!search()}>
+                        <Button onClick={() => setEditing(undefined)}>
+                            {t('first', 'Write the first one')}
+                        </Button>
+                    </Show>
+                }
+            >
+                {(list) => (
                     <div class="notes-grid">
-                        <For each={notes.data}>
+                        <For each={list()}>
                             {(note) => (
                                 <NoteCard
                                     note={note}
@@ -130,8 +111,8 @@ export default function NotesPage() {
                             )}
                         </For>
                     </div>
-                </Match>
-            </Switch>
+                )}
+            </QueryState>
 
             <NoteEditorModal
                 open={editing() !== null}

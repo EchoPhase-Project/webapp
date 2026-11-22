@@ -1,15 +1,13 @@
-import { createEffect, createSignal, Match, Show, Switch } from 'solid-js';
+import { createEffect, createSignal, Show } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import { isNotFound } from '@shared/api/client';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import BackLink from '@shared/ui/BackLink';
-import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
-import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
+import QueryState from '@shared/ui/QueryState';
 import { NavTabs } from '@shared/ui/Tabs';
 import { packageWorkflowsQuery } from './api/packages';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
@@ -70,23 +68,17 @@ export default function MyPackagePage() {
     );
 
     return (
-        <Switch
-            fallback={
-                <>
-                    {back()}
-                    <EmptyState>
-                        {t(
-                            'package.not_found',
-                            'This package does not exist, or it is not yours.'
-                        )}
-                    </EmptyState>
-                </>
-            }
-        >
-            <Match when={pkg.data}>
+        <div class="page-stack workflow-page">
+            {back()}
+            <QueryState
+                query={pkg}
+                notFound={t(
+                    'package.not_found',
+                    'This package does not exist, or it is not yours.'
+                )}
+            >
                 {(p) => (
-                    <div class="page-stack workflow-page">
-                        {back()}
+                    <>
                         <PageHeader
                             eyebrow={t('package.eyebrow', 'Package')}
                             title={
@@ -147,22 +139,9 @@ export default function MyPackagePage() {
                                 workflows={workflows.data ?? []}
                             />
                         </Show>
-                    </div>
+                    </>
                 )}
-            </Match>
-            <Match when={pkg.isPending}>{null}</Match>
-            <Match when={pkg.isError && !isNotFound(pkg.error) && pkg.error}>
-                {(error) => (
-                    <div class="page-stack">
-                        {back()}
-                        <LoadError
-                            error={error()}
-                            busy={pkg.isFetching}
-                            onRetry={() => pkg.refetch()}
-                        />
-                    </div>
-                )}
-            </Match>
-        </Switch>
+            </QueryState>
+        </div>
     );
 }

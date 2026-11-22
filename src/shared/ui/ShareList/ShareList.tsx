@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, type JSX } from 'solid-js';
+import { For, Show, type JSX } from 'solid-js';
 import {
     useQuery,
     type MutationOptions,
@@ -12,7 +12,7 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
 import { createForm } from '@shared/ui/forms/form';
-import LoadError from '@shared/ui/LoadError';
+import QueryState from '@shared/ui/QueryState';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
 import './share-list.scss';
@@ -124,20 +124,7 @@ export default function ShareList<
     );
 
     // Nothing while the list loads; its error, with a way to ask again.
-    const people = () => (
-        <Switch>
-            <Match when={shares.isError && shares.error}>
-                {(error) => (
-                    <LoadError
-                        error={error()}
-                        busy={shares.isFetching}
-                        onRetry={() => shares.refetch()}
-                    />
-                )}
-            </Match>
-            <Match when={shares.isSuccess}>{list()}</Match>
-        </Switch>
-    );
+    const people = () => <QueryState query={shares}>{list}</QueryState>;
 
     const fields = () => (
         <>

@@ -5,7 +5,7 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
-import LoadError from '@shared/ui/LoadError';
+import QueryState from '@shared/ui/QueryState';
 import {
     restoreWorkflowVersionMutation,
     workflowExportUrl,
@@ -35,67 +35,76 @@ export default function VersionList(props: { workflow: Workflow }) {
 
     return (
         <>
-            <Show when={versions.isError && versions.error}>
-                {(error) => (
-                    <LoadError
-                        error={error()}
-                        busy={versions.isFetching}
-                        onRetry={() => versions.refetch()}
-                    />
-                )}
-            </Show>
-            <ol class="workflow-versions">
-                <For each={versions.data}>
-                    {(v) => (
-                        <li>
-                            <span class="workflow-version-head">
-                                <strong>v{v.version}</strong>
-                                <Show
-                                    when={v.version === props.workflow.version}
-                                >
-                                    <span class="badge">
-                                        {t('versions.current', 'current')}
-                                    </span>
-                                </Show>
-                                <span class="muted">{date(v.createdAt)}</span>
-                                <Show when={v.restoredFrom}>
-                                    {(from) => (
+            <QueryState query={versions}>
+                {(list) => (
+                    <ol class="workflow-versions">
+                        <For each={list()}>
+                            {(v) => (
+                                <li>
+                                    <span class="workflow-version-head">
+                                        <strong>v{v.version}</strong>
+                                        <Show
+                                            when={
+                                                v.version ===
+                                                props.workflow.version
+                                            }
+                                        >
+                                            <span class="badge">
+                                                {t(
+                                                    'versions.current',
+                                                    'current'
+                                                )}
+                                            </span>
+                                        </Show>
                                         <span class="muted">
-                                            {t(
-                                                'versions.restored',
-                                                'brought back v{version}',
-                                                { version: from() }
-                                            )}
+                                            {date(v.createdAt)}
                                         </span>
-                                    )}
-                                </Show>
-                            </span>
-                            <span class="actions-row">
-                                <a
-                                    class="btn btn-ghost"
-                                    href={workflowExportUrl(
-                                        props.workflow.id,
-                                        v.version
-                                    )}
-                                    download=""
-                                >
-                                    {t('versions.export', 'Export')}
-                                </a>
-                                <Show
-                                    when={v.version !== props.workflow.version}
-                                >
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => restore.ask(v)}
-                                    >
-                                        {t('versions.restore', 'Restore')}
-                                    </Button>
-                                </Show>
-                            </span>
-                        </li>
-                    )}
-                </For>
-            </ol>
+                                        <Show when={v.restoredFrom}>
+                                            {(from) => (
+                                                <span class="muted">
+                                                    {t(
+                                                        'versions.restored',
+                                                        'brought back v{version}',
+                                                        { version: from() }
+                                                    )}
+                                                </span>
+                                            )}
+                                        </Show>
+                                    </span>
+                                    <span class="actions-row">
+                                        <a
+                                            class="btn btn-ghost"
+                                            href={workflowExportUrl(
+                                                props.workflow.id,
+                                                v.version
+                                            )}
+                                            download=""
+                                        >
+                                            {t('versions.export', 'Export')}
+                                        </a>
+                                        <Show
+                                            when={
+                                                v.version !==
+                                                props.workflow.version
+                                            }
+                                        >
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => restore.ask(v)}
+                                            >
+                                                {t(
+                                                    'versions.restore',
+                                                    'Restore'
+                                                )}
+                                            </Button>
+                                        </Show>
+                                    </span>
+                                </li>
+                            )}
+                        </For>
+                    </ol>
+                )}
+            </QueryState>
             <ConfirmDialog
                 {...restore.dialog}
                 title={t(

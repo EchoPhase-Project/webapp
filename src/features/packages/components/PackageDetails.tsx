@@ -1,4 +1,4 @@
-import { createSignal, For, Match, Show, Switch } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { IconDownload } from '@shared/ui/icons';
@@ -10,11 +10,11 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
-import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
+import QueryState from '@shared/ui/QueryState';
 import {
     leavePackageMutation,
     packageContentQuery,
@@ -66,23 +66,17 @@ export default function PackageDetails(props: { id: string }) {
     );
 
     return (
-        <Switch
-            fallback={
-                <>
-                    {back()}
-                    <EmptyState>
-                        {t(
-                            'not_found',
-                            'This package does not exist, or it is not shared with you.'
-                        )}
-                    </EmptyState>
-                </>
-            }
-        >
-            <Match when={pkg.data}>
+        <div class="page-stack package-page">
+            {back()}
+            <QueryState
+                query={pkg}
+                notFound={t(
+                    'not_found',
+                    'This package does not exist, or it is not shared with you.'
+                )}
+            >
                 {(p) => (
-                    <div class="page-stack package-page">
-                        {back()}
+                    <>
                         <PageHeader
                             eyebrow={t('eyebrow', 'Workflows')}
                             title={
@@ -294,45 +288,38 @@ export default function PackageDetails(props: { id: string }) {
 
                                 <section class="package-side-section">
                                     <h2>{t('versions', 'Versions')}</h2>
-                                    <Show
-                                        when={
-                                            versions.isError && versions.error
-                                        }
-                                    >
-                                        {(error) => (
-                                            <LoadError
-                                                error={error()}
-                                                busy={versions.isFetching}
-                                                onRetry={() =>
-                                                    versions.refetch()
-                                                }
-                                            />
+                                    <QueryState query={versions}>
+                                        {(list) => (
+                                            <ol class="package-versions">
+                                                <For each={list()}>
+                                                    {(v) => (
+                                                        <li>
+                                                            <span class="package-version-head">
+                                                                <strong>
+                                                                    v{v.version}
+                                                                </strong>
+                                                                <span class="muted">
+                                                                    {date(
+                                                                        v.createdAt
+                                                                    )}
+                                                                </span>
+                                                            </span>
+                                                            <Show
+                                                                when={v.changelog.trim()}
+                                                            >
+                                                                <Markdown
+                                                                    text={
+                                                                        v.changelog
+                                                                    }
+                                                                    class="package-changelog"
+                                                                />
+                                                            </Show>
+                                                        </li>
+                                                    )}
+                                                </For>
+                                            </ol>
                                         )}
-                                    </Show>
-                                    <ol class="package-versions">
-                                        <For each={versions.data}>
-                                            {(v) => (
-                                                <li>
-                                                    <span class="package-version-head">
-                                                        <strong>
-                                                            v{v.version}
-                                                        </strong>
-                                                        <span class="muted">
-                                                            {date(v.createdAt)}
-                                                        </span>
-                                                    </span>
-                                                    <Show
-                                                        when={v.changelog.trim()}
-                                                    >
-                                                        <Markdown
-                                                            text={v.changelog}
-                                                            class="package-changelog"
-                                                        />
-                                                    </Show>
-                                                </li>
-                                            )}
-                                        </For>
-                                    </ol>
+                                    </QueryState>
                                 </section>
 
                                 <Show
@@ -363,22 +350,9 @@ export default function PackageDetails(props: { id: string }) {
                                 />
                             )}
                         </Show>
-                    </div>
+                    </>
                 )}
-            </Match>
-            <Match when={pkg.isPending}>{null}</Match>
-            <Match when={pkg.isError && !isNotFound(pkg.error) && pkg.error}>
-                {(error) => (
-                    <div class="page-stack">
-                        {back()}
-                        <LoadError
-                            error={error()}
-                            busy={pkg.isFetching}
-                            onRetry={() => pkg.refetch()}
-                        />
-                    </div>
-                )}
-            </Match>
-        </Switch>
+            </QueryState>
+        </div>
     );
 }

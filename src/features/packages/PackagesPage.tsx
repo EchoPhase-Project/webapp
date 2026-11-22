@@ -1,4 +1,4 @@
-import { createSignal, For, Match, Show, Switch } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
@@ -9,8 +9,8 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
-import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
+import QueryState from '@shared/ui/QueryState';
 import { myPackagesQuery } from './api/packages';
 import ImportWorkflowButton from './components/ImportWorkflowButton';
 import PackageEditorModal from './components/PackageEditorModal';
@@ -71,122 +71,127 @@ export default function PackagesPage() {
             />
             <ErrorSummary errors={errors()} />
 
-            <Switch>
-                <Match when={packages.isError && packages.error}>
-                    {(error) => (
-                        <LoadError
-                            error={error()}
-                            busy={packages.isFetching}
-                            onRetry={() => packages.refetch()}
-                        />
-                    )}
-                </Match>
-                <Match when={packages.isSuccess}>
-                    <Show
-                        when={mine().length > 0}
-                        fallback={
-                            <EmptyState
-                                action={
-                                    <A class="btn" href="/explore">
-                                        {t(
-                                            'empty_explore',
-                                            'Find one in Explore'
-                                        )}
-                                    </A>
-                                }
-                            >
-                                {t(
-                                    'packages.empty',
-                                    'No packages yet: install one from Explore, start a new one or import a workflow.'
-                                )}
-                            </EmptyState>
-                        }
-                    >
-                        <ul class="workflows-list">
-                            <For each={mine()}>
-                                {(p) => (
-                                    <li class="workflows-item card">
-                                        <span class="workflows-item-main">
-                                            <span class="workflows-item-title">
-                                                <A
-                                                    href={packagePath(p.id)}
-                                                    class="workflows-item-name"
-                                                >
-                                                    {p.name}
-                                                </A>
-                                                <VisibilityBadge
-                                                    visibility={p.visibility}
-                                                />
-                                            </span>
-                                            <Show when={p.summary}>
-                                                <span class="muted">
-                                                    {p.summary}
-                                                </span>
-                                            </Show>
-                                            <span class="muted workflows-item-meta">
-                                                <span>
-                                                    {t(
-                                                        'packages.count',
-                                                        '{count} workflows',
-                                                        { count: p.workflows }
-                                                    )}
-                                                </span>
-                                                <PackageOrigin pkg={p} />
-                                                <span>{date(p.updatedAt)}</span>
-                                            </span>
-                                        </span>
-                                    </li>
-                                )}
-                            </For>
-                        </ul>
-                    </Show>
-
-                    <Show when={shared().length > 0}>
-                        <section class="workflow-section">
-                            <h2>{t('packages.shared', 'Shared with you')}</h2>
+            <QueryState query={packages}>
+                {() => (
+                    <>
+                        <Show
+                            when={mine().length > 0}
+                            fallback={
+                                <EmptyState
+                                    action={
+                                        <A class="btn" href="/explore">
+                                            {t(
+                                                'empty_explore',
+                                                'Find one in Explore'
+                                            )}
+                                        </A>
+                                    }
+                                >
+                                    {t(
+                                        'packages.empty',
+                                        'No packages yet: install one from Explore, start a new one or import a workflow.'
+                                    )}
+                                </EmptyState>
+                            }
+                        >
                             <ul class="workflows-list">
-                                <For each={shared()}>
+                                <For each={mine()}>
                                     {(p) => (
                                         <li class="workflows-item card">
                                             <span class="workflows-item-main">
-                                                <A
-                                                    href={`/explore/${p.id}`}
-                                                    class="workflows-item-name"
-                                                >
-                                                    {p.name}
-                                                </A>
+                                                <span class="workflows-item-title">
+                                                    <A
+                                                        href={packagePath(p.id)}
+                                                        class="workflows-item-name"
+                                                    >
+                                                        {p.name}
+                                                    </A>
+                                                    <VisibilityBadge
+                                                        visibility={
+                                                            p.visibility
+                                                        }
+                                                    />
+                                                </span>
+                                                <Show when={p.summary}>
+                                                    <span class="muted">
+                                                        {p.summary}
+                                                    </span>
+                                                </Show>
                                                 <span class="muted workflows-item-meta">
                                                     <span>
                                                         {t(
-                                                            'packages.by',
-                                                            'by {name}',
+                                                            'packages.count',
+                                                            '{count} workflows',
                                                             {
-                                                                name:
-                                                                    p.owner
-                                                                        .name ||
-                                                                    `@${p.owner.userName ?? ''}`,
+                                                                count: p.workflows,
                                                             }
                                                         )}
                                                     </span>
-                                                    <Show
-                                                        when={
-                                                            p.latestVersion > 0
-                                                        }
-                                                    >
-                                                        <span>
-                                                            v{p.latestVersion}
-                                                        </span>
-                                                    </Show>
+                                                    <PackageOrigin pkg={p} />
+                                                    <span>
+                                                        {date(p.updatedAt)}
+                                                    </span>
                                                 </span>
                                             </span>
                                         </li>
                                     )}
                                 </For>
                             </ul>
-                        </section>
-                    </Show>
-                </Match>
-            </Switch>
+                        </Show>
+
+                        <Show when={shared().length > 0}>
+                            <section class="workflow-section">
+                                <h2>
+                                    {t('packages.shared', 'Shared with you')}
+                                </h2>
+                                <ul class="workflows-list">
+                                    <For each={shared()}>
+                                        {(p) => (
+                                            <li class="workflows-item card">
+                                                <span class="workflows-item-main">
+                                                    <A
+                                                        href={`/explore/${p.id}`}
+                                                        class="workflows-item-name"
+                                                    >
+                                                        {p.name}
+                                                    </A>
+                                                    <span class="muted workflows-item-meta">
+                                                        <span>
+                                                            {t(
+                                                                'packages.by',
+                                                                'by {name}',
+                                                                {
+                                                                    name:
+                                                                        p.owner
+                                                                            .name ||
+                                                                        `@${p.owner.userName ?? ''}`,
+                                                                }
+                                                            )}
+                                                        </span>
+                                                        <Show
+                                                            when={
+                                                                p.latestVersion >
+                                                                0
+                                                            }
+                                                        >
+                                                            <span>
+                                                                v
+                                                                {
+                                                                    p.latestVersion
+                                                                }
+                                                            </span>
+                                                        </Show>
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        )}
+                                    </For>
+                                </ul>
+                            </section>
+                        </Show>
+                    </>
+                )}
+            </QueryState>
 
             <PackageEditorModal
                 open={creating()}
