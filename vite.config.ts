@@ -51,6 +51,23 @@ export default defineConfig(({ command, mode }) => {
         resolve: {
             // The aliases (@app, @shared...) are tsconfig.json's paths.
             tsconfigPaths: true,
+            // The dev server does not tree-shake: the package's "solid"
+            // export, a barrel of 6,258 source modules, would reach the
+            // browser module by module. Its prebuilt ESM file is one module
+            // (as in vitest.config.ts). The build keeps the barrel, which
+            // Rolldown tree-shakes.
+            alias:
+                command === 'serve'
+                    ? [
+                          {
+                              find: /^@tabler\/icons-solidjs$/,
+                              replacement: path.resolve(
+                                  import.meta.dirname,
+                                  'node_modules/@tabler/icons-solidjs/dist/esm/tabler-icons-solidjs.js'
+                              ),
+                          },
+                      ]
+                    : [],
         },
         css: {
             preprocessorOptions: {
