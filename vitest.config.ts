@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import solidPlugin from 'vite-plugin-solid';
+import path from 'node:path';
 
 // Separate from vite.config.ts: compression and the bundle report have no
 // place in a test run.
@@ -12,6 +13,19 @@ export default defineConfig({
     plugins: [solidPlugin()],
     resolve: {
         tsconfigPaths: true,
+        // The package's "solid" export is a barrel of 6,258 source modules;
+        // Vitest cannot tree-shake it and loads them all for each test file
+        // that reaches @shared/ui/icons. The prebuilt ESM file is one module.
+        // The package's exports do not list it, so the alias is a file path.
+        alias: [
+            {
+                find: /^@tabler\/icons-solidjs$/,
+                replacement: path.resolve(
+                    import.meta.dirname,
+                    'node_modules/@tabler/icons-solidjs/dist/esm/tabler-icons-solidjs.js'
+                ),
+            },
+        ],
     },
     test: {
         // Plain logic by default; vite-plugin-solid would otherwise ask for
