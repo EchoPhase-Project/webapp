@@ -13,7 +13,9 @@ run = '''
 #!/usr/bin/env bash
 set -euo pipefail
 version=${usage_version:-$(cat api-version)}
-rm -rf artifacts && mkdir -p artifacts
+# Only the contract: the coverage report in artifacts/ may be in the making
+# (`mise run check` runs the tests beside this task).
+mkdir -p artifacts && rm -f artifacts/openapi.json
 plain=$([[ "$CONTRACT_REPO" == localhost:* || "$CONTRACT_REPO" == *.svc:* ]] && echo --plain-http || true)
 oras pull $plain "$CONTRACT_REPO:$version" -o artifacts >/dev/null
 echo "artifacts/openapi.json: $CONTRACT_REPO:$version"
@@ -24,18 +26,54 @@ description = "Regenerate src/shared/api/schema.d.ts from the contract"
 depends = ["contract:pull"]
 run = "OPENAPI=artifacts/openapi.json npm run gen:api"
 
+# The steps run side by side (mise runs the tasks of `depends` in parallel,
+# each line with the name of its task); check fails if one of them fails.
 [check]
 description = "Contract types up to date, type check, lint, formatting, tests, build without dev tools"
+depends = ["check:types", "check:lint", "check:format", "check:test", "check:build"]
+run = "echo 'check: all passed'"
+
+["check:contract"]
+description = "The generated API types agree with the contract of ./api-version"
 depends = ["contract:pull"]
-run = [
-  "OPENAPI=artifacts/openapi.json npm run check:api",
-  "npx --no-install tsc --noEmit",
-  "npm run lint",
-  "npm run format:check",
-  "npm test",
-  "npm run build",
-  "scripts/check-no-dev-tools.sh",
-]
+run = "OPENAPI=artifacts/openapi.json npm run check:api"
+
+# Types, lint and format read schema.d.ts, which check:contract writes again.
+# tsc keeps what it learnt between runs: it follows the dependencies itself.
+["check:types"]
+description = "Type check (tsc), incremental"
+depends = ["check:contract"]
+run = "npx --no-install tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/tsc/tsbuildinfo"
+
+# The ESLint cache is per file and does not know the types one file takes
+# from another: a typed rule could pass on a stale result. So it is for
+# local runs only; CI (CI=true) lints everything.
+["check:lint"]
+description = "ESLint, with a cache unless CI is set"
+depends = ["check:contract"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -n "${CI:-}" ]; then
+    npx --no-install eslint src
+else
+    npx --no-install eslint src --cache --cache-strategy content --cache-location node_modules/.cache/eslint/
+fi
+"""
+
+["check:format"]
+description = "Prettier, with a cache"
+depends = ["check:contract"]
+run = "npx --no-install prettier --check . --cache --cache-strategy content"
+
+# COVERAGE=1 (CI) adds the coverage report, so CI runs the tests once.
+["check:test"]
+description = "Unit tests (Vitest); with COVERAGE=1, coverage to artifacts/coverage"
+run = "npx --no-install vitest run ${COVERAGE:+--coverage}"
+
+["check:build"]
+description = "Build, then make sure that dist/ has no developer aids"
+run = ["npm run build", "scripts/check-no-dev-tools.sh"]
 
 [test]
 description = "Unit tests (Vitest); extra arguments go to vitest"
