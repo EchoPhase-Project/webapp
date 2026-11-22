@@ -38,6 +38,18 @@ mise run check            # contract types, tsc, ESLint, Prettier, tests, build
 
 CI runs the same checks. CI also builds the Docker image.
 
+`mise run check` runs its steps in parallel. Each output line starts with the
+name of its step, for example `[check:lint]`. If one step fails, the check
+fails. To run one step, run its task, for example `mise run check:types`.
+
+tsc, Prettier, and ESLint keep caches in `node_modules/.cache`. Thus, a second
+run is faster. The ESLint cache is for local runs only: if `CI` is set,
+ESLint runs without the cache. The cache does not know which types a file gets
+from other files, so a typed rule can pass on an old result.
+
+In CI, `COVERAGE=1` makes `check:test` write the coverage report. Thus, CI
+runs the tests only one time.
+
 ## How the code is organised
 
 | Folder                 | Contents                                                                                                                                                                    |
@@ -584,6 +596,11 @@ The tests use Vitest. They are adjacent to the code (`*.test.ts`,
 `// @vitest-environment jsdom`. `src/shared/testing` contains the tools for
 page tests: `fakeApi()` answers API calls and records them. `renderPage()`
 renders a page with its providers.
+
+The test setup loads the English strings before each component test file.
+Thus, a page in a test shows the text from `en.json`, as in the app. If the
+strings loaded during a test, the result of the test would change with the
+load time.
 
 Each component test includes the axe check:
 `await expectNoA11yViolations()` from `src/shared/testing/axe.ts`. The check

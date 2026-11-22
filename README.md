@@ -38,7 +38,7 @@ build leaves them out.
 | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `contract:pull [--version v]`                             | download the server's API contract (`./api-version`) to `artifacts/openapi.json` |
 | `gen:api`                                                 | regenerate `src/shared/api/schema.d.ts` from it                                  |
-| `check`                                                   | contract types up to date, `tsc`, ESLint, tests, build                           |
+| `check`                                                   | contract types, `tsc`, ESLint, Prettier, tests, build; steps run in parallel     |
 | `test`, `test:coverage`                                   | Vitest tests (`src/**/*.test.ts[x]`); coverage to `artifacts/coverage`           |
 | `coverage:html`                                           | the same as a browsable report: `artifacts/coverage/index.html`                  |
 | `docker:build`, `docker:push [--tag t]`, `docker:publish` | the webapp image                                                                 |

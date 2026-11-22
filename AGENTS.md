@@ -24,6 +24,11 @@ Get the tools from mise. Run `mise install --locked`, then run
 Before you stop, make sure that the type check, the linter, the format check,
 and the tests are successful.
 
+`mise run check` runs its steps in parallel. Each output line starts with the
+name of its step, for example `[check:lint]`. To run one step, run its task,
+for example `mise run check:types`. The ESLint cache of `check:lint` is for
+local runs only. If `CI` is set, ESLint runs without the cache.
+
 ## Layout
 
 - `src/app/`: the entry point, the layout, the routes (`Router.tsx`), and
