@@ -1,7 +1,8 @@
 import { createSignal, For } from 'solid-js';
-import { FORM, type FormErrors } from '@shared/api/errors';
+import { mutationOptions } from '@tanstack/solid-query';
+import { ApiError } from '@shared/api/client';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import Field from '@shared/ui/forms/Field';
 import Modal from '@shared/ui/Modal';
 import RemoveButton from '@shared/ui/RemoveButton';
@@ -10,45 +11,46 @@ import { DevGrid, DevLog, DevSample, DevSection } from './DevKit';
 
 type Which = 'usual' | 'wide' | 'patterned' | 'fixed';
 
-const failure: FormErrors = {
-    [FORM]: [
-        {
-            code: 'dev_example',
-            message: 'The server could not delete it. Try again.',
-        },
-    ],
-};
+/**
+ * A fake action, as a feature's description gives it; no request goes out.
+ * It takes a second, and fails while `fail` says so.
+ */
+const revokeAllMutation = (fail: () => boolean) => () =>
+    mutationOptions({
+        mutationFn: () =>
+            new Promise<void>((resolve, reject) =>
+                setTimeout(() => {
+                    if (!fail()) return resolve();
+                    reject(
+                        new ApiError(
+                            [
+                                {
+                                    code: 'dev_example',
+                                    message:
+                                        'The server could not revoke them. Try again.',
+                                },
+                            ],
+                            503
+                        )
+                    );
+                }, 1000)
+            ),
+    });
 
-/** Modal in each form, and ConfirmDialog with busy and errors. */
+/** Modal in each form, and ConfirmDialog on createConfirm and on its own. */
 export default function DialogsPage() {
     const [open, setOpen] = createSignal<Which | null>(null);
     const [log, setLog] = createSignal('');
     const close = () => setOpen(null);
 
-    // ConfirmDialog with `open`: a fake action that takes a second.
-    const [confirming, setConfirming] = createSignal(false);
-    const [busy, setBusy] = createSignal(false);
+    // createConfirm: a fake action that takes a second. The dialog closes
+    // only when it succeeds; a failure stays in it.
     const [fail, setFail] = createSignal(true);
-    const [errors, setErrors] = createSignal<FormErrors | undefined>();
-
-    function cancel() {
-        setConfirming(false);
-        setErrors(undefined);
-    }
-
-    function revokeAll() {
-        setBusy(true);
-        setErrors(undefined);
-        setTimeout(() => {
-            setBusy(false);
-            if (fail()) {
-                setErrors(failure);
-                return;
-            }
-            setConfirming(false);
-            setLog('Revoked all sessions');
-        }, 1000);
-    }
+    const revokeAll = createConfirm(
+        revokeAllMutation(fail),
+        (_: 'all') => {},
+        () => setLog('Revoked all sessions')
+    );
 
     // ConfirmDialog with `item`: open while there is one.
     const [files, setFiles] = createSignal(['report.pdf', 'logo.png']);
@@ -96,10 +98,10 @@ export default function DialogsPage() {
 
             <DevSection
                 title="ConfirmDialog"
-                note="Cancel has the focus. The action is the red button."
+                note="Cancel has the focus. The action is the red button. With createConfirm, a failure stays in the dialog; cancel clears it."
             >
                 <DevGrid>
-                    <DevSample title="With open, busy and errors">
+                    <DevSample title="createConfirm: busy and errors">
                         <Switch
                             label="The action fails"
                             checked={fail()}
@@ -108,13 +110,13 @@ export default function DialogsPage() {
                         <div class="actions-row">
                             <Button
                                 variant="danger-outline"
-                                onClick={() => setConfirming(true)}
+                                onClick={() => revokeAll.ask('all')}
                             >
                                 Revoke all sessions
                             </Button>
                         </div>
                     </DevSample>
-                    <DevSample title="With item">
+                    <DevSample title="With item, no action">
                         <ul class="dev-plain">
                             <For
                                 each={files()}
@@ -206,13 +208,9 @@ export default function DialogsPage() {
             </Modal>
 
             <ConfirmDialog
-                open={confirming()}
+                {...revokeAll.dialog}
                 title="Revoke all sessions?"
                 confirm="Revoke all"
-                busy={busy()}
-                errors={errors()}
-                onCancel={cancel}
-                onConfirm={revokeAll}
             >
                 <p>Every device signs out, this one too.</p>
             </ConfirmDialog>

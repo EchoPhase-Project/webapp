@@ -63,7 +63,7 @@ export function devPages(): DevPage[] {
             path: '/dev/dialogs',
             title: 'Dialogs',
             description:
-                'Modal (usual, wide, patterned, not dismissible) and ConfirmDialog with busy and errors.',
+                'Modal (usual, wide, patterned, not dismissible), and ConfirmDialog on createConfirm (busy, errors) and on its own.',
             component: lazy(() => import('./DialogsPage')),
         },
         {
