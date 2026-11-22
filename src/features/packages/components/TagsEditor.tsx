@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -29,7 +29,12 @@ const normalizeTag = (text: string) =>
 export default function TagsEditor(props: { pkg: WorkflowPackage }) {
     const t = useLocalizer('workflows');
     const [tags, setTags] = createSignal<string[]>([]);
-    createEffect(() => setTags([...props.pkg.tags]));
+    // Follows the saved tags only when they change: a save in another card
+    // (a new package, the same tags) keeps what is not saved here.
+    const saved = createMemo(() => [...props.pkg.tags], [], {
+        equals: (a, b) => a.join(',') === b.join(','),
+    });
+    createEffect(() => setTags(saved()));
     const [draft, setDraft] = createSignal('');
     const { busy, errors, mutation } = createSubmit(['tags']);
     const updating = mutation(updatePackageMutation);

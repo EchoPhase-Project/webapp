@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
@@ -43,9 +43,11 @@ export default function PackageSettings(props: {
     // A failed delete shows in its dialog, which stays open.
     const removal = createSubmit();
     const removing = removal.mutation(deletePackageMutation);
-    // The choice starts from the package's, and follows it once saved.
+    // The choice starts from the package's, and follows it only when it
+    // changes: a save in another card keeps what is not saved here.
     const [errorWorkflow, setErrorWorkflow] = createSignal('');
-    createEffect(() => setErrorWorkflow(props.pkg.errorWorkflow ?? ''));
+    const savedErrorWorkflow = createMemo(() => props.pkg.errorWorkflow ?? '');
+    createEffect(() => setErrorWorkflow(savedErrorWorkflow()));
 
     async function saveErrorWorkflow(e: Event) {
         e.preventDefault();

@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from 'solid-js';
+import { createEffect, createMemo, createSignal } from 'solid-js';
 import { createSubmit } from '@shared/api/submit';
 import type { PackageVisibility, WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
@@ -17,7 +17,10 @@ export default function VisibilityEditor(props: { pkg: WorkflowPackage }) {
     const tw = useLocalizer('workflows');
     const [visibility, setVisibility] =
         createSignal<PackageVisibility>('Private');
-    createEffect(() => setVisibility(props.pkg.visibility));
+    // Follows the saved choice only when it changes: a save in another card
+    // (a new package, the same visibility) keeps what is not saved here.
+    const saved = createMemo(() => props.pkg.visibility);
+    createEffect(() => setVisibility(saved()));
     const { busy, errors, mutation } = createSubmit(['visibility']);
     const updating = mutation(updatePackageMutation);
 

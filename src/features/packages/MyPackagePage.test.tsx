@@ -220,6 +220,82 @@ describe('MyPackagePage', () => {
         ).toMatchObject({ tags: ['discord-bot'], visibility: 'Private' });
     });
 
+    it('keeps an unsaved choice in one card when another card saves', async () => {
+        // The server keeps what it is sent: each save is a new package.
+        let saved = pkg({ access: 'Owner', latestVersion: 0, workflows: 2 });
+        const api = fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1': () => json(200, saved),
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'PUT /api/v1/workflow-packages/p1': async (r) => {
+                    const body = (await r.json()) as Record<string, unknown>;
+                    saved = {
+                        ...saved,
+                        tags: body.tags as string[],
+                        visibility: body.visibility as string,
+                        errorWorkflow: (body.errorWorkflow ?? null) as null,
+                        stamp: `${saved.stamp}+`,
+                    };
+                    return json(200, saved);
+                },
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+        const card = (field: HTMLElement) =>
+            within(field.closest('form') as HTMLElement);
+
+        // Unsaved: a tag and the error workflow.
+        const input = await screen.findByLabelText('Tags');
+        fireEvent.input(input, { target: { value: 'raid' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+        const select =
+            await screen.findByLabelText<HTMLSelectElement>('When a run fails');
+        await waitFor(() => expect(select.options).toHaveLength(3));
+        fireEvent.change(select, { target: { value: 'k2' } });
+
+        // Saved: who sees it.
+        const priv = screen.getByLabelText<HTMLInputElement>(/^Private/);
+        fireEvent.click(priv);
+        fireEvent.click(card(priv).getByRole('button', { name: 'Save' }));
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflow-packages/p1')).toHaveLength(
+                1
+            )
+        );
+        // The new package is in the cache: nothing left to save here.
+        await waitFor(() =>
+            expect(
+                card(priv).getByRole('button', { name: 'Save' })
+            ).toHaveProperty('disabled', true)
+        );
+
+        expect(screen.getByText('raid')).toBeTruthy();
+        expect(select.value).toBe('k2');
+
+        // Unsaved: who sees it; saved: the tags.
+        const unlisted = screen.getByLabelText<HTMLInputElement>(/^Unlisted/);
+        fireEvent.click(unlisted);
+        fireEvent.click(card(input).getByRole('button', { name: 'Save' }));
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflow-packages/p1')).toHaveLength(
+                2
+            )
+        );
+        expect(
+            await api.calls('PUT /api/v1/workflow-packages/p1')[1].json()
+        ).toMatchObject({
+            tags: ['discord-bot', 'raid'],
+            visibility: 'Private',
+        });
+        await waitFor(() =>
+            expect(
+                card(input).getByRole('button', { name: 'Save' })
+            ).toHaveProperty('disabled', true)
+        );
+        expect(unlisted.checked).toBe(true);
+        expect(select.value).toBe('k2');
+    });
+
     it('shows a failed tags save: a field error under the input, the rest at the card top', async () => {
         let answer = () =>
             json(400, {
