@@ -12,13 +12,15 @@ import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import Select from '@shared/ui/forms/Select';
+import { createForm } from '@shared/ui/forms/form';
 import Modal from '@shared/ui/Modal';
-import { createSubmit } from '@shared/api/submit';
 import { myConnectionsQuery } from '@features/packages/api/connections';
 import { installPackageMutation } from '@features/packages/api/packages';
 import { packagePath } from '@features/packages/package-nav';
 
-const inputId = (field: string) => `package-install-${field}`;
+const FORM_ID = 'package-install';
+// As form.summary links an error about a connection: `${id}-${field}`.
+const selectId = (name: string) => `${FORM_ID}-${name}`;
 
 /** The caller's connections that can stand in for one the package uses. */
 function candidates(
@@ -93,23 +95,25 @@ function InstallForm(props: {
     const t = useLocalizer('packages');
     const connections = useQuery(() => myConnectionsQuery());
     const mine = () => connections.data ?? [];
-    const [chosen, setChosen] = createSignal<Record<string, string>>({});
-    const { busy, errors, mutation } = createSubmit();
-    const installing = mutation(installPackageMutation);
+    // The fields are the package's connections, known only now: one value
+    // (the picks by name) instead of a binding each.
+    const form = createForm({
+        id: FORM_ID,
+        initial: (): { picks: Record<string, string> } => ({ picks: {} }),
+    });
+    const installing = form.mutation(installPackageMutation);
 
     // Until the user picks, the same-named connection (or none).
     const choiceOf = (needed: PackageConnection) =>
-        chosen()[needed.name] ?? defaultChoice(needed, mine());
+        form.values.picks[needed.name] ?? defaultChoice(needed, mine());
 
-    async function install(e: Event) {
-        e.preventDefault();
-        if (busy()) return;
+    const install = form.onSubmit(() => {
         const connections: Record<string, string> = {};
         for (const needed of props.content.connections) {
             const choice = choiceOf(needed);
             if (choice) connections[needed.name] = choice;
         }
-        await installing.run(
+        return installing.run(
             {
                 id: props.packageId,
                 version: props.content.version,
@@ -117,11 +121,11 @@ function InstallForm(props: {
             },
             (installed) => props.onInstalled(installed)
         );
-    }
+    });
 
     return (
-        <form class="vert-form" onSubmit={(e) => void install(e)} noValidate>
-            <ErrorSummary errors={errors()} inputId={inputId} />
+        <form class="vert-form" onSubmit={install} noValidate>
+            <ErrorSummary {...form.summary} />
             <Show when={connections.isError && connections.error}>
                 {(error) => (
                     <LoadError
@@ -146,7 +150,7 @@ function InstallForm(props: {
                     <For each={props.content.connections}>
                         {(needed) => (
                             <Select
-                                id={inputId(needed.name)}
+                                id={selectId(needed.name)}
                                 showLabel
                                 label={
                                     <>
@@ -161,13 +165,13 @@ function InstallForm(props: {
                                         </Show>
                                     </>
                                 }
-                                disabled={busy() || connections.isPending}
+                                disabled={form.busy() || connections.isPending}
                                 value={choiceOf(needed)}
                                 onChange={(value) =>
-                                    setChosen((c) => ({
-                                        ...c,
+                                    form.set('picks', {
+                                        ...form.values.picks,
                                         [needed.name]: value,
-                                    }))
+                                    })
                                 }
                                 options={[
                                     {
@@ -188,7 +192,7 @@ function InstallForm(props: {
                 </fieldset>
             </Show>
             <div class="actions-row actions-row--end">
-                <Button type="submit" busy={busy()}>
+                <Button type="submit" busy={form.busy()}>
                     {t('install.submit', 'Install')}
                 </Button>
             </div>

@@ -1,19 +1,16 @@
-import { createSignal, Show } from 'solid-js';
-import { createSubmit } from '@shared/api/submit';
+import { Show } from 'solid-js';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
+import { createForm } from '@shared/ui/forms/form';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Modal from '@shared/ui/Modal';
 import {
     createPackageMutation,
     updatePackageMutation,
 } from '@features/packages/api/packages';
-
-const FIELDS = ['name', 'summary', 'readme'] as const;
-const inputId = (field: string) => `package-${field}`;
 
 /**
  * A package's name, summary and README: a new, empty (private) one, or an
@@ -54,85 +51,61 @@ function PackageForm(props: {
     onSaved: (pkg: WorkflowPackage) => void;
 }) {
     const t = useLocalizer('packages');
-    // The form starts from the package as opened.
-    /* eslint-disable solid/reactivity */
-    const [name, setName] = createSignal(props.pkg?.name ?? '');
-    const [summary, setSummary] = createSignal(props.pkg?.summary ?? '');
-    const [readme, setReadme] = createSignal(props.pkg?.readme ?? '');
-    /* eslint-enable solid/reactivity */
-    const { busy, errors, mutation } = createSubmit(FIELDS);
-    const creating = mutation(createPackageMutation);
-    const updating = mutation(updatePackageMutation);
+    const form = createForm({
+        id: 'package',
+        initial: () => ({
+            name: props.pkg?.name ?? '',
+            summary: props.pkg?.summary ?? '',
+            readme: props.pkg?.readme ?? '',
+        }),
+    });
+    const creating = form.mutation(createPackageMutation);
+    const updating = form.mutation(updatePackageMutation);
 
-    async function save(e: Event) {
-        e.preventDefault();
-        if (busy()) return;
-        const about = {
-            name: name(),
-            summary: summary(),
-            readme: readme(),
-        };
+    const save = form.onSubmit((about) => {
         const pkg = props.pkg;
         const onSaved = (saved: WorkflowPackage) => props.onSaved(saved);
         // The rest (tags, visibility, error workflow) as it is.
-        if (pkg) await updating.run({ pkg, patch: about }, onSaved);
-        else await creating.run({ ...about, visibility: 'Private' }, onSaved);
-    }
+        return pkg
+            ? updating.run({ pkg, patch: about }, onSaved)
+            : creating.run({ ...about, visibility: 'Private' }, onSaved);
+    });
 
     return (
-        <form
-            class="vert-form package-editor"
-            onSubmit={(e) => void save(e)}
-            noValidate
-        >
-            <ErrorSummary errors={errors()} inputId={inputId} />
+        <form class="vert-form package-editor" onSubmit={save} noValidate>
+            <ErrorSummary {...form.summary} />
             <Field
-                id={inputId('name')}
-                name="name"
+                {...form.input('name')}
                 label={t('ui.name', 'Name')}
                 showLabel
-                errors={errors().name}
                 type="text"
                 maxLength={100}
-                disabled={busy()}
-                value={name()}
-                onInput={(e) => setName(e.currentTarget.value)}
             />
             <Field
-                id={inputId('summary')}
-                name="summary"
+                {...form.input('summary')}
                 label={t(
                     'editor.summary',
                     'Summary: a sentence or two for its card'
                 )}
                 showLabel
-                errors={errors().summary}
                 type="text"
                 maxLength={300}
-                disabled={busy()}
-                value={summary()}
-                onInput={(e) => setSummary(e.currentTarget.value)}
             />
 
             <MarkdownEditor
-                id={inputId('readme')}
-                name="readme"
+                {...form.control('readme')}
                 label={t('editor.readme', 'README')}
                 showLabel
-                errors={errors().readme}
                 placeholder={t(
                     'editor.readme_placeholder',
                     'What it does, what it needs (connections, settings), how to start it. Markdown works.'
                 )}
                 rows={10}
                 maxLength={100000}
-                disabled={busy()}
-                value={readme()}
-                onChange={setReadme}
             />
 
             <div class="actions-row actions-row--end">
-                <Button type="submit" busy={busy()}>
+                <Button type="submit" busy={form.busy()}>
                     {props.pkg
                         ? t('ui.save', 'Save')
                         : t('editor.create', 'Create')}

@@ -1,6 +1,5 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useQueries } from '@tanstack/solid-query';
-import { createSubmit } from '@shared/api/submit';
 import type {
     PackageVersion,
     Workflow,
@@ -15,11 +14,9 @@ import FieldError, { errorId } from '@shared/ui/forms/FieldError';
 import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import TextArea from '@shared/ui/forms/TextArea';
+import { createForm } from '@shared/ui/forms/form';
 import { publishPackageVersionMutation } from '@features/packages/api/packages';
 import { workflowQuery } from '@features/packages/api/workflows';
-
-const FIELDS = ['workflows', 'changelog'] as const;
-const inputId = (field: string) => `package-publish-${field}`;
 
 /** The keys of the workflows a program calls (ExecuteWorkflow). */
 function callsOf(workflow: Workflow): string[] {
@@ -98,12 +95,20 @@ function PublishForm(props: {
     onPublished: (version: PackageVersion) => void;
 }) {
     const t = useLocalizer('packages');
-    // eslint-disable-next-line solid/reactivity
-    const [chosen, setChosen] = createSignal(props.workflows.map((w) => w.id));
-    const [changelog, setChangelog] = createSignal('');
-    const { busy, errors, mutation } = createSubmit(FIELDS);
-    const publishing = mutation(publishPackageVersionMutation);
+    const form = createForm({
+        id: 'package-publish',
+        initial: () => ({
+            workflows: props.workflows.map((w) => w.id),
+            changelog: '',
+        }),
+    });
+    const publishing = form.mutation(publishPackageVersionMutation);
     const [unchanged, setUnchanged] = createSignal(false);
+    // The checklist: one Checkbox for each workflow, one field.
+    const picks = form.control('workflows');
+    const chosen = () => picks.value;
+    const pickId = form.id('workflows');
+    const pickErrors = () => form.errorsOf('workflows');
 
     // Their programs: what each calls. One read each, shared with their
     // pages; until all are in, nothing is published.
@@ -116,18 +121,14 @@ function PublishForm(props: {
         missingOf(chosen(), loaded(), props.pkg.errorWorkflow);
 
     const toggle = (id: string, on: boolean) =>
-        setChosen((list) =>
-            on ? [...list, id] : list.filter((c) => c !== id)
+        picks.onChange(
+            on ? [...chosen(), id] : chosen().filter((c) => c !== id)
         );
 
-    async function publish(e: Event) {
-        e.preventDefault();
-        if (busy() || missing().length > 0 || chosen().length === 0) return;
-        await publishing.run(
-            {
-                id: props.pkg.id,
-                body: { workflows: chosen(), changelog: changelog() },
-            },
+    const publish = form.onSubmit((body) => {
+        if (missing().length > 0 || body.workflows.length === 0) return false;
+        return publishing.run(
+            { id: props.pkg.id, body },
             (version) => {
                 setUnchanged(false);
                 props.onPublished(version);
@@ -140,11 +141,11 @@ function PublishForm(props: {
                 return conflict ? {} : undefined;
             }
         );
-    }
+    });
 
     return (
-        <form class="vert-form" onSubmit={(e) => void publish(e)} noValidate>
-            <ErrorSummary errors={errors()} inputId={inputId} />
+        <form class="vert-form" onSubmit={publish} noValidate>
+            <ErrorSummary {...form.summary} />
             <Show when={failed()[0]?.error}>
                 {(error) => (
                     <LoadError
@@ -165,14 +166,10 @@ function PublishForm(props: {
                 </p>
             </Show>
             <fieldset
-                id={inputId('workflows')}
+                id={pickId}
                 class="package-picker"
-                aria-invalid={!!errors().workflows?.length}
-                aria-describedby={
-                    errors().workflows?.length
-                        ? errorId(inputId('workflows'))
-                        : undefined
-                }
+                aria-invalid={!!pickErrors()}
+                aria-describedby={pickErrors() ? errorId(pickId) : undefined}
             >
                 <legend class="field-label">
                     {t(
@@ -188,7 +185,7 @@ function PublishForm(props: {
                                 <li>
                                     <Checkbox
                                         checked={order() >= 0}
-                                        disabled={busy()}
+                                        disabled={picks.disabled}
                                         onChange={(on) =>
                                             toggle(workflow.id, on)
                                         }
@@ -239,30 +236,22 @@ function PublishForm(props: {
                         'Webhook secrets are left out; anything else in the blocks (an API key in a header) is published as it is.'
                     )}
                 </p>
-                <FieldError
-                    for={inputId('workflows')}
-                    errors={errors().workflows}
-                />
+                <FieldError for={pickId} errors={pickErrors()} />
             </fieldset>
             <TextArea
-                id={inputId('changelog')}
-                name="changelog"
+                {...form.input('changelog')}
                 label={t(
                     'publish.changelog',
                     'What changed (Markdown, optional)'
                 )}
                 showLabel
-                errors={errors().changelog}
                 rows={4}
                 maxLength={10000}
-                disabled={busy()}
-                value={changelog()}
-                onInput={(e) => setChangelog(e.currentTarget.value)}
             />
             <div class="actions-row actions-row--end">
                 <Button
                     type="submit"
-                    busy={busy()}
+                    busy={form.busy()}
                     disabled={
                         programs.some((r) => !r.isSuccess) ||
                         missing().length > 0 ||
