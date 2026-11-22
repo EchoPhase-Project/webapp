@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -74,7 +75,7 @@ const devTools = {
     message:
         'Put a developer aid behind import.meta.env.DEV_TOOLS (the dev server, or a build with VITE_DEV_TOOLS=true).',
 };
-const features = fs.readdirSync('src/features');
+const features = fs.readdirSync(path.join(import.meta.dirname, 'src/features'));
 
 export default defineConfig([
     { ignores: ['src/shared/api/schema.d.ts'] },

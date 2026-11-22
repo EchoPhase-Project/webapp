@@ -5,6 +5,9 @@ import path from 'node:path';
 // Separate from vite.config.ts: compression and the bundle report have no
 // place in a test run.
 export default defineConfig({
+    // The webapp folder, wherever Vitest starts: vite-plugin-solid looks for
+    // the Solid packages under the root, else under the current directory.
+    root: import.meta.dirname,
     // As vite.config.ts defines them for a usual build.
     define: {
         __APP_VERSION__: JSON.stringify('0.0.0-local'),

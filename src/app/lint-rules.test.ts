@@ -3,8 +3,12 @@ import { ESLint } from 'eslint';
 
 // The project's own config, on text given as if it were a file (one that
 // exists: the type-aware rules need it in the project). The rules
-// that keep the API layer and the session apart must stay on.
-const eslint = new ESLint();
+// that keep the API layer and the session apart must stay on. The paths are
+// from the webapp folder, found from this file: Vitest may start elsewhere.
+// (A URL, not node:path: the project's types are the browser's.)
+const eslint = new ESLint({
+    cwd: decodeURIComponent(new URL('../..', import.meta.url).pathname),
+});
 
 async function rulesBroken(code: string, filePath: string) {
     const [result] = await eslint.lintText(code, { filePath });
