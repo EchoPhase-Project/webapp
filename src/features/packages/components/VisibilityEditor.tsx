@@ -1,10 +1,9 @@
-import { createEffect, createMemo, createSignal } from 'solid-js';
-import { createSubmit } from '@shared/api/submit';
 import type { PackageVisibility, WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import RadioGroup from '@shared/ui/forms/RadioGroup';
+import { createForm } from '@shared/ui/forms/form';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { updatePackageMutation } from '@features/packages/api/packages';
 import VisibilityBadge from './VisibilityBadge';
@@ -15,28 +14,22 @@ const VISIBILITIES: PackageVisibility[] = ['Private', 'Unlisted', 'Public'];
 export default function VisibilityEditor(props: { pkg: WorkflowPackage }) {
     const t = useLocalizer('packages');
     const tw = useLocalizer('workflows');
-    const [visibility, setVisibility] =
-        createSignal<PackageVisibility>('Private');
-    // Follows the saved choice only when it changes: a save in another card
-    // (a new package, the same visibility) keeps what is not saved here.
-    const saved = createMemo(() => props.pkg.visibility);
-    createEffect(() => setVisibility(saved()));
-    const { busy, errors, mutation } = createSubmit(['visibility']);
-    const updating = mutation(updatePackageMutation);
-
-    async function save(e: Event) {
-        e.preventDefault();
-        await updating.run({
-            pkg: props.pkg,
-            patch: { visibility: visibility() },
-        });
-    }
+    // A save in another card keeps an unsaved choice here: a field the
+    // user changed does not follow the new package.
+    const form = createForm({
+        id: 'package',
+        initial: () => ({ visibility: props.pkg.visibility }),
+    });
+    const updating = form.mutation(updatePackageMutation);
+    const save = form.onSubmit((values) =>
+        updating.run({ pkg: props.pkg, patch: values })
+    );
 
     return (
         <SettingsCard
             title={tw('settings.visibility', 'Visibility')}
             badge={<VisibilityBadge visibility={props.pkg.visibility} />}
-            onSubmit={(e) => void save(e)}
+            onSubmit={save}
             hint={tw(
                 'settings.visibility_hint',
                 'Others see published versions only.'
@@ -45,25 +38,17 @@ export default function VisibilityEditor(props: { pkg: WorkflowPackage }) {
                 <Button
                     type="submit"
                     variant="ghost"
-                    busy={busy()}
-                    disabled={visibility() === props.pkg.visibility}
+                    busy={form.busy()}
+                    disabled={!form.dirty()}
                 >
                     {tw('settings.save', 'Save')}
                 </Button>
             }
         >
-            <ErrorSummary
-                errors={errors()}
-                inputId={() => 'package-visibility'}
-            />
+            <ErrorSummary {...form.summary} />
             <RadioGroup
-                id="package-visibility"
+                {...form.control('visibility')}
                 legend={t('editor.visibility', 'Who sees it')}
-                name="visibility"
-                value={visibility()}
-                onChange={setVisibility}
-                disabled={busy()}
-                errors={errors().visibility}
                 options={VISIBILITIES.map((option) => ({
                     value: option,
                     label: t(`visibility.${option}`, option),

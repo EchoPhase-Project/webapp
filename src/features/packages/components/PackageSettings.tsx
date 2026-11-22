@@ -1,12 +1,10 @@
-import { createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ConfirmDialog from '@shared/ui/ConfirmDialog';
-import ErrorSummary from '@shared/ui/forms/ErrorSummary';
-import Select from '@shared/ui/forms/Select';
 import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {
@@ -14,14 +12,12 @@ import {
     packageSharesQuery,
     sharePackageMutation,
     unsharePackageMutation,
-    updatePackageMutation,
 } from '@features/packages/api/packages';
+import ErrorWorkflowEditor from './ErrorWorkflowEditor';
 import PackageEditorModal from './PackageEditorModal';
 import PublishModal from './PublishModal';
 import TagsEditor from './TagsEditor';
 import VisibilityEditor from './VisibilityEditor';
-
-const ERROR_FIELD = 'package-error-workflow';
 
 /**
  * What a package is and does as a whole, each part with its own editor:
@@ -38,24 +34,9 @@ export default function PackageSettings(props: {
     const [editing, setEditing] = createSignal(false);
     const [publishing, setPublishing] = createSignal(false);
     const [deleting, setDeleting] = createSignal(false);
-    const { busy, errors, mutation } = createSubmit(['errorWorkflow']);
-    const updating = mutation(updatePackageMutation);
     // A failed delete shows in its dialog, which stays open.
     const removal = createSubmit();
     const removing = removal.mutation(deletePackageMutation);
-    // The choice starts from the package's, and follows it only when it
-    // changes: a save in another card keeps what is not saved here.
-    const [errorWorkflow, setErrorWorkflow] = createSignal('');
-    const savedErrorWorkflow = createMemo(() => props.pkg.errorWorkflow ?? '');
-    createEffect(() => setErrorWorkflow(savedErrorWorkflow()));
-
-    async function saveErrorWorkflow(e: Event) {
-        e.preventDefault();
-        await updating.run({
-            pkg: props.pkg,
-            patch: { errorWorkflow: errorWorkflow() || null },
-        });
-    }
 
     function remove() {
         return removing.run(props.pkg.id, () => {
@@ -108,52 +89,7 @@ export default function PackageSettings(props: {
 
             <VisibilityEditor pkg={props.pkg} />
 
-            <SettingsCard
-                title={t('settings.errors', 'When a run fails')}
-                description={t(
-                    'settings.errors_hint',
-                    'The workflow started when an automatic run fails.'
-                )}
-                onSubmit={(e) => void saveErrorWorkflow(e)}
-                hint={
-                    <>
-                        {t('settings.error_needs', 'It needs an ErrorTrigger.')}{' '}
-                        {docs}
-                    </>
-                }
-                actions={
-                    <Button
-                        type="submit"
-                        variant="ghost"
-                        busy={busy()}
-                        disabled={
-                            errorWorkflow() === (props.pkg.errorWorkflow ?? '')
-                        }
-                    >
-                        {t('settings.save', 'Save')}
-                    </Button>
-                }
-            >
-                <ErrorSummary errors={errors()} inputId={() => ERROR_FIELD} />
-                <Select
-                    id={ERROR_FIELD}
-                    label={t('settings.errors', 'When a run fails')}
-                    disabled={busy()}
-                    value={errorWorkflow()}
-                    onChange={setErrorWorkflow}
-                    options={[
-                        {
-                            value: '',
-                            label: t('settings.no_error_workflow', 'None'),
-                        },
-                        ...props.workflows.map((w) => ({
-                            value: w.key,
-                            label: w.name,
-                        })),
-                    ]}
-                    errors={errors().errorWorkflow}
-                />
-            </SettingsCard>
+            <ErrorWorkflowEditor pkg={props.pkg} workflows={props.workflows} />
 
             <SettingsCard
                 title={t('settings.publishing', 'Publishing')}
@@ -217,7 +153,7 @@ export default function PackageSettings(props: {
                 actions={
                     <Button
                         variant="danger-outline"
-                        disabled={busy() || removal.busy()}
+                        disabled={removal.busy()}
                         onClick={() => setDeleting(true)}
                     >
                         {t('settings.delete', 'Delete this package')}

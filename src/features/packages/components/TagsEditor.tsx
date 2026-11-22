@@ -1,10 +1,10 @@
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
-import { createSubmit } from '@shared/api/submit';
+import { createSignal, For, Show } from 'solid-js';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import FieldError, { errorId } from '@shared/ui/forms/FieldError';
+import { createForm } from '@shared/ui/forms/form';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { updatePackageMutation } from '@features/packages/api/packages';
@@ -28,31 +28,33 @@ const normalizeTag = (text: string) =>
  */
 export default function TagsEditor(props: { pkg: WorkflowPackage }) {
     const t = useLocalizer('workflows');
-    const [tags, setTags] = createSignal<string[]>([]);
-    // Follows the saved tags only when they change: a save in another card
-    // (a new package, the same tags) keeps what is not saved here.
-    const saved = createMemo(() => [...props.pkg.tags], [], {
-        equals: (a, b) => a.join(',') === b.join(','),
+    // A save in another card keeps unsaved tags here: a field the user
+    // changed does not follow the new package.
+    const form = createForm({
+        id: 'package',
+        initial: () => ({ tags: props.pkg.tags }),
     });
-    createEffect(() => setTags(saved()));
+    // The text being typed: not a tag yet, so not a field of the form.
     const [draft, setDraft] = createSignal('');
-    const { busy, errors, mutation } = createSubmit(['tags']);
-    const updating = mutation(updatePackageMutation);
-
-    const invalid = () => !!errors().tags?.length;
-    const changed = () => tags().join(',') !== props.pkg.tags.join(',');
+    const updating = form.mutation(updatePackageMutation);
+    const tags = () => form.values.tags;
+    const setTags = (next: string[]) => form.set('tags', next);
+    const invalid = () => !!form.errorsOf('tags');
 
     function add() {
         const tag = normalizeTag(draft());
         setDraft('');
         if (!tag || tags().includes(tag) || tags().length >= MAX_TAGS) return;
-        setTags((list) => [...list, tag]);
+        setTags([...tags(), tag]);
     }
 
-    async function save(e: Event) {
-        e.preventDefault();
-        add();
-        await updating.run({ pkg: props.pkg, patch: { tags: tags() } });
+    const send = form.onSubmit((values) =>
+        updating.run({ pkg: props.pkg, patch: values })
+    );
+    // What is typed but not added yet goes with the save.
+    function save(e: SubmitEvent) {
+        if (!form.busy()) add();
+        send(e);
     }
 
     return (
@@ -62,20 +64,20 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                 'tags.description',
                 'What it is about: Explore filters by them.'
             )}
-            onSubmit={(e) => void save(e)}
+            onSubmit={save}
             hint={t('tags.hint', 'Enter or a comma adds one; up to 10.')}
             actions={
                 <Button
                     type="submit"
                     variant="ghost"
-                    busy={busy()}
-                    disabled={!changed() && !draft().trim()}
+                    busy={form.busy()}
+                    disabled={!form.dirty() && !draft().trim()}
                 >
                     {t('settings.save', 'Save')}
                 </Button>
             }
         >
-            <ErrorSummary errors={errors()} inputId={() => FIELD} />
+            <ErrorSummary {...form.summary} inputId={() => FIELD} />
             <label class="visually-hidden" for={FIELD}>
                 {t('ui.tags', 'Tags')}
             </label>
@@ -97,8 +99,8 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                                             { tag }
                                         )}
                                         onClick={() =>
-                                            setTags((list) =>
-                                                list.filter((x) => x !== tag)
+                                            setTags(
+                                                tags().filter((x) => x !== tag)
                                             )
                                         }
                                     />
@@ -114,7 +116,7 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                         type="text"
                         autocomplete="off"
                         maxLength={32}
-                        disabled={busy()}
+                        disabled={form.busy()}
                         aria-invalid={invalid()}
                         aria-describedby={
                             invalid() ? errorId(FIELD) : undefined
@@ -136,12 +138,12 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                                 !draft() &&
                                 tags().length > 0
                             )
-                                setTags((list) => list.slice(0, -1));
+                                setTags(tags().slice(0, -1));
                         }}
                     />
                 </Show>
             </div>
-            <FieldError for={FIELD} errors={errors().tags} />
+            <FieldError for={FIELD} errors={form.errorsOf('tags')} />
         </SettingsCard>
     );
 }
