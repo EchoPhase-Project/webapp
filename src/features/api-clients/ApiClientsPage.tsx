@@ -2,10 +2,9 @@ import { createSignal, Match, Show, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
-import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import PageHeader from '@shared/ui/PageHeader';
@@ -32,24 +31,15 @@ export default function ApiClientsPage() {
     const clients = useQuery(() => apiClientsQuery());
     const [creating, setCreating] = createSignal(false);
     const [secret, setSecret] = createSignal<string | null>(null);
-    const { busy, errors, setErrors, mutation } = createSubmit();
-    const deleteClient = mutation(deleteApiClientMutation);
-    // The client whose deletion waits for a yes.
-    const [deleting, setDeleting] = createSignal<ApiClient | null>(null);
+    // A failure shows in the dialog, which stays open.
+    const deletion = createConfirm(
+        deleteApiClientMutation,
+        (client: ApiClient) => client.Id
+    );
 
     function created(value: string) {
         setCreating(false);
         setSecret(value);
-    }
-
-    // A failure shows in the dialog, which stays open.
-    function remove(client: ApiClient) {
-        return deleteClient.run(client.Id, () => setDeleting(null));
-    }
-
-    function cancel() {
-        setDeleting(null);
-        setErrors({});
     }
 
     return (
@@ -85,8 +75,8 @@ export default function ApiClientsPage() {
                     <SkeletonScope when={clients.isPending}>
                         <ApiClientsTable
                             clients={clients.data ?? []}
-                            busy={busy() || clients.isPending}
-                            onDelete={setDeleting}
+                            busy={deletion.busy() || clients.isPending}
+                            onDelete={deletion.ask}
                         />
                     </SkeletonScope>
                 </Match>
@@ -104,13 +94,9 @@ export default function ApiClientsPage() {
             </Modal>
 
             <ConfirmDialog
-                item={deleting()}
+                {...deletion.dialog}
                 title={t('confirm_delete.title', 'Delete this API client?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
-                errors={errors()}
-                onConfirm={(client) => void remove(client)}
-                onCancel={cancel}
             >
                 {(client) => (
                     <p>

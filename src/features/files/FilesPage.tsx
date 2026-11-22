@@ -1,4 +1,4 @@
-import { createSignal, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import { IconUpload } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { createSubmit } from '@shared/api/submit';
@@ -6,7 +6,7 @@ import type { StoredFile } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createPagedList } from '@shared/api/paged-list';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import FilePicker from '@shared/ui/FilePicker';
 import LoadError from '@shared/ui/LoadError';
@@ -35,22 +35,13 @@ export default function FilesPage() {
     const uploads = createSubmit();
     const uploading = uploads.mutation(uploadFileMutation);
     // A failed delete shows in its dialog, which stays open.
-    const removal = createSubmit();
-    const deletion = removal.mutation(deleteFileMutation);
-    // The file whose deletion waits for a yes.
-    const [deleting, setDeleting] = createSignal<StoredFile | null>(null);
+    const deletion = createConfirm(
+        deleteFileMutation,
+        (file: StoredFile) => file.id
+    );
 
     function upload(file: File) {
         return uploading.run({ file });
-    }
-
-    function remove(file: StoredFile) {
-        return deletion.run(file.id, () => setDeleting(null));
-    }
-
-    function cancelDelete() {
-        setDeleting(null);
-        removal.setErrors({});
     }
 
     return (
@@ -88,8 +79,8 @@ export default function FilesPage() {
 
             <FilesTable
                 files={files.items()}
-                busy={uploads.busy() || removal.busy()}
-                onDelete={setDeleting}
+                busy={uploads.busy() || deletion.busy()}
+                onDelete={deletion.ask}
             />
 
             <Show when={files.more()}>
@@ -105,13 +96,9 @@ export default function FilesPage() {
             </Show>
 
             <ConfirmDialog
-                item={deleting()}
+                {...deletion.dialog}
                 title={t('confirm_delete.title', 'Delete this file?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={removal.busy()}
-                errors={removal.errors()}
-                onConfirm={(file) => void remove(file)}
-                onCancel={cancelDelete}
             >
                 {(file) => (
                     <p>

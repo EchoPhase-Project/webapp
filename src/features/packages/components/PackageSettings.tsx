@@ -1,10 +1,9 @@
 import { createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import SettingsCard from '@shared/ui/SettingsCard';
 import ShareList from '@shared/ui/ShareList';
 import {
@@ -33,22 +32,12 @@ export default function PackageSettings(props: {
     const navigate = useNavigate();
     const [editing, setEditing] = createSignal(false);
     const [publishing, setPublishing] = createSignal(false);
-    const [deleting, setDeleting] = createSignal(false);
     // A failed delete shows in its dialog, which stays open.
-    const removal = createSubmit();
-    const removing = removal.mutation(deletePackageMutation);
-
-    function remove() {
-        return removing.run(props.pkg.id, () => {
-            setDeleting(false);
-            navigate('/packages');
-        });
-    }
-
-    function cancelDelete() {
-        setDeleting(false);
-        removal.setErrors({});
-    }
+    const removal = createConfirm(
+        deletePackageMutation,
+        (pkg: WorkflowPackage) => pkg.id,
+        () => navigate('/packages')
+    );
 
     const docs = (
         <A class="page-more" href="/docs/packages">
@@ -154,7 +143,7 @@ export default function PackageSettings(props: {
                     <Button
                         variant="danger-outline"
                         disabled={removal.busy()}
-                        onClick={() => setDeleting(true)}
+                        onClick={() => removal.ask(props.pkg)}
                     >
                         {t('settings.delete', 'Delete this package')}
                     </Button>
@@ -175,13 +164,9 @@ export default function PackageSettings(props: {
                 onPublished={() => setPublishing(false)}
             />
             <ConfirmDialog
-                open={deleting()}
+                {...removal.dialog}
                 title={t('settings.delete_title', 'Delete this package?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={removal.busy()}
-                errors={removal.errors()}
-                onConfirm={() => void remove()}
-                onCancel={cancelDelete}
             >
                 {t(
                     'settings.delete_body',

@@ -25,7 +25,7 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
@@ -121,10 +121,15 @@ export default function WorkflowDetails(props: {
         }
     );
     const [running, setRunning] = createSignal(false);
-    const [deleting, setDeleting] = createSignal(false);
     const { busy, errors, setErrors, mutation } = createSubmit();
     const updating = mutation(updateWorkflowMutation);
-    const removing = mutation(deleteWorkflowMutation);
+    // A failure (called by another workflow, or the package's error
+    // workflow) shows in the dialog, which stays open.
+    const removal = createConfirm(
+        deleteWorkflowMutation,
+        (w: Workflow) => ({ id: w.id, packageId: props.packageId }),
+        () => navigate(packagePath(props.packageId))
+    );
 
     usePageMeta(() => ({
         title: workflow.data?.name ?? t('title', 'Workflows'),
@@ -144,23 +149,6 @@ export default function WorkflowDetails(props: {
 
     async function toggle(w: Workflow, active: boolean) {
         await updating.run({ workflow: w, changes: { active } });
-    }
-
-    // A failure (called by another workflow, or the package's error
-    // workflow) shows in the dialog, which stays open.
-    function remove() {
-        return removing.run(
-            { id: props.id, packageId: props.packageId },
-            () => {
-                setDeleting(false);
-                navigate(packagePath(props.packageId));
-            }
-        );
-    }
-
-    function cancelDelete() {
-        setDeleting(false);
-        setErrors({});
     }
 
     const back = () => (
@@ -212,12 +200,8 @@ export default function WorkflowDetails(props: {
                                     </a>
                                     <Button
                                         variant="ghost-danger"
-                                        disabled={busy()}
-                                        onClick={() => {
-                                            // The dialog shows only its own errors.
-                                            setErrors({});
-                                            setDeleting(true);
-                                        }}
+                                        disabled={busy() || removal.busy()}
+                                        onClick={() => removal.ask(w())}
                                     >
                                         {t('ui.delete', 'Delete')}
                                     </Button>
@@ -237,14 +221,12 @@ export default function WorkflowDetails(props: {
                                 )}
                             </p>
                         </Show>
-                        <Show when={!deleting()}>
-                            <ErrorSummary errors={errors()} />
-                        </Show>
+                        <ErrorSummary errors={errors()} />
 
                         <div class="workflow-controls">
                             <Switch
                                 checked={w().active}
-                                disabled={busy()}
+                                disabled={busy() || removal.busy()}
                                 label={t('active', 'Run on triggers')}
                                 description={t(
                                     'active_hint',
@@ -293,13 +275,9 @@ export default function WorkflowDetails(props: {
                             }}
                         />
                         <ConfirmDialog
-                            open={deleting()}
+                            {...removal.dialog}
                             title={t('delete.title', 'Delete this workflow?')}
                             confirm={t('ui.delete', 'Delete')}
-                            busy={busy()}
-                            errors={errors()}
-                            onConfirm={() => void remove()}
-                            onCancel={cancelDelete}
                         >
                             {t(
                                 'delete.body',

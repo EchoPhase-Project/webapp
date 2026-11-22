@@ -1,11 +1,10 @@
-import { createSignal, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
-import { createSubmit } from '@shared/api/submit';
 import type { Workflow, WorkflowVersion } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import LoadError from '@shared/ui/LoadError';
 import {
     restoreWorkflowVersionMutation,
@@ -23,29 +22,16 @@ export default function VersionList(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
     const versions = useQuery(() => workflowVersionsQuery(props.workflow.id));
-    const [restoring, setRestoring] = createSignal<WorkflowVersion | null>(
-        null
-    );
-    const { busy, errors, setErrors, mutation } = createSubmit();
-    const bringBack = mutation(restoreWorkflowVersionMutation);
-
     // A failure (the workflow changed meanwhile) shows in the dialog, which
     // stays open.
-    function restore(version: WorkflowVersion) {
-        return bringBack.run(
-            {
-                id: props.workflow.id,
-                version: version.version,
-                currentVersion: props.workflow.version,
-            },
-            () => setRestoring(null)
-        );
-    }
-
-    function cancel() {
-        setRestoring(null);
-        setErrors({});
-    }
+    const restore = createConfirm(
+        restoreWorkflowVersionMutation,
+        (version: WorkflowVersion) => ({
+            id: props.workflow.id,
+            version: version.version,
+            currentVersion: props.workflow.version,
+        })
+    );
 
     return (
         <>
@@ -100,7 +86,7 @@ export default function VersionList(props: { workflow: Workflow }) {
                                 >
                                     <Button
                                         variant="ghost"
-                                        onClick={() => setRestoring(v)}
+                                        onClick={() => restore.ask(v)}
                                     >
                                         {t('versions.restore', 'Restore')}
                                     </Button>
@@ -111,17 +97,13 @@ export default function VersionList(props: { workflow: Workflow }) {
                 </For>
             </ol>
             <ConfirmDialog
-                item={restoring()}
+                {...restore.dialog}
                 title={t(
                     'versions.restore_title',
                     'Restore version {version}?',
-                    { version: restoring()?.version ?? '' }
+                    { version: restore.item()?.version ?? '' }
                 )}
                 confirm={t('versions.restore', 'Restore')}
-                busy={busy()}
-                errors={errors()}
-                onConfirm={(version) => void restore(version)}
-                onCancel={cancel}
             >
                 {t(
                     'versions.restore_body',

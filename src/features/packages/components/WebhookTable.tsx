@@ -45,8 +45,9 @@ export default function WebhookTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const [shown, setShown] = createSignal<number | null>(null);
     const { copied, copy } = createClipboard();
-    const { busy, errors, remove, editing, setEditing, setDeleting, deleting } =
-        useProgramSave<Webhook>(() => props.workflow);
+    const { editing, setEditing, deletion } = useProgramSave<Webhook>(
+        () => props.workflow
+    );
 
     const url = (hook: Webhook) => `${location.origin}${hook.path}`;
     const secret = (hook: Webhook) => {
@@ -73,9 +74,6 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                     )}
                 </p>
             </div>
-            <Show when={!editing() && !deleting()}>
-                <ErrorSummary errors={errors()} />
-            </Show>
             <Table
                 data={props.workflow.webhooks}
                 headers={Object.values(column())}
@@ -196,7 +194,7 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                                         'webhook.edit',
                                         'Edit the webhook'
                                     )}
-                                    disabled={busy()}
+                                    disabled={deletion.busy()}
                                     onClick={() => setEditing(hook)}
                                 >
                                     <IconPencil />
@@ -206,8 +204,8 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                                         'webhook.delete',
                                         'Delete the webhook'
                                     )}
-                                    disabled={busy()}
-                                    onClick={() => setDeleting(hook)}
+                                    disabled={deletion.busy()}
+                                    onClick={() => deletion.ask(hook)}
                                 />
                             </span>
                         </Cell>
@@ -238,13 +236,9 @@ export default function WebhookTable(props: { workflow: Workflow }) {
                 </Show>
             </Modal>
             <ConfirmDialog
-                item={deleting()}
+                {...deletion.dialog}
                 title={t('webhook.delete_title', 'Delete this webhook?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
-                errors={errors()}
-                onConfirm={(hook) => void remove(hook)}
-                onCancel={() => setDeleting(null)}
             >
                 {t(
                     'webhook.delete_body',

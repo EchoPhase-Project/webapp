@@ -1,10 +1,10 @@
-import { createSignal, Match, Switch } from 'solid-js';
+import { Match, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { createSubmit } from '@shared/api/submit';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import PageHeader from '@shared/ui/PageHeader';
@@ -29,24 +29,13 @@ export default function SessionsPage() {
     // One session's failure shows above the list; revoking all shows its
     // own in the confirm dialog, which stays open.
     const one = createSubmit();
-    const all = createSubmit();
     const revokeOne = one.mutation(revokeSessionMutation);
-    const revokeEvery = all.mutation(revokeAllSessionsMutation);
-    const [confirming, setConfirming] = createSignal(false);
+    // Success ends the session: the page goes with it.
+    const all = createConfirm(revokeAllSessionsMutation, (_: 'all') => {});
     const isLoading = () => one.busy() || all.busy() || sessions.isPending;
 
     function revoke(id: string) {
         return revokeOne.run(id);
-    }
-
-    // Success ends the session: the page goes with it.
-    function revokeAll() {
-        return revokeEvery.run(undefined, () => setConfirming(false));
-    }
-
-    function cancel() {
-        setConfirming(false);
-        all.setErrors({});
     }
 
     return (
@@ -65,7 +54,7 @@ export default function SessionsPage() {
                         disabled={
                             isLoading() || (sessions.data ?? []).length === 0
                         }
-                        onClick={() => setConfirming(true)}
+                        onClick={() => all.ask('all')}
                     >
                         {t('revoke_all', 'Revoke all')}
                     </Button>
@@ -95,13 +84,9 @@ export default function SessionsPage() {
             </Switch>
 
             <ConfirmDialog
-                open={confirming()}
+                {...all.dialog}
                 title={t('confirm_revoke_all.title', 'Revoke every session?')}
                 confirm={t('revoke_all', 'Revoke all')}
-                busy={all.busy()}
-                errors={all.errors()}
-                onConfirm={() => void revokeAll()}
-                onCancel={cancel}
             >
                 <p>
                     {t(

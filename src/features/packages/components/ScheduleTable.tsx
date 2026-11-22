@@ -31,8 +31,10 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
     const t = useLocalizer('workflows');
     const date = useDateFormat();
     // Editing: null, closed; 'new', adding; a schedule, editing it.
-    const { busy, errors, remove, editing, setEditing, setDeleting, deleting } =
-        useProgramSave<Schedule, Schedule | 'new'>(() => props.workflow);
+    const { editing, setEditing, deletion } = useProgramSave<
+        Schedule,
+        Schedule | 'new'
+    >(() => props.workflow);
 
     // Read in render: the namespace may arrive after the first one.
     const column = () => ({
@@ -56,9 +58,6 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                     {t('schedule.add', 'Add a schedule')}
                 </Button>
             </div>
-            <Show when={!editing() && !deleting()}>
-                <ErrorSummary errors={errors()} />
-            </Show>
             <Table
                 data={props.workflow.schedules}
                 headers={Object.values(column())}
@@ -88,7 +87,7 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                                         'schedule.edit',
                                         'Edit the schedule'
                                     )}
-                                    disabled={busy()}
+                                    disabled={deletion.busy()}
                                     onClick={() => setEditing(schedule)}
                                 >
                                     <IconPencil />
@@ -98,8 +97,8 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                                         'schedule.delete',
                                         'Delete the schedule'
                                     )}
-                                    disabled={busy()}
-                                    onClick={() => setDeleting(schedule)}
+                                    disabled={deletion.busy()}
+                                    onClick={() => deletion.ask(schedule)}
                                 />
                             </span>
                         </Cell>
@@ -127,13 +126,9 @@ export default function ScheduleTable(props: { workflow: Workflow }) {
                 </Show>
             </Modal>
             <ConfirmDialog
-                item={deleting()}
+                {...deletion.dialog}
                 title={t('schedule.delete_title', 'Delete this schedule?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={busy()}
-                errors={errors()}
-                onConfirm={(schedule) => void remove(schedule)}
-                onCancel={() => setDeleting(null)}
             >
                 {t(
                     'schedule.delete_body',

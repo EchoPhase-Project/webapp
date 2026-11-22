@@ -4,7 +4,7 @@ import { createSubmit } from '@shared/api/submit';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import ConfirmDialog from '@shared/ui/ConfirmDialog';
+import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Modal from '@shared/ui/Modal';
 import { deleteNoteMutation, leaveNoteMutation } from '@features/notes/api';
@@ -26,12 +26,14 @@ export default function NoteEditorModal(props: {
     const t = useLocalizer('notes');
     const { user } = useAuth();
     const [sharing, setSharing] = createSignal(false);
-    const [confirming, setConfirming] = createSignal(false);
     // Each shows its own failure: deleting in its confirm dialog (which stays
     // open), leaving under the editor's buttons.
-    const deleting = createSubmit();
+    const deleting = createConfirm(
+        deleteNoteMutation,
+        (note: Note) => note.id,
+        (_, note) => props.onGone?.(note.id)
+    );
     const leaving = createSubmit();
-    const deleteNote = deleting.mutation(deleteNoteMutation);
     const leaveNote = leaving.mutation(leaveNoteMutation);
     const busy = () => deleting.busy() || leaving.busy();
 
@@ -42,23 +44,11 @@ export default function NoteEditorModal(props: {
               ? props.note.title
               : t('editor.edit', 'Edit note');
 
-    function remove(note: Note) {
-        return deleteNote.run(note.id, () => {
-            setConfirming(false);
-            props.onGone?.(note.id);
-        });
-    }
-
     function leave(note: Note) {
         return leaveNote.run({ id: note.id, userId: user()?.id ?? '' }, () =>
             props.onGone?.(note.id)
         );
     }
-
-    const cancelDelete = () => {
-        setConfirming(false);
-        deleting.setErrors({});
-    };
 
     const close = () => {
         setSharing(false);
@@ -91,7 +81,7 @@ export default function NoteEditorModal(props: {
                     <Button
                         variant="danger-outline"
                         disabled={busy()}
-                        onClick={() => setConfirming(true)}
+                        onClick={() => deleting.ask(note())}
                     >
                         {t('ui.delete', 'Delete')}
                     </Button>
@@ -126,13 +116,9 @@ export default function NoteEditorModal(props: {
             </Modal>
 
             <ConfirmDialog
-                item={confirming() ? props.note : null}
+                {...deleting.dialog}
                 title={t('confirm_delete.title', 'Delete this note?')}
                 confirm={t('ui.delete', 'Delete')}
-                busy={deleting.busy()}
-                errors={deleting.errors()}
-                onConfirm={(note) => void remove(note)}
-                onCancel={cancelDelete}
             >
                 {(note) => (
                     <p>
