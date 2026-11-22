@@ -124,11 +124,26 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   item. If it shows the oldest item first, use `appendItem` for a new item.
 - To change or remove one item, use `patchItem` or `removeItem`. Do not
   invalidate the list.
-- To save a form, use `createSubmit(fields)` from `shared/api/submit.ts`.
-  Then use `submit.mutation(describe)` and its `run(vars, onOk)`.
+- To build a form, use `createForm` from `@shared/ui/forms/form`. Spread its
+  bindings on the controls.
+- Use `form.input(name)` for `Field` and `TextArea`. Use
+  `form.control(name)` for `Select`, `RadioGroup`, `TimeZoneField`,
+  `MarkdownEditor`, and `Combobox`. Use `form.toggle(name)` for `Checkbox`
+  and `Switch`.
+- Do not destructure a binding. Do not make one signal for each field.
+- Give the saved values to `initial`. Do not copy them with `createEffect`
+  or `createMemo`. A field that the user did not change follows them.
+- Put `<ErrorSummary {...form.summary} />` at the top of the form.
+- Write the submit with `form.onSubmit(send)`. In `send`, call `run` of
+  `form.mutation(describe)`.
+- Put a check in the browser in the `check` option. Do not add a validation
+  library.
+- `createForm` uses `createSubmit` from `shared/api/submit.ts`. If an action
+  has no form, use `createSubmit()` and its `mutation(describe)` directly.
 - Put the cache changes in the `onSuccess` of the description. Put only the
   form steps (close, go to a page) in `onOk`.
-- If each row of a list saves on its own, use `runFor(key, vars, onOk)`.
+- If each row of a list saves on its own, use `createSubmit()` and
+  `runFor(key, vars, onOk)`. Do not use `createForm` for these rows.
   `busy(key)` and `errors(key)` then apply only to that row.
 - Each action shows its errors. Do not ignore a failed result. If the action
   has a `ConfirmDialog`, give it `errors`, and close it only in `onOk`. If

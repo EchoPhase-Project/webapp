@@ -466,10 +466,49 @@ server contract. Do not write a response type manually in `types.ts`.
 
 ### Changes
 
-- To save a form, use `createSubmit(fields)` from `@shared/api/submit`. Give
+- To build a form, use `createForm` from `@shared/ui/forms/form`. Spread its
+  bindings on the controls. Thus, each field is one line, and the ids, the
+  values, the errors, and `disabled` are the same in all forms.
+- Use `form.input(name)` for `Field` and `TextArea`. Use
+  `form.control(name)` for `Select`, `RadioGroup`, `TimeZoneField`,
+  `MarkdownEditor`, and `Combobox`. Use `form.toggle(name)` for `Checkbox`
+  and `Switch`. The id of a field is `<id>-<name>`. The field names come
+  from `initial`, and TypeScript refuses a name that is not there.
+- Do not destructure a binding. Do not copy it into a new object. Its props
+  are getters, and a spread keeps them. A copy does not change when the
+  form changes.
+- Do not make one signal for each field. The form keeps the values in one
+  store.
+- Give the saved values to `initial`, for example
+  `() => ({ name: props.user.name })`. Do not copy them with `createEffect` or
+  `createMemo`. If the saved values change, a field that the user did not
+  change takes the new value. A changed field keeps the value of the user.
+  Thus, a save in a different card does not remove an edit.
+- Put `<ErrorSummary {...form.summary} />` at the top of the form. The
+  summary sorts the errors in the order of the fields. Thus, the focus goes
+  to the first field with an error on the page.
+- Write the submit with `form.onSubmit(send)`. In `send`, call `run` of
+  `form.mutation(describe)` and return its result. `onSubmit` stops the
+  native submit and does nothing while the form is busy. Thus, a form does
+  not send two times.
+- Put a check in the browser in the `check` option. It returns a message
+  for each field that is not correct. The messages show as the errors of
+  the server do, and nothing goes to the server. Do not add a validation
+  library. The server validates all data, and a second set of rules would
+  not agree with it.
+- If the server uses a different name for a field, give the names in
+  `serverFields`, for example `{ password: 'newPassword' }`. The errors of
+  the server then show under the correct field.
+- Use `form.dirty()` or `form.filled()` to disable the save button. Use
+  `form.changed()` to send only the changed fields. After a save,
+  `form.done()` is true until the next edit. Show it in a `role="status"`
+  line. To clear the form, call `form.reset()` in `onOk`.
+- `createForm` uses `createSubmit(fields)` from `@shared/api/submit`, and
+  gives its `mutation`, `busy`, `errors`, and `setErrors`. If an action has
+  no form (a remove button, a dialog), use `createSubmit()` directly. Give
   each mutation description to `submit.mutation(describe)`. Its
   `run(vars, onOk)` sets `busy`, runs the mutation, and groups the errors.
-  The save code is then the same in all forms.
+  The save code is then the same in all forms and actions.
 - Put the cache changes (`setQueryData`, `invalidateQueries`,
   `removeQueries`) in the `onSuccess` of the description. A mutation then
   changes the cache in the same way from each page that uses it.
@@ -493,9 +532,10 @@ server contract. Do not write a response type manually in `types.ts`.
   action or above the list. Refer to `VersionList.tsx` and `SessionsPage.tsx`.
 - `pending(work)` only sets `busy`. If you use it, show the errors with
   `setErrors`.
-- If each row of a list saves on its own, use `runFor(key, vars, onOk)` with
-  the ID of the row as the key. `busy(key)` and `errors(key)` then apply only
-  to that row. `busy()` is true if a save is in progress. Thus, one row that
+- If each row of a list saves on its own, use `createSubmit()` and
+  `runFor(key, vars, onOk)` with the ID of the row as the key. Do not use
+  `createForm` for these rows. One `createForm` is for one form. `busy(key)`
+  and `errors(key)` then apply only to that row. `busy()` is true if a save is in progress. Thus, one row that
   saves or fails does not stop the other rows. Refer to
   `PackageWorkflowList.tsx`.
 
