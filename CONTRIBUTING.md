@@ -259,6 +259,16 @@ Select the control for a choice from a list with these rules:
   near each query of one or two letters, and then each option agrees.
 - If the user selects the selected value again, `Listbox` and `Combobox` do
   not call `onChange`. Thus, the caller does not have to compare the values.
+- `Field` and `TextArea` give the input event to `onInput`, as a native
+  input does. All other controls give the new value to `onChange`:
+  `MarkdownEditor`, `Select`, `TimeZoneField`, `Checkbox`, `RadioGroup`,
+  `Listbox`, `Combobox`, `Switch`. Thus, one prop name always gets one type
+  of argument.
+- Give each form control the errors of its field with the `errors` prop:
+  `Field`, `TextArea`, `MarkdownEditor`, `Select`, `TimeZoneField`,
+  `Checkbox`, `RadioGroup`. The control shows the errors under it and sets
+  `aria-invalid` and `aria-describedby`. Thus, a screen reader reads the
+  error with the control.
 
 ### Icons
 
