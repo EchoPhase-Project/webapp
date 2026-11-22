@@ -98,7 +98,11 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   a body.
 - If a description needs a different `staleTime`, set it in the
   description.
-- If a read fails, show `LoadError` in place of the data.
+- Show the states of a read with `QueryState` from `@shared/ui/QueryState`:
+  `<QueryState query={x}>{(data) => …}</QueryState>`. Do not write a
+  `Switch` with `LoadError` for a read.
+- `QueryState` shows `LoadError` with a retry in place of the data. It also
+  shows the `empty` text in an `EmptyState`, and the `notFound` text for a 404.
 - Do not throw an error from a page for a failed read. The layout catches
   a page that throws in `PageErrorBoundary`. That boundary is only for
   errors in the code.
@@ -109,17 +113,26 @@ local runs only. If `CI` is set, ESLint runs without the cache.
 - Give `lazyPage` the `skeleton` option that agrees with the page:
   `table`, `cards`, `list`, `settings`, `detail`, or `document`. The default
   is `header`.
-- To show that data loads, wrap the part of the page in `SkeletonScope`
-  with `when={query.isPending}`. Shared components then show their loading
-  form.
-- Show the part in the scope while the query is pending or successful.
-  Show `LoadError` outside the scope. Keep a static `PageHeader` outside the
-  scope. `SessionsPage` is the example.
+- To show that data loads, give `QueryState` a `placeholder` (`[]` for a
+  list). The children then show in a `SkeletonScope` while the query is
+  pending, and shared components show their loading form.
+- Keep a static `PageHeader` outside `QueryState`. `SessionsPage` is the
+  example.
+- If a part of a page loads without `QueryState`, wrap it in
+  `SkeletonScope` with `when={query.isPending}`.
 - If a shared component shows data, give it a loading form under
   `useSkeleton()`. Do not give it a `loading` prop.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
+- Show such a list with `Paginated` from `@shared/ui/Paginated`. Do not
+  write "Show more", `LoadError`, or the empty text around the list.
+- Use `mode="more"` (the default) or `mode="pages"`. Add `auto` to load the
+  next page when the end of the list comes into view.
+- Give each item `paginatedItem`: `<Row props={paginatedItem}>`,
+  `<Masonry itemProps={paginatedItem}>`, or `<li {...paginatedItem}>`. Then
+  the focus goes to the first new item.
+- If the list has markup of its own, use `createPagination(list, { mode })`.
 - If such a list shows the newest item first, use `refreshHead` for a new
   item. If it shows the oldest item first, use `appendItem` for a new item.
 - To change or remove one item, use `patchItem` or `removeItem`. Do not
@@ -151,8 +164,14 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   `runFor(key, vars, onOk)`. Do not use `createForm` for these rows.
   `busy(key)` and `errors(key)` then apply only to that row.
 - Each action shows its errors. Do not ignore a failed result. If the action
-  has a `ConfirmDialog`, give it `errors`, and close it only in `onOk`. If
-  the action has no dialog, show an `ErrorSummary` adjacent to it.
+  has no dialog, show an `ErrorSummary` adjacent to it.
+- If an action has a `ConfirmDialog`, use `createConfirm(describe, vars,
+onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
+  and spread `dialog` on the `ConfirmDialog`.
+- `createConfirm` closes the dialog only after a success. A failure stays in
+  the dialog. Do not write an item signal, a cancel function, or
+  `setErrors({})` for a dialog.
+- Put the page steps (go to a page) in `onOk` of `createConfirm`.
 
 ### Session
 
@@ -170,8 +189,9 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
-  BackLink, Table, EmptyState, PageHeader, Switch, LoadError,
-  SkeletonScope, SkeletonText, SkeletonBlock, PageSkeleton.
+  BackLink, Table, Masonry, EmptyState, PageHeader, Switch, LoadError,
+  QueryState, Paginated, SkeletonScope, SkeletonText, SkeletonBlock,
+  PageSkeleton.
 - If you add a shared component, show it on a page in `src/dev/`. If you
   make a new page, add one entry for it to the list in `src/dev/routes.ts`.
 - A non-modal panel (a menu, a list, a notifications panel) opens with
@@ -219,8 +239,10 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   this rule.
 - If a full card or row opens an item, it can be a `<button>`. Then disable
   the rule on that line and write the reason.
-- If a `ConfirmDialog` asks about one item, give it `item` and
-  `onConfirm(item)`. Do not use `open={!!x()}` and `x()!`.
+- A `ConfirmDialog` always asks about an item. `createConfirm` gives it
+  `item` and `onConfirm(item)`. If the dialog is about the page, give the
+  entity, or a word such as `'all'`, to `ask`. Do not use `open={!!x()}`
+  and `x()!`.
 - Import each icon from `@shared/ui/icons`. Only `icons.ts` imports an icon
   library. ESLint enforces this rule.
 - To show an API time, use `useDateFormat()` from `@shared/lib/date-format`.

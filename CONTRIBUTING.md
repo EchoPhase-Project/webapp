@@ -144,11 +144,14 @@ Before you write new markup, make pages from the components in
 | `Modal`, `ConfirmDialog`                              | Dialogs (native `<dialog>`). Ask the user before an action that you cannot undo                                                                                                               |
 | `Popover`                                             | A panel that is not modal, next to its trigger: a menu, a list, the notifications. It shows in the top layer of the browser. A click outside and Escape close it                              |
 | `Card`, `EmptyState`, `Table`, `PageHeader`, `Switch` | Surfaces, lists, the start of a page, on/off settings that the app saves immediately                                                                                                          |
+| `Masonry`                                             | Cards of different heights in columns, in the order of the list (the Explore cards)                                                                                                           |
 | `SettingsCard`                                        | One part of a settings page: a title, a description, the content, and a footer with a hint and the action                                                                                     |
 | `ShareList`                                           | The people that an item is shared with, and a username field to share it. The feature gives its API functions                                                                                 |
 | `BackLink`                                            | The link back to the list or the package, above the `PageHeader` and above a "not found" message                                                                                              |
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
 | `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
+| `QueryState`                                          | One read in its states: `LoadError` with a retry, the loading form (with a `placeholder`), the `empty` text, the `notFound` text, the data                                                    |
+| `Paginated`                                           | A list that comes one page at a time, with "Show more" (mode `more`) or "Previous" and "Next" (mode `pages`), its states, and the focus                                                       |
 | `SkeletonScope`, `SkeletonText`, `SkeletonBlock`      | A part of a page whose data loads: the shared components in it show bars in the shape of their content. `SkeletonText` and `SkeletonBlock` are bars for markup of your own                    |
 | `PageSkeleton`                                        | The rough shape of a page (`header`, `table`, `cards`, `list`, `settings`, `detail`, `document`). `lazyPage` shows it while the page code loads                                               |
 
@@ -203,13 +206,15 @@ and the line on the index. The test renders each page from the list.
   behaviour.
 - If an action goes to a different page, use a link (`<A>`). Do not use
   `Button variant="link"` for it.
-- If a `ConfirmDialog` asks about one item, give the item to `item`. The
-  dialog is open while `item` has a value. It gives the item to `onConfirm`
-  and to the children function. Thus, the page does not need `open` or a `!`
-  assertion.
-- If the action of a `ConfirmDialog` can fail, give the errors to `errors`.
-  Close the dialog only in `onOk`. Thus, the user sees why the action failed
-  and can try again.
+- A `ConfirmDialog` asks about one item. The dialog is open while `item`
+  has a value. It gives the item to `onConfirm` and to the children
+  function. Thus, the page does not need `open` or a `!` assertion.
+- If the dialog is about the page (delete this package, revoke all
+  sessions), give the entity or a word such as `'all'` as the item. Then all
+  dialogs use the same form.
+- If the action of a `ConfirmDialog` can fail, use `createConfirm`. It
+  closes the dialog only after a success, and the dialog shows the errors.
+  Thus, the user sees why the action failed and can try again.
 
 ### Panels
 
@@ -417,9 +422,22 @@ server contract. Do not write a response type manually in `types.ts`.
 
 ### Reads
 
-- If a read fails, show `LoadError` with the error of the query in place of
-  the data. `LoadError` shows the text of the error and a button that tries
-  again. Thus, a failed read never looks like an empty list.
+- Show the states of a read with `QueryState` from `@shared/ui/QueryState`:
+  `<QueryState query={x}>{(data) => …}</QueryState>`. Do not write a
+  `Switch` with `LoadError` for a read. Thus, all pages show an error, a
+  load, and an empty list in the same way.
+- If a read fails, `QueryState` shows `LoadError` in place of the data.
+  `LoadError` shows the text of the error and a button that tries again.
+  Thus, a failed read never looks like an empty list.
+- Give the text for an empty list to `empty`, and its action to
+  `emptyAction`. `QueryState` shows them in an `EmptyState`. If an empty
+  array is not the empty state, give `isEmpty`.
+- On the page of one item, give the text for a 404 to `notFound`.
+  `QueryState` then shows it in an `EmptyState` in place of `LoadError`.
+  Thus, a deleted item does not look like an error of the server.
+- If a part of the page shows `LoadError` next to a form (the connections
+  in `InstallModal.tsx`), keep `LoadError` there. The form stays usable, so
+  the error is not a state of the whole part.
 - Do not throw an error from a page to show a failed read. The layout
   catches a page that throws in `PageErrorBoundary`, and shows a general
   error page. This boundary is only for errors in the code. A failed read
@@ -432,14 +450,20 @@ server contract. Do not write a response type manually in `types.ts`.
   first answer stops the page and shows the fallback. A new key (a new search,
   another item) then replaces the shown page with the fallback.
   `PageLoading` shows the load of the page code without `<Suspense>`.
-- To show that data loads, wrap the part of the page in `SkeletonScope`
-  with `when={query.isPending}`. Shared components then show their loading
-  form. Thus, the page keeps its shape, and the content does not jump when
-  the data comes.
-- Show the content in the scope while the query is pending or successful.
-  Show `LoadError` outside the scope for an error. The loading form needs
-  the components on the page, and an error is not a load.
-- Keep a static `PageHeader` outside the scope. The scope makes its part
+- To show that data loads, give `QueryState` a `placeholder` (`[]` for a
+  list). The children then get the placeholder in a `SkeletonScope` while
+  the query is pending, and shared components show their loading form.
+  Thus, the page keeps its shape, and the content does not jump when the
+  data comes.
+- Without a `placeholder`, `QueryState` shows nothing, or the `loading`
+  text, while the query is pending. Use this form if the children cannot
+  show a loading form.
+- `QueryState` shows `LoadError` outside the scope for an error. The
+  loading form needs the components on the page, and an error is not a
+  load.
+- If a part of the page loads without `QueryState`, wrap it in
+  `SkeletonScope` with `when={query.isPending}`.
+- Keep a static `PageHeader` outside `QueryState`. The scope makes its part
   inert, and the layout cannot move the focus to an inert `h1`.
 - The scope hides its part from screen readers and announces one
   "Loading…" for it. Thus, a screen reader does not read the bars.
@@ -451,9 +475,31 @@ server contract. Do not write a response type manually in `types.ts`.
   `@shared/api/paged-list`. `describe` gives the `…InfiniteQuery` description
   from the API file of the feature, with `cursorPages`. The helper adds
   the pages to the list. A new search is a new key, and Query cancels the
-  request for the old key. The ref `watchEnd` gets the next page when the end
-  of the list comes into view. Thus, a page does not keep a cursor or a
+  request for the old key. Thus, a page does not keep a cursor or a
   stale-answer guard of its own.
+- Show such a list with `Paginated` from `@shared/ui/Paginated`. Do not
+  write "Show more", `LoadError`, or the empty text around the list.
+  `Paginated` uses the states of `QueryState`, and a failed next page shows
+  under the items. Thus, all lists in pages behave in the same way.
+- Use `mode="more"` (the default) for a list that grows: "Show more" adds
+  the next page. Add `auto` to load the next page when the end of the list
+  comes into view (the Explore cards).
+- Use `mode="pages"` to show one page with "Previous" and "Next".
+  "Previous" shows a page from the cache without a request. "Next" asks only
+  for a page that is not in the cache. The server gives cursors and no
+  total, so the mode cannot show page numbers or jump to a page.
+- Give each item `paginatedItem`: `<Row props={paginatedItem}>`,
+  `<Masonry itemProps={paginatedItem}>`, or `<li {...paginatedItem}>`.
+  After "Show more", the focus goes to the first new item. After a change of
+  page, the list scrolls to its top and the focus goes to its first item.
+  Thus, a keyboard user does not start again at the top of the page.
+- `Paginated` has one live region. It says "Loaded 5 more", "No more.", or
+  "Page 2".
+- A new search or filter is a new key. Then `Paginated` starts on the first
+  page again.
+- If the list has markup of its own, use `createPagination(list, { mode })`.
+  It gives the items, the page, `next`, `prev`, `loadMore`, `status`, and
+  the `root` ref for the list element.
 - If such a list shows the newest item first (for example, runs), use
   `refreshHead` for a new item. `refreshHead` gets the first page again and
   puts the new item at the top.
@@ -512,7 +558,7 @@ server contract. Do not write a response type manually in `types.ts`.
   line. To clear the form, call `form.reset()` in `onOk`.
 - `createForm` uses `createSubmit(fields)` from `@shared/api/submit`, and
   gives its `mutation`, `busy`, `errors`, and `setErrors`. If an action has
-  no form (a remove button, a dialog), use `createSubmit()` directly. Give
+  no form and no dialog (a remove button), use `createSubmit()` directly. Give
   each mutation description to `submit.mutation(describe)`. Its
   `run(vars, onOk)` sets `busy`, runs the mutation, and groups the errors.
   The save code is then the same in all forms and actions.
@@ -533,10 +579,17 @@ server contract. Do not write a response type manually in `types.ts`.
   call.
 - Each action shows its errors. Do not ignore a failed result. If the user
   does not see the failure, the user thinks that the action was successful.
-- If an action has a `ConfirmDialog`, give the errors to its `errors` prop.
-  The dialog then stays open and shows the errors. On cancel, clear the
-  errors. If the action has no dialog, put an `ErrorSummary` adjacent to the
-  action or above the list. Refer to `VersionList.tsx` and `SessionsPage.tsx`.
+- If an action has a `ConfirmDialog`, use `createConfirm(describe, vars,
+onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
+  and spread `dialog` on the `ConfirmDialog`. Thus, the page does not write
+  an item signal, a cancel function, or `setErrors({})`.
+- `createConfirm` closes the dialog only after a success. A failure stays in
+  the dialog, and the user can try again or cancel. Cancel and the next
+  `ask` clear the errors. Thus, no dialog closes on a failure.
+- Put the page steps (go to a page) in `onOk` of `createConfirm`. `onOk`
+  runs after the dialog closes. Refer to `PackageSettings.tsx`.
+- If the action has no dialog, put an `ErrorSummary` adjacent to the action
+  or above the list. Refer to `SessionsPage.tsx`.
 - `pending(work)` only sets `busy`. If you use it, show the errors with
   `setErrors`.
 - If each row of a list saves on its own, use `createSubmit()` and
