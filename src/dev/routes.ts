@@ -35,7 +35,7 @@ export function devPages(): DevPage[] {
             path: '/dev/forms',
             title: 'Forms',
             description:
-                'Field, TextArea, Select, Checkbox, RadioGroup, FieldError, ErrorSummary and FilePicker, with the errors on or off.',
+                'Field, TextArea, Select, Checkbox, RadioGroup, FieldError, ErrorSummary and FilePicker, with the errors on or off; a full form on createForm.',
             component: lazy(() => import('./FormsPage')),
         },
         {

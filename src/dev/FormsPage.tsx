@@ -1,4 +1,6 @@
 import { createSignal, Show } from 'solid-js';
+import { mutationOptions } from '@tanstack/solid-query';
+import { ApiError } from '@shared/api/client';
 import { FORM, type FormErrors } from '@shared/api/errors';
 import type { ErrorItem } from '@shared/api/types';
 import Checkbox from '@shared/ui/forms/Checkbox';
@@ -7,6 +9,8 @@ import Field from '@shared/ui/forms/Field';
 import RadioGroup from '@shared/ui/forms/RadioGroup';
 import Select from '@shared/ui/forms/Select';
 import TextArea from '@shared/ui/forms/TextArea';
+import { createForm } from '@shared/ui/forms/form';
+import Button from '@shared/ui/Button';
 import FilePicker from '@shared/ui/FilePicker';
 import Switch from '@shared/ui/Switch';
 import { IconLock, IconUser } from '@shared/ui/icons';
@@ -41,6 +45,124 @@ const regions = [
 ] as const;
 
 type Region = (typeof regions)[number]['value'];
+
+type Signup = {
+    userName: string;
+    region: Region;
+    plan: Plan;
+    bio: string;
+    terms: boolean;
+};
+
+/**
+ * A fake save, as a feature's description gives it; no request goes out.
+ * "taken" is a taken username; "down" fails the whole form.
+ */
+const signupMutation = () =>
+    mutationOptions({
+        mutationFn: (values: Signup) =>
+            new Promise<Signup>((resolve, reject) =>
+                setTimeout(() => {
+                    if (values.userName.trim() === 'taken')
+                        reject(
+                            new ApiError(
+                                [
+                                    {
+                                        code: 'dev_example',
+                                        message: 'This username is taken.',
+                                        field: 'userName',
+                                    },
+                                ],
+                                409
+                            )
+                        );
+                    else if (values.userName.trim() === 'down')
+                        reject(
+                            new ApiError(
+                                [
+                                    {
+                                        code: 'dev_example',
+                                        message:
+                                            'The server did not answer. Try again.',
+                                    },
+                                ],
+                                503
+                            )
+                        );
+                    else resolve(values);
+                }, 600)
+            ),
+    });
+
+/** A whole form on createForm: bindings, check, server errors, done. */
+function CreateFormSample() {
+    const form = createForm({
+        id: 'dev-signup',
+        initial: (): Signup => ({
+            userName: '',
+            region: 'eu',
+            plan: 'free',
+            bio: '',
+            terms: false,
+        }),
+        check: (v) => ({
+            userName: v.userName.trim() ? undefined : 'Enter a username.',
+            terms: v.terms ? undefined : 'Accept the terms to go on.',
+        }),
+    });
+    const signup = form.mutation(signupMutation);
+    const save = form.onSubmit((values) => signup.run(values));
+
+    return (
+        <form class="vert-form" onSubmit={save} noValidate>
+            <ErrorSummary {...form.summary} />
+            <Field
+                {...form.input('userName')}
+                label="Username (try “taken” or “down”)"
+                showLabel
+                autocomplete="off"
+            />
+            <Select
+                {...form.control('region')}
+                label="Region"
+                showLabel
+                options={regions}
+            />
+            <RadioGroup
+                {...form.control('plan')}
+                legend="Plan"
+                showLegend
+                options={plans}
+            />
+            <TextArea
+                {...form.input('bio')}
+                label="About you"
+                showLabel
+                rows={3}
+            />
+            <Checkbox {...form.toggle('terms')} label="I accept the terms" />
+            <div class="actions-row">
+                <Button
+                    type="submit"
+                    busy={form.busy()}
+                    disabled={!form.dirty()}
+                >
+                    Sign up
+                </Button>
+                <Button
+                    variant="ghost"
+                    disabled={!form.dirty() || form.busy()}
+                    onClick={() => form.reset()}
+                >
+                    Reset
+                </Button>
+                <span class="muted" role="status">
+                    {form.done() ? 'Signed up' : ''}
+                </span>
+            </div>
+        </form>
+    );
+}
 
 /** The form controls, with the server's errors on or off. */
 export default function FormsPage() {
@@ -264,6 +386,17 @@ export default function FormsPage() {
                             options={plans}
                             disabled
                         />
+                    </DevSample>
+                </DevGrid>
+            </DevSection>
+
+            <DevSection
+                title="createForm"
+                note="A form from @shared/ui/forms/form: the bindings spread on the controls, check in the browser, the server's errors, reset and done."
+            >
+                <DevGrid wide>
+                    <DevSample title="Sign up (a fake save)">
+                        <CreateFormSample />
                     </DevSample>
                 </DevGrid>
             </DevSection>
