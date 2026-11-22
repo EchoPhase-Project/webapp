@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/solid-query';
 import { pageSection } from '@shared/nav/page-section';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import { sessionClient } from '@shared/api/session-provider';
 import { packageContentQuery, packageKeys } from './api/packages';
 import { pkg, workflow } from './fixtures';
@@ -217,6 +218,52 @@ describe('MyPackagePage', () => {
         expect(
             await api.calls('PUT /api/v1/workflow-packages/p1')[1].json()
         ).toMatchObject({ tags: ['discord-bot'], visibility: 'Private' });
+    });
+
+    it('shows a failed tags save: a field error under the input, the rest at the card top', async () => {
+        let answer = () =>
+            json(400, {
+                code: 'TagInvalid',
+                message: 'Too long.',
+                field: 'tags',
+            });
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'PUT /api/v1/workflow-packages/p1': () => answer(),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+
+        const input = await screen.findByLabelText('Tags');
+        const save = within(input.closest('form') as HTMLElement).getByRole(
+            'button',
+            { name: 'Save' }
+        );
+        fireEvent.input(input, { target: { value: 'raid' } });
+        fireEvent.click(save);
+        await waitFor(() =>
+            expect(input.getAttribute('aria-invalid')).toBe('true')
+        );
+        expect(
+            document.getElementById(
+                input.getAttribute('aria-describedby') ?? ''
+            )?.textContent
+        ).toBe('Too long.');
+
+        answer = () =>
+            json(409, {
+                code: 'TestChanged',
+                message: 'The package changed meanwhile.',
+            });
+        fireEvent.click(save);
+        const alert = await within(
+            input.closest('form') as HTMLElement
+        ).findByRole('alert');
+        expect(alert.textContent).toBe('The package changed meanwhile.');
+        expect(document.activeElement).toBe(alert);
+        expect(input.getAttribute('aria-invalid')).toBe('false');
+        await expectNoA11yViolations();
     });
 
     it('shows a failed read of the package with a retry', async () => {

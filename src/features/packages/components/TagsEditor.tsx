@@ -3,7 +3,8 @@ import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
-import FieldError from '@shared/ui/forms/FieldError';
+import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import FieldError, { errorId } from '@shared/ui/forms/FieldError';
 import RemoveButton from '@shared/ui/RemoveButton';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { updatePackageMutation } from '@features/packages/api/packages';
@@ -33,6 +34,7 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
     const { busy, errors, mutation } = createSubmit(['tags']);
     const updating = mutation(updatePackageMutation);
 
+    const invalid = () => !!errors().tags?.length;
     const changed = () => tags().join(',') !== props.pkg.tags.join(',');
 
     function add() {
@@ -68,10 +70,14 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                 </Button>
             }
         >
+            <ErrorSummary errors={errors()} inputId={() => FIELD} />
             <label class="visually-hidden" for={FIELD}>
                 {t('ui.tags', 'Tags')}
             </label>
-            <div class="field package-tags-field">
+            <div
+                class="field package-tags-field"
+                classList={{ invalid: invalid() }}
+            >
                 <ul class="package-tags">
                     <For each={tags()}>
                         {(tag) => (
@@ -104,6 +110,10 @@ export default function TagsEditor(props: { pkg: WorkflowPackage }) {
                         autocomplete="off"
                         maxLength={32}
                         disabled={busy()}
+                        aria-invalid={invalid()}
+                        aria-describedby={
+                            invalid() ? errorId(FIELD) : undefined
+                        }
                         value={draft()}
                         onInput={(e) => {
                             const value = e.currentTarget.value;
