@@ -496,6 +496,13 @@ server contract. Do not write a response type manually in `types.ts`.
   the server do, and nothing goes to the server. Do not add a validation
   library. The server validates all data, and a second set of rules would
   not agree with it.
+- A form in a `Modal` saves with its own `form.mutation`. Do not give it
+  the `busy` or the `errors` of the parent. Thus, a failed save shows in
+  the modal, and the modal stays open.
+- If the fields come from the data (for example, one `Select` for each
+  connection), keep one field with a record of the values. Then use only
+  `onSubmit`, `summary`, and `busy`. A binding needs a field name that
+  `initial` knows when the form starts. Refer to `InstallModal.tsx`.
 - If the server uses a different name for a field, give the names in
   `serverFields`, for example `{ password: 'newPassword' }`. The errors of
   the server then show under the correct field.

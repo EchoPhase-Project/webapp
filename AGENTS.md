@@ -138,6 +138,11 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   `form.mutation(describe)`.
 - Put a check in the browser in the `check` option. Do not add a validation
   library.
+- A form in a `Modal` saves with its own `form.mutation`. Do not give it
+  the `busy` or the `errors` of the parent.
+- If the fields come from the data (one for each connection), keep one
+  field with a record. Then use only `onSubmit` and `summary`. Refer to
+  `InstallModal.tsx`.
 - `createForm` uses `createSubmit` from `shared/api/submit.ts`. If an action
   has no form, use `createSubmit()` and its `mutation(describe)` directly.
 - Put the cache changes in the `onSuccess` of the description. Put only the
