@@ -63,6 +63,7 @@ export default function VisibilityEditor(props: { pkg: WorkflowPackage }) {
                 value={visibility()}
                 onChange={setVisibility}
                 disabled={busy()}
+                errors={errors().visibility}
                 options={VISIBILITIES.map((option) => ({
                     value: option,
                     label: t(`visibility.${option}`, option),

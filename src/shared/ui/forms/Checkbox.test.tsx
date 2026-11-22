@@ -1,13 +1,18 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { createSignal } from 'solid-js';
+import { createSignal, type JSX } from 'solid-js';
 import { fireEvent, render, screen } from '@solidjs/testing-library';
+import { I18nProvider } from '@shared/i18n/i18n-context';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import Checkbox from './Checkbox';
 
+// FieldError reads its messages through i18n.
+const show = (ui: () => JSX.Element) =>
+    render(() => <I18nProvider>{ui()}</I18nProvider>);
+
 function renderBox() {
     const [on, setOn] = createSignal(false);
-    render(() => (
+    show(() => (
         <Checkbox
             checked={on()}
             onChange={setOn}
@@ -39,8 +44,35 @@ describe('Checkbox', () => {
         await expectNoA11yViolations();
     });
 
+    it('shows its errors under the card, linked to the box', async () => {
+        show(() => (
+            <Checkbox
+                id="replace"
+                checked={false}
+                onChange={() => {}}
+                label="New secret"
+                errors={[{ code: 'Invalid', message: 'Not now.' }]}
+            />
+        ));
+        const box = screen.getByRole('checkbox', { name: 'New secret' });
+        expect(box.id).toBe('replace');
+        expect(box.getAttribute('aria-invalid')).toBe('true');
+        expect(
+            document.getElementById(box.getAttribute('aria-describedby') ?? '')
+                ?.textContent
+        ).toBe('Not now.');
+        await expectNoA11yViolations();
+    });
+
+    it('is not invalid without errors', () => {
+        renderBox();
+        const box = screen.getByRole('checkbox', { name: /Daily report/ });
+        expect(box.getAttribute('aria-invalid')).toBe('false');
+        expect(box.hasAttribute('aria-describedby')).toBe(false);
+    });
+
     it('can be shown but not changed', () => {
-        render(() => (
+        show(() => (
             <Checkbox
                 checked={true}
                 onChange={() => {}}

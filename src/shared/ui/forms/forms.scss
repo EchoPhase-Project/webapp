@@ -193,6 +193,16 @@
   }
 }
 
+// With errors (under the cards): the border in the danger colour too.
+.choice.invalid,
+.choices.invalid .choice {
+  border-color: var(--danger);
+}
+
+.choices.invalid:focus {
+  outline: none;
+}
+
 // The name, with what goes beside it (a badge) on its line.
 .choice-label {
   display: flex;

@@ -342,6 +342,41 @@ describe('MyPackagePage', () => {
         await expectNoA11yViolations();
     });
 
+    it('shows a refused visibility under its choices', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+                'PUT /api/v1/workflow-packages/p1': () =>
+                    json(400, {
+                        code: 'VisibilityInvalid',
+                        message: 'Not while it is installed.',
+                        field: 'visibility',
+                    }),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+
+        await screen.findByLabelText('Tags');
+        const priv = screen.getByLabelText(/^Private/);
+        fireEvent.click(priv);
+        fireEvent.click(
+            within(priv.closest('form') as HTMLElement).getByRole('button', {
+                name: 'Save',
+            })
+        );
+        await waitFor(() =>
+            expect(priv.getAttribute('aria-invalid')).toBe('true')
+        );
+        const group = screen.getByRole('group', { name: 'Who sees it' });
+        expect(
+            document.getElementById(
+                group.getAttribute('aria-describedby') ?? ''
+            )?.textContent
+        ).toBe('Not while it is installed.');
+        expect(document.activeElement).toBe(group);
+        await expectNoA11yViolations();
+    });
+
     it('shows a failed read of the package with a retry', async () => {
         fakeApi(
             routes({

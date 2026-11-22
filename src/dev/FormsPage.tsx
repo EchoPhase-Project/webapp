@@ -4,7 +4,6 @@ import type { ErrorItem } from '@shared/api/types';
 import Checkbox from '@shared/ui/forms/Checkbox';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
-import FieldError from '@shared/ui/forms/FieldError';
 import RadioGroup from '@shared/ui/forms/RadioGroup';
 import Select from '@shared/ui/forms/Select';
 import TextArea from '@shared/ui/forms/TextArea';
@@ -196,12 +195,14 @@ export default function FormsPage() {
                 note="A card for an option of a form. A setting that saves at once is a Switch."
             >
                 <DevGrid>
-                    <DevSample title="With a description">
+                    <DevSample title="With a description and errors">
                         <Checkbox
+                            id="dev-forms-terms"
                             label="I accept the terms"
                             description="You can read them on the Terms page."
                             checked={terms()}
                             onChange={setTerms}
+                            errors={errs('Accept the terms to go on.')}
                         />
                     </DevSample>
                     <DevSample title="Label only, and with a badge">
@@ -237,9 +238,12 @@ export default function FormsPage() {
                 </DevGrid>
             </DevSection>
 
-            <DevSection title="RadioGroup and FieldError">
+            <DevSection
+                title="RadioGroup"
+                note="Its errors show under the options. The group takes the focus from an ErrorSummary."
+            >
                 <DevGrid wide>
-                    <DevSample title="Legend above, an option disabled">
+                    <DevSample title="Legend above, an option disabled, errors">
                         <RadioGroup
                             id="dev-forms-plan"
                             legend="Plan"
@@ -248,9 +252,6 @@ export default function FormsPage() {
                             value={plan()}
                             onChange={setPlan}
                             options={plans}
-                        />
-                        <FieldError
-                            for="dev-forms-plan"
                             errors={errs('Choose a plan you can pay for.')}
                         />
                     </DevSample>
