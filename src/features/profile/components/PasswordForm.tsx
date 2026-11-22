@@ -1,13 +1,9 @@
-import { createSignal } from 'solid-js';
-import { createSubmit } from '@shared/api/submit';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
+import { createForm } from '@shared/ui/forms/form';
 import { changePasswordMutation } from '@features/profile/api';
-
-const FIELDS = ['currentPassword', 'newPassword', 'confirm'] as const;
-const inputId = (field: string) => `password-${field}`;
 
 /**
  * A new password: the current one, the new one twice (compared here, the
@@ -15,97 +11,57 @@ const inputId = (field: string) => `password-${field}`;
  */
 export default function PasswordForm() {
     const t = useLocalizer('profile');
-    const [current, setCurrent] = createSignal('');
-    const [next, setNext] = createSignal('');
-    const [confirm, setConfirm] = createSignal('');
-    const { busy, errors, setErrors, mutation } = createSubmit(FIELDS);
-    const changing = mutation(changePasswordMutation);
-    const [done, setDone] = createSignal(false);
+    const form = createForm({
+        id: 'password',
+        initial: () => ({ currentPassword: '', newPassword: '', confirm: '' }),
+        check: (v) =>
+            v.newPassword !== v.confirm && {
+                confirm: t('password.differ', 'The two new passwords differ.'),
+            },
+    });
+    const changing = form.mutation(changePasswordMutation);
 
-    const edited =
-        (set: (value: string) => void) =>
-        (e: { currentTarget: HTMLInputElement }) => {
-            set(e.currentTarget.value);
-            setDone(false);
-        };
-
-    async function save(e: Event) {
-        e.preventDefault();
-        if (next() !== confirm()) {
-            setErrors({
-                confirm: [
-                    {
-                        code: 'PasswordsDiffer',
-                        message: t(
-                            'password.differ',
-                            'The two new passwords differ.'
-                        ),
-                        field: 'confirm',
-                    },
-                ],
-            });
-            return;
-        }
-        await changing.run(
-            { currentPassword: current(), newPassword: next() },
-            () => {
-                setCurrent('');
-                setNext('');
-                setConfirm('');
-                setDone(true);
-            }
-        );
-    }
+    const save = form.onSubmit((v) =>
+        changing.run(
+            { currentPassword: v.currentPassword, newPassword: v.newPassword },
+            () => form.reset()
+        )
+    );
 
     return (
-        <form class="vert-form" onSubmit={(e) => void save(e)} noValidate>
-            <ErrorSummary errors={errors()} inputId={inputId} />
+        <form class="vert-form" onSubmit={save} noValidate>
+            <ErrorSummary {...form.summary} />
             <Field
-                id={inputId('currentPassword')}
-                name="currentPassword"
+                {...form.input('currentPassword')}
                 label={t('password.current', 'Current password')}
                 showLabel
-                errors={errors().currentPassword}
                 type="password"
                 autocomplete="current-password"
-                disabled={busy()}
-                value={current()}
-                onInput={edited(setCurrent)}
             />
             <Field
-                id={inputId('newPassword')}
-                name="newPassword"
+                {...form.input('newPassword')}
                 label={t('password.new', 'New password')}
                 showLabel
-                errors={errors().newPassword}
                 type="password"
                 autocomplete="new-password"
-                disabled={busy()}
-                value={next()}
-                onInput={edited(setNext)}
             />
             <Field
-                id={inputId('confirm')}
-                name="confirm"
+                {...form.input('confirm')}
                 label={t('password.confirm', 'New password again')}
                 showLabel
-                errors={errors().confirm}
                 type="password"
                 autocomplete="new-password"
-                disabled={busy()}
-                value={confirm()}
-                onInput={edited(setConfirm)}
             />
             <div class="actions-row">
                 <Button
                     type="submit"
-                    busy={busy()}
-                    disabled={!current() || !next() || !confirm()}
+                    busy={form.busy()}
+                    disabled={!form.filled()}
                 >
                     {t('password.save', 'Change password')}
                 </Button>
                 <span class="muted" role="status">
-                    {done()
+                    {form.done()
                         ? t(
                               'password.done',
                               'Changed. Your other devices are signed out.'

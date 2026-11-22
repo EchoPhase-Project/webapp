@@ -1,117 +1,78 @@
-import { createSignal } from 'solid-js';
 import { updateProfileMutation } from '@shared/api/auth';
-import { createSubmit } from '@shared/api/submit';
 import type { User } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
 import TimeZoneField from '@shared/ui/forms/TimeZoneField';
-
-const FIELDS = ['name', 'username', 'timeZone'] as const;
-const inputId = (field: string) => `profile-${field}`;
+import { createForm, orNull } from '@shared/ui/forms/form';
 
 /** The name, username and time zone; sends only what changed. */
 export default function ProfileForm(props: { user: User }) {
     const t = useLocalizer('profile');
-    // Seeded once: the user is in the props, edits stay local until saved.
-    // eslint-disable-next-line solid/reactivity
-    const [name, setName] = createSignal(props.user.name);
-    // eslint-disable-next-line solid/reactivity
-    const [username, setUsername] = createSignal(props.user.userName ?? '');
-    // eslint-disable-next-line solid/reactivity
-    const [timeZone, setTimeZone] = createSignal(props.user.timeZone);
-    const { busy, errors, mutation } = createSubmit(FIELDS);
-    const updateProfile = mutation(updateProfileMutation);
-    const [saved, setSaved] = createSignal(false);
+    // A field the user did not change follows the saved user.
+    const form = createForm({
+        id: 'profile',
+        initial: () => ({
+            name: props.user.name,
+            username: props.user.userName ?? '',
+            timeZone: props.user.timeZone,
+        }),
+    });
+    const updateProfile = form.mutation(updateProfileMutation);
 
-    const changed = () =>
-        name().trim() !== props.user.name ||
-        username().trim() !== (props.user.userName ?? '') ||
-        timeZone().trim() !== props.user.timeZone;
-
-    async function save(e: Event) {
-        e.preventDefault();
-        setSaved(false);
-        await updateProfile.run(
-            {
-                name: name().trim() !== props.user.name ? name().trim() : null,
-                username:
-                    username().trim() !== (props.user.userName ?? '')
-                        ? username().trim()
-                        : null,
-                timeZone:
-                    timeZone().trim() !== props.user.timeZone
-                        ? timeZone().trim()
-                        : null,
-            },
-            () => setSaved(true)
-        );
-    }
+    const save = form.onSubmit(() => {
+        const changed = form.changed();
+        return updateProfile.run({
+            name: orNull(changed.name),
+            username: orNull(changed.username),
+            timeZone: orNull(changed.timeZone),
+        });
+    });
 
     return (
-        <form class="vert-form" onSubmit={(e) => void save(e)} noValidate>
-            <ErrorSummary errors={errors()} inputId={inputId} />
+        <form class="vert-form" onSubmit={save} noValidate>
+            <ErrorSummary {...form.summary} />
 
             <Field
-                id={inputId('name')}
-                name="name"
+                {...form.input('name')}
                 label={t('details.name', 'Display name')}
                 showLabel
-                errors={errors().name}
                 type="text"
                 autocomplete="name"
                 minLength={2}
                 maxLength={64}
-                disabled={busy()}
-                value={name()}
-                onInput={(e) => {
-                    setName(e.currentTarget.value);
-                    setSaved(false);
-                }}
             />
 
             <Field
-                id={inputId('username')}
-                name="username"
+                {...form.input('username')}
                 label={t(
                     'details.username',
                     'Username (letters and digits; you sign in with it)'
                 )}
                 showLabel
-                errors={errors().username}
                 type="text"
                 autocomplete="username"
                 spellcheck={false}
                 maxLength={64}
-                disabled={busy()}
-                value={username()}
-                onInput={(e) => {
-                    setUsername(e.currentTarget.value);
-                    setSaved(false);
-                }}
             />
 
             <TimeZoneField
-                id={inputId('timeZone')}
-                name="timeZone"
+                {...form.control('timeZone')}
                 label={t('ui.time_zone', 'Time zone')}
                 showLabel
-                errors={errors().timeZone}
-                disabled={busy()}
-                value={timeZone()}
-                onChange={(zone) => {
-                    setTimeZone(zone);
-                    setSaved(false);
-                }}
             />
 
             <div class="actions-row">
-                <Button type="submit" busy={busy()} disabled={!changed()}>
+                <Button
+                    type="submit"
+                    busy={form.busy()}
+                    disabled={!form.dirty()}
+                >
                     {t('ui.save', 'Save')}
                 </Button>
                 <span class="muted" role="status">
-                    {saved() ? t('details.saved', 'Saved') : ''}
+                    {form.done() ? t('details.saved', 'Saved') : ''}
                 </span>
             </div>
         </form>
