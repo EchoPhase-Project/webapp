@@ -81,6 +81,13 @@ export function devPages(): DevPage[] {
             component: lazy(() => import('./SurfacesPage')),
         },
         {
+            path: '/dev/data',
+            title: 'Data states',
+            description:
+                'QueryState on a fake read: the loading form, the data, the empty text and LoadError.',
+            component: lazy(() => import('./DataPage')),
+        },
+        {
             path: '/dev/share-list',
             title: 'ShareList',
             description:
