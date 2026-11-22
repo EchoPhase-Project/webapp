@@ -90,6 +90,14 @@ function loadFile(
 }
 
 /**
+ * The site-wide strings of a locale, loaded once. The test setup loads
+ * English before each file, so a page shows the same text in each test.
+ */
+export function loadLocale(code: string): Promise<Translations | undefined> {
+    return loadFile(globalLoaders, code);
+}
+
+/**
  * A language's name in itself ("Русский", "Română"), from the browser's own
  * data: a translation added in Weblate shows in the language list as is.
  */

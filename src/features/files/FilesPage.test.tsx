@@ -88,8 +88,10 @@ describe('FilesPage', () => {
 
         pick(new File(['x'], 'big.bin'));
 
+        // The site-wide strings (loaded first, src/shared/testing/setup.ts)
+        // have this code: the user sees their text, not the server's.
         expect((await screen.findByRole('alert')).textContent).toContain(
-            'larger than 100 MB'
+            'The file is too large.'
         );
     });
 
