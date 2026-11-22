@@ -86,6 +86,7 @@ describe('createPagedList', () => {
         await waitFor(() =>
             expect(list.items().map(id)).toEqual(['a', 'b', 'c'])
         );
+        expect(list.pages().map((p) => p.map(id))).toEqual([['a', 'b'], ['c']]);
         expect(list.loading()).toBe(false);
         expect(list.more()).toBe(false);
 
@@ -104,7 +105,9 @@ describe('createPagedList', () => {
         list.loadMore();
         await waitFor(() => expect(calls).toHaveLength(2));
 
+        const before = list.key();
         setQ('raid');
+        expect(list.key()).not.toBe(before);
         await waitFor(() => expect(calls).toHaveLength(3));
         expect(calls[1]?.signal.aborted).toBe(true);
         expect(calls[2]?.cursor).toBeUndefined();

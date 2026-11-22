@@ -84,7 +84,7 @@ export function devPages(): DevPage[] {
             path: '/dev/data',
             title: 'Data states',
             description:
-                'QueryState on a fake read: the loading form, the data, the empty text and LoadError.',
+                'QueryState on a fake read, and Paginated on a fake list in the modes more and pages, with a Table and a Masonry: the loading form, the data, the empty text and LoadError.',
             component: lazy(() => import('./DataPage')),
         },
         {

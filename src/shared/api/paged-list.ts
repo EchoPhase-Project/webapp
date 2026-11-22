@@ -1,4 +1,4 @@
-import { onCleanup } from 'solid-js';
+import { createMemo, onCleanup } from 'solid-js';
 import {
     useInfiniteQuery,
     type GetNextPageParamFunction,
@@ -44,11 +44,16 @@ export type CursorListData<T> = InfiniteData<Page<T>, string | undefined>;
  * A list fetched a page at a time, by cursor, the pages added up: a
  * useInfiniteQuery of the description from the feature's api.ts. Another
  * search is another key: the list starts over, and the request for the old
- * one is cancelled.
+ * one is cancelled. A page shows it with `Paginated` (or
+ * `createPagination`), which adds "Show more" or the pages, the states and
+ * the focus.
  */
 export function createPagedList<T>(describe: () => CursorListOptions<T>) {
     const query = useInfiniteQuery(describe);
 
+    // Which list this is: another search or filter is another key.
+    const key = createMemo(() => JSON.stringify(describe().queryKey));
+    const pages = () => query.data?.pages.map((p) => p.items) ?? [];
     const items = () => query.data?.pages.flatMap((p) => p.items) ?? [];
     const more = () => query.hasNextPage;
     // Not isFetching: that is also true for a background refetch (an event,
@@ -86,11 +91,16 @@ export function createPagedList<T>(describe: () => CursorListOptions<T>) {
     }
 
     return {
+        key,
+        /** The loaded pages, each its items, in order. */
+        pages,
         items,
         more,
         loading,
         loaded,
         error,
+        /** While a next page is on its way (not the first one). */
+        fetchingMore: () => query.isFetchingNextPage,
         /** While the list or a page is asked for again (for LoadError). */
         retrying: () => query.isFetching,
         loadMore,
@@ -98,6 +108,9 @@ export function createPagedList<T>(describe: () => CursorListOptions<T>) {
         watchEnd,
     };
 }
+
+/** A list fetched a page at a time (createPagedList). */
+export type PagedList<T> = ReturnType<typeof createPagedList<T>>;
 
 /**
  * The list with a fresh first page merged in by id: items it did not hold

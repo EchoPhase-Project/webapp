@@ -1,0 +1,28 @@
+// Paginated.tsx: the items, then "Show more" or the page buttons, one under
+// another with the gap of a page (as .page-stack).
+.paginated {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+  // The top of the list, under the bar, after a change of page.
+  scroll-margin-top: 16px;
+}
+
+.paginated-more {
+  display: flex;
+  justify-content: center;
+}
+
+.paginated-pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginated-page {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}

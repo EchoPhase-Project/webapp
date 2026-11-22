@@ -28,6 +28,10 @@ type CellProps = {
 
 type RowProps = {
     events?: Handlers<HTMLTableRowElement>;
+    /** On the row element, e.g. `paginatedItem` in a `Paginated` list. */
+    props?: JSX.HTMLAttributes<HTMLTableRowElement> & {
+        [data: `data-${string}`]: string | undefined;
+    };
 };
 
 export const Cell: ParentComponent<CellProps> = (props) => {
@@ -50,7 +54,7 @@ export const Cell: ParentComponent<CellProps> = (props) => {
 
 export const Row: ParentComponent<RowProps> = (props) => {
     return (
-        <tr class="row" {...props.events}>
+        <tr class="row" {...props.props} {...props.events}>
             {props.children}
         </tr>
     );

@@ -16,19 +16,28 @@ export default function Masonry<T>(props: {
     each: readonly T[];
     children: (item: T, index: () => number) => JSX.Element;
     class?: string;
+    /** On each item's element, e.g. `paginatedItem` in a `Paginated` list. */
+    itemProps?: JSX.HTMLAttributes<HTMLDivElement> & {
+        [data: `data-${string}`]: string | undefined;
+    };
 }) {
     return (
         <div class={['masonry', props.class].filter(Boolean).join(' ')}>
             <For each={props.each}>
                 {(item, index) => (
-                    <MasonryItem>{props.children(item, index)}</MasonryItem>
+                    <MasonryItem attributes={props.itemProps}>
+                        {props.children(item, index)}
+                    </MasonryItem>
                 )}
             </For>
         </div>
     );
 }
 
-function MasonryItem(props: { children: JSX.Element }) {
+function MasonryItem(props: {
+    attributes?: JSX.HTMLAttributes<HTMLDivElement>;
+    children: JSX.Element;
+}) {
     let el: HTMLDivElement | undefined;
 
     onMount(() => {
@@ -48,7 +57,7 @@ function MasonryItem(props: { children: JSX.Element }) {
     });
 
     return (
-        <div ref={el} class="masonry-item">
+        <div {...props.attributes} ref={el} class="masonry-item">
             {props.children}
         </div>
     );

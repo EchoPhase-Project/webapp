@@ -183,6 +183,12 @@
     "results_count": "Found: {count}",
     "no_results": "Nothing found",
     "more_results": "Type more letters to see the rest.",
-    "try_again": "Try again"
+    "try_again": "Try again",
+    "loaded_more": "Loaded {count} more",
+    "no_more": "No more.",
+    "pages": "Pages",
+    "page": "Page {page}",
+    "previous": "Previous",
+    "next": "Next"
   }
 }
