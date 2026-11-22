@@ -34,6 +34,11 @@ export default defineConfig({
         // Plain logic by default; vite-plugin-solid would otherwise ask for
         // jsdom. A component test opts in with `// @vitest-environment jsdom`.
         environment: 'node',
+        // Worker threads start faster than the default child processes.
+        pool: 'threads',
+        // Transformed modules stay in node_modules/.vitest-cache between
+        // runs: a second run skips the transform.
+        fsModuleCache: true,
         include: ['src/**/*.test.{ts,tsx}'],
         // After each test: unmount what it rendered (the setup file) and put
         // back the globals it stubbed (fakeApi stubs fetch).
