@@ -101,10 +101,18 @@ export default defineConfig([
             // know types such as EventListener (typescript-eslint's advice).
             'no-undef': 'off',
             // createSubmit's run(), runFor() and pending() call their functions at
-            // once, from the event handler that called them.
+            // once, from the event handler that called them; createForm's
+            // onSubmit(send) calls send from the submit handler it makes.
             'solid/reactivity': [
                 'error',
-                { customReactiveFunctions: ['run', 'runFor', 'pending'] },
+                {
+                    customReactiveFunctions: [
+                        'run',
+                        'runFor',
+                        'pending',
+                        'onSubmit',
+                    ],
+                },
             ],
             '@typescript-eslint/no-unused-vars': [
                 'error',

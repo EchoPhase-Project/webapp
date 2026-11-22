@@ -1,111 +1,67 @@
-import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
 import { IconLock, IconTags, IconUser } from '@shared/ui/icons';
 import { registerMutation } from '@shared/api/auth';
-import { createSubmit } from '@shared/api/submit';
-import type { RegisterData } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
-
-const FIELDS = ['name', 'username', 'password'] as const;
-const inputId = (field: string) => `register-${field}`;
+import { createForm } from '@shared/ui/forms/form';
 
 export default function RegisterForm(props: {
     /** Where to go once signed up (?next=). */
     next?: string;
     onSwitch: () => void;
 }) {
-    const [registerForm, setRegisterForm] = createSignal<RegisterData>({
-        name: '',
-        username: '',
-        password: '',
-    });
-
-    const { busy, errors, mutation } = createSubmit(FIELDS);
-    const register = mutation(registerMutation);
-
     const i18n = useI18n();
     const t = useLocalizer('auth');
-    const isDisabled = () => busy() || i18n.isLoading();
+
+    const form = createForm({
+        id: 'register',
+        initial: () => ({ name: '', username: '', password: '' }),
+        locked: () => i18n.isLoading(),
+    });
+    const register = form.mutation(registerMutation);
+
+    const isDisabled = () => form.busy() || i18n.isLoading();
 
     // A new session starts, at ?next= (or home).
-    async function handleRegister(e: Event) {
-        e.preventDefault();
-        // The zone is the browser's, not a field: the user can change it later.
-        await register.run({
-            data: {
-                ...registerForm(),
-                timeZone: DateHelper.browserTimeZone(),
-            },
+    // The zone is the browser's, not a field: the user can change it later.
+    const handleRegister = form.onSubmit((values) =>
+        register.run({
+            data: { ...values, timeZone: DateHelper.browserTimeZone() },
             next: props.next,
-        });
-    }
+        })
+    );
 
     return (
-        <form
-            class="vert-form"
-            onSubmit={(e) => void handleRegister(e)}
-            noValidate
-        >
+        <form class="vert-form" onSubmit={handleRegister} noValidate>
             <h1 class="form-title">{t('signup.title', 'Sign up')}</h1>
 
-            <ErrorSummary errors={errors()} inputId={inputId} />
+            <ErrorSummary {...form.summary} />
 
             <Field
-                id={inputId('name')}
-                name="name"
+                {...form.input('name')}
                 label={t('form.fullname', 'Full name')}
                 icon={IconUser}
-                errors={errors().name}
                 type="text"
                 autocomplete="name"
-                disabled={isDisabled()}
-                value={registerForm().name}
-                onInput={(e) =>
-                    setRegisterForm((f) => ({
-                        ...f,
-                        name: e.currentTarget.value,
-                    }))
-                }
             />
 
             <Field
-                id={inputId('username')}
-                name="username"
+                {...form.input('username')}
                 label={t('ui.username', 'Username')}
                 icon={IconTags}
-                errors={errors().username}
                 type="text"
                 autocomplete="username"
-                disabled={isDisabled()}
-                value={registerForm().username}
-                onInput={(e) =>
-                    setRegisterForm((f) => ({
-                        ...f,
-                        username: e.currentTarget.value,
-                    }))
-                }
             />
 
             <Field
-                id={inputId('password')}
-                name="password"
+                {...form.input('password')}
                 label={t('form.password', 'Password')}
                 icon={IconLock}
-                errors={errors().password}
                 type="password"
                 autocomplete="new-password"
-                disabled={isDisabled()}
-                value={registerForm().password}
-                onInput={(e) =>
-                    setRegisterForm((f) => ({
-                        ...f,
-                        password: e.currentTarget.value,
-                    }))
-                }
             />
 
             <Button type="submit" busy={isDisabled()}>

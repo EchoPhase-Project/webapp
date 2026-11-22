@@ -1,15 +1,10 @@
-import { createSignal } from 'solid-js';
 import { IconLock, IconUser } from '@shared/ui/icons';
 import { loginMutation } from '@shared/api/auth';
-import { createSubmit } from '@shared/api/submit';
-import type { LoginCredentials } from '@shared/api/types';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
-
-const FIELDS = ['username', 'password'] as const;
-const inputId = (field: string) => `login-${field}`;
+import { createForm } from '@shared/ui/forms/form';
 
 export default function LoginForm(props: {
     /** Where to go once signed in (?next=). */
@@ -19,66 +14,40 @@ export default function LoginForm(props: {
     const i18n = useI18n();
     const t = useLocalizer('auth');
 
-    const [loginForm, setLoginForm] = createSignal<LoginCredentials>({
-        username: '',
-        password: '',
+    const form = createForm({
+        id: 'login',
+        initial: () => ({ username: '', password: '' }),
+        locked: () => i18n.isLoading(),
     });
+    const login = form.mutation(loginMutation);
 
-    const { busy, errors, mutation } = createSubmit(FIELDS);
-    const login = mutation(loginMutation);
-
-    const isDisabled = () => busy() || i18n.isLoading();
+    const isDisabled = () => form.busy() || i18n.isLoading();
 
     // A new session starts, at ?next= (or home).
-    async function handleLogin(e: Event) {
-        e.preventDefault();
-        await login.run({ credentials: loginForm(), next: props.next });
-    }
+    const handleLogin = form.onSubmit((credentials) =>
+        login.run({ credentials, next: props.next })
+    );
 
     return (
-        <form
-            class="vert-form"
-            onSubmit={(e) => void handleLogin(e)}
-            noValidate
-        >
+        <form class="vert-form" onSubmit={handleLogin} noValidate>
             <h1 class="form-title">{t('login.title', 'Log in')}</h1>
 
-            <ErrorSummary errors={errors()} inputId={inputId} />
+            <ErrorSummary {...form.summary} />
 
             <Field
-                id={inputId('username')}
-                name="username"
+                {...form.input('username')}
                 label={t('ui.username', 'Username')}
                 icon={IconUser}
-                errors={errors().username}
                 type="text"
                 autocomplete="username"
-                value={loginForm().username}
-                disabled={isDisabled()}
-                onInput={(e) =>
-                    setLoginForm((f) => ({
-                        ...f,
-                        username: e.currentTarget.value,
-                    }))
-                }
             />
 
             <Field
-                id={inputId('password')}
-                name="password"
+                {...form.input('password')}
                 label={t('form.password', 'Password')}
                 icon={IconLock}
-                errors={errors().password}
                 type="password"
                 autocomplete="current-password"
-                value={loginForm().password}
-                disabled={isDisabled()}
-                onInput={(e) =>
-                    setLoginForm((f) => ({
-                        ...f,
-                        password: e.currentTarget.value,
-                    }))
-                }
             />
 
             <Button type="submit" busy={isDisabled()}>
