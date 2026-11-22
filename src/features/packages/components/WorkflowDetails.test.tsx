@@ -284,6 +284,28 @@ describe('WorkflowDetails', () => {
         ).toEqual({ input: { user: 'ann' } });
     });
 
+    it('locks the input while the run starts', async () => {
+        let answer: () => void = () => {};
+        const arrived = new Promise<void>((ok) => (answer = ok));
+        fakeApi(
+            routes({
+                'POST /api/v1/workflows/w1/runs': async () => {
+                    await arrived;
+                    return json(202, { runId: 'r9', status: 'queued' });
+                },
+            })
+        );
+        renderPage(() => <WorkflowDetails id="w1" packageId="p1" />);
+        fireEvent.click(await screen.findByRole('button', { name: 'Run now' }));
+
+        const input =
+            screen.getByLabelText<HTMLTextAreaElement>(/Input \(JSON/);
+        fireEvent.click(screen.getByRole('button', { name: 'Run' }));
+        await waitFor(() => expect(input.disabled).toBe(true));
+        answer();
+        await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    });
+
     it('shows what the server refuses at the dialog top, one line each', async () => {
         const api = fakeApi(
             routes({

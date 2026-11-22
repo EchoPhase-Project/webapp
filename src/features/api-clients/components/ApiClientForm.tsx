@@ -28,11 +28,7 @@ export default function ApiClientForm(props: {
                 name: name(),
                 expiresAt: DateHelper.fromLocalInput(expiresAt()),
             },
-            (client) => {
-                setName('');
-                setExpiresAt('');
-                props.onCreated(client.clientSecret);
-            }
+            (client) => props.onCreated(client.clientSecret)
         );
     }
 

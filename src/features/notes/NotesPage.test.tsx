@@ -94,6 +94,39 @@ describe('NotesPage', () => {
         expect(api.calls('GET /api/v1/notes')).toHaveLength(2);
     });
 
+    it('shows a refused reminder under its field', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/notes': () => json(200, []),
+            'POST /api/v1/notes': () =>
+                json(400, [
+                    {
+                        code: 'Invalid',
+                        message: 'The reminder is in the past.',
+                        field: 'remindAt',
+                    },
+                ]),
+        });
+        renderPage(() => <NotesPage />);
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'New note' })
+        );
+        const remind = screen.getByLabelText(/^Remind me/);
+        fireEvent.input(remind, { target: { value: '2020-01-01T09:00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() =>
+            expect(remind.getAttribute('aria-invalid')).toBe('true')
+        );
+        expect(
+            document.getElementById(
+                remind.getAttribute('aria-describedby') ?? ''
+            )?.textContent
+        ).toBe('The reminder is in the past.');
+        expect(screen.queryByRole('alert')).toBeNull();
+        expect(document.activeElement).toBe(remind);
+    });
+
     it('saves an edited note over the version opened, and lists it again', async () => {
         let notes = [note()];
         const api = fakeApi({

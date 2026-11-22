@@ -1,4 +1,4 @@
-import { createSignal, Match, Switch } from 'solid-js';
+import { createSignal, Match, Show, Switch } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { IconPlus } from '@shared/ui/icons';
 import { usePageMeta } from '@shared/meta/page-meta';
@@ -9,6 +9,7 @@ import ConfirmDialog from '@shared/ui/ConfirmDialog';
 import LoadError from '@shared/ui/LoadError';
 import Modal from '@shared/ui/Modal';
 import PageHeader from '@shared/ui/PageHeader';
+import { SkeletonScope } from '@shared/ui/Skeleton';
 import type { ApiClient } from '@shared/api/types';
 import { apiClientsQuery, deleteApiClientMutation } from './api';
 import ApiClientForm from './components/ApiClientForm';
@@ -80,12 +81,14 @@ export default function ApiClientsPage() {
                         />
                     )}
                 </Match>
-                <Match when={clients.isSuccess}>
-                    <ApiClientsTable
-                        clients={clients.data ?? []}
-                        busy={busy()}
-                        onDelete={setDeleting}
-                    />
+                <Match when={clients.isPending || clients.isSuccess}>
+                    <SkeletonScope when={clients.isPending}>
+                        <ApiClientsTable
+                            clients={clients.data ?? []}
+                            busy={busy() || clients.isPending}
+                            onDelete={setDeleting}
+                        />
+                    </SkeletonScope>
                 </Match>
             </Switch>
 
@@ -94,7 +97,10 @@ export default function ApiClientsPage() {
                 title={t('form.title', 'New client')}
                 onClose={() => setCreating(false)}
             >
-                <ApiClientForm onCreated={created} />
+                {/* Made again each time it opens: no old values or errors. */}
+                <Show when={creating()}>
+                    <ApiClientForm onCreated={created} />
+                </Show>
             </Modal>
 
             <ConfirmDialog

@@ -6,6 +6,10 @@ import { renderPage } from '@shared/testing/render-page';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import ApiClientsPage from './ApiClientsPage';
 
+// The secret notice's live region: the first one; the list's loading
+// region (SkeletonScope) follows it.
+const notice = () => screen.getAllByRole('status')[0];
+
 describe('ApiClientsPage', () => {
     it('shows an error under the field it is about', async () => {
         fakeApi({
@@ -61,7 +65,8 @@ describe('ApiClientsPage', () => {
 
         renderPage(() => <ApiClientsPage />);
         // The live region is there, empty, before the secret comes.
-        const status = await screen.findByRole('status');
+        await screen.findAllByRole('status');
+        const status = notice();
         expect(status.textContent).toBe('');
         fireEvent.click(
             await screen.findByRole('button', { name: 'New client' })
@@ -118,7 +123,7 @@ describe('ApiClientsPage secret', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         await screen.findByText('s3cr3t');
 
-        const status = screen.getByRole('status');
+        const status = notice();
         fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
         await waitFor(() => expect(status.textContent).toBe('Copied'));
         expect(screen.getByText('s3cr3t')).toBeTruthy();
@@ -126,7 +131,7 @@ describe('ApiClientsPage secret', () => {
         // Done hides the secret; the region stays on the page, empty.
         fireEvent.click(screen.getByRole('button', { name: 'Done' }));
         expect(screen.queryByText('s3cr3t')).toBeNull();
-        expect(screen.getByRole('status')).toBe(status);
+        expect(notice()).toBe(status);
         expect(status.textContent).toBe('');
         await expectNoA11yViolations();
         Reflect.deleteProperty(navigator, 'clipboard');
@@ -149,7 +154,78 @@ describe('ApiClientsPage list', () => {
     });
 });
 
+describe('ApiClientsPage loading', () => {
+    it('shows rows of bars while the list loads, then the clients', async () => {
+        let answer: () => void = () => {};
+        const arrived = new Promise<void>((ok) => (answer = ok));
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': async () => {
+                await arrived;
+                return json(200, [
+                    {
+                        Id: 'c1',
+                        Name: 'bot',
+                        ExpiresAt: null,
+                        LastUsedAt: null,
+                        SecretRotatedAt: null,
+                        CreatedAt: '2026-10-24T12:00:00Z',
+                    },
+                ]);
+            },
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        expect(
+            await screen.findByRole('heading', {
+                level: 1,
+                name: 'API clients',
+            })
+        ).toBeTruthy();
+        await waitFor(() =>
+            expect(document.querySelector('td .skeleton-text')).not.toBeNull()
+        );
+        expect(screen.queryByText('No API clients')).toBeNull();
+        await expectNoA11yViolations();
+
+        answer();
+        expect(await screen.findByText('bot')).toBeTruthy();
+        expect(document.querySelector('.skeleton-text')).toBeNull();
+    });
+});
+
 describe('ApiClientsPage dialog', () => {
+    it('opens the form clean each time: no old values, no old errors', async () => {
+        fakeApi({
+            ...signedIn,
+            'GET /api/v1/api-clients': () => json(200, []),
+            'POST /api/v1/api-clients': () =>
+                json(400, [
+                    {
+                        code: 'Invalid',
+                        message: 'Name is taken.',
+                        field: 'name',
+                    },
+                ]),
+        });
+        renderPage(() => <ApiClientsPage />);
+
+        const open = await screen.findByRole('button', { name: 'New client' });
+        fireEvent.click(open);
+        fireEvent.input(screen.getByLabelText('Name'), {
+            target: { value: 'bot' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await screen.findAllByText('Name is taken.');
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+        fireEvent.click(open);
+        const name = screen.getByLabelText<HTMLInputElement>('Name');
+        expect(name.value).toBe('');
+        expect(name.getAttribute('aria-invalid')).toBe('false');
+        expect(screen.queryByText('Name is taken.')).toBeNull();
+    });
+
     it('opens the form in a dialog and closes it with its button', async () => {
         fakeApi({
             ...signedIn,

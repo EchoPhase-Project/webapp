@@ -11,7 +11,7 @@ import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Switch from '@shared/ui/Switch';
 import { createNoteMutation, updateNoteMutation } from '@features/notes/api';
 
-const FIELDS = ['title', 'body'] as const;
+const FIELDS = ['title', 'body', 'remindAt'] as const;
 const inputId = (field: string) => `note-${field}`;
 
 /**
@@ -133,6 +133,7 @@ export default function NoteEditor(props: {
                             'Remind me (optional, your local time)'
                         )}
                         showLabel
+                        errors={errors().remindAt}
                         type="datetime-local"
                         disabled={busy()}
                         value={remindAt()}

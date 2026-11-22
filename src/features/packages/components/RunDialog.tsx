@@ -77,6 +77,7 @@ export default function RunDialog(props: {
                     errors={errors().input}
                     rows={6}
                     spellcheck={false}
+                    disabled={busy()}
                     value={input()}
                     onInput={(e) => setInput(e.currentTarget.value)}
                 />
