@@ -1,18 +1,15 @@
-import { createSignal, Show, type JSX } from 'solid-js';
-import { createSubmit } from '@shared/api/submit';
+import { Show, type JSX } from 'solid-js';
 import type { Note } from '@shared/api/types';
 import { DateHelper } from '@shared/lib/date-helper';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Field from '@shared/ui/forms/Field';
+import { createForm } from '@shared/ui/forms/form';
 import Markdown from '@shared/ui/Markdown';
 import MarkdownEditor from '@shared/ui/MarkdownEditor';
 import Switch from '@shared/ui/Switch';
 import { createNoteMutation, updateNoteMutation } from '@features/notes/api';
-
-const FIELDS = ['title', 'body', 'remindAt'] as const;
-const inputId = (field: string) => `note-${field}`;
 
 /**
  * A note's title and Markdown text, written or previewed; its pin and
@@ -31,45 +28,37 @@ export default function NoteEditor(props: {
     const isOwner = () => isNew() || props.note!.access === 'Owner';
     const readOnly = () => props.note?.access === 'Read';
 
-    // Seeded once: edits stay local until saved.
-    // eslint-disable-next-line solid/reactivity
-    const [title, setTitle] = createSignal(props.note?.title ?? '');
-    // eslint-disable-next-line solid/reactivity
-    const [body, setBody] = createSignal(props.note?.body ?? '');
-    // eslint-disable-next-line solid/reactivity
-    const [pinned, setPinned] = createSignal(props.note?.pinned ?? false);
-    const [remindAt, setRemindAt] = createSignal(
-        // eslint-disable-next-line solid/reactivity
-        props.note?.remindAt
-            ? // eslint-disable-next-line solid/reactivity
-              DateHelper.toLocalInput(new Date(props.note.remindAt))
-            : ''
-    );
-    const submit = createSubmit(FIELDS);
-    const { busy, errors } = submit;
-    const create = submit.mutation(createNoteMutation);
-    const update = submit.mutation(updateNoteMutation);
+    // Edits stay local until saved; a field not edited follows the note.
+    const form = createForm({
+        id: 'note',
+        initial: () => ({
+            title: props.note?.title ?? '',
+            body: props.note?.body ?? '',
+            pinned: props.note?.pinned ?? false,
+            remindAt: props.note?.remindAt
+                ? DateHelper.toLocalInput(new Date(props.note.remindAt))
+                : '',
+        }),
+    });
+    const create = form.mutation(createNoteMutation);
+    const update = form.mutation(updateNoteMutation);
 
-    async function save(e?: Event) {
-        e?.preventDefault();
-        if (busy()) return;
+    const save = form.onSubmit((values) => {
         const input = {
-            title: title(),
-            body: body(),
-            pinned: pinned(),
-            remindAt: DateHelper.fromLocalInput(remindAt()),
+            ...values,
+            remindAt: DateHelper.fromLocalInput(values.remindAt),
             // Saved only over the version opened: someone else's save meanwhile is a conflict.
             expectedStamp: props.note?.stamp ?? null,
         };
         const note = props.note;
         const onSaved = (saved: Note) => props.onSaved(saved);
-        await (note
+        return note
             ? update.run({ id: note.id, body: input }, onSaved)
-            : create.run(input, onSaved));
-    }
+            : create.run(input, onSaved);
+    });
 
     const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) void save(e);
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) save(e);
     };
 
     return (
@@ -84,65 +73,49 @@ export default function NoteEditor(props: {
         >
             <form
                 class="vert-form note-editor"
-                onSubmit={(e) => void save(e)}
+                onSubmit={save}
                 onKeyDown={onKeyDown}
                 noValidate
             >
-                <ErrorSummary errors={errors()} inputId={inputId} />
+                <ErrorSummary {...form.summary} />
 
                 <Field
-                    id={inputId('title')}
-                    name="title"
+                    {...form.input('title')}
                     label={t('editor.title', 'Title (optional)')}
-                    errors={errors().title}
                     type="text"
                     maxLength={200}
-                    disabled={busy()}
-                    value={title()}
-                    onInput={(e) => setTitle(e.currentTarget.value)}
                 />
 
                 <MarkdownEditor
-                    id={inputId('body')}
-                    name="body"
+                    {...form.control('body')}
                     label={t('editor.body', 'Text')}
                     aside={t('editor.markdown', 'Markdown works')}
-                    errors={errors().body}
                     placeholder={t(
                         'editor.placeholder',
                         'Write in Markdown: # heading, **bold**, - list, [link](https://…)'
                     )}
                     rows={12}
                     maxLength={100000}
-                    disabled={busy()}
-                    value={body()}
-                    onChange={setBody}
                 />
 
                 <Show when={isOwner()}>
                     <Switch
-                        checked={pinned()}
-                        onChange={setPinned}
+                        {...form.toggle('pinned')}
                         label={t('editor.pinned', 'Pin to the top')}
                     />
                     <Field
-                        id={inputId('remindAt')}
-                        name="remindAt"
+                        {...form.input('remindAt')}
                         label={t(
                             'editor.remind',
                             'Remind me (optional, your local time)'
                         )}
                         showLabel
-                        errors={errors().remindAt}
                         type="datetime-local"
-                        disabled={busy()}
-                        value={remindAt()}
-                        onInput={(e) => setRemindAt(e.currentTarget.value)}
                     />
                 </Show>
 
                 <div class="actions-row">
-                    <Button type="submit" busy={busy()}>
+                    <Button type="submit" busy={form.busy()}>
                         {t('ui.save', 'Save')}
                     </Button>
                     {props.footer}
