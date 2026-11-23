@@ -318,6 +318,14 @@ Select the control for a choice from a list with these rules:
   The sizes of the frame are the tokens `--header-height` and
   `--nav-collapsed`. Use these tokens for an offset. Do not write the values.
   The offsets then stay correct if the frame changes.
+- A page gets its maximum width from its type. Do not set `max-width` on a
+  page. The `skeleton` option of `lazyPage` gives the type (`PAGE_WIDTHS`):
+  `document` is `text`, `table`, `cards`, and `list` are `wide`, and the
+  other forms are `default`. The tokens are `--page-text`, `--page-default`,
+  and `--page-wide`. Thus, lists and grids use a large screen, and text
+  stays easy to read.
+- For the space at the sides of a page, use `--page-gutter`. This value
+  increases with the window, from 16px to 64px.
 - If an element on a page is sticky, set `top` below the bar:
   `calc(var(--header-height) + 16px)` on desktop. If you do not do this, the
   bar covers the element.
@@ -687,7 +695,8 @@ add routes or sidebar links directly.
       that agrees with the content of the page: `table`, `cards`, `list`,
       `settings`, `detail`, or `document`. The default is `header`. The
       shape comes after 200 ms. Thus, a fast load shows nothing, and a slow
-      load does not show an empty page.
+      load does not show an empty page. The form also sets the width of
+      the page.
     - `auth: true` if the page needs a session.
     - `nav` if the page shows in the sidebar: an icon, an i18n key with its
       English text, and a `group` if the page is in a sub-menu.

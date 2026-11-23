@@ -4,16 +4,16 @@
   display: grid;
   gap: 32px;
   width: 100%;
-  max-width: 85em;
+  max-width: var(--page-max);
   margin: 5em auto 0;
-  padding: 48px 2.5em 28px;
+  padding: 48px var(--page-gutter) 28px;
   box-sizing: border-box;
   // Sizes in em follow main's, so the footer lines up with the content; the
   // smaller text is set on its parts.
   color: var(--text-muted);
 
   @include comp.media('max-width: 767.98px') {
-    padding: 40px 2em calc(4.5em + 24px);
+    padding: 40px var(--page-gutter) calc(4.5em + 24px);
   }
 }
 

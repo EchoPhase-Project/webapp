@@ -112,7 +112,7 @@ local runs only. If `CI` is set, ESLint runs without the cache.
   Do not use `lazy`.
 - Give `lazyPage` the `skeleton` option that agrees with the page:
   `table`, `cards`, `list`, `settings`, `detail`, or `document`. The default
-  is `header`.
+  is `header`. The form also sets the width of the page.
 - To show that data loads, give `QueryState` a `placeholder` (`[]` for a
   list). The children then show in a `SkeletonScope` while the query is
   pending, and shared components show their loading form.
@@ -267,6 +267,10 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 - Do not apply styles to bare elements outside `global.scss`.
 - For an offset from the frame (the bar and the rail), use the tokens
   `--header-height` and `--nav-collapsed`. Do not write the values.
+- A page gets its maximum width from the `skeleton` option of `lazyPage`
+  (`PAGE_WIDTHS`): `text`, `default`, or `wide`. Do not set `max-width` on
+  a page.
+- For the space at the sides of a page, use `--page-gutter`.
 - If an element on a page is sticky, set `top` below the bar on desktop.
 - Use the `.patterned` background only for brand areas: the sign-in card,
   empty states, the outage screen, and the About page.

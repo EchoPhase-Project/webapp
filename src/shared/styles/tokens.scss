@@ -28,6 +28,15 @@
   --nav-collapsed: var(--frame-size);
   --nav-expanded: 232px;
 
+  // How wide a page goes, by its type (lazyPage in app/pages.ts): a
+  // document with its contents beside it, the usual page, and lists, tables
+  // and grids, which show more on a large screen. The gutters grow with the
+  // window, from 16px on a phone to 64px.
+  --page-text: 72rem;
+  --page-default: 1440px;
+  --page-wide: 2400px;
+  --page-gutter: clamp(16px, 3vw, 64px);
+
   // As the dark theme, mirrored: the page, then light grey surfaces on it
   // (navigation, cards, header buttons, forms), and white fields set into
   // them; a hovered, open or current item a step darker than a surface

@@ -27,7 +27,29 @@ export interface PageLoadingState {
     pending: Accessor<boolean>;
     /** It has been loading for longer than the delay: the shape shows. */
     shown: Accessor<boolean>;
+    /** The width of the page shown now, from its type (lazyPage). */
+    width: Accessor<PageWidth>;
+    /** Gives the page's width while the page is on the screen. */
+    claimWidth: (width: PageWidth) => void;
 }
+
+/**
+ * How wide a page goes on a large screen: 'text' (a document with its
+ * contents beside it), 'default', or 'wide' (lists, tables and grids, which
+ * show more on a large screen). The layout puts it on the page's frame.
+ */
+export type PageWidth = 'text' | 'default' | 'wide';
+
+/** The width of each page type: one list, the page's skeleton form. */
+export const PAGE_WIDTHS: Record<PageSkeletonForm, PageWidth> = {
+    header: 'default',
+    document: 'text',
+    settings: 'default',
+    detail: 'default',
+    table: 'wide',
+    cards: 'wide',
+    list: 'wide',
+};
 
 /**
  * The state of the page code that is loading: made by the layout, which
@@ -61,7 +83,20 @@ export function createPageLoading(delay = SHOW_AFTER_MS): PageLoadingState {
     );
     onCleanup(() => clearTimeout(timer));
 
-    return { track, pending, shown };
+    // The page on the screen gives its width; a page that gives none (a
+    // page of the dev playground) gets the default. A token, not the value:
+    // the old page's cleanup must not take the width of the new one.
+    const [claim, setClaim] = createSignal<{ width: PageWidth }>();
+    const width = () => claim()?.width ?? 'default';
+    const claimWidth = (value: PageWidth) => {
+        const mine = { width: value };
+        setClaim(mine);
+        onCleanup(() => {
+            if (claim() === mine) setClaim(undefined);
+        });
+    };
+
+    return { track, pending, shown, width, claimWidth };
 }
 
 /**
@@ -97,7 +132,8 @@ export interface LazyPageOptions {
     /**
      * The shape of the page while its code loads (after the delay), made of
      * the shared components in their loading form: 'header' (the default),
-     * 'table', 'cards', 'list', 'settings', 'detail' or 'document'.
+     * 'table', 'cards', 'list', 'settings', 'detail' or 'document'. It
+     * also gives the page its width (PAGE_WIDTHS).
      */
     skeleton?: PageSkeletonForm;
 }
@@ -127,6 +163,7 @@ export function lazyPage<P extends object>(
     };
     const Wrapped = (props: P) => {
         const state = useContext(PageLoadingContext);
+        state?.claimWidth(PAGE_WIDTHS[options.skeleton ?? 'header']);
         // Code already in (preloaded, or seen before): no shape, no count.
         const waiting = !loaded && state;
         const [ready, setReady] = createSignal(!waiting);

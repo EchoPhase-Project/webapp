@@ -94,8 +94,9 @@ const Layout: Component<ParentProps> = (props) => {
                 <NavBuilder nav={nav()} />
             </Show>
 
-            {/* The page beside the rail: main and the footer, clear of it. */}
-            <div class="container-page">
+            {/* The page beside the rail: main and the footer, clear of it,
+                as wide as the page's type allows. */}
+            <div class="container-page" data-page-width={loading.width()}>
                 <main id="main" tabIndex={-1}>
                     <PageLoading state={loading}>
                         {/* A page that throws takes only itself down. */}

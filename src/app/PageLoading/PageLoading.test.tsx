@@ -167,6 +167,37 @@ describe('PageLoading', () => {
         await screen.findByRole('heading', { name: 'Slow page' });
     });
 
+    it('gives the frame the width of the page type', async () => {
+        const page = (name: string) => () =>
+            Promise.resolve({ default: () => <h1>{name}</h1> });
+        const Files = lazyPage(page('Files'), { skeleton: 'table' });
+        const Terms = lazyPage(page('Terms'), { skeleton: 'document' });
+        const history = renderLayout({
+            '/': Home,
+            '/files': Files,
+            '/terms': Terms,
+        });
+        const width = () =>
+            document
+                .querySelector('.container-page')
+                ?.getAttribute('data-page-width');
+        await screen.findByRole('heading', { name: 'Home' });
+        // Not a lazy page: the default.
+        expect(width()).toBe('default');
+
+        history.set({ value: '/files' });
+        await screen.findByRole('heading', { name: 'Files' });
+        expect(width()).toBe('wide');
+
+        history.set({ value: '/terms' });
+        await screen.findByRole('heading', { name: 'Terms' });
+        expect(width()).toBe('text');
+
+        history.set({ value: '/' });
+        await screen.findByRole('heading', { name: 'Home' });
+        expect(width()).toBe('default');
+    });
+
     it('focuses the heading of the new page once its code is in', async () => {
         const slow = slowModule(() => <h1>Slow page</h1>);
         const history = renderLayout({ '/': Home, '/slow': slow.Lazy });
