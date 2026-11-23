@@ -209,7 +209,9 @@ export const PAGES: Page[] = [
     {
         path: '/sessions',
         component: lazyPage(() => import('@features/sessions/SessionsPage'), {
+            // Few columns: wider, the cells would only stretch.
             skeleton: 'table',
+            width: 'default',
         }),
         auth: true,
         nav: {
@@ -227,7 +229,8 @@ export const PAGES: Page[] = [
         path: '/api-clients',
         component: lazyPage(
             () => import('@features/api-clients/ApiClientsPage'),
-            { skeleton: 'table' }
+            // Few columns: wider, the cells would only stretch.
+            { skeleton: 'table', width: 'default' }
         ),
         auth: true,
         nav: {

@@ -270,6 +270,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 - A page gets its maximum width from the `skeleton` option of `lazyPage`
   (`PAGE_WIDTHS`): `text`, `default`, or `wide`. Do not set `max-width` on
   a page.
+- If a table has few columns, give `lazyPage` the `width: 'default'`
+  option.
 - For the space at the sides of a page, use `--page-gutter`.
 - If an element on a page is sticky, set `top` below the bar on desktop.
 - Use the `.patterned` background only for brand areas: the sign-in card,

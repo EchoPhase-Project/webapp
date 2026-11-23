@@ -172,10 +172,15 @@ describe('PageLoading', () => {
             Promise.resolve({ default: () => <h1>{name}</h1> });
         const Files = lazyPage(page('Files'), { skeleton: 'table' });
         const Terms = lazyPage(page('Terms'), { skeleton: 'document' });
+        const Sessions = lazyPage(page('Sessions'), {
+            skeleton: 'table',
+            width: 'default',
+        });
         const history = renderLayout({
             '/': Home,
             '/files': Files,
             '/terms': Terms,
+            '/sessions': Sessions,
         });
         const width = () =>
             document
@@ -192,6 +197,11 @@ describe('PageLoading', () => {
         history.set({ value: '/terms' });
         await screen.findByRole('heading', { name: 'Terms' });
         expect(width()).toBe('text');
+
+        // The page's own width over its form's.
+        history.set({ value: '/sessions' });
+        await screen.findByRole('heading', { name: 'Sessions' });
+        expect(width()).toBe('default');
 
         history.set({ value: '/' });
         await screen.findByRole('heading', { name: 'Home' });

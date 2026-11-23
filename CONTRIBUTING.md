@@ -324,6 +324,9 @@ Select the control for a choice from a list with these rules:
   other forms are `default`. The tokens are `--page-text`, `--page-default`,
   and `--page-wide`. Thus, lists and grids use a large screen, and text
   stays easy to read.
+- If a table has few columns, give `lazyPage` the `width: 'default'`
+  option. Sessions and API clients use this option. A wide table with few
+  columns only makes the cells longer.
 - For the space at the sides of a page, use `--page-gutter`. This value
   increases with the window, from 16px to 64px.
 - If an element on a page is sticky, set `top` below the bar:

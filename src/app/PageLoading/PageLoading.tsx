@@ -136,6 +136,11 @@ export interface LazyPageOptions {
      * also gives the page its width (PAGE_WIDTHS).
      */
     skeleton?: PageSkeletonForm;
+    /**
+     * The width of the page, when it is not the width of its skeleton
+     * form: a table with few columns (sessions) stays 'default'.
+     */
+    width?: PageWidth;
 }
 
 /**
@@ -163,7 +168,9 @@ export function lazyPage<P extends object>(
     };
     const Wrapped = (props: P) => {
         const state = useContext(PageLoadingContext);
-        state?.claimWidth(PAGE_WIDTHS[options.skeleton ?? 'header']);
+        state?.claimWidth(
+            options.width ?? PAGE_WIDTHS[options.skeleton ?? 'header']
+        );
         // Code already in (preloaded, or seen before): no shape, no count.
         const waiting = !loaded && state;
         const [ready, setReady] = createSignal(!waiting);
