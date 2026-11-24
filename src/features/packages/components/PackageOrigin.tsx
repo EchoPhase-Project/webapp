@@ -12,23 +12,28 @@ export default function PackageOrigin(props: {
 }) {
     const t = useLocalizer('workflows');
     return (
-        <>
-            <Show when={props.pkg.source}>
-                {(source) => (
-                    <A class="badge" href={`/explore/${source().packageId}`}>
-                        {t('packages.installed', 'installed, v{version}', {
-                            version: source().version ?? '',
+        <Show when={props.pkg.source || props.pkg.latestVersion > 0}>
+            <span class="package-origin">
+                <Show when={props.pkg.source}>
+                    {(source) => (
+                        <A
+                            class="badge"
+                            href={`/explore/${source().packageId}`}
+                        >
+                            {t('packages.installed', 'installed, v{version}', {
+                                version: source().version ?? '',
+                            })}
+                        </A>
+                    )}
+                </Show>
+                <Show when={props.pkg.latestVersion > 0}>
+                    <A class="badge" href={`/explore/${props.pkg.id}`}>
+                        {t('packages.published', 'published, v{version}', {
+                            version: props.pkg.latestVersion,
                         })}
                     </A>
-                )}
-            </Show>
-            <Show when={props.pkg.latestVersion > 0}>
-                <A class="badge" href={`/explore/${props.pkg.id}`}>
-                    {t('packages.published', 'published, v{version}', {
-                        version: props.pkg.latestVersion,
-                    })}
-                </A>
-            </Show>
-        </>
+                </Show>
+            </span>
+        </Show>
     );
 }

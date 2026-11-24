@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
 import { ApiError } from '@shared/api/client';
+import InlineList from '@shared/ui/InlineList';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import Card from '@shared/ui/Card';
@@ -153,7 +154,7 @@ export default function SurfacesPage() {
 
             <DevSection
                 title="PageHeader and BackLink"
-                note="Each page starts with a PageHeader (this page has one). The sample below has every part."
+                note="Each page starts with a PageHeader (this page has one). The sample below has every part; its meta line is an InlineList."
             >
                 <Card>
                     <div class="page-stack">
@@ -163,7 +164,11 @@ export default function SurfacesPage() {
                             title="deploy-tools"
                             description="A sample header with every part."
                             docs="packages"
-                            meta="Updated 3 days ago · 12 runs"
+                            meta={
+                                <InlineList
+                                    items={['Updated 3 days ago', '12 runs']}
+                                />
+                            }
                             actions={<Button>Run now</Button>}
                         />
                     </div>

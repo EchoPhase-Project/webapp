@@ -6,6 +6,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import InlineList from '@shared/ui/InlineList';
 import Button from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
@@ -117,21 +118,22 @@ export default function PackagesPage() {
                                                         {p.summary}
                                                     </span>
                                                 </Show>
-                                                <span class="muted workflows-item-meta">
-                                                    <span>
-                                                        {t(
+                                                <InlineList
+                                                    class="muted workflows-item-meta"
+                                                    items={[
+                                                        t(
                                                             'packages.count',
                                                             '{count} workflows',
                                                             {
                                                                 count: p.workflows,
                                                             }
-                                                        )}
-                                                    </span>
-                                                    <PackageOrigin pkg={p} />
-                                                    <span>
-                                                        {date(p.updatedAt)}
-                                                    </span>
-                                                </span>
+                                                        ),
+                                                        <PackageOrigin
+                                                            pkg={p}
+                                                        />,
+                                                        date(p.updatedAt),
+                                                    ]}
+                                                />
                                             </span>
                                         </li>
                                     )}
@@ -155,9 +157,10 @@ export default function PackagesPage() {
                                                     >
                                                         {p.name}
                                                     </A>
-                                                    <span class="muted workflows-item-meta">
-                                                        <span>
-                                                            {t(
+                                                    <InlineList
+                                                        class="muted workflows-item-meta"
+                                                        items={[
+                                                            t(
                                                                 'packages.by',
                                                                 'by {name}',
                                                                 {
@@ -166,22 +169,12 @@ export default function PackagesPage() {
                                                                             .name ||
                                                                         `@${p.owner.userName ?? ''}`,
                                                                 }
-                                                            )}
-                                                        </span>
-                                                        <Show
-                                                            when={
-                                                                p.latestVersion >
-                                                                0
-                                                            }
-                                                        >
-                                                            <span>
-                                                                v
-                                                                {
-                                                                    p.latestVersion
-                                                                }
-                                                            </span>
-                                                        </Show>
-                                                    </span>
+                                                            ),
+                                                            p.latestVersion >
+                                                                0 &&
+                                                                `v${p.latestVersion}`,
+                                                        ]}
+                                                    />
                                                 </span>
                                             </li>
                                         )}

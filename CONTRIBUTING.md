@@ -151,6 +151,7 @@ Before you write new markup, make pages from the components in
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
 | `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
 | `QueryState`                                          | One read in its states: `LoadError` with a retry, the loading form (with a `placeholder`), the `empty` text, the `notFound` text, the data                                                    |
+| `InlineList`                                          | Short parts on one line with a dot between them ("by Ann · 12 installs"). It omits empty parts. Screen readers hear a comma                                                                   |
 | `Paginated`                                           | A list that comes one page at a time, with "Show more" (mode `more`) or "Previous" and "Next" (mode `pages`), its states, and the focus                                                       |
 | `SkeletonScope`, `SkeletonText`, `SkeletonBlock`      | A part of a page whose data loads: the shared components in it show bars in the shape of their content. `SkeletonText` and `SkeletonBlock` are bars for markup of your own                    |
 | `PageSkeleton`                                        | The rough shape of a page (`header`, `table`, `cards`, `list`, `settings`, `detail`, `document`). `lazyPage` shows it while the page code loads                                               |
@@ -347,6 +348,11 @@ Select the control for a choice from a list with these rules:
   a small label, for example a version. `pill pill--ok` (or `--bad`,
   `--busy`, `--quiet`) is a status word. Do not make a copy of these
   classes in a feature.
+- For short parts on one line with a dot between them, use `InlineList`.
+  Do not write `' · '`. The component draws the dot at the centre of the
+  line in all fonts, and screen readers hear a comma. A wrapped line does
+  not start with a dot. Inside a translated string, keep the `·`
+  character. Translators must not get markup.
 - Use the flowing-lines pattern (`.patterned`, `Card patterned`) only for
   brand areas: the sign-in card, empty states, the outage screen, the About
   page. Do not use it on tables, menus, or forms.

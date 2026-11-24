@@ -190,7 +190,7 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
   BackLink, Table, Masonry, EmptyState, PageHeader, Switch, LoadError,
-  QueryState, Paginated, SkeletonScope, SkeletonText, SkeletonBlock,
+  QueryState, Paginated, InlineList, SkeletonScope, SkeletonText, SkeletonBlock,
   PageSkeleton.
 - If you add a shared component, show it on a page in `src/dev/`. If you
   make a new page, add one entry for it to the list in `src/dev/routes.ts`.
@@ -259,6 +259,13 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 - For a row of buttons, use the `actions-row` class (add
   `actions-row--end` for the right side). For a small label, use `badge`.
   For a status word, use `pill pill--ok` (or `--bad`, `--busy`, `--quiet`).
+- For short parts on one line with a dot between them, use `InlineList`:
+  `<InlineList items={[a, b]} />`. Do not write `' · '`. It omits empty
+  parts.
+- A list option can have a `hint` with parts (`['Bamako', 'UTC+0']`). Then
+  the hint shows them with `InlineList`.
+- Inside a translated string, keep the `·` character. Do not use
+  `InlineList` there.
 - Use only the colour tokens in `shared/styles/tokens.scss`. The tokens
   include the two themes. `palette.test.ts` examines the contrast.
 - Do not use hex colours in components.

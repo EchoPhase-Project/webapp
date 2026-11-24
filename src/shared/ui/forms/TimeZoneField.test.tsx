@@ -80,7 +80,8 @@ describe('TimeZoneField', () => {
         const hint = screen
             .getByRole('option', { name: 'America/New_York' })
             .querySelector('.combobox-hint')?.textContent;
-        expect(hint).toMatch(/^New York · UTC-[45]$/);
+        // The dot is drawn; screen readers hear a comma.
+        expect(hint).toMatch(/^New York, UTC-[45]$/);
     });
 
     it('lets no unknown zone in: the text goes back', () => {

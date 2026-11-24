@@ -12,8 +12,11 @@ export type ListOption<T> = {
     label: string;
     /** Shown on a closed select-only Combobox instead of the label (e.g. "EN"). */
     short?: string;
-    /** A second, quieter line in the list. */
-    hint?: string;
+    /**
+     * A second, quieter line in the list; parts in a list get a dot between
+     * them (InlineList): ['Bamako', 'UTC+0'].
+     */
+    hint?: string | string[];
     disabled?: boolean;
 };
 

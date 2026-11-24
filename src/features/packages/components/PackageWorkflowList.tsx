@@ -4,6 +4,7 @@ import { createSubmit } from '@shared/api/submit';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import InlineList from '@shared/ui/InlineList';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Switch from '@shared/ui/Switch';
@@ -56,23 +57,22 @@ export default function PackageWorkflowList(props: {
                                     >
                                         {item.name}
                                     </A>
-                                    <span class="muted workflows-item-meta">
-                                        <span>v{item.version}</span>
-                                        <Show
-                                            when={
-                                                item.key ===
-                                                props.pkg.errorWorkflow
-                                            }
-                                        >
-                                            <span class="badge">
-                                                {t(
-                                                    'package.error_badge',
-                                                    'handles errors'
-                                                )}
-                                            </span>
-                                        </Show>
-                                        <span>{date(item.updatedAt)}</span>
-                                    </span>
+                                    <InlineList
+                                        class="muted workflows-item-meta"
+                                        items={[
+                                            `v${item.version}`,
+                                            item.key ===
+                                                props.pkg.errorWorkflow && (
+                                                <span class="badge">
+                                                    {t(
+                                                        'package.error_badge',
+                                                        'handles errors'
+                                                    )}
+                                                </span>
+                                            ),
+                                            date(item.updatedAt),
+                                        ]}
+                                    />
                                 </span>
                                 <Switch
                                     checked={item.active}

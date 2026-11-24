@@ -11,6 +11,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
+import InlineList from '@shared/ui/InlineList';
 import LoadError from '@shared/ui/LoadError';
 import Markdown from '@shared/ui/Markdown';
 import PageHeader from '@shared/ui/PageHeader';
@@ -89,29 +90,21 @@ export default function PackageDetails(props: { id: string }) {
                             }
                             description={p().summary || undefined}
                             meta={
-                                <span class="package-meta">
-                                    <span>
-                                        {t('by', 'by {name}', {
+                                <InlineList
+                                    items={[
+                                        t('by', 'by {name}', {
                                             name:
                                                 p().owner.name ||
                                                 `@${p().owner.userName ?? ''}`,
-                                        })}
-                                    </span>
-                                    <span>
-                                        {t(
-                                            'card.installs',
-                                            '{count} installs',
-                                            {
-                                                count: p().installs,
-                                            }
-                                        )}
-                                    </span>
-                                    <span>
-                                        {t('updated', 'updated {date}', {
+                                        }),
+                                        t('card.installs', '{count} installs', {
+                                            count: p().installs,
+                                        }),
+                                        t('updated', 'updated {date}', {
                                             date: date(p().updatedAt),
-                                        })}
-                                    </span>
-                                </span>
+                                        }),
+                                    ]}
+                                />
                             }
                             actions={
                                 <Button

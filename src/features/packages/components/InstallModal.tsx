@@ -8,6 +8,7 @@ import type {
     PackageInstall,
 } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import InlineList from '@shared/ui/InlineList';
 import Button from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
@@ -153,17 +154,16 @@ function InstallForm(props: {
                                 id={selectId(needed.name)}
                                 showLabel
                                 label={
-                                    <>
-                                        <strong>{needed.name}</strong>
-                                        <Show when={needed.provider}>
-                                            {(provider) => (
+                                    <InlineList
+                                        items={[
+                                            <strong>{needed.name}</strong>,
+                                            needed.provider && (
                                                 <span class="muted">
-                                                    {' '}
-                                                    · {provider()}
+                                                    {needed.provider}
                                                 </span>
-                                            )}
-                                        </Show>
-                                    </>
+                                            ),
+                                        ]}
+                                    />
                                 }
                                 disabled={form.busy() || connections.isPending}
                                 value={choiceOf(needed)}

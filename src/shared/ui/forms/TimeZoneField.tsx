@@ -16,7 +16,7 @@ export function timeZones(): string[] {
 }
 
 // The hint of each zone, made once: one Intl.DateTimeFormat each.
-const hints = new Map<string, string>();
+const hints = new Map<string, string[]>();
 
 /** The zone's current offset from UTC, e.g. "UTC+2", or '' if unknown. */
 function offsetOf(zone: string): string {
@@ -37,7 +37,7 @@ function offsetOf(zone: string): string {
  * What a search for a zone can find besides its id: the place in words
  * ("New York", "La Rioja, Argentina") and the offset ("UTC-5").
  */
-function zoneHint(zone: string): string {
+function zoneHint(zone: string): string[] {
     let hint = hints.get(zone);
     if (hint === undefined) {
         const place = zone
@@ -46,7 +46,7 @@ function zoneHint(zone: string): string {
             .reverse()
             .map((part) => part.replaceAll('_', ' '))
             .join(', ');
-        hint = [place, offsetOf(zone)].filter(Boolean).join(' · ');
+        hint = [place, offsetOf(zone)].filter(Boolean);
         hints.set(zone, hint);
     }
     return hint;
@@ -55,7 +55,7 @@ function zoneHint(zone: string): string {
 const zoneOption = (zone: string): ListOption<string> => ({
     value: zone,
     label: zone,
-    hint: zoneHint(zone) || undefined,
+    hint: zoneHint(zone).length ? zoneHint(zone) : undefined,
 });
 
 export type TimeZoneFieldProps = {

@@ -27,7 +27,11 @@
   overflow-wrap: anywhere;
 }
 
-.workflows-item-meta,
+// A list's meta line (an InlineList) and a page's (its origin badges).
+.workflows-item-meta {
+  font-size: 0.8rem;
+}
+
 .workflow-meta {
   display: flex;
   flex-wrap: wrap;

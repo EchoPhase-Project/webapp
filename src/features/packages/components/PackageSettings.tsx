@@ -2,6 +2,7 @@ import { createSignal, Show } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import type { WorkflowPackage, WorkflowSummary } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import InlineList from '@shared/ui/InlineList';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import SettingsCard from '@shared/ui/SettingsCard';
@@ -60,12 +61,15 @@ export default function PackageSettings(props: {
                 }
             >
                 <p>
-                    <strong>{props.pkg.name}</strong>
-                    <span class="muted">
-                        {' · '}
-                        {props.pkg.summary ||
-                            t('settings.no_summary', 'No summary yet.')}
-                    </span>
+                    <InlineList
+                        items={[
+                            <strong>{props.pkg.name}</strong>,
+                            <span class="muted">
+                                {props.pkg.summary ||
+                                    t('settings.no_summary', 'No summary yet.')}
+                            </span>,
+                        ]}
+                    />
                 </p>
                 <p class="muted">
                     {props.pkg.readme.trim()

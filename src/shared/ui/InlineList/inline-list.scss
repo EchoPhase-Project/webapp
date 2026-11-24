@@ -1,0 +1,31 @@
+// A line of parts with a dot between them (InlineList): the parts wrap, each
+// dot at the end of the part before it. The dot is a circle centred on the
+// line box, not a "·" that sits at its own height in each font; sizes in em,
+// so it follows the text.
+.inline-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 0.15em;
+}
+
+.inline-list-item {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+// Inline inside: the spaces of a part ("by Ann") stay.
+.inline-list-text {
+  min-width: 0;
+}
+
+.inline-list-sep {
+  flex: none;
+  width: 0.25em;
+  height: 0.25em;
+  margin: 0 0.5em;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.6;
+}

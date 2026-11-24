@@ -70,19 +70,6 @@
 }
 
 .package-card-meta,
-.package-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  font-size: 0.78rem;
-
-  span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-}
-
 .package-tags {
   position: relative;
   z-index: 1;
@@ -315,4 +302,11 @@
 .packages-suggestion-label {
   font-family: var(--font-mono);
   color: var(--text);
+}
+
+// Where a package comes from and goes: its badges side by side.
+.package-origin {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
 }

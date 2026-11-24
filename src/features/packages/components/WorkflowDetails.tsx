@@ -14,6 +14,7 @@ import { createSubmit } from '@shared/api/submit';
 import type { Workflow } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import InlineList from '@shared/ui/InlineList';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
@@ -164,14 +165,14 @@ export default function WorkflowDetails(props: {
                             eyebrow={t('eyebrow', 'Workflows')}
                             title={w().name}
                             meta={
-                                <span class="workflow-meta">
-                                    <span>v{w().version}</span>
-                                    <span>
-                                        {t('updated', 'changed {date}', {
+                                <InlineList
+                                    items={[
+                                        `v${w().version}`,
+                                        t('updated', 'changed {date}', {
                                             date: date(w().updatedAt),
-                                        })}
-                                    </span>
-                                </span>
+                                        }),
+                                    ]}
+                                />
                             }
                             actions={
                                 <>

@@ -7,6 +7,7 @@ import {
     toggleValue,
     type ListOption,
 } from './option-list';
+import { OptionHint } from './OptionHint';
 import './listbox.scss';
 
 // T comes from the options only (NoInfer elsewhere): a setter such as
@@ -206,7 +207,7 @@ export default function Listbox<T>(props: ListboxProps<T>) {
                                     id={`${list.optionId(i())}-hint`}
                                     class="listbox-hint"
                                 >
-                                    {option.hint}
+                                    <OptionHint hint={option.hint} />
                                 </span>
                             </Show>
                         </span>

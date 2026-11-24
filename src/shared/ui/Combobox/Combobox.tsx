@@ -14,6 +14,7 @@ import { IconCheck, IconChevronDown } from '@shared/ui/icons';
 import {
     createOptionList,
     indexOfValue,
+    OptionHint,
     type ActiveBy,
     type ListOption,
 } from '@shared/ui/Listbox';
@@ -130,7 +131,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
         query()
             ? matchOptions(props.options, query(), (o) =>
                   // An empty field is near any short query: leave it out.
-                  [o.label, o.hint].filter((f): f is string => !!f)
+                  [o.label, o.hint].flat().filter((f): f is string => !!f)
               )
             : props.options
     );
@@ -548,7 +549,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                                     id={`${list.optionId(i())}-hint`}
                                     class="combobox-hint"
                                 >
-                                    {option.hint}
+                                    <OptionHint hint={option.hint} />
                                 </span>
                             </Show>
                         </span>
