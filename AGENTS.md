@@ -202,6 +202,7 @@ The full rules are in [data.md](docs/contributing/data.md#the-session).
 ### UI and styles
 
 The full rules are in [ui.md](docs/contributing/ui.md),
+[forms.md](docs/contributing/forms.md),
 [styles.md](docs/contributing/styles.md), and
 [layout.md](docs/contributing/layout.md).
 

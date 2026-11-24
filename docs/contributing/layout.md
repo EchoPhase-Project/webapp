@@ -10,6 +10,7 @@ Contents:
 - [Folders](#folders)
 - [Folders of the components](#folders-of-the-components)
 - [The frame and the page widths](#the-frame-and-the-page-widths)
+- [A page with its own group](#a-page-with-its-own-group)
 
 ## Folders
 
@@ -97,3 +98,72 @@ stylesheet, `<feature>.scss`.
   bar covers the element.
 - The tab order is the skip link, the logo, the buttons of the bar, the
   rail, and then the page. Keep this order in `Layout.tsx`.
+
+## A page with its own group
+
+The fixed sidebar comes from `PAGES` in
+`src/app/pages.ts`. A page of one item can add its own group while it
+shows. `src/app/nav-links.ts` puts that group after the section with the
+address in `after`.
+
+### Procedure
+
+1. Give each part of the page its own address. Use a route parameter, not
+   a query parameter. In `src/app/pages.ts`, write a pattern with an
+   optional parameter: `path: '/packages/:id/:section?'`.
+2. Write a path helper in a module of the feature, for example
+   `features/<name>/<name>-nav.ts`:
+   `export const packagePath = (id: string, section?: 'runs' | 'settings') => …`.
+   All links to the parts use this helper.
+3. In the page, read the parameter with `useParams`. If the value is not a
+   known part, show the overview.
+4. In the same module, write a hook that calls `usePageSection` from
+   `@shared/nav/page-section`. Return `null` while the data loads, or if the
+   user must not see the group.
+5. Return `{ after: '<address of the parent section>', sections: [ … ] }`.
+   Each section has `icon`, `label`, and `items`.
+6. Give each item `icon`, `label`, `href`, and a short `description`. The
+   description is the line under the label.
+7. Give `end: true` to the overview item. The overview address is the start
+   of the other addresses. Without `end`, the overview is current on all
+   parts.
+8. Read the item with the query description of the feature (for example
+   `packageQuery`). The page then makes no second request for the same data.
+9. On the page, show the parts as `NavTabs` with `href` from the path
+   helper. Do not use `Tabs` for parts that have addresses.
+
+### A group in a group
+
+If a child page (a workflow in a package) must show its own group, give
+the hook a second argument. The child gives its section, and the hook adds
+a last item that goes back to the parent with `end: true`. The sidebar then
+shows one group. Refer to `usePackage(id, instead)` in `package-nav.ts`.
+
+### Rules
+
+- Send each `label` and `description` through `t()`.
+- Import icons from `@shared/ui/icons`.
+- Do not add routes to `Router.tsx` or links to `nav-links.ts` directly.
+- If you change an address that users have, keep the old address in
+  operation with a redirect page. Refer to `WorkflowRedirect.tsx`.
+
+### Tests
+
+In the page test, read `pageSection()` from `@shared/nav/page-section`.
+Make sure that `after` is correct and that the `href` values of the items
+are the addresses of the parts. Refer to `MyPackagePage.test.tsx`.
+
+### Check
+
+Run `mise run check`. Then open each part and make sure that the sidebar
+marks the correct item. If you cannot do this, tell the user.
+
+### Examples
+
+- `src/features/packages/package-nav.ts`: `packagePath`, `workflowPath`,
+  and `usePackage` with the package group and the workflow group.
+- `src/features/packages/MyPackagePage.tsx`: the `:section?` parameter and
+  `NavTabs`.
+- `src/features/packages/components/WorkflowDetails.tsx`: a child group
+  with `end` on the overview.
+- `src/shared/nav/page-section.ts`, `src/shared/nav/nav-link.ts`: the types.

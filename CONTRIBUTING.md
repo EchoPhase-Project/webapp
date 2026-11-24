@@ -56,19 +56,20 @@ runs the tests only one time.
 The rules for the code are in `docs/contributing/`, one file for each
 topic:
 
-| File                                             | Topic                                                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| [layout.md](docs/contributing/layout.md)         | The folders, the imports, the folders of the components, the frame, and the page widths |
-| [code-style.md](docs/contributing/code-style.md) | Formatting, names, comments, the shared helpers, the developer aids                     |
-| [ui.md](docs/contributing/ui.md)                 | The shared components, the controls, the panels, the list controls, the icons           |
-| [styles.md](docs/contributing/styles.md)         | The colour tokens, the class names, the mixins, the shared classes, the grids           |
-| [a11y.md](docs/contributing/a11y.md)             | The keyboard, the focus, the names of controls, the live regions                        |
-| [data.md](docs/contributing/data.md)             | The API contract, the API layer, the reads, the lists in pages, the session             |
-| [forms.md](docs/contributing/forms.md)           | Forms, changes, and the errors of an action                                             |
-| [i18n.md](docs/contributing/i18n.md)             | The translations                                                                        |
-| [privacy.md](docs/contributing/privacy.md)       | The services that collect visitor data                                                  |
-| [new-page.md](docs/contributing/new-page.md)     | The steps to add a page                                                                 |
-| [tests.md](docs/contributing/tests.md)           | The tests and their tools                                                               |
+| File                                                   | Topic                                                                                   |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [layout.md](docs/contributing/layout.md)               | The folders, the imports, the folders of the components, the frame, and the page widths |
+| [code-style.md](docs/contributing/code-style.md)       | Formatting, names, comments, the shared helpers, the developer aids                     |
+| [ui.md](docs/contributing/ui.md)                       | The shared components, the controls, the panels, the list controls, the icons           |
+| [styles.md](docs/contributing/styles.md)               | The colour tokens, the class names, the mixins, the shared classes, the grids           |
+| [a11y.md](docs/contributing/a11y.md)                   | The keyboard, the focus, the names of controls, the live regions                        |
+| [data.md](docs/contributing/data.md)                   | The API contract, the API layer, the reads, the lists in pages, the session             |
+| [forms.md](docs/contributing/forms.md)                 | Forms, changes, and the errors of an action                                             |
+| [i18n.md](docs/contributing/i18n.md)                   | The translations                                                                        |
+| [privacy.md](docs/contributing/privacy.md)             | The services that collect visitor data                                                  |
+| [docs-articles.md](docs/contributing/docs-articles.md) | The help articles of the `/docs` page and their links                                   |
+| [new-page.md](docs/contributing/new-page.md)           | The steps to add a page                                                                 |
+| [tests.md](docs/contributing/tests.md)                 | The tests and their tools                                                               |
 
 The reasons for the large decisions are in `docs/adr/`.
 
