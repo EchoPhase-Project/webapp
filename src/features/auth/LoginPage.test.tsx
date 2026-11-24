@@ -53,6 +53,39 @@ describe('LoginPage', () => {
         await expectNoA11yViolations();
     });
 
+    it('sends a signed-in user on to ?next= without showing the form', async () => {
+        let answer: (r: Response) => void = () => {};
+        fakeApi({
+            'GET /api/v1/auth/me': () =>
+                new Promise<Response>((done) => (answer = done)),
+            'GET /api/v1/roles/me': () => json(200, []),
+        });
+        const { history } = renderPage(
+            () => <LoginPage />,
+            '/auth/login?next=%2Ffiles'
+        );
+
+        // While the session is asked for: no form, no heading.
+        await new Promise((done) => setTimeout(done, 20));
+        expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+        expect(document.querySelector('form')).toBeNull();
+
+        answer(json(200, user()));
+        await waitFor(() => expect(history.get()).toBe('/files'));
+        expect(document.querySelector('form')).toBeNull();
+    });
+
+    it('shows the form when the check of the session failed', async () => {
+        fakeApi({
+            'GET /api/v1/auth/me': () =>
+                json(500, { code: 'Boom', message: 'Server error.' }),
+        });
+        renderPage(() => <LoginPage />, '/auth/login');
+        expect(
+            await screen.findByRole('heading', { level: 1, name: 'Log in' })
+        ).toBeTruthy();
+    });
+
     it('has one h1 from its header, and a link to sign up that keeps ?next=', async () => {
         fakeApi(signedOut);
         renderPage(() => <LoginPage />, '/auth/login?next=%2Ffiles');
