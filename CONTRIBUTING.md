@@ -352,6 +352,10 @@ Select the control for a choice from a list with these rules:
   components use. Before you copy a rule, examine this file.
   `@include mix.input-frame` gives the border, the focus ring, and the
   invalid ring of a field.
+  The focus ring of a field shows only if the keyboard moved the focus to
+  it. `watchFocusModality` in `shared/lib/focus-modality.ts` sets
+  `data-focus-by` on `<html>`. A text field matches `:focus-visible` after
+  a click too. Thus, CSS alone cannot make this difference.
   `@include mix.plain-list(6px)` removes the bullets and the indent of a
   list, and puts its items in a column.
 - `global.scss` contains classes that many pages use. `actions-row` is a

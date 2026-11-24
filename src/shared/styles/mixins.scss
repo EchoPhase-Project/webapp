@@ -20,8 +20,15 @@
 
   #{$focus} {
     outline: none;
-    border-color: var(--focus);
-    box-shadow: 0 0 0 1px var(--focus);
+  }
+
+  // The ring only when the keyboard brought the focus (focus-modality.ts:
+  // a text field matches :focus-visible after a click too).
+  #{$focus} {
+    :root:not([data-focus-by='pointer']) & {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 1px var(--focus);
+    }
   }
 
   &.invalid {

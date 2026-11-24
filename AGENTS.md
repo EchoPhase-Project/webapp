@@ -295,6 +295,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 
 - The keyboard must get access to all controls.
 - The focus must be visible.
+- Give a field its frame with `mix.input-frame`. Then its focus ring shows
+  only for the keyboard (`data-focus-by`, `shared/lib/focus-modality.ts`).
 - All fields must have labels.
 - Do not use colour as the only signal.
 - Animations must obey `prefers-reduced-motion`.
