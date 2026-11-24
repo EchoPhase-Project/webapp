@@ -252,6 +252,40 @@ describe('MobileNav', () => {
         ).toBe(true);
     });
 
+    it('closes the drawer on Escape, on a tap on the backdrop and on a swipe to the right', () => {
+        renderPage(() => <MobileNav nav={model()} />);
+        const more = screen.getByRole('button', { name: 'More' });
+        const drawer = document.querySelector('dialog.nav-drawer');
+        if (!(drawer instanceof HTMLDialogElement))
+            throw new Error('no drawer');
+        const isOpen = () => more.getAttribute('aria-expanded') === 'true';
+
+        fireEvent.click(more);
+        expect(isOpen()).toBe(true);
+        // Escape: the browser's cancel event, which the drawer turns into
+        // a close of its own.
+        expect(
+            fireEvent(drawer, new Event('cancel', { cancelable: true }))
+        ).toBe(false);
+        expect(isOpen()).toBe(false);
+
+        fireEvent.click(more);
+        // A tap on the panel is not one on the backdrop.
+        fireEvent.click(drawer.querySelector('.drawer-panel') as Element);
+        expect(isOpen()).toBe(true);
+        fireEvent.click(drawer);
+        expect(isOpen()).toBe(false);
+
+        fireEvent.click(more);
+        // A short swipe keeps it; a long one to the right closes it.
+        fireEvent.touchStart(drawer, { touches: [{ clientX: 100 }] });
+        fireEvent.touchEnd(drawer, { changedTouches: [{ clientX: 130 }] });
+        expect(isOpen()).toBe(true);
+        fireEvent.touchStart(drawer, { touches: [{ clientX: 100 }] });
+        fireEvent.touchEnd(drawer, { changedTouches: [{ clientX: 200 }] });
+        expect(isOpen()).toBe(false);
+    });
+
     it('leaves More alone for a page on the bar', () => {
         renderPage(() => <MobileNav nav={model()} />, '/notes');
 
