@@ -1,5 +1,4 @@
 import { createSignal, createUniqueId, For, Show, type JSX } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
 import { useLocation } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
 import Avatar from '@shared/ui/Avatar';
@@ -205,31 +204,7 @@ export function DesktopNav(props: { nav: NavModel }) {
             </NavScroll>
 
             <div class="nav-bottom">
-                <Show
-                    when={props.nav.account}
-                    fallback={
-                        <Show when={props.nav.login}>
-                            {(login) => (
-                                <NavEntry
-                                    item={login()}
-                                    class="nav-link"
-                                    onDone={close}
-                                >
-                                    <i class="nav-icon">
-                                        <Show when={login().icon}>
-                                            {(Icon) => (
-                                                <Dynamic component={Icon()} />
-                                            )}
-                                        </Show>
-                                    </i>
-                                    <span class="link-text">
-                                        {login().label}
-                                    </span>
-                                </NavEntry>
-                            )}
-                        </Show>
-                    }
-                >
+                <Show when={props.nav.account}>
                     {(account) => (
                         <div
                             class="nav-item"

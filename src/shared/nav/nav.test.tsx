@@ -33,7 +33,6 @@ const model = (over: Partial<NavModel> = {}): NavModel => ({
             { label: 'Log out', onSelect: logout },
         ],
     },
-    login: null,
     ...over,
 });
 
@@ -182,22 +181,6 @@ describe('DesktopNav', () => {
                 .getByRole('button', { name: 'Workspace' })
                 .classList.contains('nav-current')
         ).toBe(false);
-    });
-
-    it('offers signing in when nobody is', () => {
-        renderPage(() => (
-            <DesktopNav
-                nav={model({
-                    account: null,
-                    login: { label: 'Log in', href: '/auth' },
-                })}
-            />
-        ));
-
-        expect(
-            screen.getByRole('link', { name: 'Log in' }).getAttribute('href')
-        ).toBe('/auth');
-        expect(screen.queryByRole('button', { name: /Dusty/ })).toBeNull();
     });
 });
 

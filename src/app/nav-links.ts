@@ -1,6 +1,5 @@
-import { IconLogin, IconLogout } from '@shared/ui/icons';
+import { IconLogout } from '@shared/ui/icons';
 import { logoutMutation, useAuth } from '@shared/api/auth';
-import { LOGIN_PATH } from '@shared/api/auth-guards';
 import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
@@ -16,8 +15,8 @@ const ACCOUNT_GROUP: NavGroup = 'settings';
  * a `nav` in the middle (those needing a session only once there is one),
  * a group as one section with its pages, and the shown page's own group
  * (a package's) after the section it belongs to; at the bottom the account
- * (its settings pages and signing out) or signing in. About and the
- * policies are in the footer.
+ * (its settings pages and signing out); signing in and up are in the
+ * app's bar. About and the policies are in the footer.
  */
 export function useNav(): () => NavModel {
     const { isAuthenticated, user } = useAuth();
@@ -101,14 +100,6 @@ export function useNav(): () => NavModel {
                                   onSelect: () => void logout.run(),
                               },
                           ],
-                      }
-                    : null,
-            login:
-                me === null
-                    ? {
-                          icon: IconLogin,
-                          label: t('nav.login', 'Log in'),
-                          href: LOGIN_PATH,
                       }
                     : null,
         };

@@ -39,8 +39,9 @@ export interface NavModel {
     /** The mobile bar and drawer draw it; on desktop the app's bar holds it. */
     home: NavSection;
     sections: NavSection[];
-    /** Null while signed out (or still loading). */
+    /**
+     * Null while signed out (or still loading). Signing in and up are in
+     * the app's bar, not here.
+     */
     account: NavAccount | null;
-    /** Signing in: only once it is known nobody is signed in. */
-    login: NavItem | null;
 }

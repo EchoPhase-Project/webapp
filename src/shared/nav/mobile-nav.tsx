@@ -238,31 +238,7 @@ function Drawer(props: { nav: NavModel; open: boolean; onClose: () => void }) {
                 </NavScroll>
 
                 <div class="drawer-bottom">
-                    <Show
-                        when={props.nav.account}
-                        fallback={
-                            <Show when={props.nav.login}>
-                                {(login) => (
-                                    <ul class="drawer-list">
-                                        <li>
-                                            <NavEntry
-                                                item={login()}
-                                                class="drawer-row"
-                                                onDone={props.onClose}
-                                            >
-                                                <SectionIcon
-                                                    section={login()}
-                                                />
-                                                <span class="drawer-label">
-                                                    {login().label}
-                                                </span>
-                                            </NavEntry>
-                                        </li>
-                                    </ul>
-                                )}
-                            </Show>
-                        }
-                    >
+                    <Show when={props.nav.account}>
                         {(account) => (
                             <ul class="drawer-list">
                                 <DrawerGroup

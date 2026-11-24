@@ -44,7 +44,6 @@ import {
     IconLayoutGrid as TablerIconLayoutGrid,
     IconLink as TablerIconLink,
     IconLock as TablerIconLock,
-    IconLogin as TablerIconLogin,
     IconLogout as TablerIconLogout,
     IconMoon as TablerIconMoon,
     IconNotes as TablerIconNotes,
@@ -130,7 +129,6 @@ export const IconHistory = /* @__PURE__ */ decorative(TablerIconHistory);
 export const IconLayoutGrid = /* @__PURE__ */ decorative(TablerIconLayoutGrid);
 export const IconLink = /* @__PURE__ */ decorative(TablerIconLink);
 export const IconLock = /* @__PURE__ */ decorative(TablerIconLock);
-export const IconLogin = /* @__PURE__ */ decorative(TablerIconLogin);
 export const IconLogout = /* @__PURE__ */ decorative(TablerIconLogout);
 export const IconMoon = /* @__PURE__ */ decorative(TablerIconMoon);
 export const IconNotes = /* @__PURE__ */ decorative(TablerIconNotes);
