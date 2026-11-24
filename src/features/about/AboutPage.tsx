@@ -1,6 +1,7 @@
 import { For, type Component } from 'solid-js';
 import { A } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
+import { LinkButton } from '@shared/ui/Button';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
 import { SIGNUP_PATH } from '@shared/api/auth-guards';
@@ -109,23 +110,22 @@ export default function AboutPage() {
                     )}
                 </p>
                 <div class="about-actions">
-                    <A
-                        class="btn"
+                    <LinkButton
                         href={isAuthenticated() ? '/api-clients' : SIGNUP_PATH}
                     >
                         {isAuthenticated()
                             ? t('cta.signed_in', 'Your API clients')
                             : t('cta.start', 'Get started')}
-                    </A>
-                    <a
-                        class="btn btn-ghost"
+                    </LinkButton>
+                    <LinkButton
+                        variant="ghost"
                         href={Org}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <IconBrandGithub />
                         {t('cta.source', 'Source code')}
-                    </a>
+                    </LinkButton>
                 </div>
             </Card>
 

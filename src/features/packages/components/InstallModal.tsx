@@ -1,5 +1,4 @@
 import { createSignal, For, Show } from 'solid-js';
-import { A } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import type {
     ConnectionSummary,
@@ -9,7 +8,7 @@ import type {
 } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import InlineList from '@shared/ui/InlineList';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import LoadError from '@shared/ui/LoadError';
 import Select from '@shared/ui/forms/Select';
@@ -232,9 +231,9 @@ function Installed(props: { install: PackageInstall; onClose: () => void }) {
                 <Button variant="ghost" onClick={() => props.onClose()}>
                     {t('ui.done', 'Done')}
                 </Button>
-                <A class="btn" href={packagePath(props.install.package.id)}>
+                <LinkButton href={packagePath(props.install.package.id)}>
                     {t('install.open_package', 'Open it')}
-                </A>
+                </LinkButton>
             </div>
         </div>
     );

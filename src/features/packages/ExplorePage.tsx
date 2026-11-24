@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
-import { A, useSearchParams } from '@solidjs/router';
+import { useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
+import { LinkButton } from '@shared/ui/Button';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
 import { createPagedList } from '@shared/api/paged-list';
@@ -63,9 +64,9 @@ export default function ExplorePage() {
                 )}
                 docs="explore"
                 actions={
-                    <A class="btn btn-ghost" href="/packages">
+                    <LinkButton variant="ghost" href="/packages">
                         {t('yours', 'Your packages')}
-                    </A>
+                    </LinkButton>
                 }
             />
 

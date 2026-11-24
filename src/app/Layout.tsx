@@ -18,6 +18,7 @@ import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { followNoteEvents } from '@features/notes/note-events';
 import { followRunEvents } from '@features/packages/run-events';
 import { useAuth } from '@shared/api/auth';
+import { LinkButton } from '@shared/ui/Button';
 import { LOGIN_PATH, SIGNUP_PATH } from '@shared/api/auth-guards';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
@@ -93,9 +94,12 @@ const Layout: Component<ParentProps> = (props) => {
                             </A>
                         </Show>
                         <Show when={location.pathname !== SIGNUP_PATH}>
-                            <A href={SIGNUP_PATH} class="header-signup">
+                            <LinkButton
+                                href={SIGNUP_PATH}
+                                class="header-signup"
+                            >
                                 {t('nav.signup', 'Sign up')}
-                            </A>
+                            </LinkButton>
                         </Show>
                     </Show>
                 }

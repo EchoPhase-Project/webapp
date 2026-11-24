@@ -116,8 +116,8 @@
   min-width: max(11rem, var(--popover-anchor-width, 100%));
 }
 
-// Signed out, at the bar's end: log in as a flat header button, sign up in
-// the accent, as most sites have them. On a narrow phone only sign up: its
+// Signed out, at the bar's end: log in as a flat header button, sign up as
+// the main button (LinkButton), as most sites have them. On a narrow phone only sign up: its
 // page links to logging in.
 .header-login {
   padding: 0 12px;
@@ -133,29 +133,7 @@
 }
 
 .header-signup {
-  display: inline-flex;
-  align-items: center;
+  // A LinkButton (.btn): its colours and hover; only the height of the bar's
+  // controls, a little under the 40px buttons beside it.
   height: 32px;
-  padding: 0 14px;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
-  text-decoration: none;
-  color: var(--on-primary);
-  background-color: var(--primary);
-  transition:
-    color var(--transition-speed) linear,
-    background-color var(--transition-speed) linear;
-
-  // As a .btn: the colours swap. A shade of the fill did not show in the
-  // dark theme, where the fill and the text are both light.
-  &:hover {
-    color: var(--primary);
-    background-color: var(--on-primary);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 }

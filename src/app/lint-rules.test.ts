@@ -29,6 +29,10 @@ export const [open, setOpen] = createSignal(false);
 const bareButton = `export const Go = () => <button type="button">Go</button>;
 `;
 
+const linkAsButton = `import { A } from '@solidjs/router';
+export const Go = () => <A class="btn btn-ghost" href="/">Go</A>;
+`;
+
 const devAid = `export const extra = import.meta.env.DEV ? 1 : 0;
 `;
 
@@ -63,6 +67,16 @@ describe('the lint rules', { timeout: 60_000 }, () => {
         expect(
             await rulesBroken(bareButton, 'src/features/notes/NotesPage.tsx')
         ).toContain('no-restricted-syntax');
+    });
+
+    it('stop a link drawn as a button by hand', async () => {
+        for (const file of [
+            'src/features/notes/NotesPage.tsx',
+            'src/app/NotFound.tsx',
+        ])
+            expect(await rulesBroken(linkAsButton, file), file).toContain(
+                'no-restricted-syntax'
+            );
     });
 
     it('let the folders of shared/ui make the controls', async () => {

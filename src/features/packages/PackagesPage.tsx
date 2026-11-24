@@ -7,7 +7,7 @@ import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import InlineList from '@shared/ui/InlineList';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
@@ -80,12 +80,12 @@ export default function PackagesPage() {
                             fallback={
                                 <EmptyState
                                     action={
-                                        <A class="btn" href="/explore">
+                                        <LinkButton href="/explore">
                                             {t(
                                                 'empty_explore',
                                                 'Find one in Explore'
                                             )}
-                                        </A>
+                                        </LinkButton>
                                     }
                                 >
                                     {t(

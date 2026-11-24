@@ -1,10 +1,10 @@
 import { createEffect, ErrorBoundary, on, Show } from 'solid-js';
 import type { ParentProps } from 'solid-js';
-import { A, useLocation } from '@solidjs/router';
+import { useLocation } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { reportError } from '@shared/consent/error-reporting';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import Card from '@shared/ui/Card';
 import './page-error-boundary.scss';
 
@@ -102,9 +102,9 @@ function PageError(props: {
                             {t('page_error.reload', 'Reload the page')}
                         </Button>
                     </Show>
-                    <A class="btn btn-ghost" href="/">
+                    <LinkButton variant="ghost" href="/">
                         {t('not_found.home', 'Go to the home page')}
-                    </A>
+                    </LinkButton>
                 </div>
             </Card>
             <Show when={props.details}>

@@ -16,7 +16,7 @@ import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import InlineList from '@shared/ui/InlineList';
 import BackLink from '@shared/ui/BackLink';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import PageHeader from '@shared/ui/PageHeader';
@@ -176,13 +176,13 @@ export default function WorkflowDetails(props: {
                             }
                             actions={
                                 <>
-                                    <a
-                                        class="btn btn-ghost"
+                                    <LinkButton
+                                        variant="ghost"
                                         href={workflowExportUrl(w().id)}
                                         download=""
                                     >
                                         {t('export', 'Export')}
-                                    </a>
+                                    </LinkButton>
                                     <Button
                                         variant="ghost-danger"
                                         disabled={busy() || removal.busy()}

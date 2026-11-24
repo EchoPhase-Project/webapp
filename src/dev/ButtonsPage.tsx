@@ -1,6 +1,6 @@
 import { createSignal, For } from 'solid-js';
 import { useSearchParams } from '@solidjs/router';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import HeaderButton from '@shared/ui/HeaderButton';
 import RemoveButton from '@shared/ui/RemoveButton';
 import Switch from '@shared/ui/Switch';
@@ -142,6 +142,26 @@ export default function ButtonsPage() {
                         </div>
                     </DevSample>
                 </DevGrid>
+            </DevSection>
+
+            <DevSection
+                title="LinkButton"
+                note="A link with the look of a Button: a move to another page, a download or another site. No disabled and no busy: a link that cannot be followed is not shown."
+            >
+                <div class="actions-row">
+                    <LinkButton href="/dev">To the index</LinkButton>
+                    <LinkButton variant="ghost" href="/dev/forms">
+                        Forms
+                    </LinkButton>
+                    <LinkButton
+                        variant="ghost"
+                        href="https://github.com/EchoPhase-Project"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Another site
+                    </LinkButton>
+                </div>
             </DevSection>
 
             <DevSection

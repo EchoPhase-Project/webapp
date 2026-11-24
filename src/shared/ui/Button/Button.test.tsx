@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
+import { MemoryRouter, Route } from '@solidjs/router';
 import { IconCopy } from '@shared/ui/icons';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import Button from './Button';
+import LinkButton from './LinkButton';
 
 describe('Button', () => {
     it('does not submit, says when it is busy, and an icon button takes its name', async () => {
@@ -23,6 +25,40 @@ describe('Button', () => {
         expect(save.getAttribute('aria-busy')).toBe('true');
         const copy = screen.getByRole('button', { name: 'Copy the address' });
         expect(copy.classList.contains('btn-icon')).toBe(true);
+        await expectNoA11yViolations();
+    });
+});
+
+describe('LinkButton', () => {
+    it('is a link with the look of a Button of the same variant', async () => {
+        render(() => (
+            <MemoryRouter>
+                <Route
+                    path="/"
+                    component={() => (
+                        <>
+                            <LinkButton href="/explore" class="extra">
+                                Explore
+                            </LinkButton>
+                            <LinkButton variant="ghost" href="/x" download="">
+                                Export
+                            </LinkButton>
+                        </>
+                    )}
+                />
+            </MemoryRouter>
+        ));
+        const explore = await screen.findByRole('link', { name: 'Explore' });
+        expect(explore.getAttribute('href')).toBe('/explore');
+        // The router's <A> adds active / inactive of its own.
+        expect([...explore.classList]).toEqual(
+            expect.arrayContaining(['btn', 'extra'])
+        );
+        const exported = screen.getByRole('link', { name: 'Export' });
+        expect([...exported.classList]).toEqual(
+            expect.arrayContaining(['btn', 'btn-ghost'])
+        );
+        expect(exported.hasAttribute('download')).toBe(true);
         await expectNoA11yViolations();
     });
 });

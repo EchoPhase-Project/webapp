@@ -186,7 +186,7 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 ### UI and styles
 
 - Before you write new markup, use the components in `src/shared/ui`:
-  Button, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
+  Button, LinkButton, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
   BackLink, Table, Masonry, EmptyState, PageHeader, Switch, LoadError,
@@ -239,6 +239,11 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
   this rule.
 - If a full card or row opens an item, it can be a `<button>`. Then disable
   the rule on that line and write the reason.
+- If a link must look like a button, use `LinkButton` from
+  `@shared/ui/Button`. Do not put the `btn` class on `<A>` or `<a>`.
+  ESLint enforces this rule.
+- Use `Button` for an action on the page. Use `LinkButton` for a move to a
+  page, a download, or another site.
 - A `ConfirmDialog` always asks about an item. `createConfirm` gives it
   `item` and `onConfirm(item)`. If the dialog is about the page, give the
   entity, or a word such as `'all'`, to `ask`. Do not use `open={!!x()}`

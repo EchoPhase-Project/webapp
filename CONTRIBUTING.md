@@ -132,6 +132,7 @@ Before you write new markup, make pages from the components in
 
 | Component                                             | Purpose                                                                                                                                                                                       |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LinkButton`                                          | A link with the look of a `Button` (the same `variant`): a move to a page, a download, another site. It has no `disabled` and no `busy`                                                       |
 | `Button`                                              | Actions: `primary` (the main action), `ghost`, `icon` (delete, revoke), `danger` (the confirmed destructive action), `danger-outline` (opens that action), `link` (an action in a sentence)   |
 | `HeaderButton`                                        | The square icon buttons in the top bar (new note, notifications, theme)                                                                                                                       |
 | `Tabs`, `NavTabs`                                     | A line of tabs over one panel (Write and Preview), with the keyboard of the WAI-ARIA tabs pattern. `NavTabs` are links to the parts of a page                                                 |
@@ -198,6 +199,12 @@ and the line on the index. The test renders each page from the list.
   have one look and one keyboard behaviour.
 - ESLint (`no-restricted-syntax`) stops these elements outside
   `src/shared/ui` and `src/shared/nav`.
+- If a link must look like a button, use `LinkButton`. Do not put the `btn`
+  class on `<A>` or `<a>`. ESLint stops this class on a link. Thus, the
+  look and the hover of a button have one source, `buttonClass`.
+- Use `Button` for an action on the page. Use `LinkButton` for a move to a
+  page, a download, or another site. A screen reader then tells the user
+  the correct type of control.
 - If a full card or a full row opens an item, you can use `<button>`. Then
   write `eslint-disable-next-line no-restricted-syntax` with the reason on the
   line above it. A card is not an action button, and the `.btn` style does

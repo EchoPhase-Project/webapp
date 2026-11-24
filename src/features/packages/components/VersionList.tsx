@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/solid-query';
 import type { Workflow, WorkflowVersion } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import ConfirmDialog, { createConfirm } from '@shared/ui/ConfirmDialog';
 import QueryState from '@shared/ui/QueryState';
 import {
@@ -72,8 +72,8 @@ export default function VersionList(props: { workflow: Workflow }) {
                                         </Show>
                                     </span>
                                     <span class="actions-row">
-                                        <a
-                                            class="btn btn-ghost"
+                                        <LinkButton
+                                            variant="ghost"
                                             href={workflowExportUrl(
                                                 props.workflow.id,
                                                 v.version
@@ -81,7 +81,7 @@ export default function VersionList(props: { workflow: Workflow }) {
                                             download=""
                                         >
                                             {t('versions.export', 'Export')}
-                                        </a>
+                                        </LinkButton>
                                         <Show
                                             when={
                                                 v.version !==

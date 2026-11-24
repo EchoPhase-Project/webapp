@@ -1,30 +1,17 @@
 import { splitProps, type JSX } from 'solid-js';
+import { buttonClass, type ButtonVariant } from './button-class';
 
 type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
-    /**
-     * primary: the gold main action; ghost: a quiet secondary one; icon: a
-     * secondary icon action (copy, show, close); icon-danger: one that
-     * removes something and turns red on hover (delete, revoke);
-     * ghost-danger: a quiet button that leads to removing something;
-     * danger: the confirmed destructive action itself; danger-outline: a
-     * button that leads to one (it asks first), red but not loud; link: an
-     * action inside a sentence, drawn as a link (a move to another page is
-     * an <A>, not this).
-     */
-    variant?:
-        | 'primary'
-        | 'ghost'
-        | 'icon'
-        | 'icon-danger'
-        | 'ghost-danger'
-        | 'danger'
-        | 'danger-outline'
-        | 'link';
+    /** The look (button-class.ts); primary by default. */
+    variant?: ButtonVariant;
     /** Working: disabled, and announced as busy. */
     busy?: boolean;
 };
 
-/** A button in the app's style; type "button" unless told otherwise. */
+/**
+ * A button in the app's style; type "button" unless told otherwise. A move
+ * to another page or a download is a LinkButton: the same look, a link.
+ */
 export default function Button(props: ButtonProps) {
     const [own, rest] = splitProps(props, [
         'variant',
@@ -36,18 +23,7 @@ export default function Button(props: ButtonProps) {
     return (
         <button
             type={own.type ?? 'button'}
-            class={[
-                'btn',
-                own.variant &&
-                    own.variant !== 'primary' &&
-                    `btn-${own.variant}`,
-                // The red one is an icon button too.
-                own.variant === 'icon-danger' && 'btn-icon',
-                own.variant === 'ghost-danger' && 'btn-ghost',
-                own.class,
-            ]
-                .filter(Boolean)
-                .join(' ')}
+            class={buttonClass(own.variant, own.class)}
             disabled={own.disabled || own.busy}
             aria-busy={own.busy || undefined}
             {...rest}

@@ -28,7 +28,7 @@ export function devPages(): DevPage[] {
             path: '/dev/buttons',
             title: 'Buttons',
             description:
-                'Button in every variant, busy and disabled; HeaderButton, RemoveButton, Switch, Tabs and NavTabs.',
+                'Button in every variant, busy and disabled; LinkButton; HeaderButton, RemoveButton, Switch, Tabs and NavTabs.',
             component: lazy(() => import('./ButtonsPage')),
         },
         {

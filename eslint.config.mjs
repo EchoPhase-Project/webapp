@@ -24,7 +24,7 @@ const iconLibraries = layer(
     '@tabler/icons-solidjs',
     '@tabler/icons-solidjs/*'
 );
-// Controls come from src/shared/ui (Button, HeaderButton, Tabs, Checkbox,
+// Controls come from src/shared/ui (Button, LinkButton, HeaderButton, Tabs, Checkbox,
 // RadioGroup, Select, TextArea), so they keep one look and one keyboard
 // behaviour, and their errors show the same way. A clickable card or row
 // elsewhere disables the rule on its line, with why.
@@ -39,6 +39,12 @@ const ownControls = [
             'JSXOpeningElement[name.name="input"]:has(JSXAttribute[name.name="type"][value.value=/^(checkbox|radio)$/])',
         message:
             'Use Checkbox or RadioGroup (or Switch, for a setting saved at once) from @shared/ui.',
+    },
+    {
+        selector:
+            'JSXOpeningElement[name.name=/^(a|A)$/]:has(JSXAttribute[name.name="class"][value.value=/(^|\\s)btn(\\s|$)/])',
+        message:
+            'Use LinkButton from @shared/ui/Button for a link drawn as a button.',
     },
     {
         selector: 'JSXOpeningElement[name.name="select"]',

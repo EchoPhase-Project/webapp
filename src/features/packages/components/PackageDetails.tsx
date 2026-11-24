@@ -9,7 +9,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import BackLink from '@shared/ui/BackLink';
-import Button from '@shared/ui/Button';
+import Button, { LinkButton } from '@shared/ui/Button';
 import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import InlineList from '@shared/ui/InlineList';
 import LoadError from '@shared/ui/LoadError';
@@ -154,8 +154,8 @@ export default function PackageDetails(props: { id: string }) {
                             <aside class="package-side">
                                 <Show when={isOwner()}>
                                     <section class="actions-row">
-                                        <A
-                                            class="btn btn-ghost"
+                                        <LinkButton
+                                            variant="ghost"
                                             href={packagePath(
                                                 p().id,
                                                 'settings'
@@ -165,7 +165,7 @@ export default function PackageDetails(props: { id: string }) {
                                                 'manage',
                                                 'Manage it in your packages'
                                             )}
-                                        </A>
+                                        </LinkButton>
                                     </section>
                                 </Show>
 
