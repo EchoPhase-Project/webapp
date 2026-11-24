@@ -3,6 +3,7 @@ import { A } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
+import { SIGNUP_PATH } from '@shared/api/auth-guards';
 import Card from '@shared/ui/Card';
 import {
     IconApi,
@@ -110,11 +111,7 @@ export default function AboutPage() {
                 <div class="about-actions">
                     <A
                         class="btn"
-                        href={
-                            isAuthenticated()
-                                ? '/api-clients'
-                                : '/auth/register'
-                        }
+                        href={isAuthenticated() ? '/api-clients' : SIGNUP_PATH}
                     >
                         {isAuthenticated()
                             ? t('cta.signed_in', 'Your API clients')

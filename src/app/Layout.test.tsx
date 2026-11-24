@@ -39,7 +39,8 @@ function renderLayout(path: string) {
                             <MemoryRouter history={history} root={Layout}>
                                 {[
                                     { path: '/', component: Page },
-                                    { path: '/auth', component: Page },
+                                    { path: '/auth/login', component: Page },
+                                    { path: '/auth/signup', component: Page },
                                 ]}
                             </MemoryRouter>
                         </RealtimeProvider>
@@ -118,19 +119,41 @@ describe('Layout', () => {
         expect(bar.contains(rail)).toBe(false);
     });
 
-    it('has the bar and the rail on /auth too, without the bar\'s "Log in"', async () => {
-        renderLayout('/auth');
-        await screen.findByRole('heading', { name: 'A page' });
-
+    it("offers log in and sign up at the bar's end while signed out", async () => {
+        renderLayout('/');
         const bar = screen.getByRole('banner');
-        expect(
-            within(bar).getByRole('link', { name: 'Home' }).getAttribute('href')
-        ).toBe('/');
-        expect(bar.querySelector('.header-login')).toBeNull();
-        expect(
-            screen.getByRole('navigation', { name: 'Main navigation' })
-        ).toBeTruthy();
-
+        const login = await within(bar).findByRole('link', { name: 'Log in' });
+        const signup = within(bar).getByRole('link', { name: 'Sign up' });
+        expect(login.getAttribute('href')).toBe('/auth/login');
+        expect(signup.getAttribute('href')).toBe('/auth/signup');
+        expect(before(login, signup)).toBe(true);
         await expectNoA11yViolations();
     });
+
+    it.each([
+        ['/auth/login', 'Sign up', 'Log in'],
+        ['/auth/signup', 'Log in', 'Sign up'],
+    ])(
+        "has the bar and the rail on %s, with only the other page's link",
+        async (path, shown, hidden) => {
+            renderLayout(path);
+            await screen.findByRole('heading', { name: 'A page' });
+
+            const bar = screen.getByRole('banner');
+            expect(
+                within(bar)
+                    .getByRole('link', { name: 'Home' })
+                    .getAttribute('href')
+            ).toBe('/');
+            await within(bar).findByRole('link', { name: shown });
+            expect(
+                within(bar).queryByRole('link', { name: hidden })
+            ).toBeNull();
+            expect(
+                screen.getByRole('navigation', { name: 'Main navigation' })
+            ).toBeTruthy();
+
+            await expectNoA11yViolations();
+        }
+    );
 });

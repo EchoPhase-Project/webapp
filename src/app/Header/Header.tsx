@@ -11,9 +11,13 @@ import './header.scss';
  * the app's own actions (notes, notifications), theme and language at the
  * end. On desktop it is the top arm of an L with the rail: its left cell
  * sits over the rail's icons, and its bottom line starts where the rail
- * ends.
+ * ends. Signed out, logging in and signing up close it (`account`), as on
+ * most sites.
  */
-export function Header(props: { actions?: JSX.Element }) {
+export function Header(props: {
+    actions?: JSX.Element;
+    account?: JSX.Element;
+}) {
     const { t } = useI18n();
     return (
         <header class="header">
@@ -31,6 +35,7 @@ export function Header(props: { actions?: JSX.Element }) {
                 {props.actions}
                 <ThemeToggle />
                 <LanguageSelect />
+                {props.account}
             </div>
         </header>
     );

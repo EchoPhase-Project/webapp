@@ -7,9 +7,10 @@ import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
 import { createForm } from '@shared/ui/forms/form';
+import { LOGIN_PATH } from '@shared/api/auth-guards';
 import { authHref } from './AuthShell';
 
-export default function RegisterForm(props: {
+export default function SignupForm(props: {
     /** Where to go once signed up (?next=). */
     next?: string;
 }) {
@@ -77,7 +78,7 @@ export default function RegisterForm(props: {
 
             <p class="auth-switch">
                 {t('signup.switch_question', 'Already have an account?')}{' '}
-                <A href={authHref('/auth', props.next)}>
+                <A href={authHref(LOGIN_PATH, props.next)}>
                     {t('signup.switch', 'Log in')}
                 </A>
             </p>

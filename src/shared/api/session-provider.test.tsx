@@ -222,7 +222,10 @@ describe('a client per session', () => {
                             return <p>secret page</p>;
                         })}
                     />
-                    <Route path="/auth" component={() => <p>sign-in form</p>} />
+                    <Route
+                        path="/auth/login"
+                        component={() => <p>sign-in form</p>}
+                    />
                 </>
             ),
             '/sessions'

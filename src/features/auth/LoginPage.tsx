@@ -1,12 +1,11 @@
-import { Show } from 'solid-js';
-import { Navigate, useSearchParams } from '@solidjs/router';
+import { useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
-import AuthShell, { authHref, type AuthSearch } from './components/AuthShell';
+import AuthShell, { type AuthSearch } from './components/AuthShell';
 import LoginForm from './components/LoginForm';
 import './auth.scss';
 
-/** Signing in; its link under the form goes to /auth/register. */
+/** Logging in; its link under the form goes to the sign-up page. */
 export default function LoginPage() {
     const t = useLocalizer('auth');
     const [search] = useSearchParams<AuthSearch>();
@@ -17,19 +16,11 @@ export default function LoginPage() {
     }));
 
     return (
-        <Show
-            // Addresses from before the two pages: ?mode=signup.
-            when={search.mode !== 'signup'}
-            fallback={
-                <Navigate href={authHref('/auth/register', search.next)} />
-            }
+        <AuthShell
+            title={t('login.title', 'Log in')}
+            description={t('login.lead', 'Welcome back.')}
         >
-            <AuthShell
-                title={t('login.title', 'Log in')}
-                description={t('login.lead', 'Welcome back.')}
-            >
-                <LoginForm next={search.next} />
-            </AuthShell>
-        </Show>
+            <LoginForm next={search.next} />
+        </AuthShell>
     );
 }

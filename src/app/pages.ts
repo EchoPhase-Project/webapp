@@ -89,12 +89,21 @@ export const PAGES: Page[] = [
         public: true,
     },
     {
-        path: '/auth',
+        path: '/auth/login',
         component: lazyPage(() => import('@features/auth/LoginPage')),
     },
     {
+        path: '/auth/signup',
+        component: lazyPage(() => import('@features/auth/SignupPage')),
+    },
+    {
+        // Addresses from before: /auth, /auth?mode=signup, /auth/register.
+        path: '/auth',
+        component: lazyPage(() => import('@features/auth/AuthRedirect')),
+    },
+    {
         path: '/auth/register',
-        component: lazyPage(() => import('@features/auth/RegisterPage')),
+        component: lazyPage(() => import('@features/auth/AuthRedirect')),
     },
     {
         path: '/explore',

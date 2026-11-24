@@ -2,11 +2,11 @@ import { useSearchParams } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import AuthShell, { type AuthSearch } from './components/AuthShell';
-import RegisterForm from './components/RegisterForm';
+import SignupForm from './components/SignupForm';
 import './auth.scss';
 
-/** Signing up; its link under the form goes to /auth. */
-export default function RegisterPage() {
+/** Signing up; its link under the form goes to the login page. */
+export default function SignupPage() {
     const t = useLocalizer('auth');
     const [search] = useSearchParams<AuthSearch>();
 
@@ -23,7 +23,7 @@ export default function RegisterPage() {
                 'One account for your workflows, notes and files.'
             )}
         >
-            <RegisterForm next={search.next} />
+            <SignupForm next={search.next} />
         </AuthShell>
     );
 }

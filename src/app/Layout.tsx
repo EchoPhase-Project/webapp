@@ -18,6 +18,7 @@ import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { followNoteEvents } from '@features/notes/note-events';
 import { followRunEvents } from '@features/packages/run-events';
 import { useAuth } from '@shared/api/auth';
+import { LOGIN_PATH, SIGNUP_PATH } from '@shared/api/auth-guards';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
 import ConsentBanner from '@features/consent/ConsentBanner';
@@ -40,8 +41,6 @@ const Layout: Component<ParentProps> = (props) => {
     // patched in place from the event.
     onCleanup(followRunEvents(realtime, queryClient));
     const location = useLocation();
-    // On the sign-in pages the bar's own "Log in" would lead to the page.
-    const onAuth = () => /^\/auth(\/|$)/.test(location.pathname);
 
     const loading = createPageLoading();
 
@@ -79,13 +78,26 @@ const Layout: Component<ParentProps> = (props) => {
                             <QuickNoteButton />
                             <NotificationBell feed={realtime} />
                         </Show>
-                        {/* Phones have no bar while signed out: signing in is here. */}
-                        <Show when={user() === null && !onAuth()}>
-                            <A href="/auth" class="header-button header-login">
+                    </>
+                }
+                account={
+                    // Signed out: log in (quiet) and sign up (the accent),
+                    // each but on its own page.
+                    <Show when={user() === null}>
+                        <Show when={location.pathname !== LOGIN_PATH}>
+                            <A
+                                href={LOGIN_PATH}
+                                class="header-button header-login"
+                            >
                                 {t('nav.login', 'Log in')}
                             </A>
                         </Show>
-                    </>
+                        <Show when={location.pathname !== SIGNUP_PATH}>
+                            <A href={SIGNUP_PATH} class="header-signup">
+                                {t('nav.signup', 'Sign up')}
+                            </A>
+                        </Show>
+                    </Show>
                 }
             />
 

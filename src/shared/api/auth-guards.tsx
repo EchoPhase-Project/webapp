@@ -6,12 +6,14 @@ import { useAuth } from './auth';
 import { authKeys } from './auth-keys';
 import { outage } from './outage-watch';
 
-const SignInPath = '/auth';
+/** The sign-in pages (the server sends a 401 page to the first, too). */
+export const LOGIN_PATH = '/auth/login';
+export const SIGNUP_PATH = '/auth/signup';
 
 /**
  * Where to go after signing in: `next` when it is a path of this site,
  * otherwise home. Never another origin (//evil.example), never a sign-in
- * page (/auth, /auth/register) itself.
+ * page (/auth, /auth/login, /auth/signup) itself.
  */
 export function safeNext(next: string | null | undefined): string {
     if (
@@ -22,17 +24,15 @@ export function safeNext(next: string | null | undefined): string {
     )
         return '/';
     const path = next.split(/[?#]/)[0];
-    return path === SignInPath || path.startsWith(`${SignInPath}/`)
-        ? '/'
-        : next;
+    return path === '/auth' || path.startsWith('/auth/') ? '/' : next;
 }
 
-/** /auth with the way back to where the user is now. */
+/** The login page with the way back to where the user is now. */
 function signInHref(here: { pathname: string; search: string; hash: string }) {
     const next = here.pathname + here.search + here.hash;
     return next === '/'
-        ? SignInPath
-        : `${SignInPath}?next=${encodeURIComponent(next)}`;
+        ? LOGIN_PATH
+        : `${LOGIN_PATH}?next=${encodeURIComponent(next)}`;
 }
 
 /**

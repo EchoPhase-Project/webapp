@@ -3,6 +3,7 @@ import { A } from '@solidjs/router';
 import { IconBrandGithub } from '@shared/ui/icons';
 import { useI18n } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
+import { SIGNUP_PATH } from '@shared/api/auth-guards';
 import { outage } from '@shared/api/outage-watch';
 import { setSettingsOpen } from '@shared/consent/consent';
 import BrandMark from '@shared/ui/BrandMark';
@@ -77,7 +78,7 @@ export default function Footer() {
                       }
                     : {
                           text: t('footer.start', 'Get started'),
-                          href: '/auth/register',
+                          href: SIGNUP_PATH,
                       },
             ],
         },

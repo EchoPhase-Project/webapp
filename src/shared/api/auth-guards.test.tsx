@@ -26,6 +26,8 @@ describe('safeNext', () => {
             '/\\evil.example',
             '/auth',
             '/auth?next=/x',
+            '/auth/login',
+            '/auth/signup?next=/x',
         ])
             expect(safeNext(next)).toBe('/');
     });
@@ -60,7 +62,10 @@ const app = (start: string) =>
                         </>
                     )}
                 />
-                <Route path="/auth" component={() => <p>sign-in form</p>} />
+                <Route
+                    path="/auth/login"
+                    component={() => <p>sign-in form</p>}
+                />
             </>
         ),
         start
@@ -73,7 +78,7 @@ describe('requireAuth', () => {
 
         expect(await screen.findByText('sign-in form')).toBeTruthy();
         expect(screen.queryByText('secret page')).toBeNull();
-        expect(history.get()).toBe('/auth?next=%2Fsessions%3Fpage%3D2');
+        expect(history.get()).toBe('/auth/login?next=%2Fsessions%3Fpage%3D2');
     });
 
     it('shows the page to a signed-in user, until the session ends', async () => {
@@ -85,7 +90,7 @@ describe('requireAuth', () => {
         // Any API call answering 401 means the session is over.
         await api.GET('/api/v1/sessions');
         expect(await screen.findByText('sign-in form')).toBeTruthy();
-        expect(history.get()).toBe('/auth?next=%2Fsessions');
+        expect(history.get()).toBe('/auth/login?next=%2Fsessions');
     });
 
     it('shows nothing while the user loads', async () => {
@@ -155,7 +160,7 @@ describe('requireAuth', () => {
         fireEvent.click(await screen.findByText('log out'));
 
         expect(await screen.findByText('sign-in form')).toBeTruthy();
-        expect(history.get()).toBe('/auth?next=%2Fsessions');
+        expect(history.get()).toBe('/auth/login?next=%2Fsessions');
     });
 });
 

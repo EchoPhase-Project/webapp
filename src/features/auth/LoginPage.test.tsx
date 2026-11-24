@@ -30,7 +30,7 @@ describe('LoginPage', () => {
                     message: 'Wrong username or password.',
                 }),
         });
-        renderPage(() => <LoginPage />, '/auth');
+        renderPage(() => <LoginPage />, '/auth/login');
 
         const form = await loginForm();
         fireEvent.input(within(form).getByLabelText('Username'), {
@@ -66,7 +66,7 @@ describe('LoginPage', () => {
                 return new Response(null, { status: 204 });
             },
         });
-        renderPage(() => <LoginPage />, '/auth');
+        renderPage(() => <LoginPage />, '/auth/login');
 
         const form = await loginForm();
         fireEvent.click(
@@ -80,24 +80,13 @@ describe('LoginPage', () => {
 
     it('has one h1 from its header, and a link to sign up that keeps ?next=', async () => {
         fakeApi(signedOut);
-        renderPage(() => <LoginPage />, '/auth?next=%2Ffiles');
+        renderPage(() => <LoginPage />, '/auth/login?next=%2Ffiles');
         await loginForm();
         expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
         expect(
             screen.getByRole('link', { name: 'Sign up' }).getAttribute('href')
-        ).toBe('/auth/register?next=%2Ffiles');
+        ).toBe('/auth/signup?next=%2Ffiles');
         await expectNoA11yViolations();
-    });
-
-    it('sends an old ?mode=signup address to /auth/register', async () => {
-        fakeApi(signedOut);
-        const { history } = renderPage(
-            () => <LoginPage />,
-            '/auth?mode=signup&next=%2Ffiles'
-        );
-        await waitFor(() =>
-            expect(history.get()).toBe('/auth/register?next=%2Ffiles')
-        );
     });
 
     it('opens ?next= in a new session once signed in', async () => {
@@ -115,7 +104,7 @@ describe('LoginPage', () => {
         });
         const { history } = renderPage(
             () => <LoginPage />,
-            '/auth?next=%2Ffiles%3Fview%3Dgrid'
+            '/auth/login?next=%2Ffiles%3Fview%3Dgrid'
         );
 
         const form = await loginForm();

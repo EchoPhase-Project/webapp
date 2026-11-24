@@ -1,5 +1,6 @@
 import { IconLogin, IconLogout } from '@shared/ui/icons';
 import { logoutMutation, useAuth } from '@shared/api/auth';
+import { LOGIN_PATH } from '@shared/api/auth-guards';
 import { createSubmit } from '@shared/api/submit';
 import { useI18n } from '@shared/i18n/i18n-context';
 import type { NavItem, NavModel, NavSection } from '@shared/nav/nav-link';
@@ -107,7 +108,7 @@ export function useNav(): () => NavModel {
                     ? {
                           icon: IconLogin,
                           label: t('nav.login', 'Log in'),
-                          href: '/auth',
+                          href: LOGIN_PATH,
                       }
                     : null,
         };
