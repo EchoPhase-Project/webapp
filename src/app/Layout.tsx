@@ -17,9 +17,13 @@ import NotificationBell from '@features/notifications/NotificationBell';
 import QuickNoteButton from '@features/notes/QuickNoteButton';
 import { followNoteEvents } from '@features/notes/note-events';
 import { followRunEvents } from '@features/packages/run-events';
-import { useAuth } from '@shared/api/auth';
 import { LinkButton } from '@shared/ui/Button';
-import { LOGIN_PATH, SIGNUP_PATH } from '@shared/api/auth-guards';
+import {
+    LOGIN_PATH,
+    SIGNUP_PATH,
+    SignedIn,
+    SignedOut,
+} from '@shared/api/auth-guards';
 import { useI18n } from '@shared/i18n/i18n-context';
 import MaintenanceScreen from '@features/maintenance/MaintenanceScreen';
 import ConsentBanner from '@features/consent/ConsentBanner';
@@ -34,7 +38,6 @@ const Layout: Component<ParentProps> = (props) => {
     const nav = useNav();
     const realtime = useRealtime();
     const queryClient = useQueryClient();
-    const { isAuthenticated, user } = useAuth();
     const { t } = useI18n();
     // A note shared with the user shows up in an open list at once.
     onCleanup(followNoteEvents(realtime, queryClient));
@@ -75,16 +78,17 @@ const Layout: Component<ParentProps> = (props) => {
             <Header
                 actions={
                     <>
-                        <Show when={isAuthenticated()}>
+                        <SignedIn>
                             <QuickNoteButton />
                             <NotificationBell feed={realtime} />
-                        </Show>
+                        </SignedIn>
                     </>
                 }
                 account={
                     // Signed out: log in (quiet) and sign up (the accent),
-                    // each but on its own page.
-                    <Show when={user() === null}>
+                    // each but on its own page. Not while the user is still
+                    // unknown: no flash of the buttons for a signed-in user.
+                    <SignedOut>
                         <Show when={location.pathname !== LOGIN_PATH}>
                             <A
                                 href={LOGIN_PATH}
@@ -98,7 +102,7 @@ const Layout: Component<ParentProps> = (props) => {
                                 {t('nav.signup', 'Sign up')}
                             </LinkButton>
                         </Show>
-                    </Show>
+                    </SignedOut>
                 }
             />
 

@@ -11,6 +11,7 @@ import { useNavigate } from '@solidjs/router';
 import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { IconBell } from '@shared/ui/icons';
 import { useAuth } from '@shared/api/auth';
+import { SignedIn } from '@shared/api/auth-guards';
 import { createSubmit } from '@shared/api/submit';
 import type { AppNotification, NotificationInbox } from '@shared/api/types';
 import { useDateFormat } from '@shared/lib/date-format';
@@ -128,7 +129,7 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
             : t('bell', 'Notifications');
 
     return (
-        <Show when={isAuthenticated()}>
+        <SignedIn>
             <div class="notifications">
                 <HeaderButton
                     ref={bell}
@@ -232,6 +233,6 @@ export default function NotificationBell(props: { feed: NotificationFeed }) {
                     </Show>
                 </Popover>
             </div>
-        </Show>
+        </SignedIn>
     );
 }
