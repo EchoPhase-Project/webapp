@@ -620,27 +620,18 @@ describe('Combobox, top layer', () => {
         expect(screen.queryByRole('listbox', { hidden: true })).toBeNull();
     });
 
-    it('puts the list under the anchor at its start edge', () => {
-        const button = renderAligned();
-        fireEvent.click(button);
-        const style = shownList().style;
-        expect(style.position).toBe('fixed');
-        expect(style.top).toBe('104px');
-        expect(style.bottom).toBe('auto');
-        expect(style.left).toBe('600px');
-        expect(style.right).toBe('auto');
-        expect(style.getPropertyValue('--popover-anchor-width')).toBe('120px');
-    });
-
-    it('lines up the right edges with align="end"', () => {
+    // The geometry itself is placement.ts's (Popover.test.tsx): here only
+    // that the Combobox hands it its anchor and its align.
+    it('places the list at its anchor, with its align', () => {
         const button = renderAligned('end');
         expect(button.closest('.combobox')?.getAttribute('data-align')).toBe(
             'end'
         );
         fireEvent.click(button);
         const style = shownList().style;
-        expect(style.left).toBe('auto');
+        expect(style.position).toBe('fixed');
         expect(style.right).toBe('280px');
+        expect(style.getPropertyValue('--popover-anchor-width')).toBe('120px');
     });
 
     it('opens above when it does not fit below, and follows on scroll', () => {
