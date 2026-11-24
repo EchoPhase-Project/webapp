@@ -15,7 +15,7 @@ import {
 export { contentUrl } from '@shared/api/files';
 
 /** A page of the list; a full page means there may be more. */
-export const PAGE_SIZE = 100;
+const PAGE_SIZE = 100;
 
 export const fileKeys = {
     all: ['files'] as const,

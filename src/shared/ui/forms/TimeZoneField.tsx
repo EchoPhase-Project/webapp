@@ -7,7 +7,7 @@ import FieldError, { errorId } from './FieldError';
 import './forms.scss';
 
 /** The browser's IANA zones, or none if it cannot list them. */
-export function timeZones(): string[] {
+function timeZones(): string[] {
     try {
         return Intl.supportedValuesOf('timeZone');
     } catch {

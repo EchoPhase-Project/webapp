@@ -15,9 +15,9 @@ const apiModules = import.meta.glob<Record<string, unknown>>(
 // and the components share. Keep it short; a new entry needs a reason.
 const helpers: Record<string, readonly string[]> = {
     // The download address of a file (no request: an <a href>).
-    '/src/features/files/api.ts': ['contentUrl', 'PAGE_SIZE'],
+    '/src/features/files/api.ts': ['contentUrl'],
     // The bell merges realtime events into the inbox page.
-    '/src/features/notifications/api.ts': ['INBOX_SIZE', 'withNotification'],
+    '/src/features/notifications/api.ts': ['withNotification'],
     // The run lists, as realtime events and a new run change them.
     '/src/features/packages/api/runs.ts': [
         'runId',

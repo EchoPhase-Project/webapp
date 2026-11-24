@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@solidjs/testing-library';
 import type { ErrorItem } from '@shared/api/types';
 import { I18nProvider } from '@shared/i18n/i18n-context';
 import { expectNoA11yViolations } from '@shared/testing/axe';
-import TimeZoneField, { timeZones } from './TimeZoneField';
+import TimeZoneField from './TimeZoneField';
 
 function renderField(
     initial: string,
@@ -57,7 +57,6 @@ describe('TimeZoneField', () => {
         expect(input.value).toBe('Europe/Chisinau');
         expect(screen.getByRole('combobox', { name: 'Time zone' })).toBe(input);
         expect(input.hasAttribute('aria-invalid')).toBe(false);
-        expect(timeZones()).toContain('Europe/Chisinau');
         await expectNoA11yViolations();
     });
 

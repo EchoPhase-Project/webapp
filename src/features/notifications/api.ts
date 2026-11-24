@@ -7,7 +7,7 @@ import { api, request } from '@shared/api/client';
 import type { AppNotification, NotificationInbox } from '@shared/api/types';
 
 /** How many of the newest notifications the inbox holds. */
-export const INBOX_SIZE = 50;
+const INBOX_SIZE = 50;
 
 export const notificationKeys = {
     all: ['notifications'] as const,
