@@ -283,6 +283,117 @@ describe('WorkflowDetails', () => {
         expect(body.program.settings.timeZone).toBe('Europe/Chisinau');
     });
 
+    it('edits a schedule in its dialog, and deletes one after asking', async () => {
+        // A workflow with one schedule: block 3, before the Print block.
+        const scheduled = workflow({
+            program: {
+                blocks: [
+                    {
+                        id: 1,
+                        type: 'WebhookTrigger',
+                        params: { secret: 'a-secret-of-sixteen' },
+                    },
+                    { id: 2, type: 'Print', name: 'say hi', params: {} },
+                    {
+                        id: 3,
+                        type: 'ScheduleTrigger',
+                        params: { cron: '0 9 * * *' },
+                    },
+                ],
+                connections: [
+                    { from: 1, to: 2, output: 'main' },
+                    { from: 3, to: 2, output: 'main' },
+                ],
+                startIds: [],
+                settings: {},
+            },
+            schedules: [
+                {
+                    blockId: 3,
+                    cron: '0 9 * * *',
+                    timeZone: 'UTC',
+                    nextRunAt: '2026-10-26T09:00:00Z',
+                },
+            ],
+        });
+        type Body = {
+            program: {
+                blocks: { id: number; params: { cron?: string } }[];
+                connections: { from: number }[];
+            };
+        };
+        // The saves in turn: the edit, a refused delete, the delete.
+        const answers = [
+            () => json(200, { ...scheduled, version: 4 }),
+            () =>
+                json(409, {
+                    code: 'TestChanged',
+                    message: 'The workflow changed meanwhile.',
+                }),
+            () => json(200, workflow({ version: 5 })),
+        ];
+        const api = fakeApi(
+            routes({
+                'GET /api/v1/workflows/w1': () => json(200, scheduled),
+                'PUT /api/v1/workflows/w1': () => {
+                    const answer = answers.shift();
+                    if (!answer) throw new Error('one save too many');
+                    return answer();
+                },
+            })
+        );
+        renderPage(() => (
+            <WorkflowDetails id="w1" packageId="p1" tab="schedules" />
+        ));
+        expect(await screen.findByText('0 9 * * *')).toBeTruthy();
+
+        // Edit: the dialog opens with the cron; the save changes block 3.
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Edit the schedule' })
+        );
+        const dialog = await screen.findByRole('dialog');
+        const cron = within(dialog).getByLabelText<HTMLInputElement>(/^Cron/);
+        expect(cron.value).toBe('0 9 * * *');
+        fireEvent.input(cron, { target: { value: '30 8 * * *' } });
+        fireEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+        await waitFor(() =>
+            expect(api.calls('PUT /api/v1/workflows/w1')).toHaveLength(1)
+        );
+        const edited = (await api
+            .calls('PUT /api/v1/workflows/w1')[0]
+            .json()) as Body;
+        expect(edited.program.blocks).toHaveLength(3);
+        expect(edited.program.blocks.find((b) => b.id === 3)?.params.cron).toBe(
+            '30 8 * * *'
+        );
+        await waitFor(() =>
+            expect(dialog.closest('dialog')?.hasAttribute('open')).toBe(false)
+        );
+
+        // Delete: asked first; a refusal stays in the question.
+        fireEvent.click(
+            await screen.findByRole('button', { name: 'Delete the schedule' })
+        );
+        const question = await screen.findByRole('alertdialog');
+        const yes = question.querySelector('.btn-danger') as HTMLElement;
+        fireEvent.click(yes);
+        expect((await within(question).findByRole('alert')).textContent).toBe(
+            'The workflow changed meanwhile.'
+        );
+        expect(question.closest('dialog')?.hasAttribute('open')).toBe(true);
+
+        fireEvent.click(yes);
+        await waitFor(() =>
+            expect(question.closest('dialog')?.hasAttribute('open')).toBe(false)
+        );
+        // Block 3 and its connection go; the rest stays.
+        const deleted = (await api
+            .calls('PUT /api/v1/workflows/w1')[2]
+            .json()) as Body;
+        expect(deleted.program.blocks.map((b) => b.id)).toEqual([1, 2]);
+        expect(deleted.program.connections.map((c) => c.from)).toEqual([1]);
+    });
+
     it('runs it with a JSON input, refusing what is not JSON', async () => {
         const api = fakeApi(
             routes({
