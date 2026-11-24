@@ -6,7 +6,11 @@ import { endSession, sessionClient } from '@shared/api/session-provider';
 import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { gatewayKeys } from './api';
-import { RealtimeProvider } from './realtime-provider';
+import {
+    RealtimeProvider,
+    useRealtime,
+    useRealtimeEvent,
+} from './realtime-provider';
 import { Op } from './types';
 
 /** A WebSocket the test opens, drops and reads. */
@@ -37,6 +41,12 @@ class FakeSocket {
     open() {
         this.readyState = FakeSocket.OPEN;
         this.onopen?.();
+    }
+    /** A message from the server, as text (as the socket gives it). */
+    deliver(data: unknown) {
+        this.onmessage?.({
+            data: typeof data === 'string' ? data : JSON.stringify(data),
+        });
     }
     /** The connection is gone (the server, the network). */
     drop() {
@@ -83,7 +93,76 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
+const signedIn = {
+    'GET /api/v1/auth/me': () => json(200, user()),
+    'GET /api/v1/roles/me': () => json(200, []),
+    'GET /api/v1/gateway/intents': () => json(200, intents),
+};
+
 describe('RealtimeProvider', () => {
+    it('opens on the handshake ack, pings at half the interval, and hands each event to its handlers', async () => {
+        fakeApi(signedIn);
+        const interval = vi.spyOn(window, 'setInterval');
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const seen: string[] = [];
+        const Probe = () => {
+            const { status, intents: allowed } = useRealtime();
+            // The first handler throws: the others still get the event.
+            useRealtimeEvent('note.shared', () => {
+                throw new Error('handler bug');
+            });
+            useRealtimeEvent('note.shared', (e) =>
+                seen.push(`type ${String(e.id)}`)
+            );
+            useRealtimeEvent('*', (e) => seen.push(`any ${e.type}`));
+            return (
+                <p data-testid="probe">
+                    {status()} {allowed().join(',')}
+                </p>
+            );
+        };
+        const { getByTestId } = renderPage(() => (
+            <RealtimeProvider>
+                <Probe />
+            </RealtimeProvider>
+        ));
+        await waitFor(() => expect(FakeSocket.made).toHaveLength(1));
+        const socket = FakeSocket.made[0];
+        socket.open();
+
+        socket.deliver({
+            op: Op.HandshakeAck,
+            d: {
+                intents: ['blocks', 'notifications'],
+                heartbeatInterval: 2000,
+            },
+        });
+        expect(getByTestId('probe').textContent).toBe(
+            'open blocks,notifications'
+        );
+        expect(interval).toHaveBeenCalledWith(expect.any(Function), 1000);
+
+        socket.deliver({ type: 'note.shared', id: 7 });
+        socket.deliver({ type: 'run.started' });
+        expect(seen).toEqual(['type 7', 'any note.shared', 'any run.started']);
+        expect(error).toHaveBeenCalledOnce();
+
+        // Not JSON, and an event without a type: nothing happens.
+        socket.deliver('not json');
+        socket.deliver({ id: 8 });
+        expect(seen).toHaveLength(3);
+
+        socket.deliver({ op: Op.Error, d: { message: 'unknown intent' } });
+        expect(warn).toHaveBeenCalledWith(
+            'Realtime gateway error:',
+            'unknown intent'
+        );
+        expect(getByTestId('probe').textContent).toBe(
+            'open blocks,notifications'
+        );
+    });
+
     it("opens for a signed-in user, with the intents from the session's cache", async () => {
         fakeApi({
             'GET /api/v1/auth/me': () => json(200, user()),
