@@ -33,7 +33,7 @@ function candidates(
 }
 
 /** The first choice: the caller's connection by the same name, if they have one. */
-export function defaultChoice(
+function defaultChoice(
     needed: PackageConnection,
     mine: ConnectionSummary[]
 ): string {

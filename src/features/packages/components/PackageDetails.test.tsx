@@ -8,7 +8,6 @@ import { pkg } from '@features/packages/fixtures';
 import { usePackage } from '@features/packages/package-nav';
 import PackagePage from '@features/packages/PackagePage';
 import PackageDetails from './PackageDetails';
-import { defaultChoice } from './InstallModal';
 
 const content = {
     version: 2,
@@ -243,9 +242,41 @@ describe('PackageDetails', () => {
         expect(screen.queryByText('3 blocks')).toBeNull();
     });
 
-    it('picks nothing for a connection the caller lacks', () => {
-        expect(defaultChoice({ name: 'bot', provider: 'discord' }, [])).toBe(
-            ''
+    it('picks nothing for a connection the caller lacks, and installs without it', async () => {
+        const api = fakeApi(
+            routes({
+                // Only a connection of another provider.
+                'GET /api/v1/connections': () =>
+                    json(200, [
+                        {
+                            id: 'c2',
+                            provider: 'twitch',
+                            name: 'bot',
+                            authType: 'Manual',
+                            status: 'Active',
+                        },
+                    ]),
+                'POST /api/v1/workflow-packages/p1/install': () =>
+                    json(201, {
+                        package: pkg({ id: 'n0', access: 'Owner' }),
+                        workflows: [{ id: 'n1', name: 'main', key: 'k1' }],
+                        version: 2,
+                        missingConnections: ['bot'],
+                    }),
+            })
         );
+        renderPage(() => <PackageDetails id="p1" />);
+        const install = await screen.findByRole('button', { name: 'Install' });
+        await waitFor(() => expect(install).toHaveProperty('disabled', false));
+        fireEvent.click(install);
+        const select = await screen.findByLabelText<HTMLSelectElement>(/bot/);
+        expect(select.value).toBe('');
+
+        fireEvent.click(screen.getAllByRole('button', { name: 'Install' })[1]);
+        expect(await screen.findByText(/Installed/)).toBeTruthy();
+        const body = (await api
+            .calls('POST /api/v1/workflow-packages/p1/install')[0]
+            .json()) as { connections: Record<string, string> };
+        expect(body.connections).toEqual({});
     });
 });
