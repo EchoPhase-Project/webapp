@@ -163,7 +163,7 @@ export interface RunCompleted {
     runId: string;
     status: string;
     durationMs: number | null;
-    errorCount: number;
+    errorCount: number | null;
 }
 
 /**

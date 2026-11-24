@@ -87,23 +87,37 @@ const completed = {
     errorCount: 2,
 };
 
+/** A completed event as the server sends it (BlockRunEventsNotifier). */
+const completedEvent = (over: Record<string, unknown> = {}) => ({
+    run: { ...completed, ...over },
+});
+
 describe('runCompletedOf', () => {
-    it('reads a whole event', () => {
-        expect(runCompletedOf({ type: 'x', ...completed })).toEqual(completed);
+    it('reads the run under `run`, as the server sends it', () => {
         expect(
-            runCompletedOf({ ...completed, durationMs: null })?.durationMs
-        ).toBeNull();
+            runCompletedOf({ type: 'block_run.completed', ...completedEvent() })
+        ).toEqual(completed);
+        // Both counts may be null, as in the API's run.
+        expect(
+            runCompletedOf(
+                completedEvent({ durationMs: null, errorCount: null })
+            )
+        ).toEqual({ ...completed, durationMs: null, errorCount: null });
     });
 
-    it('answers undefined for a field missing, of another type or renamed', () => {
+    it('answers undefined for a field missing, of another type or renamed, or a flat event', () => {
         const { errorCount: _, ...missing } = completed;
-        expect(runCompletedOf(missing)).toBeUndefined();
+        expect(runCompletedOf({ run: missing })).toBeUndefined();
         expect(
-            runCompletedOf({ ...completed, durationMs: '4000' })
+            runCompletedOf(completedEvent({ durationMs: '4000' }))
         ).toBeUndefined();
-        expect(runCompletedOf({ ...completed, runId: 5 })).toBeUndefined();
+        expect(runCompletedOf(completedEvent({ runId: 5 }))).toBeUndefined();
         const { status, ...rest } = completed;
-        expect(runCompletedOf({ ...rest, state: status })).toBeUndefined();
+        expect(
+            runCompletedOf({ run: { ...rest, state: status } })
+        ).toBeUndefined();
+        // The shape before: the fields at the top, not under `run`.
+        expect(runCompletedOf({ type: 'x', ...completed })).toBeUndefined();
     });
 });
 
@@ -189,7 +203,7 @@ describe('run events', () => {
         );
         const lists = api.calls(WORKFLOW_RUNS).length;
 
-        emit('block_run.completed', { ...completed, runId: 'r4' });
+        emit('block_run.completed', completedEvent({ runId: 'r4' }));
 
         await waitFor(() =>
             expect(rows()).toEqual([
@@ -217,7 +231,7 @@ describe('run events', () => {
         followRunEvents(value, sessionClient());
         await waitFor(() => expect(rows()).toEqual(['running']));
 
-        emit('block_run.completed', { runId: 'r5', state: 'failed' });
+        emit('block_run.completed', { run: { runId: 'r5', state: 'failed' } });
 
         await waitFor(() => expect(firstPages(api, WORKFLOW_RUNS)).toBe(2));
         expect(rows()).toEqual(['running']);

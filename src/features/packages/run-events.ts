@@ -12,17 +12,26 @@ export interface RunEventFeed {
     subscribe: (type: string, handler: (event: Event) => void) => () => void;
 }
 
+const isRecord = (value: unknown): value is Event =>
+    typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isCount = (value: unknown): value is number | null =>
+    value === null || typeof value === 'number';
+
 /**
  * What a `block_run.completed` event says, when it has the shape the run
- * lists show; undefined otherwise. Realtime events are not in the API
- * contract: nothing else checks them.
+ * lists show; undefined otherwise. The server sends the run under `run`
+ * (BlockRunEventsNotifier: `{ type, run: { runId, status, durationMs,
+ * errorCount } }`); the two counts may be null, as in the API's run.
+ * Realtime events are not in the API contract: nothing else checks them.
  */
 export function runCompletedOf(event: Event): RunCompleted | undefined {
-    const { runId, status, durationMs, errorCount } = event;
+    const run = event.run;
+    if (!isRecord(run)) return undefined;
+    const { runId, status, durationMs, errorCount } = run;
     if (typeof runId !== 'string' || typeof status !== 'string')
         return undefined;
-    if (durationMs !== null && typeof durationMs !== 'number') return undefined;
-    if (typeof errorCount !== 'number') return undefined;
+    if (!isCount(durationMs) || !isCount(errorCount)) return undefined;
     return { runId, status, durationMs, errorCount };
 }
 
