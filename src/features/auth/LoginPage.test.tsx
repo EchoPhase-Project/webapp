@@ -53,31 +53,6 @@ describe('LoginPage', () => {
         await expectNoA11yViolations();
     });
 
-    it('signs in and leaves the form once the user is known', async () => {
-        let signedIn = false;
-        fakeApi({
-            'GET /api/v1/auth/me': () =>
-                signedIn
-                    ? json(200, user())
-                    : json(401, { code: 'Unauthorized', message: 'no' }),
-            'GET /api/v1/roles/me': () => json(200, []),
-            'POST /api/v1/auth/login': () => {
-                signedIn = true;
-                return new Response(null, { status: 204 });
-            },
-        });
-        renderPage(() => <LoginPage />, '/auth/login');
-
-        const form = await loginForm();
-        fireEvent.click(
-            await within(form).findByRole('button', { name: 'Log in' })
-        );
-
-        await waitFor(() =>
-            expect(screen.queryByRole('heading', { name: 'Log in' })).toBe(null)
-        );
-    });
-
     it('has one h1 from its header, and a link to sign up that keeps ?next=', async () => {
         fakeApi(signedOut);
         renderPage(() => <LoginPage />, '/auth/login?next=%2Ffiles');
@@ -89,7 +64,10 @@ describe('LoginPage', () => {
         await expectNoA11yViolations();
     });
 
-    it('opens ?next= in a new session once signed in', async () => {
+    it.each([
+        ['/auth/login', '/'],
+        ['/auth/login?next=%2Ffiles%3Fview%3Dgrid', '/files?view=grid'],
+    ])('signs in at %s and opens %s in a new session', async (from, to) => {
         let signedIn = false;
         fakeApi({
             'GET /api/v1/auth/me': () =>
@@ -102,16 +80,14 @@ describe('LoginPage', () => {
                 return new Response(null, { status: 204 });
             },
         });
-        const { history } = renderPage(
-            () => <LoginPage />,
-            '/auth/login?next=%2Ffiles%3Fview%3Dgrid'
-        );
+        const { history } = renderPage(() => <LoginPage />, from);
 
         const form = await loginForm();
         fireEvent.click(
             await within(form).findByRole('button', { name: 'Log in' })
         );
 
-        await waitFor(() => expect(history.get()).toBe('/files?view=grid'));
+        await waitFor(() => expect(history.get()).toBe(to));
+        expect(screen.queryByRole('heading', { name: 'Log in' })).toBeNull();
     });
 });
