@@ -5,12 +5,16 @@
   },
   "login": {
     "title": "Autentificare",
+    "description": "Autentificare în EchoPhase.",
+    "lead": "Bine ai revenit.",
     "submit": "Intră în cont",
     "switch_question": "Nu ai cont?",
     "switch": "Înregistrează-te"
   },
   "signup": {
     "title": "Înregistrare",
+    "description": "Creează un cont EchoPhase.",
+    "lead": "Un singur cont pentru workflow-urile, notițele și fișierele tale.",
     "submit": "Creează cont",
     "switch_question": "Ai deja cont?",
     "switch": "Autentifică-te",

@@ -5,12 +5,16 @@
   },
   "login": {
     "title": "Вход",
+    "description": "Вход в EchoPhase.",
+    "lead": "С возвращением.",
     "submit": "Войти",
     "switch_question": "Нет аккаунта?",
     "switch": "Зарегистрироваться"
   },
   "signup": {
     "title": "Регистрация",
+    "description": "Создайте аккаунт EchoPhase.",
+    "lead": "Один аккаунт для ваших workflow, заметок и файлов.",
     "submit": "Создать аккаунт",
     "switch_question": "Уже есть аккаунт?",
     "switch": "Войти",
