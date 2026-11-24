@@ -2,9 +2,11 @@
 
 This repository contains the EchoPhase web client. The client uses SolidJS
 and Vite, and nginx serves it. The full rules for persons are in
-[CONTRIBUTING.md](CONTRIBUTING.md). This file is the short version for coding
-agents. If this file and CONTRIBUTING.md are different, CONTRIBUTING.md and the
-code are correct. Then correct this file.
+[CONTRIBUTING.md](CONTRIBUTING.md) and in the files of
+[docs/contributing/](docs/contributing/), one for each topic. The reasons
+for the large decisions are in [docs/adr/](docs/adr/). This file is the
+short version for coding agents. If this file and those files are
+different, those files and the code are correct. Then correct this file.
 
 ## Commands
 
@@ -60,6 +62,8 @@ local runs only. If `CI` is set, ESLint runs without the cache.
 
 ### Imports
 
+The full rules are in [layout.md](docs/contributing/layout.md).
+
 - Import through the aliases: `@app`, `@features`, `@shared`, `@dev`,
   `@static`. Do not use `../`.
 - A feature imports only `shared` and its own files.
@@ -67,6 +71,8 @@ local runs only. If `CI` is set, ESLint runs without the cache.
 - ESLint enforces these rules.
 
 ### Developer aids
+
+The full rules are in [code-style.md](docs/contributing/code-style.md).
 
 - Put a developer aid behind `import.meta.env.DEV_TOOLS`. Do not read
   `import.meta.env.DEV` directly. ESLint enforces this rule.
@@ -77,11 +83,16 @@ local runs only. If `CI` is set, ESLint runs without the cache.
 
 ### Solid
 
+The full rules are in [code-style.md](docs/contributing/code-style.md).
+
 - Do not destructure props. Read `props.x` in JSX or in effects. Use
   `splitProps`.
 - The `solid/reactivity` rule causes an error.
 
 ### API
+
+The full rules are in [data.md](docs/contributing/data.md) and
+[forms.md](docs/contributing/forms.md).
 
 - Do not edit `src/shared/api/schema.d.ts`. The generator makes this file from
   the server contract.
@@ -178,6 +189,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 
 ### Session
 
+The full rules are in [data.md](docs/contributing/data.md#the-session).
+
 - Change the user only with `startSession` and `endSession`.
 - Keep user data in Query, in a component under `SessionProvider`, or in
   `sessionScoped` from `shared/api/session-provider.tsx`.
@@ -187,6 +200,10 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 - To reset an external system for a new user, use `onSessionChange`.
 
 ### UI and styles
+
+The full rules are in [ui.md](docs/contributing/ui.md),
+[styles.md](docs/contributing/styles.md), and
+[layout.md](docs/contributing/layout.md).
 
 - Before you write new markup, use the components in `src/shared/ui`:
   Button, LinkButton, HeaderButton, Tabs, NavTabs, Field, TimeZoneField, TextArea,
@@ -301,6 +318,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 
 ### a11y (accessibility)
 
+The full rules are in [a11y.md](docs/contributing/a11y.md).
+
 - The keyboard must get access to all controls.
 - The focus must be visible.
 - Give a field its frame with `mix.input-frame`. Then its focus ring shows
@@ -321,6 +340,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 
 ### i18n (translations)
 
+The full rules are in [i18n.md](docs/contributing/i18n.md).
+
 - Send each string that the user sees through i18n:
   `t('key', 'English fallback')`.
 - If a string contains a value, give the value to `t()`:
@@ -333,12 +354,17 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 
 ### Privacy and public pages
 
+The full rules are in [privacy.md](docs/contributing/privacy.md) and
+[new-page.md](docs/contributing/new-page.md).
+
 - Code that collects visitor data must go through `shared/consent/consent.ts`
   and `shared/consent/optional-services.ts`.
 - If you add a public page, add an `Allow:` line for it in
   `public/robots.txt`.
 
 ### Tests
+
+The full rules are in [tests.md](docs/contributing/tests.md).
 
 - Start each component test with `// @vitest-environment jsdom`.
 - Use `fakeApi()` and `renderPage()` from `shared/testing`.
