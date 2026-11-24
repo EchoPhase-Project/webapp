@@ -1,5 +1,19 @@
-// The sign-in pages: the form on a card of its own width under the page's
-// header. Scoped to .auth-*: nothing here styles the rest of the site.
+// The sign-in pages: the header and the form on a card of its own width,
+// in the middle of the page (across, and down in the room above the footer),
+// as sign-in pages usually are. Scoped to .auth-*: nothing here styles the
+// rest of the site.
+
+.auth-page {
+  flex: 1;
+  align-content: center;
+  justify-items: center;
+  padding-block: 2em;
+
+  .page-header {
+    justify-content: center;
+    text-align: center;
+  }
+}
 
 .auth-card {
   width: min(24rem, 100%);
