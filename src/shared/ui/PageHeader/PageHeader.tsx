@@ -14,9 +14,24 @@ type PageHeaderProps = {
     docs?: string;
     /** A line of small print under it (a date, a count). */
     meta?: JSX.Element;
-    /** The page's main action, beside the title. */
+    /** The page's main action, beside the title (under the text in `hero`). */
     actions?: JSX.Element;
+    /**
+     * A brand page's opening (About): the same parts on a card with the
+     * brand pattern, larger, the actions under the text. Only where
+     * `.patterned` is allowed.
+     */
+    hero?: boolean;
 };
+
+const frameClass = (props: PageHeaderProps, loading = false) =>
+    [
+        'page-header',
+        loading && 'page-header--loading',
+        props.hero && 'page-header--hero card patterned',
+    ]
+        .filter(Boolean)
+        .join(' ');
 
 /**
  * A page's opening: eyebrow, title and what the page is for, its main action
@@ -26,14 +41,14 @@ type PageHeaderProps = {
  * and shows a bar in place of each one that is empty: the eyebrow, the h1
  * (which stays a real h1, for the outline and the focus) and two lines of
  * description. The meta line goes; the actions keep their room but do not
- * show.
+ * show. `hero` keeps its card and pattern while it loads.
  */
 export default function PageHeader(props: PageHeaderProps) {
     const { t } = useI18n();
     const loading = useSkeleton();
     return (
         <Show when={!loading()} fallback={<Loading {...props} />}>
-            <div class="page-header">
+            <div class={frameClass(props)}>
                 <div class="page-header-text">
                     <Show when={props.eyebrow}>
                         <p class="page-eyebrow">{props.eyebrow}</p>
@@ -72,7 +87,7 @@ export default function PageHeader(props: PageHeaderProps) {
 /** The same frame, with bars where the texts are not there yet. */
 function Loading(props: PageHeaderProps) {
     return (
-        <div class="page-header page-header--loading">
+        <div class={frameClass(props, true)}>
             <div class="page-header-text">
                 <p class="page-eyebrow">
                     {props.eyebrow || <SkeletonText width="6em" />}

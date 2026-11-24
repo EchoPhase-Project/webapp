@@ -68,4 +68,31 @@ describe('PageHeader', () => {
         ).not.toBeNull();
         await expectNoA11yViolations();
     });
+
+    it('as a hero: on a patterned card, the actions under the text, also while it loads', async () => {
+        const { container } = render(() => (
+            <I18nProvider>
+                <PageHeader
+                    hero
+                    eyebrow="About"
+                    title="One place"
+                    description="What it is."
+                    actions={<Button>Start</Button>}
+                />
+                <SkeletonScope when>
+                    <PageHeader hero title="" />
+                </SkeletonScope>
+            </I18nProvider>
+        ));
+        const [shown, loading] = container.querySelectorAll('.page-header');
+        expect(shown?.className).toBe(
+            'page-header page-header--hero card patterned'
+        );
+        expect(loading?.classList.contains('page-header--hero')).toBe(true);
+        expect(loading?.classList.contains('page-header--loading')).toBe(true);
+        expect(
+            screen.getByRole('heading', { level: 1, name: 'One place' })
+        ).toBeTruthy();
+        await expectNoA11yViolations();
+    });
 });

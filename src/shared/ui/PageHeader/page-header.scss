@@ -65,3 +65,43 @@
 .page-actions--loading {
   visibility: hidden;
 }
+
+// A brand page's opening (hero, About): on a card with the pattern, larger,
+// the actions under the text. Two classes: over the padding of .card, which
+// global.scss sets after this file.
+.page-header.page-header--hero {
+  --pattern-size: cover;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 44px 40px;
+
+  @include comp.media('max-width: 600px') {
+    padding: 28px 22px;
+  }
+
+  .page-header-text {
+    gap: 12px;
+    max-width: none;
+
+    h1 {
+      max-width: 22em;
+      font-size: 2rem;
+    }
+  }
+
+  .page-description {
+    max-width: 40em;
+    font-size: 1.02rem;
+  }
+
+  .page-actions {
+    gap: 10px;
+  }
+
+  // A quiet action on the pattern: still a button, with an edge.
+  .page-actions .btn.btn-ghost {
+    border-color: color-mix(in srgb, var(--text) 18%, transparent);
+  }
+}

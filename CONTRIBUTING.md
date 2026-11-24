@@ -368,6 +368,10 @@ Select the control for a choice from a list with these rules:
   line in all fonts, and screen readers hear a comma. A wrapped line does
   not start with a dot. Inside a translated string, keep the `·`
   character. Translators must not get markup.
+- A brand page (About) starts with `<PageHeader hero>`. It has the same
+  parts on a card with the pattern, larger, with the actions under the
+  text. Do not write a hero of your own. Thus, the title, the skeleton, and
+  the focus on the `h1` stay the same on all pages.
 - Use the flowing-lines pattern (`.patterned`, `Card patterned`) only for
   brand areas: the sign-in card, empty states, the outage screen, the About
   page. Do not use it on tables, menus, or forms.

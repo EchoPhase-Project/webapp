@@ -6,6 +6,7 @@ import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
 import { SIGNUP_PATH } from '@shared/api/auth-guards';
 import Card from '@shared/ui/Card';
+import PageHeader from '@shared/ui/PageHeader';
 import {
     IconApi,
     IconBolt,
@@ -98,31 +99,35 @@ export default function AboutPage() {
 
     return (
         <div class="about">
-            <Card patterned class="about-hero">
-                <p class="about-eyebrow">{t('eyebrow', 'About EchoPhase')}</p>
-                <h1>
-                    {t('heading', 'Bots and services, connected in one place')}
-                </h1>
-                <p class="about-lead">
-                    {t(
-                        'lead',
-                        'EchoPhase is an open-source platform for managing bots and connecting services: link your accounts, automate tasks with workflows and reach everything through one API.'
-                    )}
-                </p>
-                <div class="about-actions">
-                    <LinkButton
-                        href={isAuthenticated() ? '/api-clients' : SIGNUP_PATH}
-                    >
-                        {isAuthenticated()
-                            ? t('cta.signed_in', 'Your API clients')
-                            : t('cta.start', 'Get started')}
-                    </LinkButton>
-                    <LinkButton variant="ghost" href={Org} target="_blank">
-                        <IconBrandGithub />
-                        {t('cta.source', 'Source code')}
-                    </LinkButton>
-                </div>
-            </Card>
+            <PageHeader
+                hero
+                eyebrow={t('eyebrow', 'About EchoPhase')}
+                title={t(
+                    'heading',
+                    'Bots and services, connected in one place'
+                )}
+                description={t(
+                    'lead',
+                    'EchoPhase is an open-source platform for managing bots and connecting services: link your accounts, automate tasks with workflows and reach everything through one API.'
+                )}
+                actions={
+                    <>
+                        <LinkButton
+                            href={
+                                isAuthenticated() ? '/api-clients' : SIGNUP_PATH
+                            }
+                        >
+                            {isAuthenticated()
+                                ? t('cta.signed_in', 'Your API clients')
+                                : t('cta.start', 'Get started')}
+                        </LinkButton>
+                        <LinkButton variant="ghost" href={Org} target="_blank">
+                            <IconBrandGithub />
+                            {t('cta.source', 'Source code')}
+                        </LinkButton>
+                    </>
+                }
+            />
 
             <section aria-labelledby="about-features">
                 <h2 id="about-features">

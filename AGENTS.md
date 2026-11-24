@@ -258,6 +258,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
   `createClipboard`. If a `Popover` can close the panel, do not use
   `createDismiss`.
 - Each page starts with `PageHeader`.
+- A brand page (About) starts with `PageHeader hero`. Do not make a hero
+  of your own. Use `hero` only where `.patterned` is allowed.
 - Each page sets its title and description with
   `usePageMeta(() => ({ title, description }))`. Do not add " · EchoPhase".
 - Put the content of a page in an element with the `page-stack` class.

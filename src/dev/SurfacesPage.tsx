@@ -173,6 +173,18 @@ export default function SurfacesPage() {
                         />
                     </div>
                 </Card>
+                <PageHeader
+                    hero
+                    eyebrow="About"
+                    title="A brand page's opening"
+                    description="PageHeader hero: the same parts on a patterned card, larger, the actions under the text. Only on brand pages (About)."
+                    actions={
+                        <>
+                            <Button>Get started</Button>
+                            <Button variant="ghost">Source code</Button>
+                        </>
+                    }
+                />
             </DevSection>
 
             <DevSection
