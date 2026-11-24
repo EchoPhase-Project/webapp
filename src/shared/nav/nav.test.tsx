@@ -184,6 +184,23 @@ describe('DesktopNav', () => {
     });
 });
 
+describe('DesktopNav, empty', () => {
+    it('marks a rail with nothing in it, so it does not widen', () => {
+        renderPage(() => (
+            <DesktopNav nav={model({ sections: [], account: null })} />
+        ));
+        const rail = screen.getByRole('navigation');
+        expect(rail.classList.contains('navbar--empty')).toBe(true);
+    });
+
+    it('does not mark one with pages in it', () => {
+        renderPage(() => <DesktopNav nav={model({ account: null })} />);
+        expect(
+            screen.getByRole('navigation').classList.contains('navbar--empty')
+        ).toBe(false);
+    });
+});
+
 describe('MobileNav', () => {
     afterEach(() => cleanup());
 

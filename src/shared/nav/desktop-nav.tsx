@@ -154,6 +154,11 @@ export function DesktopNav(props: { nav: NavModel }) {
         <nav
             ref={nav}
             class="navbar navbar--desktop"
+            // Nothing in it (signed out): it does not widen to show nothing.
+            classList={{
+                'navbar--empty':
+                    props.nav.sections.length === 0 && !props.nav.account,
+            }}
             aria-label={t('nav.label', 'Main navigation')}
             onMouseLeave={close}
             onFocusOut={(e) => {

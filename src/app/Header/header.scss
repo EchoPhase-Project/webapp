@@ -47,7 +47,7 @@
 // separate selectors: :has() cannot hold another :has(), and one selector
 // the browser does not take would drop the whole rule.
 @include comp.media('min-width: 768px') {
-  .container:has(.navbar--desktop:hover) .header::after,
+  .container:has(.navbar--desktop:not(.navbar--empty):hover) .header::after,
   .container:has(.navbar--desktop :focus-visible) .header::after,
   .container:has(.navbar--desktop .nav-link[aria-expanded='true'])
     .header::after {

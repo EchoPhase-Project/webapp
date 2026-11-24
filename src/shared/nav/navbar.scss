@@ -104,8 +104,9 @@
 
   // Wide while the pointer or the keyboard is in it, and while one of its
   // lists is open: a list in the top layer does not keep the rail's :hover
-  // in every browser, and it sits beside the wide rail.
-  &:hover,
+  // in every browser, and it sits beside the wide rail. An empty rail
+  // (signed out) stays narrow: there is nothing to show.
+  &:not(.navbar--empty):hover,
   &:has(:focus-visible),
   &:has(.nav-link[aria-expanded='true']) {
     width: var(--nav-expanded);
