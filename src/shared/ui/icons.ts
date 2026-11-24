@@ -18,6 +18,7 @@ import {
     IconAdjustmentsHorizontal as TablerIconAdjustmentsHorizontal,
     IconApi as TablerIconApi,
     IconArrowLeft as TablerIconArrowLeft,
+    IconArrowUpRight as TablerIconArrowUpRight,
     IconBell as TablerIconBell,
     IconBolt as TablerIconBolt,
     IconBox as TablerIconBox,
@@ -93,6 +94,9 @@ export const IconAdjustmentsHorizontal = /* @__PURE__ */ decorative(
 );
 export const IconApi = /* @__PURE__ */ decorative(TablerIconApi);
 export const IconArrowLeft = /* @__PURE__ */ decorative(TablerIconArrowLeft);
+export const IconArrowUpRight = /* @__PURE__ */ decorative(
+    TablerIconArrowUpRight
+);
 export const IconBell = /* @__PURE__ */ decorative(TablerIconBell);
 export const IconBolt = /* @__PURE__ */ decorative(TablerIconBolt);
 export const IconBox = /* @__PURE__ */ decorative(TablerIconBox);

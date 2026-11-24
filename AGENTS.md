@@ -244,6 +244,8 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
   ESLint enforces this rule.
 - Use `Button` for an action on the page. Use `LinkButton` for a move to a
   page, a download, or another site.
+- `LinkButton` adds the arrow and `rel` to a link to another site. Do not
+  add an arrow icon or `rel="noopener noreferrer"` yourself.
 - A `ConfirmDialog` always asks about an item. `createConfirm` gives it
   `item` and `onConfirm(item)`. If the dialog is about the page, give the
   entity, or a word such as `'all'`, to `ask`. Do not use `open={!!x()}`

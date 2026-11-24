@@ -205,6 +205,10 @@ and the line on the index. The test renders each page from the list.
 - Use `Button` for an action on the page. Use `LinkButton` for a move to a
   page, a download, or another site. A screen reader then tells the user
   the correct type of control.
+- `LinkButton` adds an arrow (↗) and `rel="noopener noreferrer"` to a link
+  to another site. With `target="_blank"`, screen readers also hear "opens
+  in a new tab". Thus, the user knows before the click that the link leaves
+  the app.
 - If a full card or a full row opens an item, you can use `<button>`. Then
   write `eslint-disable-next-line no-restricted-syntax` with the reason on the
   line above it. A card is not an action button, and the `.btn` style does

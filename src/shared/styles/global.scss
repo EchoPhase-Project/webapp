@@ -466,6 +466,14 @@ a.btn {
   text-decoration: none;
 }
 
+// The arrow (↗) at the end of a LinkButton to another site: the size of
+// the text (1em), so the button keeps its height.
+.btn-external {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
 // What leads to a destructive action (it asks first): red, but outlined so
 // it does not outshout the page.
 .btn.btn-danger-outline {

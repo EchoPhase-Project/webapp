@@ -157,7 +157,6 @@ export default function ButtonsPage() {
                         variant="ghost"
                         href="https://github.com/EchoPhase-Project"
                         target="_blank"
-                        rel="noopener noreferrer"
                     >
                         Another site
                     </LinkButton>

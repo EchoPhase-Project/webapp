@@ -117,12 +117,7 @@ export default function AboutPage() {
                             ? t('cta.signed_in', 'Your API clients')
                             : t('cta.start', 'Get started')}
                     </LinkButton>
-                    <LinkButton
-                        variant="ghost"
-                        href={Org}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <LinkButton variant="ghost" href={Org} target="_blank">
                         <IconBrandGithub />
                         {t('cta.source', 'Source code')}
                     </LinkButton>
