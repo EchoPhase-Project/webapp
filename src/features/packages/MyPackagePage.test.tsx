@@ -220,6 +220,32 @@ describe('MyPackagePage', () => {
         ).toMatchObject({ tags: ['discord-bot'], visibility: 'Private' });
     });
 
+    it('takes the last tag back with Backspace in the empty input, and keeps it while text is typed', async () => {
+        fakeApi(
+            routes({
+                'GET /api/v1/workflow-packages/p1/shares': () => json(200, []),
+            })
+        );
+        renderPage(() => <MyPackagePage />, '/packages/p1/settings', PATTERN);
+        const input = await screen.findByLabelText('Tags');
+        fireEvent.input(input, { target: { value: 'raid' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+        const capsules = () =>
+            [...document.querySelectorAll('.package-tag')].map((c) =>
+                c.textContent?.trim()
+            );
+        expect(capsules()).toEqual(['discord-bot', 'raid']);
+
+        // Text in the input: Backspace edits the text, not the tags.
+        fireEvent.input(input, { target: { value: 'x' } });
+        fireEvent.keyDown(input, { key: 'Backspace' });
+        expect(capsules()).toHaveLength(2);
+
+        fireEvent.input(input, { target: { value: '' } });
+        fireEvent.keyDown(input, { key: 'Backspace' });
+        expect(capsules()).toEqual(['discord-bot']);
+    });
+
     it('keeps an unsaved choice in one card when another card saves', async () => {
         // The server keeps what it is sent: each save is a new package.
         let saved = pkg({ access: 'Owner', latestVersion: 0, workflows: 2 });
