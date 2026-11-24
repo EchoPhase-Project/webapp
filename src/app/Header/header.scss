@@ -144,11 +144,15 @@
   text-decoration: none;
   color: var(--on-primary);
   background-color: var(--primary);
-  transition: background-color var(--transition-speed) ease-in;
+  transition:
+    color var(--transition-speed) linear,
+    background-color var(--transition-speed) linear;
 
+  // As a .btn: the colours swap. A shade of the fill did not show in the
+  // dark theme, where the fill and the text are both light.
   &:hover {
-    color: var(--on-primary);
-    background-color: color-mix(in srgb, var(--primary) 85%, var(--text));
+    color: var(--primary);
+    background-color: var(--on-primary);
   }
 
   @media (prefers-reduced-motion: reduce) {
