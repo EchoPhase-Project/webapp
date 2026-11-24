@@ -113,7 +113,7 @@ export default function AboutPage() {
                         href={
                             isAuthenticated()
                                 ? '/api-clients'
-                                : '/auth?mode=signup'
+                                : '/auth/register'
                         }
                     >
                         {isAuthenticated()

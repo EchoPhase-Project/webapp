@@ -40,8 +40,8 @@ const Layout: Component<ParentProps> = (props) => {
     // patched in place from the event.
     onCleanup(followRunEvents(realtime, queryClient));
     const location = useLocation();
-    // The sign-in page stands alone: nowhere to go before signing in.
-    const showNav = () => location.pathname !== '/auth';
+    // On the sign-in pages the bar's own "Log in" would lead to the page.
+    const onAuth = () => /^\/auth(\/|$)/.test(location.pathname);
 
     const loading = createPageLoading();
 
@@ -67,13 +67,12 @@ const Layout: Component<ParentProps> = (props) => {
     // it on desktop. Tab order: the skip link, the logo and the bar's
     // buttons, the rail, then the page.
     return (
-        <div class="container" classList={{ 'container--rail': showNav() }}>
+        <div class="container">
             <a class="skip-link" href="#main">
                 {t('nav.skip', 'Skip to content')}
             </a>
 
             <Header
-                rail={showNav()}
                 actions={
                     <>
                         <Show when={isAuthenticated()}>
@@ -81,7 +80,7 @@ const Layout: Component<ParentProps> = (props) => {
                             <NotificationBell feed={realtime} />
                         </Show>
                         {/* Phones have no bar while signed out: signing in is here. */}
-                        <Show when={user() === null && showNav()}>
+                        <Show when={user() === null && !onAuth()}>
                             <A href="/auth" class="header-button header-login">
                                 {t('nav.login', 'Log in')}
                             </A>
@@ -90,9 +89,7 @@ const Layout: Component<ParentProps> = (props) => {
                 }
             />
 
-            <Show when={showNav()}>
-                <NavBuilder nav={nav()} />
-            </Show>
+            <NavBuilder nav={nav()} />
 
             {/* The page beside the rail: main and the footer, clear of it,
                 as wide as the page's type allows. */}

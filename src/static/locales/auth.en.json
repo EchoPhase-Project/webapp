@@ -5,12 +5,16 @@
   },
   "login": {
     "title": "Log in",
+    "description": "Log in to EchoPhase.",
+    "lead": "Welcome back.",
     "submit": "Log in",
     "switch_question": "No account yet?",
     "switch": "Sign up"
   },
   "signup": {
     "title": "Sign up",
+    "description": "Create an EchoPhase account.",
+    "lead": "One account for your workflows, notes and files.",
     "submit": "Create account",
     "switch_question": "Already have an account?",
     "switch": "Log in",

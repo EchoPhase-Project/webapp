@@ -7,11 +7,11 @@ import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
 import { createForm } from '@shared/ui/forms/form';
+import { authHref } from './AuthShell';
 
 export default function RegisterForm(props: {
     /** Where to go once signed up (?next=). */
     next?: string;
-    onSwitch: () => void;
 }) {
     const i18n = useI18n();
     const t = useLocalizer('auth');
@@ -36,8 +36,6 @@ export default function RegisterForm(props: {
 
     return (
         <form class="vert-form" onSubmit={handleRegister} noValidate>
-            <h1 class="form-title">{t('signup.title', 'Sign up')}</h1>
-
             <ErrorSummary {...form.summary} />
 
             <Field
@@ -79,9 +77,9 @@ export default function RegisterForm(props: {
 
             <p class="auth-switch">
                 {t('signup.switch_question', 'Already have an account?')}{' '}
-                <Button variant="link" onClick={() => props.onSwitch()}>
+                <A href={authHref('/auth', props.next)}>
                     {t('signup.switch', 'Log in')}
-                </Button>
+                </A>
             </p>
         </form>
     );

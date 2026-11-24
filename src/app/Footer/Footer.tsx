@@ -77,7 +77,7 @@ export default function Footer() {
                       }
                     : {
                           text: t('footer.start', 'Get started'),
-                          href: '/auth?mode=signup',
+                          href: '/auth/register',
                       },
             ],
         },

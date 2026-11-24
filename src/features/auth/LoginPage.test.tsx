@@ -4,24 +4,23 @@ import { fireEvent, screen, waitFor, within } from '@solidjs/testing-library';
 import { fakeApi, json, user } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { expectNoA11yViolations } from '@shared/testing/axe';
-import AuthPage from './AuthPage';
+import LoginPage from './LoginPage';
 
 const signedOut = {
     'GET /api/v1/auth/me': () =>
         json(401, { code: 'Unauthorized', message: 'no' }),
 };
 
-/** The login side's form (both sides are in the page; one is inert). */
+/** The login form, under the page's header. */
 const loginForm = async () => {
-    const form = (
-        await screen.findByRole('heading', { name: 'Log in' })
-    ).closest('form') as HTMLFormElement;
+    await screen.findByRole('heading', { level: 1, name: 'Log in' });
+    const form = document.querySelector('form') as HTMLFormElement;
     // Its inputs are enabled once the translations are in.
     await within(form).findByRole('button', { name: 'Log in' });
     return form;
 };
 
-describe('AuthPage', () => {
+describe('LoginPage', () => {
     it('shows a refused login at the form top, which takes the focus', async () => {
         const api = fakeApi({
             ...signedOut,
@@ -31,7 +30,7 @@ describe('AuthPage', () => {
                     message: 'Wrong username or password.',
                 }),
         });
-        renderPage(() => <AuthPage />, '/auth');
+        renderPage(() => <LoginPage />, '/auth');
 
         const form = await loginForm();
         fireEvent.input(within(form).getByLabelText('Username'), {
@@ -67,7 +66,7 @@ describe('AuthPage', () => {
                 return new Response(null, { status: 204 });
             },
         });
-        renderPage(() => <AuthPage />, '/auth');
+        renderPage(() => <LoginPage />, '/auth');
 
         const form = await loginForm();
         fireEvent.click(
@@ -79,34 +78,26 @@ describe('AuthPage', () => {
         );
     });
 
-    it('shows a sign-up field error under its field, which takes the focus', async () => {
-        fakeApi({
-            ...signedOut,
-            'POST /api/v1/auth/register': () =>
-                json(400, [
-                    {
-                        code: 'TestTaken',
-                        message: 'That username is taken.',
-                        field: 'username',
-                    },
-                ]),
-        });
-        renderPage(() => <AuthPage />, '/auth?mode=signup');
-
-        await screen.findByRole('heading', { name: 'Sign up' });
-        fireEvent.click(
-            await screen.findByRole('button', { name: 'Create account' })
-        );
-
-        const input = document.getElementById('register-username');
-        await waitFor(() =>
-            expect(input?.getAttribute('aria-invalid')).toBe('true')
-        );
-        expect(document.activeElement).toBe(input);
+    it('has one h1 from its header, and a link to sign up that keeps ?next=', async () => {
+        fakeApi(signedOut);
+        renderPage(() => <LoginPage />, '/auth?next=%2Ffiles');
+        await loginForm();
+        expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
         expect(
-            document.getElementById('register-username-error')?.textContent
-        ).toBe('That username is taken.');
+            screen.getByRole('link', { name: 'Sign up' }).getAttribute('href')
+        ).toBe('/auth/register?next=%2Ffiles');
         await expectNoA11yViolations();
+    });
+
+    it('sends an old ?mode=signup address to /auth/register', async () => {
+        fakeApi(signedOut);
+        const { history } = renderPage(
+            () => <LoginPage />,
+            '/auth?mode=signup&next=%2Ffiles'
+        );
+        await waitFor(() =>
+            expect(history.get()).toBe('/auth/register?next=%2Ffiles')
+        );
     });
 
     it('opens ?next= in a new session once signed in', async () => {
@@ -123,7 +114,7 @@ describe('AuthPage', () => {
             },
         });
         const { history } = renderPage(
-            () => <AuthPage />,
+            () => <LoginPage />,
             '/auth?next=%2Ffiles%3Fview%3Dgrid'
         );
 

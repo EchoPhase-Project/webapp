@@ -78,19 +78,12 @@ describe('Layout', () => {
         const bar = screen.getByRole('banner');
         const home = within(bar).getByRole('link', { name: 'Home' });
         expect(home.getAttribute('href')).toBe('/');
-        expect(bar.classList.contains('header--rail')).toBe(true);
 
         const rail = screen.getByRole('navigation', {
             name: 'Main navigation',
         });
         expect(rail.contains(home)).toBe(false);
         expect(within(rail).queryByRole('link', { name: 'Home' })).toBeNull();
-
-        // The page keeps clear of the rail.
-        const page = document.querySelector('.container-page');
-        expect(page?.parentElement?.classList.contains('container--rail')).toBe(
-            true
-        );
 
         // Tab order: the skip link, the logo, the bar's buttons, the rail,
         // the page.
@@ -125,7 +118,7 @@ describe('Layout', () => {
         expect(bar.contains(rail)).toBe(false);
     });
 
-    it('has the bar with the logo on /auth, and no rail', async () => {
+    it('has the bar and the rail on /auth too, without the bar\'s "Log in"', async () => {
         renderLayout('/auth');
         await screen.findByRole('heading', { name: 'A page' });
 
@@ -133,15 +126,10 @@ describe('Layout', () => {
         expect(
             within(bar).getByRole('link', { name: 'Home' }).getAttribute('href')
         ).toBe('/');
-        expect(bar.classList.contains('header--rail')).toBe(false);
+        expect(bar.querySelector('.header-login')).toBeNull();
         expect(
-            screen.queryByRole('navigation', { name: 'Main navigation' })
-        ).toBeNull();
-        expect(
-            document
-                .querySelector('.container')
-                ?.classList.contains('container--rail')
-        ).toBe(false);
+            screen.getByRole('navigation', { name: 'Main navigation' })
+        ).toBeTruthy();
 
         await expectNoA11yViolations();
     });

@@ -1,45 +1,13 @@
-// The sign-in page: one card in the middle of the page, turning over between
-// signing in and signing up. Scoped to .auth-*: nothing here styles the rest
-// of the site.
+// The sign-in pages: the form on a card of its own width under the page's
+// header. Scoped to .auth-*: nothing here styles the rest of the site.
 
-.auth-wrapper {
-  // Fills the page's height, so the card sits in the middle of it.
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2em 0;
-  perspective: 1000px;
-}
-
-// Both sides in one grid cell; each keeps its own height, centred in it.
 .auth-card {
-  display: grid;
-  width: min(22rem, 100%);
-  transform-style: preserve-3d;
-  transition: transform 600ms ease-out;
-
-  &--back {
-    transform: rotateY(180deg);
-  }
+  width: min(24rem, 100%);
+  box-sizing: border-box;
+  padding: 24px 22px 20px;
 }
 
-.auth-face {
-  grid-area: 1 / 1;
-  align-self: center;
-  padding: 26px 22px 20px;
-  border-radius: 10px;
-  background-color: var(--surface);
-  box-shadow: color-mix(in srgb, var(--shadow) 25%, transparent) 0 7px 18px 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.auth-back {
-  transform: rotateY(180deg);
-}
-
-// Under the form: the way to the other side, and the policies on sign-up.
+// Under the form: the way to the other page, and the policies on sign-up.
 .auth-switch,
 .auth-legal {
   margin: 0;
@@ -56,23 +24,4 @@
 .auth-legal {
   font-size: 0.78rem;
   line-height: 1.5;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .auth-card {
-    transition: none;
-  }
-}
-
-.auth-face .form-title {
-  margin-bottom: 8px;
-  font-size: 1.3rem;
-}
-
-// The brand mark above the title: the page has no navigation to carry it.
-.auth-mark {
-  display: block;
-  margin: 0 auto 6px;
-  font-size: 2.5rem;
-  color: var(--accent);
 }

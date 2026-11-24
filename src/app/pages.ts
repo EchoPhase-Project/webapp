@@ -90,7 +90,11 @@ export const PAGES: Page[] = [
     },
     {
         path: '/auth',
-        component: lazyPage(() => import('@features/auth/AuthPage')),
+        component: lazyPage(() => import('@features/auth/LoginPage')),
+    },
+    {
+        path: '/auth/register',
+        component: lazyPage(() => import('@features/auth/RegisterPage')),
     },
     {
         path: '/explore',

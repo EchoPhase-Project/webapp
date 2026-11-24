@@ -175,9 +175,7 @@ a {
   }
 
   @include comp.media('min-width: 768px') {
-    .container--rail > & {
-      padding-left: var(--nav-collapsed);
-    }
+    padding-left: var(--nav-collapsed);
   }
 }
 

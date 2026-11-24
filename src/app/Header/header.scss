@@ -5,8 +5,8 @@
 // Flat, in the rail's colour, across the whole window. On desktop it stays
 // at the top while the window scrolls, over the page and over the rail's
 // shadow. On phones it scrolls away, as before. Its bottom line runs the
-// whole width, or, beside the rail, from the rail's edge on: the corner
-// cell has no line, so bar and rail read as one shape (an L).
+// whole width on phones; on desktop it starts at the rail's edge: the
+// corner cell has no line, so bar and rail read as one shape (an L).
 .header {
   z-index: 30;
   justify-content: space-between;
@@ -31,7 +31,7 @@
     position: sticky;
     top: 0;
 
-    &--rail::after {
+    &::after {
       left: var(--nav-collapsed);
       transition: left 200ms ease;
 
@@ -47,10 +47,10 @@
 // separate selectors: :has() cannot hold another :has(), and one selector
 // the browser does not take would drop the whole rule.
 @include comp.media('min-width: 768px') {
-  .container:has(.navbar--desktop:hover) .header--rail::after,
-  .container:has(.navbar--desktop :focus-visible) .header--rail::after,
+  .container:has(.navbar--desktop:hover) .header::after,
+  .container:has(.navbar--desktop :focus-visible) .header::after,
   .container:has(.navbar--desktop .nav-link[aria-expanded='true'])
-    .header--rail::after {
+    .header::after {
     left: var(--nav-expanded);
   }
 }

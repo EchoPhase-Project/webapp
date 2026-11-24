@@ -9,13 +9,14 @@ import './header.scss';
 /**
  * The top bar across the window: the logo (the way home) in its left cell,
  * the app's own actions (notes, notifications), theme and language at the
- * end. With the rail (`rail`) it is the top arm of an L: its left cell sits
- * over the rail's icons, and its bottom line starts where the rail ends.
+ * end. On desktop it is the top arm of an L with the rail: its left cell
+ * sits over the rail's icons, and its bottom line starts where the rail
+ * ends.
  */
-export function Header(props: { actions?: JSX.Element; rail?: boolean }) {
+export function Header(props: { actions?: JSX.Element }) {
     const { t } = useI18n();
     return (
-        <header class="header" classList={{ 'header--rail': props.rail }}>
+        <header class="header">
             <div class="header-brand">
                 <A
                     href="/"

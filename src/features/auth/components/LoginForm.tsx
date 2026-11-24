@@ -1,3 +1,4 @@
+import { A } from '@solidjs/router';
 import { IconLock, IconUser } from '@shared/ui/icons';
 import { loginMutation } from '@shared/api/auth';
 import { useI18n, useLocalizer } from '@shared/i18n/i18n-context';
@@ -5,11 +6,11 @@ import ErrorSummary from '@shared/ui/forms/ErrorSummary';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
 import { createForm } from '@shared/ui/forms/form';
+import { authHref } from './AuthShell';
 
 export default function LoginForm(props: {
     /** Where to go once signed in (?next=). */
     next?: string;
-    onSwitch: () => void;
 }) {
     const i18n = useI18n();
     const t = useLocalizer('auth');
@@ -30,8 +31,6 @@ export default function LoginForm(props: {
 
     return (
         <form class="vert-form" onSubmit={handleLogin} noValidate>
-            <h1 class="form-title">{t('login.title', 'Log in')}</h1>
-
             <ErrorSummary {...form.summary} />
 
             <Field
@@ -58,9 +57,9 @@ export default function LoginForm(props: {
 
             <p class="auth-switch">
                 {t('login.switch_question', 'No account yet?')}{' '}
-                <Button variant="link" onClick={() => props.onSwitch()}>
+                <A href={authHref('/auth/register', props.next)}>
                     {t('login.switch', 'Sign up')}
-                </Button>
+                </A>
             </p>
         </form>
     );

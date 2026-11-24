@@ -10,7 +10,8 @@ const SignInPath = '/auth';
 
 /**
  * Where to go after signing in: `next` when it is a path of this site,
- * otherwise home. Never another origin (//evil.example), never /auth itself.
+ * otherwise home. Never another origin (//evil.example), never a sign-in
+ * page (/auth, /auth/register) itself.
  */
 export function safeNext(next: string | null | undefined): string {
     if (
@@ -21,7 +22,9 @@ export function safeNext(next: string | null | undefined): string {
     )
         return '/';
     const path = next.split(/[?#]/)[0];
-    return path === SignInPath ? '/' : next;
+    return path === SignInPath || path.startsWith(`${SignInPath}/`)
+        ? '/'
+        : next;
 }
 
 /** /auth with the way back to where the user is now. */
