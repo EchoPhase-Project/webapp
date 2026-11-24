@@ -46,7 +46,7 @@ describe('PackageSearch', () => {
         await waitFor(() => expect(api.calls(TAGS)).toHaveLength(2));
     });
 
-    it('moves with the arrows (round the ends), picks with Enter, closes with Escape', async () => {
+    it('moves with the arrows (stopping at the ends), picks with Enter, closes with Escape', async () => {
         fakeApi({
             ...signedIn,
             [TAGS]: () =>
@@ -69,12 +69,18 @@ describe('PackageSearch', () => {
         input.focus();
         await screen.findByText('alpha');
         expect(selected()).toContain('alpha');
+        // The keys of every list (createOptionList): no wrap at the ends.
+        key('ArrowUp');
+        expect(selected()).toContain('alpha');
         key('ArrowDown');
-        expect(selected()).toContain('beta');
-        key('ArrowUp');
-        key('ArrowUp');
+        key('ArrowDown');
+        key('ArrowDown');
         expect(selected()).toContain('gamma');
-        expect(input.getAttribute('aria-activedescendant')).toMatch(/-2$/);
+        const active = screen.getAllByRole('option')[2];
+        expect(input.getAttribute('aria-activedescendant')).toBe(active.id);
+        // Home and End are the text's.
+        expect(fireEvent.keyDown(input, { key: 'Home' })).toBe(true);
+        expect(selected()).toContain('gamma');
 
         // A tag is final: Enter puts it in with a space, and the list closes.
         key('Enter');

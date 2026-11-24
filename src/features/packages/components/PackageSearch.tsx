@@ -1,8 +1,9 @@
-import { createSignal, createUniqueId, For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { useQuery } from '@tanstack/solid-query';
 import { IconSearch, IconX } from '@shared/ui/icons';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import Button from '@shared/ui/Button';
+import { createOptionList } from '@shared/ui/Listbox';
 import { exploreTagsQuery } from '@features/packages/api/packages';
 
 /** What a search line asks for: a tag (`tag:name`, the last one wins) and words. */
@@ -40,18 +41,17 @@ interface Suggestion {
 /**
  * One search line, as on GitHub: words, and qualifiers in the same text
  * (`tag:discord-bot`). Focused, it offers the qualifiers; after `tag:`,
- * the tags in use (from the server). Arrows move, Enter picks, Escape
- * closes; a cross clears the line.
+ * the tags in use (from the server). Arrows move (createOptionList: the
+ * keys of every list), Enter picks, Escape closes; Home and End stay with
+ * the text. A cross clears the line.
  */
 export default function PackageSearch(props: {
     value: string;
     onInput: (value: string) => void;
 }) {
     const t = useLocalizer('packages');
-    const listId = createUniqueId();
     let input: HTMLInputElement | undefined;
     const [open, setOpen] = createSignal(false);
-    const [active, setActive] = createSignal(0);
 
     const token = () => lastToken(props.value);
     const tagPrefix = () => /^tag:(.*)$/i.exec(token())?.[1];
@@ -85,38 +85,49 @@ export default function PackageSearch(props: {
 
     const shown = () => open() && suggestions().length > 0;
 
+    const list = createOptionList(() =>
+        suggestions().map((s) => ({ value: s.insert, label: s.label }))
+    );
+    // The first suggestion is ready for Enter, as on GitHub.
+    const start = () => list.setActive(0, 'keys');
+    const chosen = () => suggestions()[Math.max(list.active(), 0)];
+
     function pick(s: Suggestion) {
         const before = props.value.slice(
             0,
             props.value.length - token().length
         );
         props.onInput(`${before}${s.insert}${s.final ? ' ' : ''}`);
-        setActive(0);
+        start();
         if (s.final) setOpen(false);
         input?.focus();
     }
 
     function onKeyDown(e: KeyboardEvent) {
-        const list = suggestions();
         if (e.key === 'Escape') {
             setOpen(false);
             return;
         }
         if (!shown()) {
-            if (e.key === 'ArrowDown') setOpen(true);
+            if (e.key === 'ArrowDown') {
+                setOpen(true);
+                start();
+            }
             return;
         }
-        if (e.key === 'ArrowDown') {
+        // Home and End move in the text, not in the list.
+        if (
+            e.key !== 'Home' &&
+            e.key !== 'End' &&
+            list.move(e.key) !== undefined
+        ) {
             e.preventDefault();
-            setActive((i) => (i + 1) % list.length);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            setActive((i) => (i - 1 + list.length) % list.length);
+            list.scrollActiveIntoView();
         } else if (e.key === 'Enter' || e.key === 'Tab') {
-            const chosen = list[Math.min(active(), list.length - 1)];
-            if (chosen && (e.key === 'Enter' || !chosen.final)) {
+            const s = chosen();
+            if (s && (e.key === 'Enter' || !s.final)) {
                 e.preventDefault();
-                pick(chosen);
+                pick(s);
             }
         }
     }
@@ -139,20 +150,23 @@ export default function PackageSearch(props: {
                     spellcheck={false}
                     aria-autocomplete="list"
                     aria-expanded={shown()}
-                    aria-controls={listId}
+                    aria-controls={list.id}
                     aria-activedescendant={
-                        shown() ? `${listId}-${active()}` : undefined
+                        shown() ? list.activeId() : undefined
                     }
                     placeholder={t(
                         'search_placeholder',
                         'Search packages, or tag:name'
                     )}
                     value={props.value}
-                    onFocus={() => setOpen(true)}
+                    onFocus={() => {
+                        setOpen(true);
+                        start();
+                    }}
                     onBlur={() => setOpen(false)}
                     onInput={(e) => {
                         setOpen(true);
-                        setActive(0);
+                        start();
                         props.onInput(e.currentTarget.value);
                     }}
                     onKeyDown={onKeyDown}
@@ -173,7 +187,7 @@ export default function PackageSearch(props: {
                 </Show>
             </div>
             <ul
-                id={listId}
+                id={list.id}
                 role="listbox"
                 class="packages-suggestions"
                 hidden={!shown()}
@@ -182,16 +196,16 @@ export default function PackageSearch(props: {
                 <For each={suggestions()}>
                     {(s, i) => (
                         <li
-                            id={`${listId}-${i()}`}
+                            id={list.optionId(i())}
                             role="option"
                             class="packages-suggestion"
-                            aria-selected={i() === active()}
+                            aria-selected={i() === list.active()}
                             // Picked before the input's blur closes the list.
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 pick(s);
                             }}
-                            onMouseEnter={() => setActive(i())}
+                            onMouseEnter={() => list.setActive(i(), 'pointer')}
                         >
                             <span class="packages-suggestion-label">
                                 {s.label}
