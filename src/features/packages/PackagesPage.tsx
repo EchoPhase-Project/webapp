@@ -6,6 +6,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import { groupErrors, type FormErrors } from '@shared/api/errors';
 import { useDateFormat } from '@shared/lib/date-format';
 import { useLocalizer } from '@shared/i18n/i18n-context';
+import CardGrid from '@shared/ui/CardGrid';
 import InlineList from '@shared/ui/InlineList';
 import Button, { LinkButton } from '@shared/ui/Button';
 import EmptyState from '@shared/ui/EmptyState';
@@ -95,7 +96,11 @@ export default function PackagesPage() {
                                 </EmptyState>
                             }
                         >
-                            <ul class="workflows-list workflows-list--grid">
+                            <CardGrid
+                                as="ul"
+                                size="medium"
+                                class="workflows-list--grid"
+                            >
                                 <For each={mine()}>
                                     {(p) => (
                                         <li class="workflows-item card">
@@ -138,7 +143,7 @@ export default function PackagesPage() {
                                         </li>
                                     )}
                                 </For>
-                            </ul>
+                            </CardGrid>
                         </Show>
 
                         <Show when={shared().length > 0}>
@@ -146,7 +151,11 @@ export default function PackagesPage() {
                                 <h2>
                                     {t('packages.shared', 'Shared with you')}
                                 </h2>
-                                <ul class="workflows-list workflows-list--grid">
+                                <CardGrid
+                                    as="ul"
+                                    size="medium"
+                                    class="workflows-list--grid"
+                                >
                                     <For each={shared()}>
                                         {(p) => (
                                             <li class="workflows-item card">
@@ -179,7 +188,7 @@ export default function PackagesPage() {
                                             </li>
                                         )}
                                     </For>
-                                </ul>
+                                </CardGrid>
                             </section>
                         </Show>
                     </>

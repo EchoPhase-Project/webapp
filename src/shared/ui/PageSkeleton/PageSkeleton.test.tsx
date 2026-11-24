@@ -23,7 +23,7 @@ function renderForm(form: PageSkeletonForm) {
 const parts: [PageSkeletonForm, string, number][] = [
     ['header', '.card, table', 0],
     ['table', 'tbody tr', 4],
-    ['cards', '.page-skeleton-cards .card', 6],
+    ['cards', '.card-grid .card', 6],
     ['list', '.card', 4],
     ['settings', '.settings-card', 2],
     ['detail', '.card', 1],

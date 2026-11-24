@@ -1,9 +1,10 @@
-import { createSignal } from 'solid-js';
+import { createSignal, For } from 'solid-js';
 import { ApiError } from '@shared/api/client';
 import InlineList from '@shared/ui/InlineList';
 import BackLink from '@shared/ui/BackLink';
 import Button from '@shared/ui/Button';
 import Card from '@shared/ui/Card';
+import CardGrid from '@shared/ui/CardGrid';
 import EmptyState from '@shared/ui/EmptyState';
 import Field from '@shared/ui/forms/Field';
 import LoadError from '@shared/ui/LoadError';
@@ -150,6 +151,32 @@ export default function SurfacesPage() {
                         />
                     </DevSample>
                 </DevGrid>
+            </DevSection>
+
+            <DevSection
+                title="CardGrid"
+                note="Cards of one size side by side, as many as fit: size small (16rem) or medium (20rem); stretch fills the row with few cards. Masonry is for cards of very different heights."
+            >
+                <div class="page-stack">
+                    <CardGrid>
+                        <For each={['One', 'Two', 'Three']}>
+                            {(name) => (
+                                <Card>
+                                    {name}: small, the columns keep their width.
+                                </Card>
+                            )}
+                        </For>
+                    </CardGrid>
+                    <CardGrid size="medium" stretch>
+                        <For each={['One', 'Two']}>
+                            {(name) => (
+                                <Card>
+                                    {name}: medium, stretched over the row.
+                                </Card>
+                            )}
+                        </For>
+                    </CardGrid>
+                </div>
             </DevSection>
 
             <DevSection

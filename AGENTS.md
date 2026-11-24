@@ -193,7 +193,7 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
   MarkdownEditor, Select, Checkbox, RadioGroup, Listbox, Combobox, Modal,
   ConfirmDialog, Popover, Card, SettingsCard, ShareList, RemoveButton,
   BackLink, Table, Masonry, EmptyState, PageHeader, Switch, LoadError,
-  QueryState, Paginated, InlineList, SkeletonScope, SkeletonText, SkeletonBlock,
+  QueryState, Paginated, InlineList, CardGrid, SkeletonScope, SkeletonText, SkeletonBlock,
   PageSkeleton.
 - If you add a shared component, show it on a page in `src/dev/`. If you
   make a new page, add one entry for it to the list in `src/dev/routes.ts`.
@@ -271,6 +271,9 @@ onOk)` from `@shared/ui/ConfirmDialog`. Open the dialog with `ask(item)`,
 - For a row of buttons, use the `actions-row` class (add
   `actions-row--end` for the right side). For a small label, use `badge`.
   For a status word, use `pill pill--ok` (or `--bad`, `--busy`, `--quiet`).
+- For cards of one size side by side, use `CardGrid` (`size="small"` or
+  `"medium"`, `stretch`, `as="ul"`). For cards of very different heights,
+  use `Masonry`. Do not write `repeat(auto-fill, …)` yourself.
 - For short parts on one line with a dot between them, use `InlineList`:
   `<InlineList items={[a, b]} />`. Do not write `' · '`. It omits empty
   parts.

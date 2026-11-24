@@ -44,9 +44,9 @@ export default defineConfig({
         // back the globals it stubbed (fakeApi stubs fetch).
         setupFiles: ['src/shared/testing/setup.ts'],
         unstubGlobals: true,
-        // Stylesheets come out empty in tests, ?raw too; the palette test
-        // reads the colour tokens.
-        css: { include: [/tokens\.scss/] },
+        // Stylesheets come out empty in tests; the palette test reads the
+        // colour tokens, structure.test.ts the stylesheets as text (?raw).
+        css: { include: [/tokens\.scss/, /\.scss\?raw$/] },
         coverage: {
             provider: 'v8',
             include: ['src/**/*.{ts,tsx}'],

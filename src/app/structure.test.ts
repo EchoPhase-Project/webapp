@@ -40,6 +40,13 @@ const sources = import.meta.glob<string>(
     { query: '?raw', import: 'default', eager: true }
 );
 
+// Every stylesheet as text.
+const styles = import.meta.glob<string>('/src/**/*.scss', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+});
+
 // Transitional code of the move to TanStack Query: gone, and stays gone.
 const leftovers: [string, RegExp][] = [
     ['send(api.…)', /\bsend\(\s*api\./],
@@ -107,6 +114,18 @@ describe('the source', () => {
         const pages = sources['/src/app/pages.ts'] ?? '';
         expect(pages).toContain('lazyPage(');
         expect(/\blazy\(/.test(pages)).toBe(false);
+    });
+
+    it('builds a grid of cards only with CardGrid (or Masonry)', () => {
+        // The dev playground keeps its own sample grids.
+        const own = Object.entries(styles)
+            .filter(([, source]) => /repeat\(\s*auto-(fill|fit)/.test(source))
+            .map(([file]) => file)
+            .filter((file) => !file.startsWith('/src/dev/'));
+        expect(own.sort()).toEqual([
+            '/src/shared/ui/CardGrid/card-grid.scss',
+            '/src/shared/ui/Masonry/masonry.scss',
+        ]);
     });
 
     it('has createResource only for static documents', () => {

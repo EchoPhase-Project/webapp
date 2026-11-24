@@ -152,6 +152,7 @@ Before you write new markup, make pages from the components in
 | `RemoveButton`                                        | The cross at the end of a row that removes the row (a file, a person, a tag). Its label tells what goes                                                                                       |
 | `LoadError`                                           | The error of a read that failed, in place of the data, and a button to try again                                                                                                              |
 | `QueryState`                                          | One read in its states: `LoadError` with a retry, the loading form (with a `placeholder`), the `empty` text, the `notFound` text, the data                                                    |
+| `CardGrid`                                            | Cards of one size side by side, as many as fit: `size` `small` (16rem) or `medium` (20rem), `stretch`, `as="ul"`. Its loading form is a grid of empty cards                                   |
 | `InlineList`                                          | Short parts on one line with a dot between them ("by Ann · 12 installs"). It omits empty parts. Screen readers hear a comma                                                                   |
 | `Paginated`                                           | A list that comes one page at a time, with "Show more" (mode `more`) or "Previous" and "Next" (mode `pages`), its states, and the focus                                                       |
 | `SkeletonScope`, `SkeletonText`, `SkeletonBlock`      | A part of a page whose data loads: the shared components in it show bars in the shape of their content. `SkeletonText` and `SkeletonBlock` are bars for markup of your own                    |
@@ -363,6 +364,10 @@ Select the control for a choice from a list with these rules:
   a small label, for example a version. `pill pill--ok` (or `--bad`,
   `--busy`, `--quiet`) is a status word. Do not make a copy of these
   classes in a feature.
+- For cards of one size side by side, use `CardGrid`. For cards of very
+  different heights, use `Masonry`. Do not write `repeat(auto-fill, …)` in
+  a stylesheet: `structure.test.ts` fails. Thus, all grids of cards have the
+  same column widths and the same loading form.
 - For short parts on one line with a dot between them, use `InlineList`.
   Do not write `' · '`. The component draws the dot at the centre of the
   line in all fonts, and screen readers hear a comma. A wrapped line does

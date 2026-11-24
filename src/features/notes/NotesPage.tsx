@@ -6,6 +6,7 @@ import { usePageMeta } from '@shared/meta/page-meta';
 import type { Note } from '@shared/api/types';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { createDebounced } from '@shared/lib/debounced';
+import CardGrid from '@shared/ui/CardGrid';
 import Button from '@shared/ui/Button';
 import Field from '@shared/ui/forms/Field';
 import PageHeader from '@shared/ui/PageHeader';
@@ -101,7 +102,7 @@ export default function NotesPage() {
                 }
             >
                 {(list) => (
-                    <div class="notes-grid">
+                    <CardGrid>
                         <For each={list()}>
                             {(note) => (
                                 <NoteCard
@@ -110,7 +111,7 @@ export default function NotesPage() {
                                 />
                             )}
                         </For>
-                    </div>
+                    </CardGrid>
                 )}
             </QueryState>
 

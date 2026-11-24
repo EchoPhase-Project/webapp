@@ -1,0 +1,34 @@
+// CardGrid: columns of at least its size, as many as fit (auto-fill: few
+// cards keep their width; stretch: auto-fit, they fill the row), one on a
+// phone (min with 100%), 16px apart. A list loses its bullets.
+.card-grid {
+  --card-grid-min: 16rem;
+
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--card-grid-min), 100%), 1fr)
+  );
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &--medium {
+    --card-grid-min: 20rem;
+  }
+
+  &--stretch {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(var(--card-grid-min), 100%), 1fr)
+    );
+  }
+}
+
+// An item of a list: a card in it fills it, as tall as the row. Without
+// weight (:where), so an item that is the card itself keeps its layout.
+:where(.card-grid > li) {
+  display: grid;
+  min-width: 0;
+}

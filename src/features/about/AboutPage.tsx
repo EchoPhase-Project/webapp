@@ -1,6 +1,7 @@
 import { For, type Component } from 'solid-js';
 import { A } from '@solidjs/router';
 import { usePageMeta } from '@shared/meta/page-meta';
+import CardGrid from '@shared/ui/CardGrid';
 import { LinkButton } from '@shared/ui/Button';
 import { useLocalizer } from '@shared/i18n/i18n-context';
 import { useAuth } from '@shared/api/auth';
@@ -83,8 +84,8 @@ export default function AboutPage() {
     const text = (key: string, part: 'title' | 'text') =>
         t(`items.${key}.${part}`, EN[key][part]);
 
-    const Items = (props: { items: Item[]; class: string }) => (
-        <div class={props.class}>
+    const Items = (props: { items: Item[] }) => (
+        <CardGrid stretch>
             <For each={props.items}>
                 {(item) => (
                     <Card class="about-item">
@@ -94,7 +95,7 @@ export default function AboutPage() {
                     </Card>
                 )}
             </For>
-        </div>
+        </CardGrid>
     );
 
     return (
@@ -133,14 +134,14 @@ export default function AboutPage() {
                 <h2 id="about-features">
                     {t('features_title', 'What you can do')}
                 </h2>
-                <Items items={FEATURES} class="about-grid" />
+                <Items items={FEATURES} />
             </section>
 
             <section aria-labelledby="about-principles">
                 <h2 id="about-principles">
                     {t('principles_title', 'How it is made')}
                 </h2>
-                <Items items={PRINCIPLES} class="about-grid about-grid--3" />
+                <Items items={PRINCIPLES} />
             </section>
 
             <p class="about-footnote muted">

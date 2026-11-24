@@ -1,5 +1,6 @@
 import { Index, Match, Switch } from 'solid-js';
 import Card from '@shared/ui/Card';
+import CardGrid from '@shared/ui/CardGrid';
 import PageHeader from '@shared/ui/PageHeader';
 import SettingsCard from '@shared/ui/SettingsCard';
 import { SkeletonScope, SkeletonText } from '@shared/ui/Skeleton';
@@ -46,9 +47,7 @@ export default function PageSkeleton(props: { form: PageSkeletonForm }) {
                         />
                     </Match>
                     <Match when={props.form === 'cards'}>
-                        <div class="page-skeleton-cards">
-                            <Index each={times(6)}>{() => <Card />}</Index>
-                        </div>
+                        <CardGrid />
                     </Match>
                     <Match when={props.form === 'list'}>
                         <Index each={times(4)}>

@@ -10,12 +10,6 @@
   }
 }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 16px;
-}
-
 .about-item {
   display: grid;
   align-content: start;
