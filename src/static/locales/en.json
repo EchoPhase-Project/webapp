@@ -115,10 +115,10 @@
   "notice": {
     "reauth": {
       "title": "Connection needs attention",
-      "text": "Reconnect"
+      "body": "Reconnect {provider} \"{name}\"."
     },
     "discord": {
-      "title": "Discord gateway stopped"
+      "heading": "Discord gateway stopped ({connection})"
     },
     "dismiss": "Dismiss"
   },

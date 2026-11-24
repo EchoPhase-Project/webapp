@@ -107,10 +107,10 @@
   "notice": {
     "reauth": {
       "title": "Подключение требует внимания",
-      "text": "Переподключите"
+      "body": "Переподключите {provider} «{name}»."
     },
     "discord": {
-      "title": "Шлюз Discord остановлен"
+      "heading": "Шлюз Discord остановлен ({connection})"
     },
     "dismiss": "Закрыть"
   },

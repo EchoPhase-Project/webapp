@@ -37,8 +37,10 @@ export default function RealtimeNotices() {
             { name?: string; provider?: string } | undefined;
         add(
             i18n.t('notice.reauth.title', 'Connection needs attention'),
-            i18n.t('notice.reauth.text', 'Reconnect') +
-                ` ${connection?.provider ?? ''} "${connection?.name ?? ''}".`
+            i18n.t('notice.reauth.body', 'Reconnect {provider} "{name}".', {
+                provider: connection?.provider ?? '',
+                name: connection?.name ?? '',
+            })
         );
     });
 
@@ -46,8 +48,11 @@ export default function RealtimeNotices() {
         const gateway = event.gateway as
             { connection?: string; message?: string } | undefined;
         add(
-            i18n.t('notice.discord.title', 'Discord gateway stopped') +
-                ` (${gateway?.connection ?? ''})`,
+            i18n.t(
+                'notice.discord.heading',
+                'Discord gateway stopped ({connection})',
+                { connection: gateway?.connection ?? '' }
+            ),
             gateway?.message ?? ''
         );
     });

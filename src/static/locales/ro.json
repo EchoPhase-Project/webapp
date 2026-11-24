@@ -107,10 +107,10 @@
   "notice": {
     "reauth": {
       "title": "Conexiunea necesită atenție",
-      "text": "Reconectează"
+      "body": "Reconectează {provider} „{name}”."
     },
     "discord": {
-      "title": "Gateway-ul Discord s-a oprit"
+      "heading": "Gateway-ul Discord s-a oprit ({connection})"
     },
     "dismiss": "Închide"
   },
