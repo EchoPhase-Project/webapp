@@ -1,6 +1,10 @@
 import { Show, type JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
+import {
+    SkeletonText,
+    useSkeleton,
+    type SkeletonProps,
+} from '@shared/ui/Skeleton';
 import './settings-card.scss';
 
 /**
@@ -15,17 +19,19 @@ import './settings-card.scss';
  * description and the content, and keeps the room of the actions without
  * showing them.
  */
-export default function SettingsCard(props: {
-    title: JSX.Element;
-    badge?: JSX.Element;
-    description?: JSX.Element;
-    children?: JSX.Element;
-    hint?: JSX.Element;
-    actions?: JSX.Element;
-    danger?: boolean;
-    onSubmit?: (e: SubmitEvent) => void;
-}) {
-    const loading = useSkeleton();
+export default function SettingsCard(
+    props: {
+        title: JSX.Element;
+        badge?: JSX.Element;
+        description?: JSX.Element;
+        children?: JSX.Element;
+        hint?: JSX.Element;
+        actions?: JSX.Element;
+        danger?: boolean;
+        onSubmit?: (e: SubmitEvent) => void;
+    } & SkeletonProps
+) {
+    const loading = useSkeleton(props);
     return (
         <Dynamic
             component={props.onSubmit ? 'form' : 'section'}

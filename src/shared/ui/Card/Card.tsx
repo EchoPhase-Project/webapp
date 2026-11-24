@@ -1,12 +1,17 @@
 import { Show, splitProps, type JSX } from 'solid-js';
-import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
+import {
+    SkeletonText,
+    useSkeleton,
+    type SkeletonProps,
+} from '@shared/ui/Skeleton';
 
-type CardProps = JSX.HTMLAttributes<HTMLDivElement> & {
-    /** The flowing-lines pattern: for brand moments, not working surfaces. */
-    patterned?: boolean;
-    /** Lines of bars in the loading form (3 by default). */
-    skeletonLines?: number;
-};
+type CardProps = JSX.HTMLAttributes<HTMLDivElement> &
+    SkeletonProps & {
+        /** The flowing-lines pattern: for brand moments, not working surfaces. */
+        patterned?: boolean;
+        /** Lines of bars in the loading form (3 by default). */
+        skeletonLines?: number;
+    };
 
 /**
  * A surface that is one thing (a notice, a panel), set off by shadow. Its
@@ -19,8 +24,9 @@ export default function Card(props: CardProps) {
         'class',
         'children',
         'skeletonLines',
+        'skeleton',
     ]);
-    const loading = useSkeleton();
+    const loading = useSkeleton(own);
     return (
         <div
             class={['card', own.patterned && 'patterned', own.class]

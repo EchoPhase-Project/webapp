@@ -85,10 +85,16 @@ describe('PageHeader', () => {
             </I18nProvider>
         ));
         const [shown, loading] = container.querySelectorAll('.page-header');
-        expect(shown?.className).toBe(
-            'page-header page-header--hero card patterned'
-        );
-        expect(loading?.classList.contains('page-header--hero')).toBe(true);
+        for (const frame of [shown, loading])
+            expect([...(frame?.classList ?? [])]).toEqual(
+                expect.arrayContaining([
+                    'page-header--hero',
+                    'card',
+                    'patterned',
+                ])
+            );
+        // Its own loading form, not the Card's three bars: the h1 is there.
+        expect(loading?.querySelector('h1')).not.toBeNull();
         expect(loading?.classList.contains('page-header--loading')).toBe(true);
         expect(
             screen.getByRole('heading', { level: 1, name: 'One place' })

@@ -12,12 +12,26 @@ import './skeleton.scss';
 const SkeletonContext = createContext<Accessor<boolean>>(() => false);
 
 /**
+ * The prop of each shared component that has a loading form. `false`: the
+ * component keeps its own content while its scope loads, and only the
+ * components inside it show their loading forms (a Card around a Table:
+ * the table's rows of bars, not three bars in place of the table), or none
+ * at all when the caller draws the loading form itself (PageHeader hero).
+ */
+export type SkeletonProps = {
+    /** False: no loading form of its own (true by default). */
+    skeleton?: boolean;
+};
+
+/**
  * True inside a `SkeletonScope` whose data is on its way: a shared
  * component then shows its loading form (bars in the shape of its content)
- * in place of its content. The nearest scope decides.
+ * in place of its content. The nearest scope decides; a component's own
+ * `skeleton={false}` (pass its props) turns its form off.
  */
-export function useSkeleton(): Accessor<boolean> {
-    return useContext(SkeletonContext);
+export function useSkeleton(props?: SkeletonProps): Accessor<boolean> {
+    const scope = useContext(SkeletonContext);
+    return () => props?.skeleton !== false && scope();
 }
 
 /**

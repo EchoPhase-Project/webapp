@@ -1,7 +1,12 @@
 import { Show, type JSX } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useI18n } from '@shared/i18n/i18n-context';
-import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
+import Card from '@shared/ui/Card';
+import {
+    SkeletonText,
+    useSkeleton,
+    type SkeletonProps,
+} from '@shared/ui/Skeleton';
 import './page-header.scss';
 
 type PageHeaderProps = {
@@ -22,16 +27,46 @@ type PageHeaderProps = {
      * `.patterned` is allowed.
      */
     hero?: boolean;
-};
+} & SkeletonProps;
 
 const frameClass = (props: PageHeaderProps, loading = false) =>
     [
         'page-header',
         loading && 'page-header--loading',
-        props.hero && 'page-header--hero card patterned',
+        props.hero && 'page-header--hero',
     ]
         .filter(Boolean)
         .join(' ');
+
+/**
+ * The frame: a plain box, or for `hero` a patterned Card. The Card has no
+ * loading form of its own (skeleton={false}): the header draws its own,
+ * with a real h1.
+ */
+function Frame(props: {
+    header: PageHeaderProps;
+    loading?: boolean;
+    children: JSX.Element;
+}) {
+    return (
+        <Show
+            when={props.header.hero}
+            fallback={
+                <div class={frameClass(props.header, props.loading)}>
+                    {props.children}
+                </div>
+            }
+        >
+            <Card
+                patterned
+                skeleton={false}
+                class={frameClass(props.header, props.loading)}
+            >
+                {props.children}
+            </Card>
+        </Show>
+    );
+}
 
 /**
  * A page's opening: eyebrow, title and what the page is for, its main action
@@ -45,10 +80,10 @@ const frameClass = (props: PageHeaderProps, loading = false) =>
  */
 export default function PageHeader(props: PageHeaderProps) {
     const { t } = useI18n();
-    const loading = useSkeleton();
+    const loading = useSkeleton(props);
     return (
         <Show when={!loading()} fallback={<Loading {...props} />}>
-            <div class={frameClass(props)}>
+            <Frame header={props}>
                 <div class="page-header-text">
                     <Show when={props.eyebrow}>
                         <p class="page-eyebrow">{props.eyebrow}</p>
@@ -79,7 +114,7 @@ export default function PageHeader(props: PageHeaderProps) {
                 <Show when={props.actions}>
                     <div class="page-actions">{props.actions}</div>
                 </Show>
-            </div>
+            </Frame>
         </Show>
     );
 }
@@ -87,7 +122,7 @@ export default function PageHeader(props: PageHeaderProps) {
 /** The same frame, with bars where the texts are not there yet. */
 function Loading(props: PageHeaderProps) {
     return (
-        <div class={frameClass(props, true)}>
+        <Frame header={props} loading>
             <div class="page-header-text">
                 <p class="page-eyebrow">
                     {props.eyebrow || <SkeletonText width="6em" />}
@@ -102,6 +137,6 @@ function Loading(props: PageHeaderProps) {
                     {props.actions}
                 </div>
             </Show>
-        </div>
+        </Frame>
     );
 }

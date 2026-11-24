@@ -1,7 +1,11 @@
 import { For, Index, Show, JSX, Component, ParentComponent } from 'solid-js';
 import { useI18n } from '@shared/i18n/i18n-context';
 import EmptyState from '@shared/ui/EmptyState';
-import { SkeletonText, useSkeleton } from '@shared/ui/Skeleton';
+import {
+    SkeletonText,
+    useSkeleton,
+    type SkeletonProps,
+} from '@shared/ui/Skeleton';
 import './table.scss';
 
 type DataLabel = string;
@@ -73,7 +77,7 @@ type TableProps<T> = {
     tableProps?: JSX.HTMLAttributes<HTMLTableElement>;
     /** Rows of bars in the loading form (3 by default). */
     skeletonRows?: number;
-};
+} & SkeletonProps;
 
 /**
  * Items in rows under a header row; below 768px each row is a card. Its
@@ -81,7 +85,7 @@ type TableProps<T> = {
  * rows of bars, one bar for each column, and never the empty text.
  */
 export function Table<T>(props: TableProps<T>) {
-    const loading = useSkeleton();
+    const loading = useSkeleton(props);
     return (
         <Show
             when={props.data.length > 0 || loading()}

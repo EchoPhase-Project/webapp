@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@solidjs/testing-library';
 import { I18nProvider } from '@shared/i18n/i18n-context';
-import { SkeletonScope } from '@shared/ui/Skeleton';
+import { SkeletonScope, useSkeleton } from '@shared/ui/Skeleton';
 import { expectNoA11yViolations } from '@shared/testing/axe';
 import Card from './Card';
 
@@ -36,4 +36,30 @@ describe('Card', () => {
         );
         await expectNoA11yViolations();
     });
+
+    it('keeps its content while it loads with skeleton={false}', async () => {
+        const { container } = render(() => (
+            <I18nProvider>
+                <SkeletonScope when>
+                    <Card skeleton={false}>
+                        <p>Stays.</p>
+                        <SkeletonProbe />
+                    </Card>
+                </SkeletonScope>
+            </I18nProvider>
+        ));
+        // Its own content stays; what is inside still sees the scope load.
+        expect(container.querySelector('.card p')?.textContent).toBe('Stays.');
+        expect(container.querySelector('[data-probe]')?.textContent).toBe(
+            'loading'
+        );
+        expect(container.querySelector('.card > .skeleton-text')).toBeNull();
+        await expectNoA11yViolations();
+    });
 });
+
+/** What a component inside sees: loading or not. */
+function SkeletonProbe() {
+    const loading = useSkeleton();
+    return <span data-probe>{loading() ? 'loading' : 'ready'}</span>;
+}

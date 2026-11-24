@@ -507,6 +507,11 @@ server contract. Do not write a response type manually in `types.ts`.
   `useSkeleton()`. Do not give it a `loading` prop. The scope makes the
   part inert and announces the load, and a prop does not do these steps.
   `SessionsPage` is the example.
+- Add `SkeletonProps` to the props of such a component, and give its props
+  to `useSkeleton(props)`. Then `skeleton={false}` turns off the loading
+  form of that component only. Examples: a `Card` around a `Table` shows
+  the rows of bars of the table, and `PageHeader hero` puts its own loading
+  form in a patterned `Card`.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `@shared/api/paged-list`. `describe` gives the `…InfiniteQuery` description
   from the API file of the feature, with `cursorPages`. The helper adds

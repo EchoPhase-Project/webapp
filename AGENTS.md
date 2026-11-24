@@ -121,7 +121,10 @@ local runs only. If `CI` is set, ESLint runs without the cache.
 - If a part of a page loads without `QueryState`, wrap it in
   `SkeletonScope` with `when={query.isPending}`.
 - If a shared component shows data, give it a loading form under
-  `useSkeleton()`. Do not give it a `loading` prop.
+  `useSkeleton(props)`. Do not give it a `loading` prop.
+- Add `SkeletonProps` to the props of such a component. Then
+  `skeleton={false}` turns off its own loading form. The components inside
+  it keep their forms.
 - If a list comes one page at a time, use `createPagedList(describe)` from
   `shared/api/paged-list.ts`. Write the `…InfiniteQuery` description with
   `cursorPages`.
