@@ -117,23 +117,23 @@
 }
 
 // Signed out, at the bar's end: log in as a flat header button, sign up as
-// the main button (LinkButton), as most sites have them. On a narrow phone only sign up: its
-// page links to logging in.
+// the main button (a LinkButton, as any other), as most sites have them. On
+// a narrow phone only sign up: its page links to logging in.
 .header-login {
   padding: 0 12px;
   font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
 
+  // A link: the text colour of the other header buttons, not the links'
+  // blue of a:hover.
+  &:hover {
+    color: var(--text);
+  }
+
   @include comp.media('max-width: 419.98px') {
-    &:has(+ .header-signup) {
+    &:has(+ .btn) {
       display: none;
     }
   }
-}
-
-.header-signup {
-  // A LinkButton (.btn): its colours and hover; only the height of the bar's
-  // controls, a little under the 40px buttons beside it.
-  height: 32px;
 }

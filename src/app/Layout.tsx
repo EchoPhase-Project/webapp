@@ -94,10 +94,7 @@ const Layout: Component<ParentProps> = (props) => {
                             </A>
                         </Show>
                         <Show when={location.pathname !== SIGNUP_PATH}>
-                            <LinkButton
-                                href={SIGNUP_PATH}
-                                class="header-signup"
-                            >
+                            <LinkButton href={SIGNUP_PATH}>
                                 {t('nav.signup', 'Sign up')}
                             </LinkButton>
                         </Show>

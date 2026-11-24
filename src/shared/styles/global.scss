@@ -151,7 +151,7 @@ a {
 
 // The app: the bar across the top, then the page (content and footer); the
 // content grows, so the footer stays at the bottom of the window on a short
-// page. Beside the rail (desktop, not /auth) the page keeps clear of it.
+// page. Beside the rail (desktop) the page keeps clear of it.
 .container {
   display: flex;
   flex-direction: column;
