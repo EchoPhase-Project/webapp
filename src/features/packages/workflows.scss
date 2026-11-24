@@ -7,6 +7,18 @@
   @include mix.plain-list(10px);
 }
 
+// The packages page: the cards side by side as many as fit (a wide page),
+// each at least 20rem; one row's cards as tall as its tallest, their text
+// at the top.
+.workflows-list--grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+
+  > .card.workflows-item {
+    align-items: flex-start;
+    align-content: flex-start;
+  }
+}
+
 .card.workflows-item {
   display: flex;
   flex-wrap: wrap;

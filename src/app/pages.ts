@@ -57,7 +57,10 @@ export const NAV_GROUPS: Record<NavGroup, Omit<PageNav, 'group'>> = {
 export const PAGES: Page[] = [
     {
         path: '/',
-        component: lazyPage(() => import('@features/home/HomePage')),
+        // The signed-in overview to come: lists and cards.
+        component: lazyPage(() => import('@features/home/HomePage'), {
+            width: 'wide',
+        }),
         public: true,
     },
     {
@@ -124,7 +127,7 @@ export const PAGES: Page[] = [
     {
         path: '/packages',
         component: lazyPage(() => import('@features/packages/PackagesPage'), {
-            skeleton: 'list',
+            skeleton: 'cards',
         }),
         auth: true,
         nav: {

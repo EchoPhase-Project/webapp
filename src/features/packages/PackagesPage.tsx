@@ -95,7 +95,7 @@ export default function PackagesPage() {
                                 </EmptyState>
                             }
                         >
-                            <ul class="workflows-list">
+                            <ul class="workflows-list workflows-list--grid">
                                 <For each={mine()}>
                                     {(p) => (
                                         <li class="workflows-item card">
@@ -146,7 +146,7 @@ export default function PackagesPage() {
                                 <h2>
                                     {t('packages.shared', 'Shared with you')}
                                 </h2>
-                                <ul class="workflows-list">
+                                <ul class="workflows-list workflows-list--grid">
                                     <For each={shared()}>
                                         {(p) => (
                                             <li class="workflows-item card">
