@@ -4,6 +4,7 @@ import {
     type QueryClient,
 } from '@tanstack/solid-query';
 import { api, request } from '@shared/api/client';
+import type { ApiClientInput } from '@shared/api/types';
 
 export const apiClientKeys = {
     all: ['api-clients'] as const,
@@ -25,7 +26,7 @@ export const apiClientsQuery = () =>
 export const createApiClientMutation = (queryClient: QueryClient) =>
     mutationOptions({
         mutationKey: [...apiClientKeys.all, 'create'] as const,
-        mutationFn: (body: { name: string; expiresAt: string | null }) =>
+        mutationFn: (body: ApiClientInput) =>
             request(api.POST('/api/v1/api-clients', { body })),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: apiClientKeys.all }),

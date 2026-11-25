@@ -89,6 +89,8 @@ export type NotificationInbox = Schemas['NotificationInboxResponse'];
 
 export type ApiClient = Schemas['ApiClientResponse'];
 
+export type ApiClientInput = Schemas['CreateApiClientRequest'];
+
 /** The answer to creating an API client; the secret is shown this once. */
 export type CreatedApiClient = Schemas['CreatedApiClientResponse'];
 
