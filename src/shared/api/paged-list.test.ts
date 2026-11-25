@@ -254,6 +254,22 @@ describe('patchItem and removeItem', () => {
         expect(client.getQueryData(key)).toBe(before);
         expect(client.getQueryState(key)?.dataUpdatedAt).toBe(updatedAt);
     });
+
+    it('patch from the item; an empty patch leaves the list as it was', () => {
+        withSession(() => null);
+        const client = sessionClient();
+        const before = data([item('a', 1)], [item('b', 2)]);
+        client.setQueryData(key, before);
+
+        patchItem<Item>(client, key, 'b', (it) => ({ n: it.n + 1 }), id);
+        const now = client.getQueryData<CursorListData<Item>>(key);
+        expect(now?.pages[1]?.items).toEqual([item('b', 3)]);
+
+        patchItem<Item>(client, key, 'a', () => ({}), id);
+        expect(client.getQueryData<CursorListData<Item>>(key)?.pages[0]).toBe(
+            before.pages[0]
+        );
+    });
 });
 
 describe('appendItem', () => {

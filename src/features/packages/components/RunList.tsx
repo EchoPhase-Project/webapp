@@ -12,12 +12,16 @@ import {
 } from '@features/packages/api/runs';
 import { formatDuration } from '@features/packages/format';
 import RunStatus from './RunStatus';
+import { RunLiveDetails, RunLiveLine } from './RunLive';
+
+const busy = (status: string) => status === 'queued' || status === 'running';
 
 /**
  * A workflow's runs, or those of all a package's workflows (each named),
  * newest first, a page at a time; opening one shows its result (output,
  * variables, errors) while the server keeps it. Run events keep it
- * current (run-events.ts): a new run on top, a run done patched in place.
+ * current (run-events.ts): a new run on top, a running run's step and
+ * failed blocks as they come, a run done patched in place.
  */
 export default function RunList(props: {
     workflowId?: string;
@@ -93,6 +97,9 @@ export default function RunList(props: {
                                             i18n.currentLocale()
                                         )}
                                     </span>
+                                    <Show when={busy(run.status)}>
+                                        <RunLiveLine runId={run.runId} />
+                                    </Show>
                                     <Show when={(run.errorCount ?? 0) > 0}>
                                         <span class="workflow-run-errors">
                                             {t(
@@ -107,39 +114,48 @@ export default function RunList(props: {
                                 </button>
                                 <Show when={open() === run.runId}>
                                     <div class="workflow-run-details">
-                                        <QueryState
-                                            query={details}
-                                            loading={
-                                                <p class="muted">
-                                                    {t(
-                                                        'ui.loading',
-                                                        'Loading…'
-                                                    )}
-                                                </p>
+                                        <Show
+                                            when={!busy(run.status)}
+                                            fallback={
+                                                <RunLiveDetails
+                                                    runId={run.runId}
+                                                />
                                             }
                                         >
-                                            {(d) => (
-                                                <Show
-                                                    when={d().result}
-                                                    fallback={
-                                                        <p class="muted">
-                                                            {t(
-                                                                'runs.no_result',
-                                                                'Its result is no longer kept.'
-                                                            )}
-                                                        </p>
-                                                    }
-                                                >
-                                                    <pre class="workflow-json">
-                                                        {JSON.stringify(
-                                                            d().result,
-                                                            null,
-                                                            2
+                                            <QueryState
+                                                query={details}
+                                                loading={
+                                                    <p class="muted">
+                                                        {t(
+                                                            'ui.loading',
+                                                            'Loading…'
                                                         )}
-                                                    </pre>
-                                                </Show>
-                                            )}
-                                        </QueryState>
+                                                    </p>
+                                                }
+                                            >
+                                                {(d) => (
+                                                    <Show
+                                                        when={d().result}
+                                                        fallback={
+                                                            <p class="muted">
+                                                                {t(
+                                                                    'runs.no_result',
+                                                                    'Its result is no longer kept.'
+                                                                )}
+                                                            </p>
+                                                        }
+                                                    >
+                                                        <pre class="workflow-json">
+                                                            {JSON.stringify(
+                                                                d().result,
+                                                                null,
+                                                                2
+                                                            )}
+                                                        </pre>
+                                                    </Show>
+                                                )}
+                                            </QueryState>
+                                        </Show>
                                     </div>
                                 </Show>
                             </li>

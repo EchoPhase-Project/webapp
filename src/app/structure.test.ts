@@ -23,6 +23,8 @@ const helpers: Record<string, readonly string[]> = {
         'runId',
         'refreshRunLists',
         'patchRunLists',
+        'patchRunProgress',
+        'patchRunBlockFailed',
     ],
     // The export address (no request: an <a href download>).
     '/src/features/packages/api/workflows.ts': ['workflowExportUrl'],

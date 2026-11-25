@@ -5,6 +5,7 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { sessionClient } from '@shared/api/session-provider';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
+import { expectNoA11yViolations } from '@shared/testing/axe';
 import type { CursorListData } from '@shared/api/paged-list';
 import type { BlockRun } from '@shared/api/types';
 import {
@@ -16,7 +17,9 @@ import RunDialog from './components/RunDialog';
 import RunList from './components/RunList';
 import {
     followRunEvents,
+    runBlockFailedOf,
     runCompletedOf,
+    runProgressOf,
     type RunEventFeed,
 } from './run-events';
 
@@ -118,6 +121,35 @@ describe('runCompletedOf', () => {
         ).toBeUndefined();
         // The shape before: the fields at the top, not under `run`.
         expect(runCompletedOf({ type: 'x', ...completed })).toBeUndefined();
+    });
+});
+
+describe('runProgressOf and runBlockFailedOf', () => {
+    const progress = { runId: 'r5', steps: 7, blockId: 3, blockType: 'Http' };
+    const failed = {
+        runId: 'r5',
+        blockId: 3,
+        errorType: 'Timeout',
+        message: 'no answer',
+    };
+
+    it('read the run under `run`, as the server sends it', () => {
+        expect(runProgressOf({ run: progress })).toEqual(progress);
+        expect(runBlockFailedOf({ run: failed })).toEqual(failed);
+    });
+
+    it('answer undefined for a field missing or of another type, or a flat event', () => {
+        expect(
+            runProgressOf({ run: { ...progress, steps: '7' } })
+        ).toBeUndefined();
+        const { blockType: _, ...noType } = progress;
+        expect(runProgressOf({ run: noType })).toBeUndefined();
+        expect(runProgressOf({ ...progress })).toBeUndefined();
+        expect(
+            runBlockFailedOf({ run: { ...failed, blockId: '3' } })
+        ).toBeUndefined();
+        const { message: __, ...noMessage } = failed;
+        expect(runBlockFailedOf({ run: noMessage })).toBeUndefined();
     });
 });
 
@@ -312,5 +344,90 @@ describe('run events', () => {
         await waitFor(() => expect(firstPages(api, WORKFLOW_RUNS)).toBe(3));
         await waitFor(() => expect(firstPages(api, PACKAGE_RUNS)).toBe(3));
         expect(rows()).toEqual(['queued', 'succeeded', 'queued', 'succeeded']);
+    });
+
+    it('progress and a failed block: the running row shows the step and one more error, its details the failure; no request', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            [WORKFLOW_RUNS]: server([
+                [run('r5', { status: 'queued', steps: null, errorCount: 0 })],
+            ]),
+            'GET /api/v1/blocks/runs/r5': () =>
+                json(200, { run: run('r5', { status: 'running' }) }),
+        });
+        const { value, emit } = feed();
+        renderPage(() => <RunList workflowId="w1" />);
+        followRunEvents(value, sessionClient());
+        await waitFor(() => expect(rows()).toEqual(['queued']));
+        const lists = api.calls(WORKFLOW_RUNS).length;
+
+        emit('block_run.progress', {
+            run: { runId: 'r5', steps: 4, blockId: 2, blockType: 'Http' },
+        });
+        await waitFor(() => expect(rows()).toEqual(['running']));
+        expect(screen.getByText('Step 4: Http #2')).toBeTruthy();
+
+        emit('block_run.block_failed', {
+            run: {
+                runId: 'r5',
+                blockId: 2,
+                errorType: 'Timeout',
+                message: 'no answer',
+            },
+        });
+        await waitFor(() => expect(screen.getByText('1 errors')).toBeTruthy());
+
+        fireEvent.click(screen.getByRole('button', { name: /running/ }));
+        expect(
+            await screen.findByText(
+                'Still running: its result shows when it is done.'
+            )
+        ).toBeTruthy();
+        expect(screen.getByText(/Timeout: no answer/)).toBeTruthy();
+        expect(api.calls(WORKFLOW_RUNS)).toHaveLength(lists);
+        await expectNoA11yViolations();
+    });
+
+    it('done: the live entry goes, and a late progress event does not make the run running again', async () => {
+        fakeApi({
+            ...signedIn,
+            [WORKFLOW_RUNS]: server([[run('r5', { status: 'running' })]]),
+        });
+        const { value, emit } = feed();
+        renderPage(() => <RunList workflowId="w1" />);
+        const client = sessionClient();
+        followRunEvents(value, client);
+        await waitFor(() => expect(rows()).toEqual(['running']));
+        const step = {
+            run: { runId: 'r5', steps: 9, blockId: 1, blockType: 'If' },
+        };
+        emit('block_run.progress', step);
+        await waitFor(() =>
+            expect(client.getQueryData(runKeys.live('r5'))).toBeDefined()
+        );
+
+        emit('block_run.completed', completedEvent({ runId: 'r5' }));
+        await waitFor(() => expect(rows()).toEqual(['failed']));
+        expect(client.getQueryData(runKeys.live('r5'))).toBeUndefined();
+
+        emit('block_run.progress', step);
+        expect(rows()).toEqual(['failed']);
+        expect(screen.queryByText('Step 9: If #1')).toBeNull();
+    });
+
+    it('a progress event of another shape is dropped, with no request', async () => {
+        const api = fakeApi({
+            ...signedIn,
+            [WORKFLOW_RUNS]: server([[run('r5', { status: 'running' })]]),
+        });
+        const { value, emit } = feed();
+        renderPage(() => <RunList workflowId="w1" />);
+        followRunEvents(value, sessionClient());
+        await waitFor(() => expect(rows()).toEqual(['running']));
+
+        emit('block_run.progress', { run: { runId: 'r5', step: 3 } });
+
+        expect(api.calls(WORKFLOW_RUNS)).toHaveLength(1);
+        expect(document.querySelector('.workflow-run-live')).toBeNull();
     });
 });

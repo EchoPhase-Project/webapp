@@ -221,6 +221,23 @@
   padding: 0 12px 12px;
 }
 
+// The step of a running run: it changes several times a second, so its width
+// should not shake the row.
+.workflow-run-live {
+  font-variant-numeric: tabular-nums;
+}
+
+.workflow-run-failures-title {
+  margin: 8px 0 4px;
+  font-size: 0.875rem;
+}
+
+.workflow-run-failures {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--danger);
+}
+
 .workflow-json {
   max-height: 24rem;
   margin: 0;

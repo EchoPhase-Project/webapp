@@ -2,6 +2,7 @@ import {
     infiniteQueryOptions,
     mutationOptions,
     queryOptions,
+    skipToken,
     type Query,
     type QueryClient,
 } from '@tanstack/solid-query';
@@ -28,6 +29,8 @@ export const runKeys = {
     ofWorkflow: (id: string) => [...runKeys.all, 'workflow', id] as const,
     ofPackage: (id: string) => [...runKeys.all, 'package', id] as const,
     detail: (runId: string) => [...runKeys.all, 'detail', runId] as const,
+    /** A running run's progress: only events write it, the API has none. */
+    live: (runId: string) => [...runKeys.all, 'live', runId] as const,
 };
 
 /** A run list item's id. */
@@ -158,6 +161,102 @@ export async function refreshRunLists(queryClient: QueryClient) {
     );
 }
 
+/** What a `block_run.progress` event says: steps so far, the block just done. */
+export interface RunProgress {
+    runId: string;
+    steps: number;
+    blockId: number;
+    blockType: string;
+}
+
+/** What a `block_run.block_failed` event says. */
+export interface RunBlockFailed {
+    runId: string;
+    blockId: number;
+    errorType: string;
+    message: string;
+}
+
+/** A running run as its events tell it, until it is done. */
+export interface RunLive {
+    steps: number;
+    /** The block done last; none before the first progress event. */
+    block?: { id: number; type: string };
+    /** The blocks that failed so far, oldest first (at most LIVE_FAILURES). */
+    failures: Omit<RunBlockFailed, 'runId'>[];
+}
+
+const LIVE_FAILURES = 20;
+
+/**
+ * A run's live progress, from the cache only: `skipToken`, so nothing is
+ * fetched; it is undefined until an event comes, and removed when the run
+ * is done (the API's run and details are then the truth).
+ */
+export const runLiveQuery = (runId: string) =>
+    queryOptions<RunLive>({
+        queryKey: runKeys.live(runId),
+        queryFn: skipToken,
+        staleTime: Infinity,
+    });
+
+const busy = (run: BlockRun) =>
+    run.status === 'queued' || run.status === 'running';
+
+/** Patches the run's row in every run list held; a run done stays done. */
+function patchRunningRow(
+    queryClient: QueryClient,
+    id: string,
+    patch: (run: BlockRun) => Partial<BlockRun>
+) {
+    const lists = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: runKeys.all, predicate: isRunList });
+    for (const query of lists)
+        patchItem<BlockRun>(
+            queryClient,
+            query.queryKey,
+            id,
+            (run) => (busy(run) ? patch(run) : {}),
+            runId
+        );
+}
+
+/**
+ * A step of a running run: its rows show the step count and the status
+ * running; its live entry the block done last (no request).
+ */
+export function patchRunProgress(queryClient: QueryClient, p: RunProgress) {
+    patchRunningRow(queryClient, p.runId, () => ({
+        status: 'running',
+        steps: p.steps,
+    }));
+    queryClient.setQueryData<RunLive>(runKeys.live(p.runId), (live) => ({
+        failures: [],
+        ...live,
+        steps: p.steps,
+        block: { id: p.blockId, type: p.blockType },
+    }));
+}
+
+/**
+ * A block of a running run failed: one more error on its rows, the failure
+ * on its live entry (no request). The completed event sets the final count.
+ */
+export function patchRunBlockFailed(
+    queryClient: QueryClient,
+    { runId: id, ...failure }: RunBlockFailed
+) {
+    patchRunningRow(queryClient, id, (run) => ({
+        errorCount: (run.errorCount ?? 0) + 1,
+    }));
+    queryClient.setQueryData<RunLive>(runKeys.live(id), (live) => ({
+        steps: live?.steps ?? 0,
+        block: live?.block,
+        failures: [...(live?.failures ?? []), failure].slice(-LIVE_FAILURES),
+    }));
+}
+
 /** What a `block_run.completed` event says about a run. */
 export interface RunCompleted {
     runId: string;
@@ -189,6 +288,10 @@ export function patchRunLists(queryClient: QueryClient, done: RunCompleted) {
         );
     void queryClient.invalidateQueries({
         queryKey: runKeys.detail(done.runId),
+        exact: true,
+    });
+    queryClient.removeQueries({
+        queryKey: runKeys.live(done.runId),
         exact: true,
     });
 }

@@ -209,19 +209,27 @@ function update<T>(
     });
 }
 
-/** Updates one known item wherever it is among the loaded pages: no request. */
+/**
+ * Updates one known item wherever it is among the loaded pages: no request.
+ * The patch may be worked out from the item; an empty one changes nothing.
+ */
 export function patchItem<T>(
     client: QueryClient,
     key: QueryKey,
     id: string,
-    patch: Partial<T>,
+    patch: Partial<T> | ((item: T) => Partial<T>),
     getId: (item: T) => string
 ) {
     update<T>(client, key, (data) =>
         mapItems(data, (items) =>
-            items.map((item) =>
-                getId(item) === id ? { ...item, ...patch } : item
-            )
+            items.map((item) => {
+                if (getId(item) !== id) return item;
+                const change =
+                    typeof patch === 'function' ? patch(item) : patch;
+                return Object.keys(change).length
+                    ? { ...item, ...change }
+                    : item;
+            })
         )
     );
 }

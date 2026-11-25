@@ -1,8 +1,12 @@
 import type { QueryClient } from '@tanstack/solid-query';
 import {
+    patchRunBlockFailed,
     patchRunLists,
+    patchRunProgress,
     refreshRunLists,
+    type RunBlockFailed,
     type RunCompleted,
+    type RunProgress,
 } from '@features/packages/api/runs';
 
 type Event = { [key: string]: unknown };
@@ -36,9 +40,41 @@ export function runCompletedOf(event: Event): RunCompleted | undefined {
 }
 
 /**
+ * What a `block_run.progress` event says (`{ type, run: { runId, steps,
+ * blockId, blockType } }`, BlockRunProgressObserver: at most every 250 ms);
+ * undefined for another shape.
+ */
+export function runProgressOf(event: Event): RunProgress | undefined {
+    const run = event.run;
+    if (!isRecord(run)) return undefined;
+    const { runId, steps, blockId, blockType } = run;
+    if (typeof runId !== 'string' || typeof blockType !== 'string')
+        return undefined;
+    if (typeof steps !== 'number' || typeof blockId !== 'number')
+        return undefined;
+    return { runId, steps, blockId, blockType };
+}
+
+/**
+ * What a `block_run.block_failed` event says (`{ type, run: { runId,
+ * blockId, errorType, message } }`); undefined for another shape.
+ */
+export function runBlockFailedOf(event: Event): RunBlockFailed | undefined {
+    const run = event.run;
+    if (!isRecord(run)) return undefined;
+    const { runId, blockId, errorType, message } = run;
+    if (typeof runId !== 'string' || typeof blockId !== 'number')
+        return undefined;
+    if (typeof errorType !== 'string' || typeof message !== 'string')
+        return undefined;
+    return { runId, blockId, errorType, message };
+}
+
+/**
  * Keeps the run lists in the cache current with the gateway's run events:
- * a new run merged in on top of the open lists (one request each), a run
- * done patched from its event (none). Returns the unsubscribe.
+ * a new run merged in on top of the open lists (one request each), a step
+ * or a failed block of a running run and a run done patched from their
+ * events (none). Returns the unsubscribe.
  */
 export function followRunEvents(feed: RunEventFeed, queryClient: QueryClient) {
     const started = feed.subscribe(
@@ -57,8 +93,20 @@ export function followRunEvents(feed: RunEventFeed, queryClient: QueryClient) {
             void refreshRunLists(queryClient);
         }
     });
+    // Progress is only a preview: an event of another shape is dropped (the
+    // completed event and the API correct the run), not fetched for.
+    const progress = feed.subscribe('block_run.progress', (event) => {
+        const p = runProgressOf(event);
+        if (p) patchRunProgress(queryClient, p);
+    });
+    const failed = feed.subscribe('block_run.block_failed', (event) => {
+        const f = runBlockFailedOf(event);
+        if (f) patchRunBlockFailed(queryClient, f);
+    });
     return () => {
         started();
         completed();
+        progress();
+        failed();
     };
 }

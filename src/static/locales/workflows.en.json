@@ -54,6 +54,12 @@
     "deleted": "a deleted workflow",
     "empty": "No runs yet. Run it now, or turn it on for its triggers.",
     "errors": "{count} errors",
+    "live": {
+      "failures": "Failed blocks so far",
+      "running": "Still running: its result shows when it is done.",
+      "step": "Step {steps}: {type} #{id}",
+      "steps": "Step {steps}"
+    },
     "more": "Show older",
     "no_result": "Its result is no longer kept."
   },
