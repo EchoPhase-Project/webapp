@@ -56,7 +56,7 @@ export type BlockRunDetails = Schemas['BlockRunDetailsResponse'];
 export type RunStarted = Schemas['RunStartedResponse'];
 
 /** One of the caller's connections (provider, name, status). */
-export type ConnectionSummary = Schemas['ConnectionSummary'];
+export type ConnectionSummary = Schemas['ConnectionResponse'];
 
 /** A package as the caller sees it: their own (its workflows live in it) or someone else's published one. */
 export type WorkflowPackage = Schemas['PackageResponse'];
@@ -87,21 +87,13 @@ export type AppNotification = Schemas['NotificationResponse'];
 
 export type NotificationInbox = Schemas['NotificationInboxResponse'];
 
-/**
- * An API client as listed. Not in the OpenAPI document: the controller
- * returns a projection (the entity's [Expose] fields, PascalCase).
- */
-export interface ApiClient {
-    Id: string;
-    Name: string;
-    ExpiresAt: string | null;
-    LastUsedAt: string | null;
-    SecretRotatedAt: string | null;
-    CreatedAt: string;
-}
+export type ApiClient = Schemas['ApiClientResponse'];
 
-/** The answer to creating an API client; the secret is shown this once. Not in the OpenAPI document. */
-export interface CreatedApiClient {
-    clientId: string;
-    clientSecret: string;
-}
+/** The answer to creating an API client; the secret is shown this once. */
+export type CreatedApiClient = Schemas['CreatedApiClientResponse'];
+
+/** One intent of the realtime gateway, and whether the caller may subscribe to it. */
+export type GatewayIntent = Schemas['GatewayIntentResponse'];
+
+/** Whether the service is open (GET /api/v1/status). */
+export type ServiceStatus = Schemas['ServiceStatusResponse'];

@@ -33,7 +33,7 @@ export default function ApiClientsPage() {
     // A failure shows in the dialog, which stays open.
     const deletion = createConfirm(
         deleteApiClientMutation,
-        (client: ApiClient) => client.Id
+        (client: ApiClient) => client.id
     );
 
     function created(value: string) {
@@ -91,7 +91,7 @@ export default function ApiClientsPage() {
                         {t(
                             'confirm_delete.text',
                             '{name} stops working at once: bots and scripts using it can no longer sign in.',
-                            { name: client.Name }
+                            { name: client.name }
                         )}
                     </p>
                 )}

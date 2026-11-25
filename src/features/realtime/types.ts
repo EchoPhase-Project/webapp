@@ -21,14 +21,6 @@ export interface RealtimeEvent {
 
 export type RealtimeHandler = (event: RealtimeEvent) => void;
 
-/** One entry of GET /api/v1/gateway/intents. */
-export interface GatewayIntent {
-    name: string;
-    resource?: string;
-    permission?: string;
-    allowed: boolean;
-}
-
 export interface ProtocolMessage {
     op: number;
     d?: {

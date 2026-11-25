@@ -25,7 +25,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ApiClientResponse'][];
+                    };
                 };
             };
         };
@@ -51,7 +53,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['CreatedApiClientResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -90,7 +103,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ApiClientSecretResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -121,12 +145,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -157,12 +190,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -837,7 +879,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        'application/json': components['schemas']['BlockTypeInfo'][];
+                        'application/json': components['schemas']['BlockTypeResponse'][];
                     };
                 };
             };
@@ -874,7 +916,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        'application/json': components['schemas']['ConnectionSummary'][];
+                        'application/json': components['schemas']['ConnectionResponse'][];
                     };
                 };
             };
@@ -922,7 +964,27 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ConnectionResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Bad Gateway */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -967,7 +1029,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['AuthorizeConnectionResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1004,8 +1077,8 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Found */
+                302: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1042,12 +1115,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1083,7 +1165,36 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['DiscordUserGuildsResponseDto'][];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Bad Gateway */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1117,7 +1228,11 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': {
+                            [key: string]: string[];
+                        };
+                    };
                 };
             };
         };
@@ -1143,7 +1258,27 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['DiscordGatewayConnectionResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1175,8 +1310,8 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1490,7 +1625,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['GatewayIntentResponse'][];
+                    };
                 };
             };
         };
@@ -1524,7 +1661,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ImpersonationResponse'][];
+                    };
                 };
             };
         };
@@ -1553,7 +1692,45 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ImpersonationStartedResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1585,12 +1762,30 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ProblemDetails'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1619,12 +1814,30 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -1662,7 +1875,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ServiceStatusResponse'];
+                    };
                 };
             };
         };
@@ -2258,7 +2473,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['OAuthAppResponse'][];
+                    };
                 };
             };
         };
@@ -2283,7 +2500,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['OAuthAppResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2314,12 +2542,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2357,7 +2594,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RefreshTokenResponse'];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2437,7 +2685,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RolePermissionsResponse'];
+                    };
                 };
             };
         };
@@ -2473,7 +2723,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserRolesResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2509,7 +2770,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserSummaryResponse'][];
+                    };
                 };
             };
         };
@@ -2542,12 +2805,30 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2565,12 +2846,30 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -2751,7 +3050,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ServiceStatusResponse'];
+                    };
                 };
             };
         };
@@ -2976,7 +3277,27 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['ClientTokenResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['OAuthErrorResponse'];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['OAuthErrorResponse'];
+                    };
                 };
             };
         };
@@ -3013,7 +3334,36 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['TwitchVipsResponse'];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Bad Gateway */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3047,7 +3397,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserPermissionsResponse'];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ProblemDetails'];
+                    };
                 };
             };
         };
@@ -3082,7 +3443,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserPermissionsResponse'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3130,7 +3502,45 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserPermissionGrantResponse'];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3147,12 +3557,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ErrorBody'];
+                    };
                 };
             };
         };
@@ -3184,7 +3603,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['UserSummaryResponse'][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        'application/json': components['schemas']['ProblemDetails'];
+                    };
                 };
             };
         };
@@ -3225,12 +3655,21 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description Accepted */
                 202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RunStartedResponse'];
+                    };
                 };
                 /** @description Unauthorized */
                 401: {
@@ -3238,7 +3677,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        'application/json': components['schemas']['ProblemDetails'];
+                        'application/json': components['schemas']['ErrorBody'];
                     };
                 };
                 /** @description Not Found */
@@ -3247,7 +3686,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        'application/json': components['schemas']['ProblemDetails'];
+                        'application/json': components['schemas']['ErrorBody'];
                     };
                 };
                 /** @description Gateway Timeout */
@@ -3255,7 +3694,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        'application/json': components['schemas']['RunStartedResponse'];
+                    };
                 };
             };
         };
@@ -4750,6 +5191,55 @@ export interface components {
                 [key: string]: string[];
             } | null;
         };
+        /** @description The permissions of an API client on one resource. */
+        ApiClientPermissionResponse: {
+            /** @description The resource, as in `resource:action`. */
+            resource: string;
+            /** @description The actions on it. */
+            permissions: string[];
+        };
+        /** @description An API client. Its secret is stored only as a hash and never leaves the server. */
+        ApiClientResponse: {
+            /**
+             * Format: uuid
+             * @description The public client id, for `POST /api/v1/auth/token`.
+             */
+            id: string;
+            /** @description The owner's name for it. */
+            name: string;
+            /** @description What the client may do, by resource. */
+            permissions: components['schemas']['ApiClientPermissionResponse'][];
+            /**
+             * Format: date-time
+             * @description When its tokens stop being issued; none: never.
+             */
+            expiresAt?: string | null;
+            /**
+             * Format: date-time
+             * @description The last time it got a token.
+             */
+            lastUsedAt?: string | null;
+            /**
+             * Format: date-time
+             * @description The last secret rotation; the previous secret works until revoked.
+             */
+            secretRotatedAt?: string | null;
+            /**
+             * Format: date-time
+             * @description When it was made.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description The last change.
+             */
+            updatedAt: string;
+        };
+        /** @description A new secret of an API client, shown this once. */
+        ApiClientSecretResponse: {
+            /** @description The secret; the previous one works until it is revoked. */
+            clientSecret: string;
+        };
         AuthorizeConnectionRequest: {
             /** @description Connection name; an existing name reconnects that connection. */
             name: string;
@@ -4758,6 +5248,11 @@ export interface components {
              * @description A user-owned OAuth app; omit to use the platform app.
              */
             appId?: string | null;
+        };
+        /** @description Where the browser goes to sign in at the provider. */
+        AuthorizeConnectionResponse: {
+            /** @description The provider's sign-in page, with the state of this flow. */
+            url: string;
         };
         Block: {
             /** Format: int32 */
@@ -4878,12 +5373,19 @@ export interface components {
              */
             errorCount?: number | null;
         };
-        BlockTypeInfo: {
+        /** @description A block type as the editor sees it: what to draw and which form to show. */
+        BlockTypeResponse: {
             type: components['schemas']['BlockTypes'];
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Its version; a program names the version it was written for.
+             */
             version: number;
+            /** @description What it does, for the block catalogue. */
             description: string;
+            /** @description Whether it starts runs (webhooks, schedules, events). */
             isTrigger: boolean;
+            /** @description The outputs connections leave through; with onError = ErrorOutput also "error". */
             outputs: string[];
             paramsSchema: components['schemas']['JsonNode'];
         };
@@ -4894,26 +5396,65 @@ export interface components {
             /** @description The new one, held to the same rules as at registration. */
             newPassword: string;
         };
-        ConnectionSummary: {
-            /** Format: uuid */
+        /** @description An access token for an API client (RFC 6749 §5.1; the field names are OAuth's). */
+        ClientTokenResponse: {
+            /** @description The token; send it as `Authorization: Bearer`. */
+            access_token: string;
+            /** @description Always `Bearer`. */
+            token_type: string;
+            /**
+             * Format: int32
+             * @description Seconds until it expires.
+             */
+            expires_in: number;
+        };
+        /** @description A connected account; token material never leaves the server. */
+        ConnectionResponse: {
+            /**
+             * Format: uuid
+             * @description The connection's id.
+             */
             id: string;
+            /** @description The service, such as `discord` or `twitch`. */
             provider: string;
+            /** @description The owner's name for it; blocks refer to it by this name. */
             name: string;
+            /** @description How it signs in: `BotToken` (a static token) or `OAuth2`. */
             authType: string;
+            /** @description Whether it works: `Active`, or a state that needs the owner (such as reconnecting). */
             status: string;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description The owner's OAuth app it signed in through; none: the server's app or a manual token.
+             */
             oAuthAppId?: string | null;
+            /** @description The account's id at the provider. */
             externalAccountId?: string | null;
+            /** @description The account's login at the provider. */
             externalLogin?: string | null;
+            /** @description The scopes the provider granted. */
             scopes: string[];
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description When the access token expires; none: it does not.
+             */
             expiresAt?: string | null;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The last time the provider accepted it.
+             */
             lastValidatedAt?: string | null;
+            /** @description The provider's last refusal, if any. */
             lastError?: string | null;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description When it was connected.
+             */
             createdAt: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The last change.
+             */
             updatedAt: string;
         };
         CreateApiClientRequest: {
@@ -4925,6 +5466,33 @@ export interface components {
              * @description Optional; the client stops working afterwards. With Z or an offset.
              */
             expiresAt?: string | null;
+        };
+        /** @description A new API client and its secret, shown this once. */
+        CreatedApiClientResponse: {
+            client: components['schemas']['ApiClientResponse'];
+            /** @description The secret; it cannot be read again. */
+            clientSecret: string;
+        };
+        /** @description An open gateway connection. */
+        DiscordGatewayConnectionResponse: {
+            /**
+             * Format: uuid
+             * @description Its id, to close it.
+             */
+            connectionId: string;
+        };
+        DiscordUserGuildsResponseDto: {
+            id: string;
+            name: string;
+            icon?: string | null;
+            banner?: string | null;
+            owner: boolean;
+            permissions: string;
+            features: string[];
+            /** Format: int32 */
+            approximate_member_count: number;
+            /** Format: int32 */
+            approximate_presence_count: number;
         };
         EnableMaintenanceRequest: {
             /** @description Shown to users; a default one when absent. */
@@ -4992,6 +5560,17 @@ export interface components {
              */
             intents?: number | null;
         };
+        /** @description One intent of the gateway, and whether the caller may subscribe to it. */
+        GatewayIntentResponse: {
+            /** @description The intent, as in the handshake. */
+            name: string;
+            /** @description The resource its permission is on; none: the intent is never allowed. */
+            resource?: string | null;
+            /** @description The action needed on that resource. */
+            permission?: string | null;
+            /** @description Whether the caller's token has that permission. */
+            allowed: boolean;
+        };
         GrantPermissionsRequest: {
             permissions: string[];
             reason: string;
@@ -5000,6 +5579,68 @@ export interface components {
              * @description Null: until revoked. With Z or an offset.
              */
             expiresAt?: string | null;
+        };
+        /** @description An impersonation the caller took part in, as actor or as target. */
+        ImpersonationResponse: {
+            /**
+             * Format: uuid
+             * @description Its id.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Who acted.
+             */
+            actorId: string;
+            /**
+             * Format: uuid
+             * @description Whom they acted as.
+             */
+            targetId: string;
+            /** @description Why, as the actor wrote it. */
+            reason: string;
+            /**
+             * Format: date-time
+             * @description When its tokens stop working.
+             */
+            expiresAt: string;
+            /**
+             * Format: date-time
+             * @description When it was ended; none: not ended (it may have expired).
+             */
+            endedAt?: string | null;
+            /**
+             * Format: date-time
+             * @description When it started.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description The last change.
+             */
+            updatedAt: string;
+        };
+        /** @description A started impersonation; its token is returned only here. */
+        ImpersonationStartedResponse: {
+            /**
+             * Format: uuid
+             * @description The impersonation, to end it.
+             */
+            impersonationId: string;
+            /**
+             * Format: uuid
+             * @description The user acted as.
+             */
+            targetId: string;
+            /** @description Their user name. */
+            targetUserName?: string | null;
+            /** @description Send it as `Authorization: Bearer`; it never replaces your own session. */
+            accessToken: string;
+            /**
+             * Format: int32
+             * @description Seconds until the token expires.
+             */
+            expiresIn: number;
         };
         InstallPackageRequest: {
             /**
@@ -5080,7 +5721,7 @@ export interface components {
              */
             remindAt?: string | null;
             access: components['schemas']['NoteAccess'];
-            owner: components['schemas']['NoteUserResponse'];
+            owner: components['schemas']['UserSummaryResponse'];
             /**
              * Format: uuid
              * @description Changes on every save: send it back as expectedStamp to save only over this version.
@@ -5098,7 +5739,7 @@ export interface components {
             updatedAt: string;
         };
         NoteShareResponse: {
-            user: components['schemas']['NoteUserResponse'];
+            user: components['schemas']['UserSummaryResponse'];
             /** @description May change the title and text. */
             canEdit: boolean;
             /**
@@ -5106,17 +5747,6 @@ export interface components {
              * @description Since when.
              */
             createdAt: string;
-        };
-        NoteUserResponse: {
-            /**
-             * Format: uuid
-             * @description The user's id.
-             */
-            id: string;
-            /** @description Their username. */
-            userName?: string | null;
-            /** @description Their display name. */
-            name: string;
         };
         NotificationInboxResponse: {
             /** @description The newest notifications first. */
@@ -5152,6 +5782,34 @@ export interface components {
              * @description When it was sent.
              */
             createdAt: string;
+        };
+        /** @description An OAuth app of the user's own; its secret is never returned. */
+        OAuthAppResponse: {
+            /**
+             * Format: uuid
+             * @description The app's id.
+             */
+            id: string;
+            /** @description The service it is registered at. */
+            provider: string;
+            /** @description The owner's name for it. */
+            name: string;
+            /** @description The client id at the provider (public). */
+            clientId: string;
+            /** @description Whether a client secret is stored. */
+            hasSecret: boolean;
+            /**
+             * Format: date-time
+             * @description When it was added.
+             */
+            createdAt: string;
+        };
+        /** @description An OAuth error (RFC 6749 §5.2). */
+        OAuthErrorResponse: {
+            /** @description The error code, such as `invalid_client`. */
+            error: string;
+            /** @description A text for the developer; often none. */
+            error_description?: string | null;
         };
         /**
          * @description What a user may do with a package.
@@ -5376,6 +6034,16 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        /** @description A new access token, and the refresh token to keep. */
+        RefreshTokenResponse: {
+            /** @description The new access token. */
+            accessToken: string;
+            /**
+             * @description The rotated refresh token; none when a parallel request already rotated it:
+             *     keep the token from that answer.
+             */
+            refreshToken?: string | null;
+        };
         RegisterRequest: {
             name: string;
             username: string;
@@ -5388,6 +6056,19 @@ export interface components {
              * @description The version you are looking at; a newer one on the server is a 409.
              */
             currentVersion?: number | null;
+        };
+        /** @description What each role grants, and what everyone has. */
+        RolePermissionsResponse: {
+            /** @description The permissions of every signed-in user, by resource. */
+            everyone: {
+                [key: string]: string[];
+            };
+            /** @description Each role's permissions, by resource. */
+            roles: {
+                [key: string]: {
+                    [key: string]: string[];
+                };
+            };
         };
         /**
          * @description A program to run once, not saved: blocks, connections, settings, and
@@ -5407,7 +6088,10 @@ export interface components {
              * @description The new run's id.
              */
             runId: string;
-            /** @description queued: it reports its progress as events. */
+            /**
+             * @description queued: it reports its progress as events; running when a webhook stopped
+             *     waiting for the program's reply (504).
+             */
             status: string;
             /**
              * Format: uuid
@@ -5454,6 +6138,28 @@ export interface components {
              * @description On create: the package it goes in; absent: a new package of its own, of the same name. Ignored on update.
              */
             packageId?: string | null;
+        };
+        /** @description Whether the service is open, and if not, until when. */
+        ServiceStatusResponse: {
+            /** @description True while the service is closed for maintenance. */
+            maintenance: boolean;
+            /** @description The maintenance message for users. */
+            message?: string | null;
+            /**
+             * Format: date-time
+             * @description When the maintenance started.
+             */
+            since?: string | null;
+            /**
+             * Format: date-time
+             * @description When it is planned to end; none: not known.
+             */
+            until?: string | null;
+            /**
+             * Format: int64
+             * @description How long a client should wait before it asks again.
+             */
+            retryAfterSeconds?: number | null;
         };
         /** @description A signed-in device. Secrets (the refresh token hash) never leave the server. */
         SessionResponse: {
@@ -5508,6 +6214,22 @@ export interface components {
             /** @description The value; only when one entry is fetched. */
             value?: unknown;
         };
+        /** @description Twitch's cursor for the next page. */
+        TwitchPaginationResponse: {
+            /** @description The cursor; none: this is the last page. */
+            cursor?: string | null;
+        };
+        TwitchVipResponseDto: {
+            user_id: string;
+            user_name: string;
+            user_login: string;
+        };
+        /** @description A page of a channel's VIPs, as Twitch returns it. */
+        TwitchVipsResponse: {
+            /** @description The VIPs on this page. */
+            data: components['schemas']['TwitchVipResponseDto'][];
+            pagination: components['schemas']['TwitchPaginationResponse'];
+        };
         /** @description Profile fields to change; an omitted (null) field stays as it is. */
         UpdateProfileRequest: {
             /** @description Display name, at least 2 characters. */
@@ -5516,6 +6238,67 @@ export interface components {
             timeZone?: string | null;
             /** @description A new username, checked as at registration; the old one becomes free. */
             username?: string | null;
+        };
+        /** @description Permissions granted to one user on one resource. */
+        UserPermissionGrantResponse: {
+            /** @description The resource. */
+            resource: string;
+            /** @description The actions granted on it. */
+            permissions: string[];
+            /** @description Why, as the granter wrote it. */
+            reason: string;
+            /**
+             * Format: date-time
+             * @description When the grant ends; none: never.
+             */
+            expiresAt?: string | null;
+            /** @description Whether it is in force now. */
+            active: boolean;
+            /**
+             * Format: uuid
+             * @description Who granted it.
+             */
+            grantedById?: string | null;
+            /**
+             * Format: date-time
+             * @description When it was granted.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description The last change.
+             */
+            updatedAt: string;
+        };
+        /** @description A user's permissions: from their roles, granted one by one, and in effect. */
+        UserPermissionsResponse: {
+            /** @description The user's roles. */
+            roles: string[];
+            /** @description The permissions granted to this user directly. */
+            grants: components['schemas']['UserPermissionGrantResponse'][];
+            /** @description All the user may do now, by resource. */
+            effective: {
+                [key: string]: string[];
+            };
+        };
+        /** @description The roles of one user. */
+        UserRolesResponse: {
+            /** @description The user name that was asked for. */
+            username: string;
+            /** @description The user's roles. */
+            roles: string[];
+        };
+        /** @description A user as others see them: the id and the names, nothing private. */
+        UserSummaryResponse: {
+            /**
+             * Format: uuid
+             * @description The user's id.
+             */
+            id: string;
+            /** @description The unique user name. */
+            userName?: string | null;
+            /** @description The display name. */
+            name: string;
         };
         /** @enum {string} */
         WebhookRespondMode: 'Immediately' | 'OnFinish' | 'ByBlock';

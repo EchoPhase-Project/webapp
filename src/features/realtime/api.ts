@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/solid-query';
 import { api, request } from '@shared/api/client';
-import type { GatewayIntent } from './types';
+import type { GatewayIntent } from '@shared/api/types';
 
 export const gatewayKeys = {
     all: ['gateway'] as const,

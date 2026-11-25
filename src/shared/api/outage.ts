@@ -1,4 +1,5 @@
 import { createSignal } from 'solid-js';
+import type { ServiceStatus } from '@shared/api/types';
 
 /**
  * The service being away: under maintenance (the server says so, 503 with
@@ -92,11 +93,11 @@ export function createOutageWatch(deps: OutageWatchDeps) {
                 cache: 'no-store',
             });
             if (!res.ok) return (await outageOf(res)) ?? unavailable();
-            const status = (await res.json()) as {
-                maintenance?: unknown;
-                message?: unknown;
-                retryAfterSeconds?: unknown;
-            };
+            // Checked field by field: during an outage a proxy may answer
+            // instead of the server. The names come from the contract.
+            const status = (await res.json()) as Partial<
+                Record<keyof ServiceStatus, unknown>
+            >;
             if (status.maintenance !== true) return null;
             return {
                 kind: 'maintenance',

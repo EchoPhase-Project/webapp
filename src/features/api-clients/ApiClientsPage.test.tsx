@@ -4,11 +4,27 @@ import { fireEvent, screen, waitFor } from '@solidjs/testing-library';
 import { fakeApi, json, signedIn } from '@shared/testing/fake-api';
 import { renderPage } from '@shared/testing/render-page';
 import { expectNoA11yViolations } from '@shared/testing/axe';
+import type { ApiClient, CreatedApiClient } from '@shared/api/types';
 import ApiClientsPage from './ApiClientsPage';
 
 // The secret notice's live region: the first one; the list's loading
 // region (SkeletonScope) follows it.
 const notice = () => screen.getAllByRole('status')[0];
+
+// Typed by the contract: a fixture that drifts from the server's answer
+// fails tsc.
+const client = (over: Partial<ApiClient> = {}): ApiClient => ({
+    id: 'c1',
+    name: 'bot',
+    permissions: [],
+    expiresAt: null,
+    lastUsedAt: null,
+    secretRotatedAt: null,
+    createdAt: '2026-10-24T12:00:00Z',
+    updatedAt: '2026-10-24T12:00:00Z',
+    ...over,
+});
+const created: CreatedApiClient = { client: client(), clientSecret: 's3cr3t' };
 
 describe('ApiClientsPage', () => {
     it('shows an error under the field it is about', async () => {
@@ -49,17 +65,8 @@ describe('ApiClientsPage', () => {
             ...signedIn,
             'GET /api/v1/api-clients': () => json(200, clients),
             'POST /api/v1/api-clients': () => {
-                clients = [
-                    {
-                        Id: 'c1',
-                        Name: 'bot',
-                        ExpiresAt: null,
-                        LastUsedAt: null,
-                        SecretRotatedAt: null,
-                        CreatedAt: '2026-10-24T12:00:00Z',
-                    },
-                ];
-                return json(200, { clientId: 'c1', clientSecret: 's3cr3t' });
+                clients = [client()];
+                return json(200, created);
             },
         });
 
@@ -110,8 +117,7 @@ describe('ApiClientsPage secret', () => {
         fakeApi({
             ...signedIn,
             'GET /api/v1/api-clients': () => json(200, []),
-            'POST /api/v1/api-clients': () =>
-                json(200, { clientId: 'c1', clientSecret: 's3cr3t' }),
+            'POST /api/v1/api-clients': () => json(200, created),
         });
         renderPage(() => <ApiClientsPage />);
         fireEvent.click(
@@ -162,16 +168,7 @@ describe('ApiClientsPage loading', () => {
             ...signedIn,
             'GET /api/v1/api-clients': async () => {
                 await arrived;
-                return json(200, [
-                    {
-                        Id: 'c1',
-                        Name: 'bot',
-                        ExpiresAt: null,
-                        LastUsedAt: null,
-                        SecretRotatedAt: null,
-                        CreatedAt: '2026-10-24T12:00:00Z',
-                    },
-                ]);
+                return json(200, [client()]);
             },
         });
         renderPage(() => <ApiClientsPage />);
@@ -247,16 +244,7 @@ describe('ApiClientsPage dialog', () => {
 
 describe('ApiClientsPage delete', () => {
     it('deletes a client only after the confirmation', async () => {
-        let clients = [
-            {
-                Id: 'c1',
-                Name: 'bot',
-                ExpiresAt: null,
-                LastUsedAt: null,
-                SecretRotatedAt: null,
-                CreatedAt: '2026-10-24T12:00:00Z',
-            },
-        ];
+        let clients = [client()];
         const api = fakeApi({
             ...signedIn,
             'GET /api/v1/api-clients': () => json(200, clients),
@@ -283,17 +271,7 @@ describe('ApiClientsPage delete', () => {
     it('shows a refused delete in the dialog, which stays open', async () => {
         fakeApi({
             ...signedIn,
-            'GET /api/v1/api-clients': () =>
-                json(200, [
-                    {
-                        Id: 'c1',
-                        Name: 'bot',
-                        ExpiresAt: null,
-                        LastUsedAt: null,
-                        SecretRotatedAt: null,
-                        CreatedAt: '2026-10-24T12:00:00Z',
-                    },
-                ]),
+            'GET /api/v1/api-clients': () => json(200, [client()]),
             'DELETE /api/v1/api-clients/c1': () =>
                 json(500, { code: 'TestBroken', message: 'Try later.' }),
         });

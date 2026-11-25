@@ -24,7 +24,7 @@ export default function ApiClientsTable(props: {
 
     const column = (c: (typeof COLUMNS)[number]) => t(...COLUMN_TEXT[c]);
     // Times in the profile's zone, so they read the same on any device.
-    const show = (iso: string | null) => date(iso) || '—';
+    const show = (iso?: string | null) => date(iso) || '—';
 
     return (
         <Table
@@ -34,18 +34,18 @@ export default function ApiClientsTable(props: {
             tableProps={{ class: 'api-clients' }}
             render={({ item: client }) => (
                 <Row>
-                    <Cell label={column('name')} text={client.Name} />
+                    <Cell label={column('name')} text={client.name} />
                     <Cell
                         label={column('expires')}
-                        text={show(client.ExpiresAt)}
+                        text={show(client.expiresAt)}
                     />
                     <Cell
                         label={column('last_used')}
-                        text={show(client.LastUsedAt)}
+                        text={show(client.lastUsedAt)}
                     />
                     <Cell
                         label={column('created')}
-                        text={show(client.CreatedAt)}
+                        text={show(client.createdAt)}
                     />
                     <Cell
                         label={column('actions')}
@@ -53,7 +53,7 @@ export default function ApiClientsTable(props: {
                     >
                         <RemoveButton
                             label={t('ui.delete_named', 'Delete {name}', {
-                                name: client.Name,
+                                name: client.name,
                             })}
                             disabled={props.busy}
                             onClick={() => props.onDelete(client)}
