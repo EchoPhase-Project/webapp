@@ -19,23 +19,32 @@ const files = Object.keys(
     ])
 );
 
-/** The anchor GitHub gives a heading: lower case, spaces to dashes. */
+/**
+ * The anchor GitHub gives a heading: lower case, spaces to dashes. An
+ * underscore stays (GitHub keeps it); backticks and asterisks go.
+ */
 export function slug(heading: string): string {
     return heading
         .trim()
         .toLowerCase()
-        .replace(/[`*_]/g, '')
-        .replace(/[^\p{L}\p{N}\- ]/gu, '')
+        .replace(/[`*]/g, '')
+        .replace(/[^\p{L}\p{N}_\- ]/gu, '')
         .replace(/ /g, '-');
 }
 
-function anchorsOf(text: string): Set<string> {
+export function anchorsOf(text: string): Set<string> {
     const anchors = new Set<string>();
+    // A repeated heading gets -1, -2, … on GitHub.
+    const seen = new Map<string, number>();
     let fenced = false;
     for (const line of text.split('\n')) {
         if (line.startsWith('```')) fenced = !fenced;
         const heading = fenced ? null : /^#{1,6} (.+)$/.exec(line);
-        if (heading?.[1]) anchors.add(slug(heading[1]));
+        if (!heading?.[1]) continue;
+        const base = slug(heading[1]);
+        const n = seen.get(base) ?? 0;
+        seen.set(base, n + 1);
+        anchors.add(n === 0 ? base : `${base}-${n}`);
     }
     return anchors;
 }
@@ -97,5 +106,11 @@ describe('the links in the docs', () => {
             'the-api-layer-of-a-feature'
         );
         expect(slug('`CardGrid` and Masonry')).toBe('cardgrid-and-masonry');
+        expect(slug('`Member_Condition_Outcome`')).toBe(
+            'member_condition_outcome'
+        );
+        expect([
+            ...anchorsOf('# Example\n## Example\n```\n# Not\n```'),
+        ]).toEqual(['example', 'example-1']);
     });
 });
