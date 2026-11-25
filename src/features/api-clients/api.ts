@@ -4,19 +4,18 @@ import {
     type QueryClient,
 } from '@tanstack/solid-query';
 import { api, request } from '@shared/api/client';
-import type { ApiClient, CreatedApiClient } from '@shared/api/types';
 
 export const apiClientKeys = {
     all: ['api-clients'] as const,
     mine: () => [...apiClientKeys.all, 'mine'] as const,
 };
 
-/** The signed-in user's API clients (the contract leaves the shape out). */
+/** The signed-in user's API clients. */
 export const apiClientsQuery = () =>
     queryOptions({
         queryKey: apiClientKeys.mine(),
         queryFn: ({ signal }) =>
-            request<ApiClient[]>(api.GET('/api/v1/api-clients', { signal })),
+            request(api.GET('/api/v1/api-clients', { signal })),
     });
 
 /**
@@ -27,9 +26,7 @@ export const createApiClientMutation = (queryClient: QueryClient) =>
     mutationOptions({
         mutationKey: [...apiClientKeys.all, 'create'] as const,
         mutationFn: (body: { name: string; expiresAt: string | null }) =>
-            request<CreatedApiClient>(
-                api.POST('/api/v1/api-clients', { body })
-            ),
+            request(api.POST('/api/v1/api-clients', { body })),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: apiClientKeys.all }),
     });

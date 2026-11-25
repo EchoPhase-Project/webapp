@@ -1,6 +1,5 @@
 import { queryOptions } from '@tanstack/solid-query';
 import { api, request } from '@shared/api/client';
-import type { GatewayIntent } from '@shared/api/types';
 
 export const gatewayKeys = {
     all: ['gateway'] as const,
@@ -11,9 +10,6 @@ export const gatewayKeys = {
 export const gatewayIntentsQuery = () =>
     queryOptions({
         queryKey: gatewayKeys.intents(),
-        // The contract leaves the answer undescribed: its shape is named here.
         queryFn: ({ signal }) =>
-            request<GatewayIntent[]>(
-                api.GET('/api/v1/gateway/intents', { signal })
-            ),
+            request(api.GET('/api/v1/gateway/intents', { signal })),
     });

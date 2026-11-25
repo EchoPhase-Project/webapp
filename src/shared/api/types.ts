@@ -92,8 +92,5 @@ export type ApiClient = Schemas['ApiClientResponse'];
 /** The answer to creating an API client; the secret is shown this once. */
 export type CreatedApiClient = Schemas['CreatedApiClientResponse'];
 
-/** One intent of the realtime gateway, and whether the caller may subscribe to it. */
-export type GatewayIntent = Schemas['GatewayIntentResponse'];
-
 /** Whether the service is open (GET /api/v1/status). */
 export type ServiceStatus = Schemas['ServiceStatusResponse'];
