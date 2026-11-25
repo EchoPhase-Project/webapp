@@ -233,6 +233,29 @@ describe('createOutageWatch', () => {
         expect(h.watch.outage()?.kind).toBe('unavailable');
     });
 
+    it.each([
+        ['no maintenance field', {}],
+        ['maintenance as a string', { maintenance: 'false' }],
+        [
+            'a message of another type',
+            { maintenance: true, message: { text: 'x' } },
+        ],
+        [
+            'a retry of another type',
+            { maintenance: true, retryAfterSeconds: '60' },
+        ],
+    ])(
+        'does not take a status answer with %s for an open service',
+        async (_, body) => {
+            const h = harness(() => json(200, body));
+            const fetch = h.api(() => new Response('', { status: 502 }));
+
+            await fetch('/api/v1/sessions');
+            await h.settle();
+            expect(h.watch.outage()?.kind).toBe('unavailable');
+        }
+    );
+
     it('reads the maintenance from the status: its message and when to ask again', async () => {
         const h = harness(() =>
             json(200, {

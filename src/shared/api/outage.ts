@@ -56,9 +56,15 @@ const isErrorBody = (body: unknown): body is ErrorItem =>
     typeof body.code === 'string' &&
     typeof body.message === 'string';
 
-/** A ServiceStatusResponse of the contract. */
+const optional = (value: unknown, type: 'string' | 'number') =>
+    value === undefined || value === null || typeof value === type;
+
+/** A ServiceStatusResponse of the contract: each field the probe reads. */
 const isServiceStatus = (body: unknown): body is ServiceStatus =>
-    isRecord(body) && typeof body.maintenance === 'boolean';
+    isRecord(body) &&
+    typeof body.maintenance === 'boolean' &&
+    optional(body.message, 'string') &&
+    optional(body.retryAfterSeconds, 'number');
 
 /** What a response says about the service: an outage, or null when it is just an answer. */
 export async function outageOf(res: Response): Promise<Outage | null> {
