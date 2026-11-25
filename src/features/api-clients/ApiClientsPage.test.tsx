@@ -60,7 +60,7 @@ describe('ApiClientsPage', () => {
     });
 
     it('creates a client, shows its secret once and lists it', async () => {
-        let clients: unknown[] = [];
+        let clients: ApiClient[] = [];
         const api = fakeApi({
             ...signedIn,
             'GET /api/v1/api-clients': () => json(200, clients),
