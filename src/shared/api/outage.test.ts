@@ -67,6 +67,54 @@ describe('outageOf', () => {
         );
     });
 
+    it('trusts only our JSON: a proxy page, text that looks like JSON, or a malformed body is unavailable', async () => {
+        const page = (status: number, body: string, type: string) =>
+            new Response(body, { status, headers: { 'Content-Type': type } });
+        // The webapp's nginx when the server does not answer: its ErrorBody.
+        expect(
+            await outageOf(
+                json(
+                    503,
+                    {
+                        code: 'Unavailable',
+                        message: 'Not responding',
+                        field: null,
+                    },
+                    { 'Retry-After': '30' }
+                )
+            )
+        ).toEqual({
+            kind: 'unavailable',
+            message: undefined,
+            retryAfterMs: 30_000,
+        });
+        // A proxy in front of the webapp, with its own page.
+        expect(
+            (
+                await outageOf(
+                    page(503, '<h1>Service Unavailable</h1>', 'text/html')
+                )
+            )?.kind
+        ).toBe('unavailable');
+        // The words of a maintenance, but not sent as JSON: not believed.
+        expect(
+            (
+                await outageOf(
+                    page(
+                        503,
+                        '{"code":"Maintenance","message":"x"}',
+                        'text/plain'
+                    )
+                )
+            )?.kind
+        ).toBe('unavailable');
+        // JSON, but not an ErrorBody of the contract.
+        expect(
+            (await outageOf(json(503, { code: 7, message: 'x' })))?.kind
+        ).toBe('unavailable');
+        expect((await outageOf(json(503, [])))?.kind).toBe('unavailable');
+    });
+
     it('leaves ordinary answers alone, and the response readable', async () => {
         const res = json(500, { code: 'Oops' });
         expect(await outageOf(res)).toBeNull();
@@ -168,6 +216,42 @@ describe('createOutageWatch', () => {
         await h.settle();
         expect(h.statusCalls).toBe(1);
         expect(h.watch.outage()).toBeNull();
+    });
+
+    it("does not take a captive portal's page for an open service", async () => {
+        const h = harness(
+            () =>
+                new Response('<html>Sign in to the Wi-Fi</html>', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' },
+                })
+        );
+        const fetch = h.api(() => new Response('', { status: 502 }));
+
+        await fetch('/api/v1/sessions');
+        await h.settle();
+        expect(h.watch.outage()?.kind).toBe('unavailable');
+    });
+
+    it('reads the maintenance from the status: its message and when to ask again', async () => {
+        const h = harness(() =>
+            json(200, {
+                maintenance: true,
+                message: 'Upgrading',
+                since: '2026-11-25T10:00:00Z',
+                until: null,
+                retryAfterSeconds: 90,
+            })
+        );
+        const fetch = h.api(() => new Response('', { status: 504 }));
+
+        await fetch('/api/v1/sessions');
+        await h.settle();
+        expect(h.watch.outage()).toEqual({
+            kind: 'maintenance',
+            message: 'Upgrading',
+            retryAfterMs: 90_000,
+        });
     });
 
     it('shows the service as unavailable when the status cannot be reached either', async () => {

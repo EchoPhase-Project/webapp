@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js';
-import type { ServiceStatus } from '@shared/api/types';
+import type { ErrorItem, ServiceStatus } from '@shared/api/types';
 
 /**
  * The service being away: under maintenance (the server says so, 503 with
@@ -31,28 +31,46 @@ export function retryDelay(header: string | null, now = Date.now()): number {
     return Math.min(MaxRetryMs, Math.max(MinRetryMs, ms));
 }
 
+/**
+ * The body when it is our JSON (the server's, or the webapp's nginx when the
+ * server does not answer: both send ErrorBody); undefined for anything else,
+ * such as the page of a proxy in front of the webapp or of a captive portal.
+ * Read through a clone: the caller still gets the response.
+ */
+async function jsonOf(res: Response): Promise<unknown> {
+    if (!res.headers.get('Content-Type')?.includes('application/json'))
+        return undefined;
+    try {
+        return await res.clone().json();
+    } catch {
+        return undefined;
+    }
+}
+
+const isRecord = (body: unknown): body is Record<string, unknown> =>
+    typeof body === 'object' && body !== null && !Array.isArray(body);
+
+/** An ErrorBody of the contract. */
+const isErrorBody = (body: unknown): body is ErrorItem =>
+    isRecord(body) &&
+    typeof body.code === 'string' &&
+    typeof body.message === 'string';
+
+/** A ServiceStatusResponse of the contract. */
+const isServiceStatus = (body: unknown): body is ServiceStatus =>
+    isRecord(body) && typeof body.maintenance === 'boolean';
+
 /** What a response says about the service: an outage, or null when it is just an answer. */
 export async function outageOf(res: Response): Promise<Outage | null> {
     if (res.status !== 502 && res.status !== 503 && res.status !== 504)
         return null;
 
-    let body: unknown;
-    try {
-        body = await res.clone().json();
-    } catch {
-        // Not JSON: a proxy's own page.
-    }
-    const error =
-        body && typeof body === 'object'
-            ? (body as { code?: unknown; message?: unknown })
-            : {};
-    const maintenance = res.status === 503 && error.code === 'Maintenance';
+    const body = await jsonOf(res);
+    const maintenance =
+        res.status === 503 && isErrorBody(body) && body.code === 'Maintenance';
     return {
         kind: maintenance ? 'maintenance' : 'unavailable',
-        message:
-            maintenance && typeof error.message === 'string'
-                ? error.message
-                : undefined,
+        message: maintenance ? body.message : undefined,
         retryAfterMs: retryDelay(res.headers.get('Retry-After')),
     };
 }
@@ -93,22 +111,17 @@ export function createOutageWatch(deps: OutageWatchDeps) {
                 cache: 'no-store',
             });
             if (!res.ok) return (await outageOf(res)) ?? unavailable();
-            // Checked field by field: during an outage a proxy may answer
-            // instead of the server. The names come from the contract.
-            const status = (await res.json()) as Partial<
-                Record<keyof ServiceStatus, unknown>
-            >;
-            if (status.maintenance !== true) return null;
+            // Not the server's answer (a captive portal's page): not open.
+            const status = await jsonOf(res);
+            if (!isServiceStatus(status)) return unavailable();
+            if (!status.maintenance) return null;
             return {
                 kind: 'maintenance',
-                message:
-                    typeof status.message === 'string'
-                        ? status.message
-                        : undefined,
+                message: status.message ?? undefined,
                 retryAfterMs: retryDelay(
-                    typeof status.retryAfterSeconds === 'number'
-                        ? String(status.retryAfterSeconds)
-                        : null
+                    status.retryAfterSeconds == null
+                        ? null
+                        : String(status.retryAfterSeconds)
                 ),
             };
         } catch {
