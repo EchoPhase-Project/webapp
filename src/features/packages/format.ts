@@ -36,3 +36,6 @@ export function statusTone(status: string): 'ok' | 'bad' | 'busy' | 'quiet' {
             return 'quiet';
     }
 }
+
+/** Not done yet: queued or running (the statuses that statusTone calls busy). */
+export const isBusy = (status: string) => statusTone(status) === 'busy';

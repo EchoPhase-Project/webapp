@@ -182,7 +182,13 @@ export interface RunLive {
     steps: number;
     /** The block done last; none before the first progress event. */
     block?: { id: number; type: string };
-    /** The blocks that failed so far, oldest first (at most LIVE_FAILURES). */
+    /**
+     * The blocks that failed so far. The rows do not count them: the server
+     * stores a run's error count only when it is done, and any first-page
+     * refresh brings that stored count back.
+     */
+    failed: number;
+    /** The newest of them, oldest first (at most LIVE_FAILURES). */
     failures: Omit<RunBlockFailed, 'runId'>[];
 }
 
@@ -191,48 +197,59 @@ const LIVE_FAILURES = 20;
 /**
  * A run's live progress, from the cache only: `skipToken`, so nothing is
  * fetched; it is undefined until an event comes, and removed when the run
- * is done (the API's run and details are then the truth).
+ * is done (the API's run and details are then the truth). It is kept while
+ * no list shows the run (gcTime Infinity), so a long run's failures stay.
  */
 export const runLiveQuery = (runId: string) =>
     queryOptions<RunLive>({
         queryKey: runKeys.live(runId),
         queryFn: skipToken,
         staleTime: Infinity,
+        gcTime: Infinity,
     });
 
-const busy = (run: BlockRun) =>
-    run.status === 'queued' || run.status === 'running';
-
-/** Patches the run's row in every run list held; a run done stays done. */
-function patchRunningRow(
+/** Writes a run's live entry; an entry made here keeps runLiveQuery's gcTime. */
+function updateLive(
     queryClient: QueryClient,
     id: string,
-    patch: (run: BlockRun) => Partial<BlockRun>
+    next: (live: RunLive) => RunLive
+) {
+    // One default for every live entry (a prefix of their keys).
+    queryClient.setQueryDefaults([...runKeys.all, 'live'], {
+        gcTime: Infinity,
+    });
+    queryClient.setQueryData<RunLive>(runKeys.live(id), (live) =>
+        next(live ?? { steps: 0, failed: 0, failures: [] })
+    );
+}
+
+/** Patches the run's row in every run list held, on any loaded page. */
+function patchRunRows(
+    queryClient: QueryClient,
+    id: string,
+    patch: Partial<BlockRun> | ((run: BlockRun) => Partial<BlockRun>)
 ) {
     const lists = queryClient
         .getQueryCache()
         .findAll({ queryKey: runKeys.all, predicate: isRunList });
     for (const query of lists)
-        patchItem<BlockRun>(
-            queryClient,
-            query.queryKey,
-            id,
-            (run) => (busy(run) ? patch(run) : {}),
-            runId
-        );
+        patchItem<BlockRun>(queryClient, query.queryKey, id, patch, runId);
 }
 
 /**
- * A step of a running run: its rows show the step count and the status
- * running; its live entry the block done last (no request).
+ * A queued run's rows say running once its first event comes. Nothing else
+ * of the row changes: a new row object would remount it (and drop the focus)
+ * at each event, and a run done stays done.
  */
+const startRows = (queryClient: QueryClient, id: string) =>
+    patchRunRows(queryClient, id, (run) =>
+        run.status === 'queued' ? { status: 'running' } : {}
+    );
+
+/** A step of a running run: on its live entry (no request). */
 export function patchRunProgress(queryClient: QueryClient, p: RunProgress) {
-    patchRunningRow(queryClient, p.runId, () => ({
-        status: 'running',
-        steps: p.steps,
-    }));
-    queryClient.setQueryData<RunLive>(runKeys.live(p.runId), (live) => ({
-        failures: [],
+    startRows(queryClient, p.runId);
+    updateLive(queryClient, p.runId, (live) => ({
         ...live,
         steps: p.steps,
         block: { id: p.blockId, type: p.blockType },
@@ -240,20 +257,18 @@ export function patchRunProgress(queryClient: QueryClient, p: RunProgress) {
 }
 
 /**
- * A block of a running run failed: one more error on its rows, the failure
- * on its live entry (no request). The completed event sets the final count.
+ * A block of a running run failed: counted and kept on its live entry (no
+ * request). The completed event sets the run's final count.
  */
 export function patchRunBlockFailed(
     queryClient: QueryClient,
     { runId: id, ...failure }: RunBlockFailed
 ) {
-    patchRunningRow(queryClient, id, (run) => ({
-        errorCount: (run.errorCount ?? 0) + 1,
-    }));
-    queryClient.setQueryData<RunLive>(runKeys.live(id), (live) => ({
-        steps: live?.steps ?? 0,
-        block: live?.block,
-        failures: [...(live?.failures ?? []), failure].slice(-LIVE_FAILURES),
+    startRows(queryClient, id);
+    updateLive(queryClient, id, (live) => ({
+        ...live,
+        failed: live.failed + 1,
+        failures: [...live.failures, failure].slice(-LIVE_FAILURES),
     }));
 }
 
@@ -271,21 +286,11 @@ export interface RunCompleted {
  * fetched again: they hold steps and errors the event does not.
  */
 export function patchRunLists(queryClient: QueryClient, done: RunCompleted) {
-    const lists = queryClient
-        .getQueryCache()
-        .findAll({ queryKey: runKeys.all, predicate: isRunList });
-    for (const query of lists)
-        patchItem<BlockRun>(
-            queryClient,
-            query.queryKey,
-            done.runId,
-            {
-                status: done.status,
-                durationMs: done.durationMs,
-                errorCount: done.errorCount,
-            },
-            runId
-        );
+    patchRunRows(queryClient, done.runId, {
+        status: done.status,
+        durationMs: done.durationMs,
+        errorCount: done.errorCount,
+    });
     void queryClient.invalidateQueries({
         queryKey: runKeys.detail(done.runId),
         exact: true,

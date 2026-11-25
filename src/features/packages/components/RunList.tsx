@@ -10,11 +10,9 @@ import {
     runsOfPackageInfiniteQuery,
     runsOfWorkflowInfiniteQuery,
 } from '@features/packages/api/runs';
-import { formatDuration } from '@features/packages/format';
+import { formatDuration, isBusy } from '@features/packages/format';
 import RunStatus from './RunStatus';
-import { RunLiveDetails, RunLiveLine } from './RunLive';
-
-const busy = (status: string) => status === 'queued' || status === 'running';
+import { RunErrors, RunLiveDetails, RunLiveLine } from './RunLive';
 
 /**
  * A workflow's runs, or those of all a package's workflows (each named),
@@ -38,9 +36,13 @@ export default function RunList(props: {
     );
     // The run whose details are open, and its details.
     const [open, setOpen] = createSignal<string | null>(null);
+    // A run not done has no result yet: its details wait (the completed
+    // event refreshes the row, and this query then asks).
+    const openBusy = () =>
+        runs.items().some((r) => r.runId === open() && isBusy(r.status));
     const details = useQuery(() => ({
         ...runQuery(open() ?? ''),
-        enabled: open() !== null,
+        enabled: open() !== null && !openBusy(),
     }));
 
     const toggle = (id: string) => setOpen(open() === id ? null : id);
@@ -97,25 +99,15 @@ export default function RunList(props: {
                                             i18n.currentLocale()
                                         )}
                                     </span>
-                                    <Show when={busy(run.status)}>
-                                        <RunLiveLine runId={run.runId} />
-                                    </Show>
-                                    <Show when={(run.errorCount ?? 0) > 0}>
-                                        <span class="workflow-run-errors">
-                                            {t(
-                                                'runs.errors',
-                                                '{count} errors',
-                                                {
-                                                    count: run.errorCount ?? 0,
-                                                }
-                                            )}
-                                        </span>
-                                    </Show>
+                                    <RunErrors run={run} />
                                 </button>
+                                <Show when={isBusy(run.status)}>
+                                    <RunLiveLine runId={run.runId} />
+                                </Show>
                                 <Show when={open() === run.runId}>
                                     <div class="workflow-run-details">
                                         <Show
-                                            when={!busy(run.status)}
+                                            when={!isBusy(run.status)}
                                             fallback={
                                                 <RunLiveDetails
                                                     runId={run.runId}

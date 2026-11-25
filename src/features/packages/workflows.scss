@@ -221,15 +221,19 @@
   padding: 0 12px 12px;
 }
 
-// The step of a running run: it changes several times a second, so its width
-// should not shake the row.
+// The step of a running run, under its row: it changes several times a
+// second, so its digits keep one width.
 .workflow-run-live {
+  margin: 0;
+  padding: 0 12px 8px;
+  font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
 
 .workflow-run-failures-title {
   margin: 8px 0 4px;
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .workflow-run-failures {
