@@ -41,6 +41,7 @@ numbers.
 
 - Every new paged list gets the states, focus and live region for free,
   and a page does not write "Show more", `LoadError` or the empty text.
-- The remaining lists move to it in `todo/webapp/pagination-rollout.md`,
-  including a client source for lists that are already whole in the cache.
+- The remaining lists (sessions, notes, notifications, API clients,
+  webhooks, schedules) still have to move to it, some with a client source
+  for lists that are already whole in the cache.
 - The rules are in `docs/contributing/data.md`.

@@ -30,8 +30,8 @@ context.
 - **Keep each panel's own code**: three ways to do the same thing, each
   open to clipping.
 - **Drop the fallback**: the API is Baseline since 2024 (Chrome 114,
-  Firefox 125, Safari 17). The user chose to keep it because that is only
-  about three years of support in all browsers.
+  Firefox 125, Safari 17). We kept it: support in all browsers is only
+  about two and a half years old.
 - **CSS anchor positioning instead of `placement.ts`**: not in every
   browser yet; it may replace `placement.ts` later.
 
@@ -42,5 +42,6 @@ context.
 - A press on the trigger of an open panel does not reopen it (a guard in
   `createPopover`); `showPopover({ source })` may make the guard
   unnecessary where browsers support it.
-- `createDismiss` stays for panels that `Popover` does not open.
+- `createDismiss` stays where a panel uses `createPopover` in manual mode
+  (the `Combobox` list): there the browser's light dismiss is off.
 - The rules are in `docs/contributing/ui.md`.

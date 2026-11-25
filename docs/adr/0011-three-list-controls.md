@@ -41,8 +41,8 @@ always visible.
 
 ## Consequences
 
-- Each control has tests for its keys and an axe check; a screen reader
-  pass is still open (`todo/webapp/keyboard-a11y.md`).
+- Each control has tests for its keys and an axe check; a pass with a
+  real screen reader is still open.
 - Selecting the selected value again does not call `onChange` in either
   custom control.
 - An editable `Combobox` needs the texts `resultsText`, `noResults` and

@@ -11,7 +11,7 @@ replaced is not deleted: its status changes to "Superseded by NNNN", and the
 new record links back to it.
 
 To add one, copy [template.md](template.md) to the next number, for example
-`0010-short-title.md`, and add it to the list below. Write in plain, clear
+`NNNN-short-title.md`, and add it to the list below. Write in plain, clear
 English.
 
 | No.                                      | Decision                                                                  | Status   |

@@ -8,9 +8,10 @@
 Every form wired its fields by hand on top of `createSubmit`: a signal per
 field, an input handler, the errors of the field, the busy state, and the
 copy of saved values into the fields. A survey of the 16 forms (2026-11-17)
-also found five real bugs of that wiring: a form that did not follow saved
-values, missing field errors, a modal form that kept stale values, and a
-confirm dialog that closed on failure.
+also found five real bugs of that wiring: settings cards that overwrote
+unsaved edits with saved values, three forms that did not show an error (a
+failed edit in a modal, an error not about a field, a field error never
+shown), and a confirm dialog that closed on failure.
 
 The server is the authority on validation: DataAnnotations, `IValidatable`
 and service errors arrive with the field name, and `groupErrors` already

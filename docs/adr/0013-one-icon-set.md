@@ -15,8 +15,9 @@ catalogue to pick a new icon from.
 
 - All icons come from `src/shared/ui/icons.ts`, under Tabler names. Only
   that file imports an icon library; ESLint enforces it.
-- The set is the official `@tabler/icons-solidjs`. `solid-icons` stays only
-  for the few icons Tabler does not have.
+- The set is the official `@tabler/icons-solidjs`. An icon Tabler lacks may
+  come from `solid-icons`, still a dependency for that, and only through
+  `icons.ts`; none is needed today.
 - Icons take the size of the text around them (`1em`, set in
   `global.scss`), and are `aria-hidden` by default.
 
