@@ -25,3 +25,9 @@ English.
 | [0007](0007-focus-ring-keyboard-only.md) | Field focus ring only when the keyboard moved the focus                   | Accepted |
 | [0008](0008-skeleton-prop.md)            | `skeleton={false}` instead of a `loading` prop                            | Accepted |
 | [0009](0009-translations-in-branch.md)   | When a branch may add translations instead of Weblate                     | Accepted |
+| [0010](0010-all-api-through-query.md)    | All API calls through TanStack Query, and a new client per session        | Accepted |
+| [0011](0011-three-list-controls.md)      | Three list controls: native `Select`, `Combobox`, `Listbox`               | Accepted |
+| [0012](0012-forms-without-a-library.md)  | Forms on `createForm`, without a form or validation library               | Accepted |
+| [0013](0013-one-icon-set.md)             | One icon set, Tabler, only through `icons.ts`                             | Accepted |
+| [0014](0014-paginated.md)                | `Paginated`: one component for every paged list                           | Accepted |
+| [0015](0015-popover-api.md)              | The Popover API for non-modal panels, with a fallback                     | Accepted |
